@@ -14,7 +14,7 @@
 #define IDR_POPUP_INACTIVE              132
 #define IDD_CONFIGURE                   133
 #define IDAPPLY                         1010
-#define IDC_SHORTCUTLIST                1011
+#define IDC_KEYCOMBOLIST                1011
 #define ID_APP_DISABLE                  32773
 #define ID_APP_ENABLE                   32775
 #define ID_POPUP_CONFIGURE              32779

@@ -50,7 +50,7 @@ BEGIN
     "#pragma code_page(1252)\r\n"
     "#include ""res\\FreeCompose.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""     // Standard components\r\n"
-    "#endif\r\n"
+    "#endif\r\0"
 END
 
 #endif    // APSTUDIO_INVOKED
@@ -82,14 +82,14 @@ BEGIN
 END
 
 IDD_CONFIGURE DIALOGEX 0, 0, 186, 90
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "FreeCompose Configuration"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,9,69,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,127,69,50,14
     PUSHBUTTON      "&Apply",IDAPPLY,68,69,50,14
-    CONTROL         "",IDC_SHORTCUTLIST,"SysListView32",LVS_LIST | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,172,57
+    CONTROL         "",IDC_KEYCOMBOLIST,"SysListView32",LVS_REPORT | LVS_EDITLABELS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,7,172,57
 END
 
 
