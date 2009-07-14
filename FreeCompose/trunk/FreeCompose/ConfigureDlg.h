@@ -19,6 +19,10 @@ protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 
 	DECLARE_MESSAGE_MAP()
+private:
+	CListCtrl m_KeyComboList;
+	CSize m_MinimumSize;
 public:
-	CListCtrl m_ShortcutList;
+	virtual BOOL OnInitDialog();
+	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 };
