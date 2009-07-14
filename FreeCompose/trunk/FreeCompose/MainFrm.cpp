@@ -14,6 +14,9 @@ const UINT FCM_NOTIFYICON = RegisterWindowMessage( _T("FreeCompose.FCM_NOTIFYICO
 const UINT FCM_ENABLE     = RegisterWindowMessage( _T("FreeCompose.FCM_ENABLE") );
 const UINT FCM_DISABLE    = RegisterWindowMessage( _T("FreeCompose.FCM_DISABLE") );
 
+const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
+const UINT FCM_KEY        = RegisterWindowMessage( _T("FcHookDll.FCM_KEY") );
+
 // CMainFrame
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
@@ -24,6 +27,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE(FCM_NOTIFYICON, &CMainFrame::OnFcmNotifyIcon)
 	ON_REGISTERED_MESSAGE(FCM_ENABLE, &CMainFrame::OnFcmEnable)
 	ON_REGISTERED_MESSAGE(FCM_DISABLE, &CMainFrame::OnFcmDisable)
+	ON_REGISTERED_MESSAGE(FCM_PIP, &CMainFrame::OnFcmPip)
+	ON_REGISTERED_MESSAGE(FCM_KEY, &CMainFrame::OnFcmKey)
 END_MESSAGE_MAP()
 
 
@@ -52,11 +57,10 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return FALSE;
 	}
 
-	CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
 	for ( LONG n = 0; n < MAXLONG; n++ ) {
 		COMPOSE_KEY_ENTRY cke;
-		TCHAR tszSection[128];
-		_sntprintf( tszSection, 128, _T("Mapping\\%d"), n );
+		TCHAR tszSection[32];
+		_sntprintf( tszSection, 32, _T("Mapping\\%d"), n );
 		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkFirst"),     0 );
 		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkSecond"),    0 );
 		cke.wchComposed = (wchar_t) theApp.GetProfileInt( tszSection, _T("wchComposed"), 0 );
@@ -103,7 +107,7 @@ LRESULT CMainFrame::OnFcmNotifyIcon(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT CMainFrame::OnFcmEnable(WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnFcmEnable(WPARAM /*wParam*/, LPARAM /*lParam*/) {
 	if ( ! m_fActive ) {
 		FcEnableHook( );
 		m_fActive = TRUE;
@@ -113,13 +117,50 @@ LRESULT CMainFrame::OnFcmEnable(WPARAM wParam, LPARAM lParam) {
 	return 0;
 }
 
-LRESULT CMainFrame::OnFcmDisable(WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnFcmDisable(WPARAM /*wParam*/, LPARAM /*lParam*/) {
 	if ( m_fActive ) {
 		FcDisableHook();
 		m_fActive = FALSE;
 		m_ptni->SetMenu( LoadMenu( theApp.m_hInstance, MAKEINTRESOURCE( IDR_POPUP_INACTIVE ) ) );
 		m_ptni->SetTooltipText( _T("FreeCompose is enabled.") );
 	}
+	return 0;
+}
+
+LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
+	switch ( wPip ) {
+		case PIP_OK_1:
+			::Beep( 523, 100 );
+			break;
+
+		case PIP_OK_2:
+			::Beep( 523, 100 );
+			break;
+
+		case PIP_OK_3:
+			::Beep( 1047, 100 );
+			break;
+
+		case PIP_ABORT:
+			MessageBeep( MB_ICONASTERISK );
+			break;
+
+		case PIP_ERROR:
+			MessageBeep( MB_ICONHAND );
+			break;
+
+		case PIP_FAIL:
+			MessageBeep( MB_ICONHAND );
+			break;
+
+		default:
+			break;
+	}
+
+	return 0;
+}
+
+LRESULT CMainFrame::OnFcmKey(WPARAM /*wKey*/, LPARAM /*lParam*/) {
 	return 0;
 }
 
