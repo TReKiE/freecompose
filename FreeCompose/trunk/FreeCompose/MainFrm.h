@@ -43,6 +43,8 @@ public:
 	afx_msg LRESULT OnFcmNotifyIcon(WPARAM, LPARAM);
 	afx_msg LRESULT OnFcmEnable(WPARAM, LPARAM);
 	afx_msg LRESULT OnFcmDisable(WPARAM, LPARAM);
+	afx_msg LRESULT OnFcmPip(WPARAM wPip, LPARAM);
+	afx_msg LRESULT OnFcmKey(WPARAM wKey, LPARAM);
 	afx_msg LRESULT OnTaskbarCreated(WPARAM, LPARAM);
 	afx_msg void OnClose();
 };
