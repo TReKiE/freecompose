@@ -15,26 +15,20 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0D39C3AA09F64867931A14182A322540"
-        "OwnerKey" = "8:_579B2FE7A72F426199044B4940916A04"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0D39C3AA09F64867931A14182A322540"
+        "MsmKey" = "8:_2F6C4BD4BEED46C9BECD5AEC944A2D6C"
         "OwnerKey" = "8:_E565F08927774CE4B5D60C6884F0B8B1"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_18B317FAB8A24323A7D18B2D270DD102"
-        "OwnerKey" = "8:_0D39C3AA09F64867931A14182A322540"
+        "MsmKey" = "8:_456361CC3CF9409EA99D73ADFA4EEBEF"
+        "OwnerKey" = "8:_79CD7C93EA5744149F8D6211CA0E7038"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_32B09BD5304F49F3A1A45B753C05ACBD"
-        "OwnerKey" = "8:_E565F08927774CE4B5D60C6884F0B8B1"
+        "MsmKey" = "8:_5778047304AB4092B1ECD35267741159"
+        "OwnerKey" = "8:_2F6C4BD4BEED46C9BECD5AEC944A2D6C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -45,13 +39,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D9F320F15FEA4C96809F784A3286B5C4"
-        "OwnerKey" = "8:_32B09BD5304F49F3A1A45B753C05ACBD"
+        "MsmKey" = "8:_79CD7C93EA5744149F8D6211CA0E7038"
+        "OwnerKey" = "8:_579B2FE7A72F426199044B4940916A04"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DA3D81A2357DAB26D5F14395CDE21B86"
+        "MsmKey" = "8:_79CD7C93EA5744149F8D6211CA0E7038"
+        "OwnerKey" = "8:_E565F08927774CE4B5D60C6884F0B8B1"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_AFDA7EF2C50CDBF015F9C0A96F231353"
         "OwnerKey" = "8:_E565F08927774CE4B5D60C6884F0B8B1"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -69,7 +69,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:Debug\\Setup.msi"
+        "OutputFilename" = "8:Debug\\FreeCompose.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -79,13 +79,24 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                }
+            }
         }
         "Release"
         {
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:Release\\Setup.msi"
+        "OutputFilename" = "8:Release\\FreeCompose.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -95,6 +106,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.2.0"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 2.0"
+                    "ProductCode" = "8:Microsoft.Net.Framework.2.0"
+                    }
+                }
+            }
         }
     }
     "Deployable"
@@ -116,7 +143,7 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DA3D81A2357DAB26D5F14395CDE21B86"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AFDA7EF2C50CDBF015F9C0A96F231353"
             {
             "SourcePath" = "8:FCHookDll.dll"
             "TargetName" = "8:FCHookDll.dll"
@@ -162,6 +189,17 @@
             "Property" = "8:ProgramMenuFolder"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_A8AA52D61D754138B0ADF2F3B55357D9"
+                    {
+                    "Name" = "8:Zive"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_00C77736CF8E4161B5EB73A4A233383E"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_B0CE172377CD4EE1BC12D418A33C8CE5"
@@ -190,24 +228,24 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Setup"
-        "ProductCode" = "8:{EBE58554-C4F6-4D86-9E08-AC77B8E399AC}"
-        "PackageCode" = "8:{BC06FB45-4576-4062-AC6C-29754F98C5F1}"
+        "ProductName" = "8:FreeCompose"
+        "ProductCode" = "8:{5027BB96-EAE7-43BE-B13C-BB90D69E37A2}"
+        "PackageCode" = "8:{95B39C9C-5702-4F67-B36B-324B8C33BC1D}"
         "UpgradeCode" = "8:{4A0B60E6-D027-4CA8-8E16-8E98344EF382}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.0"
-        "Manufacturer" = "8:Zive"
+        "ProductVersion" = "8:1.0.1"
+        "Manufacturer" = "8:Zive Technology Research"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Setup"
+        "Title" = "8:FreeCompose Setup"
         "Subject" = "8:"
-        "ARPCONTACT" = "8:Zive"
+        "ARPCONTACT" = "8:Zive Technology Research"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:"
-        "ARPURLINFOABOUT" = "8:"
+        "ARPCOMMENTS" = "8:FreeCompose provides an easy way to input accented letters and other symbols."
+        "ARPURLINFOABOUT" = "8:http://www.zive.ca/"
         "ARPPRODUCTICON" = "8:"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
@@ -311,6 +349,20 @@
         }
         "Shortcut"
         {
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_5190F3C9F2A34BC6A65AC8F038E785EF"
+            {
+            "Name" = "8:FreeCompose"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_E565F08927774CE4B5D60C6884F0B8B1"
+            "Folder" = "8:_A8AA52D61D754138B0ADF2F3B55357D9"
+            "WorkingFolder" = "8:_B0CE172377CD4EE1BC12D418A33C8CE5"
+            "Icon" = "8:"
+            "Feature" = "8:"
+            }
         }
         "UserInterface"
         {
@@ -707,11 +759,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0D39C3AA09F64867931A14182A322540"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_2F6C4BD4BEED46C9BECD5AEC944A2D6C"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC80_DebugCRT_x86.msm"
+            "SourcePath" = "8:Microsoft_VC80_MFC_x86.msm"
                 "Properties"
                 {
                 }
@@ -721,11 +773,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_18B317FAB8A24323A7D18B2D270DD102"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_456361CC3CF9409EA99D73ADFA4EEBEF"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_debugcrt_x86.msm"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_crt_x86.msm"
                 "Properties"
                 {
                 }
@@ -735,11 +787,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_32B09BD5304F49F3A1A45B753C05ACBD"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5778047304AB4092B1ECD35267741159"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC80_DebugMFC_x86.msm"
+            "SourcePath" = "8:policy_8_0_microsoft_vc80_mfc_x86.msm"
                 "Properties"
                 {
                 }
@@ -749,11 +801,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D9F320F15FEA4C96809F784A3286B5C4"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_79CD7C93EA5744149F8D6211CA0E7038"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_8_0_microsoft_vc80_debugmfc_x86.msm"
+            "SourcePath" = "8:Microsoft_VC80_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -768,7 +820,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_579B2FE7A72F426199044B4940916A04"
             {
-            "SourcePath" = "8:..\\debug\\FCHookDll.dll"
+            "SourcePath" = "8:..\\release\\FCHookDll.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B0CE172377CD4EE1BC12D418A33C8CE5"
@@ -796,7 +848,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E565F08927774CE4B5D60C6884F0B8B1"
             {
-            "SourcePath" = "8:..\\debug\\FreeCompose.exe"
+            "SourcePath" = "8:..\\release\\FreeCompose.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B0CE172377CD4EE1BC12D418A33C8CE5"
