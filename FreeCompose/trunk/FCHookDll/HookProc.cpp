@@ -9,6 +9,8 @@
 
 typedef set<DWORD> DwordSet;
 
+#define VK_COMPOSE VK_SCROLL
+
 #define KEY_DOWN()     ( 0 == ( pkb->flags & LLKHF_UP       ) )
 #define KEY_UP()       ( 0 != ( pkb->flags & LLKHF_UP       ) )
 #define KEY_INJECTED() ( 0 != ( pkb->flags & LLKHF_INJECTED ) )
@@ -20,7 +22,7 @@ typedef set<DWORD> DwordSet;
 					   ( pkb->vkCode >= VK_OEM_4 && pkb->vkCode <= VK_OEM_7 )    )
 
 #define KEY_SHIFT() ( VK_LSHIFT == pkb->vkCode || VK_RSHIFT == pkb->vkCode )
-#define KEY_APPS() ( VK_APPS == pkb->vkCode )
+#define KEY_COMPOSE() ( VK_COMPOSE == pkb->vkCode )
 
 #pragma data_seg( push, ".shareddata" )
 int ComposeState = 0;
@@ -31,10 +33,13 @@ bool shift = false;
 DwordSet WantedKeys;
 #pragma data_seg( pop )
 
+const UINT FCM_PIP = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
+const UINT FCM_KEY = RegisterWindowMessage( _T("FcHookDll.FCM_KEY") );
+
 bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 	bool f = false;
 
-	debug( _T( "TranslateKey: vk1=%08x vk2=%08x\n" ), vk1, vk2 );
+//	debug( _T( "TranslateKey: vk1=%08x vk2=%08x\n" ), vk1, vk2 );
 	EnterCriticalSection( &cs );
 		for ( int n = 0; n < cComposeKeyEntries; n++ ) {
 			if ( 
@@ -46,7 +51,7 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 				input.type = INPUT_KEYBOARD;
 				input.ki.wVk = 0;
 				input.ki.wScan = ComposeKeyEntries[n].wchComposed;
-				input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+				input.ki.dwFlags = KEYEVENTF_UNICODE/* | KEYEVENTF_KEYUP*/;
 //				input.ki.time = 0;
 //				input.ki.dwExtraInfo = 0;
 
@@ -54,20 +59,21 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 				if ( u < 1 ) {
 					debug( _T( "TranslateKey: SendInput failed? u=%d %d\n" ), u, GetLastError( ) );
 				}
+
+				::PostMessage( HWND_BROADCAST, FCM_KEY, (WPARAM) ComposeKeyEntries[n].wchComposed, 0 );
+
 				f = true;
 				break;
 			}
 		}
 	LeaveCriticalSection( &cs );
-	debug( _T( "TranslateKey: done: %d\n" ), (int) f );
+//	debug( _T( "TranslateKey: done: %d\n" ), (int) f );
 
 	return f;
 }
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
 	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
-
-	debug( _T( "LowLevelKeyboardProc: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n" ), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	if ( nCode < 0 )
 		goto acceptKey;
@@ -97,13 +103,19 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		}
 	}
 
+#ifdef _DEBUG
+	if ( ComposeState > 0 )
+		debug( _T( "LowLevelKeyboardProc: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n" ), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
+#endif
+
 	switch ( ComposeState ) {
 		case 0:
 			if ( KEY_DOWN() ) {
-				if ( KEY_APPS() ) {
+				if ( KEY_COMPOSE() ) {
 					debug(_T("LLKP: 0=>1 Apps down\n"));
 					ComposeState = 1;
-					WantedKeys.insert( VK_APPS );
+					WantedKeys.insert( VK_COMPOSE );
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_1, 0 );
 					return 1;
 				}
 			}
@@ -116,12 +128,14 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					debug(_T("LLKP: 1=>2 Xalnum down\n"));
 					ComposeState = 2;
 					WantedKeys.insert( pkb->vkCode );
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_2, 0 );
 
 					key1 = ( (DWORD) shift << 31 ) | pkb->vkCode;
 					return 1;
-				} else if ( KEY_APPS() && WantedKeys.end() == WantedKeys.find( VK_APPS ) ) {
+				} else if ( KEY_COMPOSE() && WantedKeys.end() == WantedKeys.find( VK_COMPOSE ) ) {
 					debug(_T("LLKP: 1=>0: Apps down abort\n"));
 					ComposeState = 0;
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
 					goto acceptKey;
 				} else {
 					debug(_T("LLKP: 1=>0 rejecting\n"));
@@ -138,22 +152,23 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 				if ( KEY_XALNUM() ) {
 					debug(_T("LLKP: 2=>0 Xalnum down\n"));
 					WantedKeys.insert( pkb->vkCode );
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_3, 0 );
 
 					key2 = ( (DWORD) shift << 31 ) | pkb->vkCode;
 					debug(_T("LLKP: 2=>0 keys %08x %08x\n"), key1, key2);
 					if ( ! TranslateKey( key1, key2 ) ) {
 						debug(_T("LLKP: 2=>0 translate failed\n"));
-						MessageBeep( MB_ICONHAND );
+						::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_FAIL, 0 );
 					} else {
 						debug(_T("LLKP: 2=>0 translate succeeded\n"));
 					}
 					ComposeState = 0;
 					return 1;
-				} else if ( KEY_APPS() && WantedKeys.end() == WantedKeys.find( VK_APPS ) ) {
+				} else if ( KEY_COMPOSE() && WantedKeys.end() == WantedKeys.find( VK_COMPOSE ) ) {
 					debug(_T("LLKP: 2=>0: Apps down abort\n"));
 					ComposeState = 0;
-					WantedKeys.insert( VK_APPS );
-					MessageBeep( MB_ICONASTERISK );
+					WantedKeys.insert( VK_COMPOSE );
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
 					return 1;
 				} else {
 					debug(_T("LLKP: 2=>0 rejecting\n"));
@@ -174,8 +189,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 rejectKey:
 	ComposeState = 0;
 	debug(_T("LLKP: rejectKey\n"));
-	MessageBeep( MB_ICONHAND );
-	WantedKeys.insert( VK_APPS );
+	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
+	WantedKeys.insert( VK_COMPOSE );
 	return 1;
 
 acceptKey:
