@@ -11,8 +11,7 @@ void debug( LPCTSTR lpszMessage, ... ) {
 
 	va_list va;
 	va_start( va, lpszMessage );
-	_vsntprintf( buf, 4095, lpszMessage, va );
+	_vsntprintf_s( buf, countof( buf ), _TRUNCATE, lpszMessage, va );
 	va_end( va );
 	OutputDebugString( buf );
 }
-
