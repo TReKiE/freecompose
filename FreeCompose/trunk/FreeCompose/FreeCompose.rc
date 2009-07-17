@@ -76,8 +76,8 @@ CAPTION "About FreeCompose"
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "FreeCompose Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
-    LTEXT           "Copyright (C) 2006",IDC_STATIC,40,25,119,8
+    LTEXT           "FreeCompose Version 1.0",IDC_ABOUT_VERSION,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2006",IDC_ABOUT_COPYRIGHT,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,16,WS_GROUP
 END
 
@@ -99,8 +99,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,2,1
+ PRODUCTVERSION 1,0,2,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -117,12 +117,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Zive Technology Research"
             VALUE "FileDescription", "FreeCompose"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.0.2.1"
             VALUE "InternalName", "FreeCompose.exe"
-            VALUE "LegalCopyright", "© 2006 Zive Technology Research"
+            VALUE "LegalCopyright", "© 2009 Zive Technology Research"
             VALUE "OriginalFilename", "FreeCompose.exe"
             VALUE "ProductName", "FreeCompose"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "1.0.2.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -326,8 +326,7 @@ LANGUAGE 9, 4
 #pragma code_page(1252)
 #include "res\FreeCompose.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
-#endif
-
+#endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
