@@ -15,6 +15,8 @@
 #define IDD_CONFIGURE                   133
 #define IDAPPLY                         1010
 #define IDC_KEYCOMBOLIST                1011
+#define IDC_ABOUT_VERSION               1012
+#define IDC_ABOUT_COPYRIGHT             1013
 #define ID_APP_DISABLE                  32773
 #define ID_APP_ENABLE                   32775
 #define ID_POPUP_CONFIGURE              32779
@@ -26,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32781
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           105
 #endif
 #endif
