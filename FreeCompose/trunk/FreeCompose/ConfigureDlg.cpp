@@ -74,6 +74,10 @@ LPCTSTR lpszVkNames[256] = {
 };
 
 
+#define ITEM_FUDGE_FACTOR 12
+#define HEADER_FUDGE_FACTOR (ITEM_FUDGE_FACTOR + 3)
+
+
 // CConfigureDlg dialog
 
 IMPLEMENT_DYNAMIC(CConfigureDlg, CDialog)
@@ -112,9 +116,13 @@ BOOL CConfigureDlg::OnInitDialog()
 		m_MinimumSize = rect.Size( );
 	}
 
-	m_KeyComboList.InsertColumn( 0, _T("Character"), LVCFMT_LEFT, 60 );
-	m_KeyComboList.InsertColumn( 1, _T("Key 1"),     LVCFMT_LEFT, 60, 1 );
-	m_KeyComboList.InsertColumn( 2, _T("Key 2"),     LVCFMT_LEFT, 60, 2 );
+	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
+	int nMinWidths[3] = { 0, 0, 0, };
+
+	for ( int n = 0; n < 3; n++ ) {
+		nMinWidths[n] = m_KeyComboList.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
+		m_KeyComboList.InsertColumn( n, strLabels[n], LVCFMT_LEFT, nMinWidths[n] );
+	}
 
 	const LPCTSTR IsCap   = _T("Shift+");
 	const LPCTSTR IsntCap = _T("");
@@ -125,8 +133,12 @@ BOOL CConfigureDlg::OnInitDialog()
 	DWORD dwVk;
 	bool fCapital;
 	BOOL rc;
+	int nwidth;
 	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
 		_sntprintf_s( buf, 64, _TRUNCATE, _T("%c"), ComposeKeyEntries[n].wchComposed );
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > nMinWidths[0] )
+			nMinWidths[0] = nwidth;
 		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, buf, 0, (UINT) -1, -1, n );
 		ASSERT( -1 != nItem );
 
@@ -143,6 +155,9 @@ BOOL CConfigureDlg::OnInitDialog()
 		} else {
 			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
 		}
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > nMinWidths[1] )
+			nMinWidths[1] = nwidth;
 		rc = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
 		ASSERT( TRUE == rc );
 
@@ -159,8 +174,34 @@ BOOL CConfigureDlg::OnInitDialog()
 		} else {
 			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
 		}
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > nMinWidths[2] )
+			nMinWidths[2] = nwidth;
 		rc = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
 		ASSERT( TRUE == rc );
+	}
+
+	if ( nMinWidths[1] > nMinWidths[2] )
+		nMinWidths[1] = nMinWidths[2];
+	m_KeyComboList.SetColumnWidth( 0, nMinWidths[0] );
+	m_KeyComboList.SetColumnWidth( 1, nMinWidths[1] );
+	m_KeyComboList.SetColumnWidth( 2, nMinWidths[2] );
+
+	{
+		CRect list;
+		m_KeyComboList.GetWindowRect( list );
+		int totwidth = nMinWidths[0] + nMinWidths[1] + nMinWidths[2];
+		if ( list.Width() < totwidth ) {
+			int cxVScroll = GetSystemMetrics( SM_CXVSCROLL );
+			int cxSizeFrame = GetSystemMetrics( SM_CXSIZEFRAME );
+			int excess = totwidth - list.Width() + cxVScroll + cxSizeFrame;
+
+			m_KeyComboList.SetWindowPos( NULL, 0, 0, list.Width() + excess, list.Height(), SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
+
+			CRect dlg;
+			GetWindowRect( dlg );
+			SetWindowPos( NULL, 0, 0, dlg.Width() + excess, dlg.Height(), SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
+		}
 	}
 
 	return TRUE;
