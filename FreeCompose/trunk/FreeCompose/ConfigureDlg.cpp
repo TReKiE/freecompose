@@ -85,7 +85,7 @@ IMPLEMENT_DYNAMIC(CConfigureDlg, CDialog)
 CConfigureDlg::CConfigureDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CConfigureDlg::IDD, pParent)
 {
-
+	memset( m_nColumnWidths, 0, sizeof( m_nColumnWidths ) );
 }
 
 CConfigureDlg::~CConfigureDlg()
@@ -99,126 +99,6 @@ void CConfigureDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDEDIT, m_btnEdit);
 	DDX_Control(pDX, IDREMOVE, m_btnRemove);
 	DDX_Control(pDX, IDCLOSE, m_btnClose);
-}
-
-
-BEGIN_MESSAGE_MAP(CConfigureDlg, CDialog)
-	ON_WM_SIZING()
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CConfigureDlg::OnKeyComboListItemChanged)
-END_MESSAGE_MAP()
-
-
-// CConfigureDlg message handlers
-
-BOOL CConfigureDlg::OnInitDialog()
-{
-	CDialog::OnInitDialog();
-	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
-	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
-
-	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
-	int nMinWidths[3] = { 0, 0, 0, };
-
-	for ( int n = 0; n < 3; n++ ) {
-		nMinWidths[n] = m_KeyComboList.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
-		m_KeyComboList.InsertColumn( n, strLabels[n], LVCFMT_LEFT, nMinWidths[n] );
-	}
-
-	const LPCTSTR IsCap   = _T("Shift+");
-	const LPCTSTR IsntCap = _T("");
-
-	TCHAR buf[64];
-	LPCTSTR lpszCapital;
-	LPCTSTR lpszName;
-	DWORD dwVk;
-	bool fCapital;
-	BOOL ret;
-	int nwidth;
-	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
-		_sntprintf_s( buf, 64, _TRUNCATE, _T("%c"), ComposeKeyEntries[n].wchComposed );
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > nMinWidths[0] )
-			nMinWidths[0] = nwidth;
-		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, buf, 0, (UINT) -1, -1, n );
-		ASSERT( -1 != nItem );
-
-		dwVk = (DWORD) ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x7FFFFFFF );
-		fCapital = ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x80000000 ) != 0;
-		lpszCapital = fCapital ? IsCap : IsntCap;
-		lpszName = lpszVkNames[ dwVk ];
-		if ( NULL == lpszName ) {
-			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
-			} else {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
-			}
-		} else {
-			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
-		}
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > nMinWidths[1] )
-			nMinWidths[1] = nwidth;
-		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
-		ASSERT( TRUE == ret );
-
-		dwVk = (DWORD) ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x7FFFFFFF );
-		fCapital = ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x80000000 ) != 0;
-		lpszCapital = fCapital ? IsCap : IsntCap;
-		lpszName = lpszVkNames[ dwVk ];
-		if ( NULL == lpszName ) {
-			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
-			} else {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
-			}
-		} else {
-			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
-		}
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > nMinWidths[2] )
-			nMinWidths[2] = nwidth;
-		ret = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
-		ASSERT( TRUE == ret );
-	}
-
-	if ( nMinWidths[1] > nMinWidths[2] )
-		nMinWidths[1] = nMinWidths[2];
-	m_KeyComboList.SetColumnWidth( 0, nMinWidths[0] );
-	m_KeyComboList.SetColumnWidth( 1, nMinWidths[1] );
-	m_KeyComboList.SetColumnWidth( 2, nMinWidths[2] );
-
-	CRect rc;
-	m_KeyComboList.GetWindowRect( rc );
-	int totwidth = nMinWidths[0] + nMinWidths[1] + nMinWidths[2];
-	if ( totwidth > rc.Width() ) {
-		int cxVScroll = GetSystemMetrics( SM_CXVSCROLL );
-		int cxSizeFrame = GetSystemMetrics( SM_CXSIZEFRAME );
-		int excessX = ( totwidth - rc.Width() ) + cxVScroll + cxSizeFrame;
-		_DoLayout( excessX, 0 );
-	}
-
-	this->GetWindowRect( rc );
-	m_MinimumSize = rc.Size( );
-
-	return TRUE;
-}
-
-void CConfigureDlg::OnSizing(UINT fwSide, LPRECT pRect)
-{
-	CRect rc;
-	this->GetWindowRect( rc );
-
-	if ( pRect->right - pRect->left < m_MinimumSize.cx )
-		pRect->right = pRect->left + m_MinimumSize.cx;
-	if ( pRect->bottom - pRect->top < m_MinimumSize.cy )
-		pRect->bottom = pRect->top + m_MinimumSize.cy;
-	CDialog::OnSizing( fwSide, pRect );
-
-	int excessX = ( pRect->right - pRect->left ) - rc.Width( );
-	int excessY = ( pRect->bottom - pRect->top ) - rc.Height( );
-	if ( 0 != excessX || 0 != excessY ) {
-		_DoLayout( excessX, excessY );
-	}
 }
 
 void CConfigureDlg::_DoLayout( const int excessX, const int excessY ) {
@@ -243,6 +123,129 @@ void CConfigureDlg::_DoLayout( const int excessX, const int excessY ) {
 	this->SetWindowPos( NULL, 0, 0, rc.Width() + excessX, rc.Height() + excessY, SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
 }
 
+void CConfigureDlg::_FillKeyComboList( void ) {
+	TCHAR buf[64];
+	LPCTSTR lpszCapital;
+	LPCTSTR lpszName;
+	DWORD dwVk;
+	bool fCapital;
+	BOOL ret;
+	int nwidth;
+
+	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
+		_sntprintf_s( buf, 64, _TRUNCATE, _T("%c"), ComposeKeyEntries[n].wchComposed );
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > m_nColumnWidths[0] )
+			m_nColumnWidths[0] = nwidth;
+		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, buf, 0, (UINT) -1, -1, n );
+		ASSERT( -1 != nItem );
+
+		dwVk = (DWORD) ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x7FFFFFFF );
+		fCapital = ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x80000000 ) != 0;
+		lpszCapital = fCapital ? _T("Shift+") : _T("");
+		lpszName = lpszVkNames[ dwVk ];
+		if ( NULL == lpszName ) {
+			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
+				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
+			} else {
+				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
+			}
+		} else {
+			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
+		}
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > m_nColumnWidths[1] )
+			m_nColumnWidths[1] = nwidth;
+		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		ASSERT( TRUE == ret );
+
+		dwVk = (DWORD) ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x7FFFFFFF );
+		fCapital = ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x80000000 ) != 0;
+		lpszCapital = fCapital ? _T("Shift+") : _T("");
+		lpszName = lpszVkNames[ dwVk ];
+		if ( NULL == lpszName ) {
+			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
+				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
+			} else {
+				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
+			}
+		} else {
+			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
+		}
+		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
+		if ( nwidth > m_nColumnWidths[2] )
+			m_nColumnWidths[2] = nwidth;
+		ret = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		ASSERT( TRUE == ret );
+	}
+
+	if ( m_nColumnWidths[1] > m_nColumnWidths[2] )
+		m_nColumnWidths[1] = m_nColumnWidths[2];
+	m_KeyComboList.SetColumnWidth( 0, m_nColumnWidths[0] );
+	m_KeyComboList.SetColumnWidth( 1, m_nColumnWidths[1] );
+	m_KeyComboList.SetColumnWidth( 2, m_nColumnWidths[2] );
+
+	CRect rc;
+	m_KeyComboList.GetWindowRect( rc );
+	int totwidth = m_nColumnWidths[0] + m_nColumnWidths[1] + m_nColumnWidths[2];
+	if ( totwidth > rc.Width() ) {
+		int cxVScroll = GetSystemMetrics( SM_CXVSCROLL );
+		int cxSizeFrame = GetSystemMetrics( SM_CXSIZEFRAME );
+		int excessX = ( totwidth - rc.Width() ) + cxVScroll + cxSizeFrame;
+		_DoLayout( excessX, 0 );
+	}
+
+	this->GetWindowRect( rc );
+	m_MinimumSize = rc.Size( );
+}
+
+
+BEGIN_MESSAGE_MAP(CConfigureDlg, CDialog)
+	ON_WM_SIZING()
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CConfigureDlg::OnKeyComboListItemChanged)
+	ON_BN_CLICKED(IDREMOVE, &CConfigureDlg::OnBnClickedRemove)
+	ON_BN_CLICKED(IDCLOSE, &CConfigureDlg::OnBnClickedClose)
+END_MESSAGE_MAP()
+
+
+// CConfigureDlg message handlers
+
+BOOL CConfigureDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
+	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
+
+	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
+
+	for ( int n = 0; n < 3; n++ ) {
+		m_nColumnWidths[n] = m_KeyComboList.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
+		m_KeyComboList.InsertColumn( n, strLabels[n], LVCFMT_LEFT, m_nColumnWidths[n] );
+	}
+
+	_FillKeyComboList( );
+
+	return TRUE;
+}
+
+void CConfigureDlg::OnSizing(UINT fwSide, LPRECT pRect)
+{
+	CRect rc;
+	this->GetWindowRect( rc );
+
+	if ( pRect->right - pRect->left < m_MinimumSize.cx )
+		pRect->right = pRect->left + m_MinimumSize.cx;
+	if ( pRect->bottom - pRect->top < m_MinimumSize.cy )
+		pRect->bottom = pRect->top + m_MinimumSize.cy;
+	CDialog::OnSizing( fwSide, pRect );
+
+	int excessX = ( pRect->right - pRect->left ) - rc.Width( );
+	int excessY = ( pRect->bottom - pRect->top ) - rc.Height( );
+	if ( 0 != excessX || 0 != excessY ) {
+		_DoLayout( excessX, excessY );
+	}
+}
+
 void CConfigureDlg::OnKeyComboListItemChanged(NMHDR* pNMHDR, LRESULT* pResult) {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
 
@@ -260,4 +263,36 @@ void CConfigureDlg::OnKeyComboListItemChanged(NMHDR* pNMHDR, LRESULT* pResult) {
 
 out:
 	*pResult = 0;
+}
+
+void CConfigureDlg::OnBnClickedRemove( ) {
+	UINT count = m_KeyComboList.GetSelectedCount( );
+	if ( count < 1 )
+		return;
+
+	int ret = MessageBox( _T("Are you sure?"), _T("Remove key definitions"), MB_YESNO | MB_ICONWARNING );
+	if ( IDYES == ret ) {
+		POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
+		int i = m_KeyComboList.GetNextSelectedItem( pos );
+		int* items = new int[count];
+		int n = 0;
+
+		while ( -1 != i ) {
+			items[n++] = i;
+			i = m_KeyComboList.GetNextSelectedItem( pos );
+		}
+		qsort_s( items, count, sizeof( int ), compare_keys_reverse, NULL );
+
+		for ( UINT n = 0; n < count; n++ ) {
+			m_KeyComboList.DeleteItem( items[n] );
+			ComposeKeyEntries.RemoveAt( items[n] );
+		}
+
+		FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
+	}
+	// XXX need to save changes to registry
+}
+
+void CConfigureDlg::OnBnClickedClose( ) {
+	this->EndDialog( 0 );
 }
