@@ -42,9 +42,6 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 //	debug( _T( "TranslateKey: vk1=%08x vk2=%08x\n" ), vk1, vk2 );
 	EnterCriticalSection( &cs );
 		for ( int n = 0; n < cComposeKeyEntries; n++ ) {
-			if ( ! ComposeKeyEntries[n].fValid )
-				continue;
-
 			if ( 
 				( vk1 == ComposeKeyEntries[n].vkFirst && vk2 == ComposeKeyEntries[n].vkSecond ) ||
 				( vk2 == ComposeKeyEntries[n].vkFirst && vk1 == ComposeKeyEntries[n].vkSecond )
