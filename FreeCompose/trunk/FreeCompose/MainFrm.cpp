@@ -53,34 +53,23 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
-		MessageBox( _T( "FC API version mismatch!" ), _T( "Fuck" ), MB_ICONHAND );
+		MessageBox( _T( "FC API version mismatch!" ), _T( "Uh oh" ), MB_ICONHAND );
 		return FALSE;
 	}
 
-	for ( LONG n = 0; n < MAXLONG; n++ ) {
-		COMPOSE_KEY_ENTRY cke;
-		TCHAR tszSection[32];
-		_sntprintf( tszSection, 32, _T("Mapping\\%d"), n );
-		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkFirst"),     0 );
-		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkSecond"),    0 );
-		cke.wchComposed = (wchar_t) theApp.GetProfileInt( tszSection, _T("wchComposed"), 0 );
-		if ( 0 == cke.vkFirst && 0 == cke.vkSecond && 0 == cke.wchComposed )
-			break;
-		ComposeKeyEntries.Add( cke );
-	}
+	_FcLoadKeys( );
 	if ( 0 == ComposeKeyEntries.GetCount() ) {
 		LONG n = 0;
-		while ( 0 != DefaultComposeKeyEntries[n].vkFirst ) {
-			TCHAR tszSection[128];
-			_sntprintf( tszSection, 128, _T("Mapping\\%d"), n );
-			theApp.WriteProfileInt( tszSection, _T("vkFirst"),     (int) DefaultComposeKeyEntries[n].vkFirst     );
-			theApp.WriteProfileInt( tszSection, _T("vkSecond"),    (int) DefaultComposeKeyEntries[n].vkSecond    );
-			theApp.WriteProfileInt( tszSection, _T("wchComposed"), (int) DefaultComposeKeyEntries[n].wchComposed );
-			ComposeKeyEntries.Add( DefaultComposeKeyEntries[n] );
-			n++;
+		while (
+			DefaultComposeKeyEntries[n].vkFirst     != 0 &&
+			DefaultComposeKeyEntries[n].vkSecond    != 0 &&
+			DefaultComposeKeyEntries[n].wchComposed != 0
+		) {
+			ComposeKeyEntries.Add( DefaultComposeKeyEntries[n++] );
 		}
+		_FcSaveKeys( );
 	}
-	FcSetComposeKeyEntries( ComposeKeyEntries.GetData(), (DWORD) ComposeKeyEntries.GetCount() );
+	FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
 
 	if ( (BOOL) theApp.GetProfileInt( _T("Startup"), _T("StartActive"), (int) TRUE ) ) {
 		FcEnableHook( );
@@ -95,7 +84,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 // CMainFrame message handlers
 
-LRESULT CMainFrame::OnTaskbarCreated(WPARAM, LPARAM) {
+LRESULT CMainFrame::OnTaskbarCreated(WPARAM /*wParam*/, LPARAM /*lParam*/) {
 	m_ptni = new CTrayNotifyIcon();
 	m_ptni->Create( this, 1, ( m_fActive ? _T("FreeCompose is enabled.") : _T("FreeCompose is disabled.") ), m_hIcon, FCM_NOTIFYICON, IDR_POPUP_ACTIVE );
 
@@ -103,8 +92,7 @@ LRESULT CMainFrame::OnTaskbarCreated(WPARAM, LPARAM) {
 }
 
 LRESULT CMainFrame::OnFcmNotifyIcon(WPARAM wParam, LPARAM lParam) {
-	m_ptni->OnTrayNotification( wParam, lParam );
-	return 0;
+	return m_ptni->OnTrayNotification( wParam, lParam );
 }
 
 LRESULT CMainFrame::OnFcmEnable(WPARAM /*wParam*/, LPARAM /*lParam*/) {
