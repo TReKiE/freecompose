@@ -26,10 +26,14 @@ private:
 	CButton m_btnEdit;
 	CButton m_btnRemove;
 	CButton m_btnClose;
+	int m_nColumnWidths[3];
+
+	void _DoLayout( const int excessX = 0, const int excessY = 0 );
+	void _FillKeyComboList( void );
 
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
 	afx_msg void OnKeyComboListItemChanged(NMHDR* pNMHDR, LRESULT* pResult);
-
-	void _DoLayout( const int excessX = 0, const int excessY = 0 );
+	afx_msg void OnBnClickedRemove();
+	afx_msg void OnBnClickedClose();
 };
