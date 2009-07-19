@@ -4,12 +4,13 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0011
+#define FCHOOKDLL_API_VERSION 0x0012
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
 	DWORD vkSecond;
 	wchar_t wchComposed;
+	bool fValid;
 };
 
 FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries );
