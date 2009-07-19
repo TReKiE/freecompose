@@ -54,9 +54,7 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 				input.type = INPUT_KEYBOARD;
 				input.ki.wVk = 0;
 				input.ki.wScan = ComposeKeyEntries[n].wchComposed;
-				input.ki.dwFlags = KEYEVENTF_UNICODE/* | KEYEVENTF_KEYUP*/;
-//				input.ki.time = 0;
-//				input.ki.dwExtraInfo = 0;
+				input.ki.dwFlags = KEYEVENTF_UNICODE;
 
 				UINT u = SendInput( 1, &input, sizeof( INPUT ) );
 				if ( u < 1 ) {
