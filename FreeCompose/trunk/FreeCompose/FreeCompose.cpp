@@ -148,3 +148,31 @@ void debug( LPCTSTR lpsz, ... ) {
 	va_end( va );
 	OutputDebugString( szbuf );
 }
+
+void _FcLoadKeys( void ) {
+	TCHAR tszSection[32];
+	COMPOSE_KEY_ENTRY cke;
+
+	ComposeKeyEntries.RemoveAll( );
+	for ( LONG n = 0; n < MAXLONG; n++ ) {
+		_sntprintf_s( tszSection, 32, _TRUNCATE, _T("Mapping\\%d"), n );
+		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkFirst"),     0 );
+		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( tszSection, _T("vkSecond"),    0 );
+		cke.wchComposed = (wchar_t) theApp.GetProfileInt( tszSection, _T("wchComposed"), 0 );
+		if ( 0 == cke.vkFirst && 0 == cke.vkSecond && 0 == cke.wchComposed )
+			break;
+		ComposeKeyEntries.Add( cke );
+	}
+}
+
+void _FcSaveKeys( void ) {
+	TCHAR tszSection[32];
+
+	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( _T("Mapping") ) );
+	for ( LONG n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
+		_sntprintf_s( tszSection, 32, _TRUNCATE, _T("Mapping\\%d"), n );
+		theApp.WriteProfileInt( tszSection, _T("vkFirst"),     (int) ComposeKeyEntries[n].vkFirst     );
+		theApp.WriteProfileInt( tszSection, _T("vkSecond"),    (int) ComposeKeyEntries[n].vkSecond    );
+		theApp.WriteProfileInt( tszSection, _T("wchComposed"), (int) ComposeKeyEntries[n].wchComposed );
+	}
+}

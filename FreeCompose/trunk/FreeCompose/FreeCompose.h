@@ -39,6 +39,8 @@ extern CFreeComposeApp theApp;
 extern CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
 
 void debug( LPCTSTR lpsz, ... );
+void _FcLoadKeys( void );
+void _FcSaveKeys( void );
 
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
 	T elem1 = *( (T*) _elem1 );
