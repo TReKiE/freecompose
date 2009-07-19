@@ -96,11 +96,15 @@ void CConfigureDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_KEYCOMBOLIST, m_KeyComboList);
+	DDX_Control(pDX, IDEDIT, m_btnEdit);
+	DDX_Control(pDX, IDREMOVE, m_btnRemove);
+	DDX_Control(pDX, IDCLOSE, m_btnClose);
 }
 
 
 BEGIN_MESSAGE_MAP(CConfigureDlg, CDialog)
 	ON_WM_SIZING()
+	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CConfigureDlg::OnKeyComboListItemChanged)
 END_MESSAGE_MAP()
 
 
@@ -109,12 +113,8 @@ END_MESSAGE_MAP()
 BOOL CConfigureDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
-
-	{
-		CRect rect;
-		GetWindowRect( &rect );
-		m_MinimumSize = rect.Size( );
-	}
+	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
+	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 
 	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
 	int nMinWidths[3] = { 0, 0, 0, };
@@ -132,7 +132,7 @@ BOOL CConfigureDlg::OnInitDialog()
 	LPCTSTR lpszName;
 	DWORD dwVk;
 	bool fCapital;
-	BOOL rc;
+	BOOL ret;
 	int nwidth;
 	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
 		_sntprintf_s( buf, 64, _TRUNCATE, _T("%c"), ComposeKeyEntries[n].wchComposed );
@@ -158,8 +158,8 @@ BOOL CConfigureDlg::OnInitDialog()
 		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
 		if ( nwidth > nMinWidths[1] )
 			nMinWidths[1] = nwidth;
-		rc = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
-		ASSERT( TRUE == rc );
+		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		ASSERT( TRUE == ret );
 
 		dwVk = (DWORD) ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x7FFFFFFF );
 		fCapital = ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x80000000 ) != 0;
@@ -177,8 +177,8 @@ BOOL CConfigureDlg::OnInitDialog()
 		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
 		if ( nwidth > nMinWidths[2] )
 			nMinWidths[2] = nwidth;
-		rc = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
-		ASSERT( TRUE == rc );
+		ret = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		ASSERT( TRUE == ret );
 	}
 
 	if ( nMinWidths[1] > nMinWidths[2] )
@@ -187,31 +187,77 @@ BOOL CConfigureDlg::OnInitDialog()
 	m_KeyComboList.SetColumnWidth( 1, nMinWidths[1] );
 	m_KeyComboList.SetColumnWidth( 2, nMinWidths[2] );
 
-	{
-		CRect list;
-		m_KeyComboList.GetWindowRect( list );
-		int totwidth = nMinWidths[0] + nMinWidths[1] + nMinWidths[2];
-		if ( list.Width() < totwidth ) {
-			int cxVScroll = GetSystemMetrics( SM_CXVSCROLL );
-			int cxSizeFrame = GetSystemMetrics( SM_CXSIZEFRAME );
-			int excess = totwidth - list.Width() + cxVScroll + cxSizeFrame;
-
-			m_KeyComboList.SetWindowPos( NULL, 0, 0, list.Width() + excess, list.Height(), SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
-
-			CRect dlg;
-			GetWindowRect( dlg );
-			SetWindowPos( NULL, 0, 0, dlg.Width() + excess, dlg.Height(), SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
-		}
+	CRect rc;
+	m_KeyComboList.GetWindowRect( rc );
+	int totwidth = nMinWidths[0] + nMinWidths[1] + nMinWidths[2];
+	if ( totwidth > rc.Width() ) {
+		int cxVScroll = GetSystemMetrics( SM_CXVSCROLL );
+		int cxSizeFrame = GetSystemMetrics( SM_CXSIZEFRAME );
+		int excessX = ( totwidth - rc.Width() ) + cxVScroll + cxSizeFrame;
+		_DoLayout( excessX, 0 );
 	}
+
+	this->GetWindowRect( rc );
+	m_MinimumSize = rc.Size( );
 
 	return TRUE;
 }
 
 void CConfigureDlg::OnSizing(UINT fwSide, LPRECT pRect)
 {
+	CRect rc;
+	this->GetWindowRect( rc );
+
 	if ( pRect->right - pRect->left < m_MinimumSize.cx )
 		pRect->right = pRect->left + m_MinimumSize.cx;
 	if ( pRect->bottom - pRect->top < m_MinimumSize.cy )
 		pRect->bottom = pRect->top + m_MinimumSize.cy;
-	CDialog::OnSizing(fwSide, pRect);
+	CDialog::OnSizing( fwSide, pRect );
+
+	int excessX = ( pRect->right - pRect->left ) - rc.Width( );
+	int excessY = ( pRect->bottom - pRect->top ) - rc.Height( );
+	if ( 0 != excessX || 0 != excessY ) {
+		_DoLayout( excessX, excessY );
+	}
+}
+
+void CConfigureDlg::_DoLayout( const int excessX, const int excessY ) {
+	CRect rc;
+
+	m_KeyComboList.GetWindowRect( rc );
+	m_KeyComboList.SetWindowPos( NULL, 0, 0, rc.Width() + excessX, rc.Height() + excessY, SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
+
+	m_btnEdit.GetWindowRect( rc );
+	ScreenToClient( rc );
+	m_btnEdit.SetWindowPos( NULL, rc.left + excessX/2, rc.top + excessY, rc.Width(), rc.Height(), SWP_NOACTIVATE|SWP_NOZORDER );
+
+	m_btnRemove.GetWindowRect( rc );
+	ScreenToClient( rc );
+	m_btnRemove.SetWindowPos( NULL, rc.left + excessX/2, rc.top + excessY, rc.Width(), rc.Height(), SWP_NOACTIVATE|SWP_NOZORDER );
+
+	m_btnClose.GetWindowRect( rc );
+	ScreenToClient( rc );
+	m_btnClose.SetWindowPos( NULL, rc.left + excessX/2, rc.top + excessY, rc.Width(), rc.Height(), SWP_NOACTIVATE|SWP_NOZORDER );
+
+	this->GetWindowRect( rc );
+	this->SetWindowPos( NULL, 0, 0, rc.Width() + excessX, rc.Height() + excessY, SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER );
+}
+
+void CConfigureDlg::OnKeyComboListItemChanged(NMHDR* pNMHDR, LRESULT* pResult) {
+	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
+
+	if ( NM_RCLICK == pNMLV->hdr.code || NM_RDBLCLK == pNMLV->hdr.code )
+		goto out;
+
+	UINT nsel = m_KeyComboList.GetSelectedCount( );
+	if ( 0 == nsel ) {
+		m_btnEdit.EnableWindow( FALSE );
+		m_btnRemove.EnableWindow( FALSE );
+	} else {
+		m_btnEdit.EnableWindow( ( 1 == nsel ) );
+		m_btnRemove.EnableWindow( TRUE );
+	}
+
+out:
+	*pResult = 0;
 }
