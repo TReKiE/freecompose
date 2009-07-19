@@ -37,3 +37,5 @@ public:
 
 extern CFreeComposeApp theApp;
 extern CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
+
+void debug( LPCTSTR lpsz, ... );
