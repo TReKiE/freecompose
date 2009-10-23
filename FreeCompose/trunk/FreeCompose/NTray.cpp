@@ -353,7 +353,7 @@ BOOL CTrayNotifyIcon::Create(BOOL bShow)
   
   if (bShow == FALSE)
   {
-    ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+    if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
     m_NotifyIconData.uFlags |= NIF_STATE;
     m_NotifyIconData.dwState = NIS_HIDDEN;
     m_NotifyIconData.dwStateMask = NIS_HIDDEN;
@@ -373,8 +373,8 @@ BOOL CTrayNotifyIcon::Create(BOOL bShow)
 BOOL CTrayNotifyIcon::Hide()
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
   ATLASSERT(!m_bHidden); //Only makes sense to hide the icon if it is not already hidden
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   m_NotifyIconData.uFlags = NIF_STATE;
   m_NotifyIconData.dwState = NIS_HIDDEN;
@@ -388,8 +388,8 @@ BOOL CTrayNotifyIcon::Hide()
 BOOL CTrayNotifyIcon::Show()
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
   ATLASSERT(m_bHidden); //Only makes sense to show the icon if it has been previously hidden
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   ATLASSERT(m_bCreated);
   m_NotifyIconData.uFlags = NIF_STATE;
@@ -516,7 +516,7 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
 
   if (bShow == FALSE)
   {
-    ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+    if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
     m_NotifyIconData.uFlags |= NIF_STATE;
     m_NotifyIconData.dwState = NIS_HIDDEN;
     m_NotifyIconData.dwStateMask = NIS_HIDDEN;
@@ -538,7 +538,7 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
 BOOL CTrayNotifyIcon::SetVersion(UINT uVersion)
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   //Call the Shell_NotifyIcon function
   m_NotifyIconData.uVersion = uVersion;
@@ -630,7 +630,7 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
 {
   //Validate our parameters
   ATLASSUME(pNotifyWnd && ::IsWindow(pNotifyWnd->operator HWND()));
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 #ifdef _DEBUG
   NOTIFYICONDATA_2 dummy;
   DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
@@ -708,7 +708,7 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
     {
       if (hBalloonIcon)
       {
-        ATLASSERT(m_ShellVersion >= VersionVista);
+        if (m_ShellVersion < VersionVista) return FALSE; //Only supported on Vista Shell
         m_NotifyIconData.hBalloonIcon = hBalloonIcon;
       }
       else
@@ -728,17 +728,17 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
     m_NotifyIconData.dwInfoFlags |= NIIF_NOSOUND;
   if (bLargeIcon)
   {
-    ATLASSERT(m_ShellVersion >= VersionVista); //Only supported on Vista Shell
+    if (m_ShellVersion < VersionVista) return FALSE; //Only supported on Vista Shell
 	  m_NotifyIconData.dwInfoFlags |= NIIF_LARGE_ICON;
 	}
   if (bRealtime)
   {
-    ATLASSERT(m_ShellVersion >= VersionVista); //Only supported on Vista Shell
+    if (m_ShellVersion < VersionVista) return FALSE; //Only supported on Vista Shell
 	  m_NotifyIconData.uFlags |= NIF_REALTIME;
 	}
   if (bShow == FALSE)
   {
-    ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+    if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
     m_NotifyIconData.uFlags |= NIF_STATE;
     m_NotifyIconData.dwState = NIS_HIDDEN;
     m_NotifyIconData.dwStateMask = NIS_HIDDEN;
@@ -799,7 +799,7 @@ BOOL CTrayNotifyIcon::SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBallo
     return FALSE;
 
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 #ifdef _DEBUG
   NOTIFYICONDATA_2 dummy;
   DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
@@ -838,7 +838,7 @@ BOOL CTrayNotifyIcon::SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBallo
     {
       if (hBalloonIcon)
       {
-        ATLASSERT(m_ShellVersion >= VersionVista);
+        if (m_ShellVersion < VersionVista) return FALSE; //Only supported on Vista Shell
         m_NotifyIconData.hBalloonIcon = hBalloonIcon;
       }
       else
@@ -870,7 +870,7 @@ BOOL CTrayNotifyIcon::SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBallo
 CTrayNotifyIconString CTrayNotifyIcon::GetBalloonText() const
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   CTrayNotifyIconString sText;
   if (m_bCreated)
@@ -882,7 +882,7 @@ CTrayNotifyIconString CTrayNotifyIcon::GetBalloonText() const
 CTrayNotifyIconString CTrayNotifyIcon::GetBalloonCaption() const
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   CTrayNotifyIconString sText;
   if (m_bCreated)
@@ -894,7 +894,7 @@ CTrayNotifyIconString CTrayNotifyIcon::GetBalloonCaption() const
 UINT CTrayNotifyIcon::GetBalloonTimeout() const
 {
   //Validate our parameters
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or later
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   UINT nTimeout = 0;
   if (m_bCreated)
@@ -1083,7 +1083,7 @@ CWindow* CTrayNotifyIcon::GetNotificationWnd() const
 
 BOOL CTrayNotifyIcon::SetFocus()
 {
-  ATLASSERT(m_ShellVersion >= Version5); //Only supported on Shell v5 or greater
+  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
 
   //Call the Shell_NotifyIcon function
   return Shell_NotifyIcon(NIM_SETFOCUS, reinterpret_cast<PNOTIFYICONDATA>(&m_NotifyIconData));
