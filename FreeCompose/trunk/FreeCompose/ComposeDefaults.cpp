@@ -45,6 +45,10 @@
 const COMPOSE_KEY_ENTRY DefaultComposeKeyEntries[] = {
 	{         'C',                   EQUALS,        L'€', },
 	{ CAPITAL 'C',                   EQUALS,        L'€', },
+	{         'T',                   'M',           L'™', },
+	{ CAPITAL 'T',                   'M',           L'™', },
+	{         'T',           CAPITAL 'M',           L'™', },
+	{ CAPITAL 'T',           CAPITAL 'M',           L'™', },
 
 	// ¡¢£¤¥¦§©ª«¬®°±²³µ¶¹º»¼½¾¿
 	{ CAPITAL '1',           CAPITAL '1',           L'¡', },
