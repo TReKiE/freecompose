@@ -3,8 +3,6 @@
 // Used by FCHookDll.rc
 //
 
-#define IDS_APP_TITLE			103
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
