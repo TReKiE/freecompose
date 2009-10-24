@@ -52,8 +52,12 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
 
+	debug( _T("CMainFrame::OnCreate: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
-		MessageBox( _T( "FC API version mismatch!" ), _T( "Uh oh" ), MB_ICONHAND );
+		CString str;
+		str.Format( _T(" FC API version mismatch: DLL %d vs. host %d" ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+		MessageBox( (LPCTSTR) str, _T( "Uh oh" ), MB_ICONHAND );
+		// Hey, maybe we can use Windows Installer to try to repair the file!
 		return FALSE;
 	}
 
@@ -100,7 +104,8 @@ LRESULT CMainFrame::OnFcmEnable(WPARAM /*wParam*/, LPARAM /*lParam*/) {
 		FcEnableHook( );
 		m_fActive = TRUE;
 		m_ptni->SetMenu( LoadMenu( theApp.m_hInstance, MAKEINTRESOURCE( IDR_POPUP_ACTIVE ) ) );
-		m_ptni->SetTooltipText( _T("FreeCompose is disabled.") );
+		m_ptni->SetTooltipText( _T("FreeCompose is enabled.") );
+		m_ptni->SetBalloonDetails( _T("FreeCompose is enabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
 	}
 	return 0;
 }
@@ -110,7 +115,8 @@ LRESULT CMainFrame::OnFcmDisable(WPARAM /*wParam*/, LPARAM /*lParam*/) {
 		FcDisableHook();
 		m_fActive = FALSE;
 		m_ptni->SetMenu( LoadMenu( theApp.m_hInstance, MAKEINTRESOURCE( IDR_POPUP_INACTIVE ) ) );
-		m_ptni->SetTooltipText( _T("FreeCompose is enabled.") );
+		m_ptni->SetTooltipText( _T("FreeCompose is disabled.") );
+		m_ptni->SetBalloonDetails( _T("FreeCompose is disabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
 	}
 	return 0;
 }
@@ -154,5 +160,7 @@ LRESULT CMainFrame::OnFcmKey(WPARAM /*wKey*/, LPARAM /*lParam*/) {
 
 void CMainFrame::OnClose() {
 	OnFcmDisable( 0, 0 );
+	delete m_ptni;
+	m_ptni = NULL;
 	CFrameWnd::OnClose();
 }
