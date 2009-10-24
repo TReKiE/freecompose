@@ -221,11 +221,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeySequences.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrm.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\NTray.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPropSheet.cpp"
 				>
 			</File>
 		</Filter>
@@ -255,11 +263,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\KeySequences.h"
+				>
+			</File>
+			<File
 				RelativePath=".\MainFrm.h"
 				>
 			</File>
 			<File
 				RelativePath=".\NTray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsPropSheet.h"
 				>
 			</File>
 		</Filter>
@@ -306,6 +322,10 @@
 			</File>
 			<File
 				RelativePath=".\stdafx.h"
+				>
+			</File>
+			<File
+				RelativePath=".\res\Zive Compose.bmp"
 				>
 			</File>
 		</Filter>
