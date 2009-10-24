@@ -48,6 +48,15 @@ class CTRAYNOTIFYICON_EXT_CLASS CTrayNotifyIcon : public CWindowImpl<CTrayNotify
 {
 public:
 //Enums / Typedefs
+//Enums
+  enum ShellVersion
+  {
+    Version4     = 0, //PreWin2k
+    Version5     = 1, //Win2k
+    Version6     = 2, //XP
+    VersionVista = 3  //Vista
+  };
+
 #ifndef CTRAYNOTIFYICON_NOWIN2K
   enum BalloonStyle
   {
@@ -219,7 +228,8 @@ public:
   UINT                  GetBalloonTimeout() const;
 
 //Other functionality
-  BOOL SetVersion(UINT uVersion);
+  BOOL SetVersion(UINT ShellVersion);
+  ShellVersion GetVersion() const { return m_ShellVersion; }
   BOOL SetFocus();
 
 //Helper functions to load tray icon from resources
@@ -239,15 +249,6 @@ protected:
   void         OnTimer(UINT_PTR nIDEvent);
   void         OnDestroy();
   DWORD        GetNOTIFYICONDATASizeForOS();
-
-//Enums
-  enum ShellVersion
-  {
-    Version4     = 0, //PreWin2k
-    Version5     = 1, //Win2k
-    Version6     = 2, //XP
-    VersionVista = 3  //Vista
-  };
 
 //Member variables
   NOTIFYICONDATA_4 m_NotifyIconData;
