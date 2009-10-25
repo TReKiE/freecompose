@@ -160,7 +160,10 @@ LRESULT CMainFrame::OnFcmKey(WPARAM /*wKey*/, LPARAM /*lParam*/) {
 }
 
 void CMainFrame::OnClose() {
-	OnFcmDisable( 0, 0 );
+	if ( m_fActive ) {
+		FcDisableHook();
+		m_fActive = FALSE;
+	}
 	delete m_ptni;
 	m_ptni = NULL;
 	CFrameWnd::OnClose();
