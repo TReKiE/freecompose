@@ -14,16 +14,23 @@
 #endif
 
 
+// The one and only CFreeComposeApp object
+
+CFreeComposeApp theApp;
+CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
+
+
 // CFreeComposeApp
 
 
-BEGIN_MESSAGE_MAP(CFreeComposeApp, CWinApp)
-	ON_COMMAND(ID_APP_ABOUT, &CFreeComposeApp::OnAppAbout)
-	ON_COMMAND(ID_APP_DISABLE, &CFreeComposeApp::OnAppDisable)
-	ON_COMMAND(ID_APP_ENABLE, &CFreeComposeApp::OnAppEnable)
-	ON_COMMAND(ID_APP_CONFIGURE, &CFreeComposeApp::OnAppConfigure)
-	ON_COMMAND(ID_APP_EXIT, &CFreeComposeApp::OnAppExit)
-END_MESSAGE_MAP()
+BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
+	ON_COMMAND( ID_APP_ABOUT,     &CFreeComposeApp::OnAppAbout )
+	ON_COMMAND( ID_APP_DISABLE,   &CFreeComposeApp::OnAppDisable )
+	ON_COMMAND( ID_APP_ENABLE,    &CFreeComposeApp::OnAppEnable )
+	ON_COMMAND( ID_APP_CAPSLOCK,  &CFreeComposeApp::OnAppCapsLock )
+	ON_COMMAND( ID_APP_CONFIGURE, &CFreeComposeApp::OnAppConfigure )
+	ON_COMMAND( ID_APP_EXIT,      &CFreeComposeApp::OnAppExit )
+END_MESSAGE_MAP( )
 
 
 // CFreeComposeApp construction
@@ -33,12 +40,6 @@ CFreeComposeApp::CFreeComposeApp()
 	// TODO: add construction code here,
 	// Place all significant initialization in InitInstance
 }
-
-
-// The one and only CFreeComposeApp object
-
-CFreeComposeApp theApp;
-CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
 
 
 // CFreeComposeApp initialization
@@ -119,6 +120,10 @@ void CFreeComposeApp::OnAppEnable()
 void CFreeComposeApp::OnAppDisable()
 {
 	SendMessage(m_pMainWnd->m_hWnd, FCM_DISABLE, 0, 0);
+}
+
+void CFreeComposeApp::OnAppCapsLock( ) {
+	SendMessage( m_pMainWnd->m_hWnd, FCM_CAPSLOCK, 0, 0 );
 }
 
 void CFreeComposeApp::OnAppConfigure()
