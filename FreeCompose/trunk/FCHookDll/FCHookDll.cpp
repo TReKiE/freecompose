@@ -108,15 +108,15 @@ FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 }
 
 FCHOOKDLL_API BOOL FcEnableCapsLock( void ) {
-	LOCK( cs ) {
+	//LOCK( cs ) {
 		fDisableCapsLock = false;
-	} UNLOCK( cs );
+	//} UNLOCK( cs );
 	return TRUE;
 }
 
 FCHOOKDLL_API BOOL FcDisableCapsLock( void ) {
-	LOCK( cs ) {
+	//LOCK( cs ) {
 		fDisableCapsLock = true;
-	} UNLOCK( cs );
+	//} UNLOCK( cs );
 	return TRUE;
 }
