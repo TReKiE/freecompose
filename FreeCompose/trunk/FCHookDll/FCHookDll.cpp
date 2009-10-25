@@ -29,12 +29,12 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 		case DLL_PROCESS_DETACH:
 			cClients--;
 			if ( 0 == cClients ) {
-				EnterCriticalSection( &cs );
-				if ( NULL != ComposeKeyEntries )
-					free( ComposeKeyEntries );
-				ComposeKeyEntries = NULL;
-				cComposeKeyEntries = 0;
-				LeaveCriticalSection( &cs );
+				LOCK( cs ) {
+					if ( NULL != ComposeKeyEntries )
+						free( ComposeKeyEntries );
+					ComposeKeyEntries = NULL;
+					cComposeKeyEntries = 0;
+				} UNLOCK( cs );
 				DeleteCriticalSection( &cs );
 			}
 			break;
@@ -48,46 +48,75 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 }
 
 FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries ) {
-	EnterCriticalSection( &cs );
-	if ( NULL != ComposeKeyEntries )
-		free( ComposeKeyEntries );
-	ComposeKeyEntries = (COMPOSE_KEY_ENTRY*) calloc( cEntries, sizeof( COMPOSE_KEY_ENTRY ) );
-	memcpy( ComposeKeyEntries, rgEntries, sizeof( COMPOSE_KEY_ENTRY ) * cEntries );
-	cComposeKeyEntries = cEntries;
-	LeaveCriticalSection( &cs );
+	COMPOSE_KEY_ENTRY* pcke = (COMPOSE_KEY_ENTRY*) calloc( cEntries, sizeof( COMPOSE_KEY_ENTRY ) );
+	memcpy( pcke, rgEntries, sizeof( COMPOSE_KEY_ENTRY ) * cEntries );
+	qsort( pcke, cEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
+
+	LOCK( cs ) {
+		if ( NULL != ComposeKeyEntries )
+			free( ComposeKeyEntries );
+		ComposeKeyEntries = pcke;
+		cComposeKeyEntries = cEntries;
+	} UNLOCK( cs );
 	return TRUE;
 }
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
-	debug( _T( "EnableHook\n" ) );
+	BOOL ret = TRUE;
 
-	if ( NULL != hHook ) {
-		debug( _T( "EnableHook: hook already registered!!\n" ) );
-		return FALSE;
-	}
-	hHook = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc, hDllInst, 0 );
-	if ( NULL == hHook ) {
-		debug( _T( "EnableHook: SetWindowsHookEx failed, %d\n" ), GetLastError( ) );
-		return FALSE;
-	}
-	return TRUE;
+	debug( _T( "EnableHook\n" ) );
+	LOCK( cs ) {
+		if ( NULL != hHook ) {
+			debug( _T( "EnableHook: hook already registered!!\n" ) );
+			ret = FALSE;
+			goto out;
+		}
+		hHook = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc, hDllInst, 0 );
+		if ( NULL == hHook ) {
+			debug( _T( "EnableHook: SetWindowsHookEx failed, %d\n" ), GetLastError( ) );
+			ret = FALSE;
+			goto out;
+		}
+out:	;
+	} UNLOCK( cs );
+	return ret;
 }
 
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
-	debug( _T( "DisableHook\n" ) );
+	BOOL ret = TRUE;
 
-	if ( NULL == hHook ) {
-		debug( _T( "DisableHook: hook not registered!!\n" ) );
-		return FALSE;
-	}
-	if ( ! UnhookWindowsHookEx( hHook ) ) {
-		debug( _T( "DisableHook: UnhookWindowsHookEx failed, %d\n" ), GetLastError( ) );
-		return FALSE;
-	}
-	hHook = NULL;
-	return TRUE;
+	debug( _T( "DisableHook\n" ) );
+	LOCK( cs ) {
+		if ( NULL == hHook ) {
+			debug( _T( "DisableHook: hook not registered!!\n" ) );
+			ret = FALSE;
+			goto out;
+		}
+		if ( ! UnhookWindowsHookEx( hHook ) ) {
+			debug( _T( "DisableHook: UnhookWindowsHookEx failed, %d\n" ), GetLastError( ) );
+			ret = FALSE;
+			goto out;
+		}
+		hHook = NULL;
+out:	;
+	} UNLOCK( cs );
+	return ret;
 }
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 	return FCHOOKDLL_API_VERSION;
+}
+
+FCHOOKDLL_API BOOL FcEnableCapsLock( void ) {
+	LOCK( cs ) {
+		fDisableCapsLock = false;
+	} UNLOCK( cs );
+	return TRUE;
+}
+
+FCHOOKDLL_API BOOL FcDisableCapsLock( void ) {
+	LOCK( cs ) {
+		fDisableCapsLock = true;
+	} UNLOCK( cs );
+	return TRUE;
 }

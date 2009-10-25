@@ -4,7 +4,7 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0013
+#define FCHOOKDLL_API_VERSION 0x0017
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
@@ -15,6 +15,8 @@ struct COMPOSE_KEY_ENTRY {
 FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries );
 FCHOOKDLL_API BOOL FcEnableHook( void );
 FCHOOKDLL_API BOOL FcDisableHook( void );
+FCHOOKDLL_API BOOL FcEnableCapsLock( void );
+FCHOOKDLL_API BOOL FcDisableCapsLock( void );
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
 const WPARAM PIP_OK_1  = 1;
