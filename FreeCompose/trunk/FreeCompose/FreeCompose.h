@@ -9,59 +9,26 @@
 #include "resource.h"       // main symbols
 
 
-// CFreeComposeApp:
-// See FreeCompose.cpp for the implementation of this class
-//
-
-class CFreeComposeApp : public CWinApp
-{
+class CFreeComposeApp: public CWinApp {
 public:
-	CFreeComposeApp();
-
+	CFreeComposeApp( );
 
 // Overrides
 public:
-	virtual BOOL InitInstance();
+	virtual BOOL InitInstance( );
 
 // Implementation
-
 public:
-	afx_msg void OnAppAbout();
-	afx_msg void OnAppEnable();
-	afx_msg void OnAppDisable();
-	afx_msg void OnAppConfigure();
+	afx_msg void OnAppAbout( );
+	afx_msg void OnAppEnable( );
+	afx_msg void OnAppDisable( );
+	afx_msg void OnAppConfigure( );
+
 	DECLARE_MESSAGE_MAP()
-//public:
-//	BOOL ExitInstance(void);
 };
 
 extern CFreeComposeApp theApp;
 extern CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
 
-void debug( LPCTSTR lpsz, ... );
 void _FcLoadKeys( void );
 void _FcSaveKeys( void );
-
-template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
-	T elem1 = *( (T*) _elem1 );
-	T elem2 = *( (T*) _elem2 );
-
-	if ( elem1 < elem2 )
-		return -1;
-	else if ( elem1 > elem2 )
-		return 1;
-	else
-		return 0;
-}
-
-template<typename T> inline T compare_keys_reverse( void* /*context*/, const void* _elem2, const void* _elem1 ) {
-	T elem1 = *( (T*) _elem1 );
-	T elem2 = *( (T*) _elem2 );
-
-	if ( elem1 < elem2 )
-		return -1;
-	else if ( elem1 > elem2 )
-		return 1;
-	else
-		return 0;
-}
