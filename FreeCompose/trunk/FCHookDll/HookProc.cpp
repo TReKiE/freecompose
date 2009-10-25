@@ -83,16 +83,11 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 	}
 
-	// HACK: Scroll Lock => Caps Lock, Caps Lock => nothing
 	if ( fDisableCapsLock && VK_CAPITAL == pkb->vkCode ) {
 		// eat Caps Lock key
 		debug( _T( "LowLevelKeyboardProc: eating Caps Lock\n" ) );
 		return 1;
 	}
-	//if ( VK_SCROLL == pkb->vkCode ) {
-	//	
-	//}
-	// END HACK
 
 	if ( KEY_ALTDOWN() ) {
 		debug( _T( "LowLevelKeyboardProc: ALT key down, ignoring\n" ) );
