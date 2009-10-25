@@ -4,7 +4,7 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0017
+#define FCHOOKDLL_API_VERSION 0x0019
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
