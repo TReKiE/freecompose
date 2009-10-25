@@ -5,6 +5,7 @@
 #include "FreeCompose.h"
 #include "MainFrm.h"
 #include "ComposeDefaults.h"
+#include "Utils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
