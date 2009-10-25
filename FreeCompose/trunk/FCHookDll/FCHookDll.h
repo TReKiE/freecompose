@@ -1,3 +1,5 @@
+#pragma once
+
 #ifdef FCHOOKDLL_EXPORTS
 #define FCHOOKDLL_API __declspec(dllexport)
 #else
