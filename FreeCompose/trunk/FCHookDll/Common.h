@@ -1,9 +1,10 @@
 #pragma once
+#pragma warning( disable: 4127 )
 
 #define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
 
-#define LOCK(x) EnterCriticalSection(&(x));
-#define UNLOCK(x) LeaveCriticalSection(&(x));
+#define LOCK(x) EnterCriticalSection(&(x)); do
+#define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
 
 #pragma data_seg( push, ".shareddata" )
 __declspec(selectany) CRITICAL_SECTION   cs;
