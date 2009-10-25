@@ -22,6 +22,7 @@ public:
 	afx_msg void OnAppAbout( );
 	afx_msg void OnAppEnable( );
 	afx_msg void OnAppDisable( );
+	afx_msg void OnAppCapsLock( );
 	afx_msg void OnAppConfigure( );
 
 	DECLARE_MESSAGE_MAP()
