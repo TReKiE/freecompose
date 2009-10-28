@@ -1,21 +1,17 @@
 #pragma once
 
-
-// CKeySequences dialog
-
-class CKeySequences : public CPropertyPage
-{
-	DECLARE_DYNAMIC(CKeySequences)
+class CKeySequences: public CPropertyPage {
+	DECLARE_DYNAMIC( CKeySequences )
 
 public:
-	CKeySequences();
-	virtual ~CKeySequences();
+	CKeySequences( );
+	virtual ~CKeySequences( );
 
-// Dialog Data
+	// Dialog Data
 	enum { IDD = IDD_KEYSEQUENCES };
 
 protected:
-	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
+	virtual void DoDataExchange( CDataExchange* pDX );
 
-	DECLARE_MESSAGE_MAP()
+	DECLARE_MESSAGE_MAP( )
 };
