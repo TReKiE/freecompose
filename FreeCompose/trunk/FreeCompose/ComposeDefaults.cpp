@@ -42,7 +42,7 @@
 #define DOTBELOW   PERIOD
 #define MIDDLEDOT  PERIOD
 
-const COMPOSE_KEY_ENTRY DefaultComposeKeyEntries[] = {
+const COMPOSE_KEY_ENTRY DefaultComposeKeyEntries[229] = {
 	{         'C',                   EQUALS,        L'€', },
 	{ CAPITAL 'C',                   EQUALS,        L'€', },
 	{         'T',                   'M',           L'™', },
@@ -304,7 +304,4 @@ const COMPOSE_KEY_ENTRY DefaultComposeKeyEntries[] = {
 	{ CAPITAL '2',                   UMLAUT,        0x0308, },
 	{ CAPITAL '2',                   RINGABOVE,     0x030A, },
 	{ CAPITAL '2',                   CEDILLA,       0x0327, },
-
-	// End of list
-	{ 0, 0, 0, }
 };
