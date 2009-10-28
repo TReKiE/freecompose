@@ -1,6 +1,4 @@
 #pragma once
-#include "afxcmn.h"
-
 
 // COptionsDlg dialog
 
