@@ -2,7 +2,6 @@
 
 #include "stdafx.h"
 #include "FreeCompose.h"
-#include "ConfigureDlg.h"
 #include "MainFrm.h"
 
 #include <initguid.h>
