@@ -1,13 +1,11 @@
 // FreeCompose.cpp : Defines the class behaviors for the application.
-//
 
 #include "stdafx.h"
 #include "FreeCompose.h"
-#include "AboutDlg.h"
 #include "ConfigureDlg.h"
 #include "MainFrm.h"
-#include <initguid.h>
 
+#include <initguid.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -22,25 +20,14 @@ CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
 
 // CFreeComposeApp
 
-
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
-	ON_COMMAND( ID_APP_ABOUT,     &CFreeComposeApp::OnAppAbout )
-	ON_COMMAND( ID_APP_DISABLE,   &CFreeComposeApp::OnAppDisable )
-	ON_COMMAND( ID_APP_ENABLE,    &CFreeComposeApp::OnAppEnable )
-	ON_COMMAND( ID_APP_CAPSLOCK,  &CFreeComposeApp::OnAppCapsLock )
-	ON_COMMAND( ID_APP_CONFIGURE, &CFreeComposeApp::OnAppConfigure )
-	ON_COMMAND( ID_APP_EXIT,      &CFreeComposeApp::OnAppExit )
+	ON_COMMAND(ID_APP_EXIT, &CFreeComposeApp::OnAppExit)
 END_MESSAGE_MAP( )
-
 
 // CFreeComposeApp construction
 
-CFreeComposeApp::CFreeComposeApp()
-{
-	// TODO: add construction code here,
-	// Place all significant initialization in InitInstance
+CFreeComposeApp::CFreeComposeApp() {
 }
-
 
 // CFreeComposeApp initialization
 
@@ -102,51 +89,21 @@ BOOL CFreeComposeApp::InitInstance()
 	return TRUE;
 }
 
-
 // CFreeComposeApp message handlers
 
-// App command to run the dialog
-void CFreeComposeApp::OnAppAbout()
-{
-	CAboutDlg aboutDlg;
-	aboutDlg.DoModal();
-}
-
-void CFreeComposeApp::OnAppEnable()
-{
-	SendMessage(m_pMainWnd->m_hWnd, FCM_ENABLE, 0, 0);
-}
-
-void CFreeComposeApp::OnAppDisable()
-{
-	SendMessage(m_pMainWnd->m_hWnd, FCM_DISABLE, 0, 0);
-}
-
-void CFreeComposeApp::OnAppCapsLock( ) {
-	SendMessage( m_pMainWnd->m_hWnd, FCM_CAPSLOCK, 0, 0 );
-}
-
-void CFreeComposeApp::OnAppConfigure()
-{
-	//COptionsDlg* pdlg = new COptionsDlg();
-	//pdlg->Create( IDD_OPTIONS );
-	//pdlg->ShowWindow( SW_SHOW );
-	
-	//CPropertySheet* ps = 
-}
-
 void _FcLoadKeys( void ) {
-	TCHAR tszSection[32];
-	COMPOSE_KEY_ENTRY cke;
+	int lim = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
 
 	ComposeKeyEntries.RemoveAll( );
-	for ( LONG n = 0; n < MAXLONG; n++ ) {
-		_sntprintf_s( tszSection, 32, _TRUNCATE, _T("Mapping\\%d"), n );
-		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( tszSection, _T("First"),    0 );
-		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( tszSection, _T("Second"),   0 );
-		cke.wchComposed = (wchar_t) theApp.GetProfileInt( tszSection, _T("Composed"), 0 );
-		if ( 0 == cke.vkFirst && 0 == cke.vkSecond && 0 == cke.wchComposed )
-			break;
+	ComposeKeyEntries.SetSize( lim );
+
+	COMPOSE_KEY_ENTRY cke;
+	CString section;
+	for ( int n = 0; n < lim; n++ ) {
+		section.Format( _T("Mapping\\%d"), n );
+		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( section, _T("First"),    0 );
+		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( section, _T("Second"),   0 );
+		cke.wchComposed = (wchar_t) theApp.GetProfileInt( section, _T("Composed"), 0 );
 		ComposeKeyEntries.Add( cke );
 	}
 }
@@ -155,6 +112,7 @@ void _FcSaveKeys( void ) {
 	TCHAR tszSection[32];
 
 	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( _T("Mapping") ) );
+	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), ComposeKeyEntries.GetCount( ) );
 	for ( LONG n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
 		_sntprintf_s( tszSection, 32, _TRUNCATE, _T("Mapping\\%d"), n );
 		theApp.WriteProfileInt( tszSection, _T("First"),    (int) ComposeKeyEntries[n].vkFirst     );
