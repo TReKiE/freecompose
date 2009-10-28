@@ -10,3 +10,7 @@ void debug( LPCTSTR lpsz, ... ) {
 	va_end( va );
 	OutputDebugString( szbuf );
 }
+
+bool IsCapsLock( void ) {
+	return ( GetAsyncKeyState( VK_CAPITAL ) & 1 ) == 1;
+}
