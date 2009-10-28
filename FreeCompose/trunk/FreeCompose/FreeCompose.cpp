@@ -103,7 +103,7 @@ void _FcLoadKeys( void ) {
 		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( section, _T("First"),    0 );
 		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( section, _T("Second"),   0 );
 		cke.wchComposed = (wchar_t) theApp.GetProfileInt( section, _T("Composed"), 0 );
-		ComposeKeyEntries.Add( cke );
+		ComposeKeyEntries[n] = cke;
 	}
 }
 
