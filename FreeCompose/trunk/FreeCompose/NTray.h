@@ -71,6 +71,7 @@ public:
 //We use our own definitions of the NOTIFYICONDATA structs so that
 //we can use all the functionality without requiring client code to 
 //define _WIN32_IE >= 0x500
+  static const size_t _NOTIFYICONDATA_1_TIPLEN = 64;
   typedef struct _NOTIFYICONDATA_1 //The version of the structure supported by Shell v4
   {
     DWORD cbSize;
@@ -79,9 +80,10 @@ public:
     UINT uFlags;
     UINT uCallbackMessage;
     HICON hIcon;
-    TCHAR szTip[64];
+    TCHAR szTip[_NOTIFYICONDATA_1_TIPLEN];
   } NOTIFYICONDATA_1;
 
+  static const size_t _NOTIFYICONDATA_2_TIPLEN = 128;
   typedef struct _NOTIFYICONDATA_2 //The version of the structure supported by Shell v5
   {
     DWORD cbSize;
@@ -90,7 +92,7 @@ public:
     UINT uFlags;
     UINT uCallbackMessage;
     HICON hIcon;
-    TCHAR szTip[128];
+    TCHAR szTip[_NOTIFYICONDATA_2_TIPLEN];
     DWORD dwState;
     DWORD dwStateMask;
     TCHAR szInfo[256];
