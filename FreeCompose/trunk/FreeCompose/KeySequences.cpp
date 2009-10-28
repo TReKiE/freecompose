@@ -164,6 +164,25 @@ void CKeySequences::_FillKeyComboList( void ) {
 	m_KeyComboList.SetColumnWidth( 2, m_nColumnWidths[2] );
 }
 
+BOOL CKeySequences::OnInitDialog( ) {
+	if ( ! CPropertyPage::OnInitDialog( ) )
+		return FALSE;
+
+	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
+	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
+
+	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
+
+	for ( int n = 0; n < 3; n++ ) {
+		m_nColumnWidths[n] = m_KeyComboList.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
+		m_KeyComboList.InsertColumn( n, strLabels[n], LVCFMT_LEFT, m_nColumnWidths[n] );
+	}
+
+	_FillKeyComboList( );
+	
+	return TRUE;
+}
+
 void CKeySequences::OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult ) {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
 
