@@ -869,11 +869,8 @@ BOOL CTrayNotifyIcon::SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBallo
 
 CTrayNotifyIconString CTrayNotifyIcon::GetBalloonText() const
 {
-  //Validate our parameters
-  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
-
   CTrayNotifyIconString sText;
-  if (m_bCreated)
+  if (m_bCreated && m_ShellVersion >= Version5) //Only supported on Shell v5 or later
     sText = m_NotifyIconData.szInfo;
 
   return sText;
@@ -881,11 +878,8 @@ CTrayNotifyIconString CTrayNotifyIcon::GetBalloonText() const
 
 CTrayNotifyIconString CTrayNotifyIcon::GetBalloonCaption() const
 {
-  //Validate our parameters
-  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
-
   CTrayNotifyIconString sText;
-  if (m_bCreated)
+  if (m_bCreated && m_ShellVersion >= Version5) //Only supported on Shell v5 or later
     sText = m_NotifyIconData.szInfoTitle;
 
   return sText;
@@ -893,11 +887,8 @@ CTrayNotifyIconString CTrayNotifyIcon::GetBalloonCaption() const
 
 UINT CTrayNotifyIcon::GetBalloonTimeout() const
 {
-  //Validate our parameters
-  if (m_ShellVersion < Version5) return FALSE; //Only supported on Shell v5 or later
-
   UINT nTimeout = 0;
-  if (m_bCreated)
+  if (m_bCreated && m_ShellVersion >= Version5) //Only supported on Shell v5 or later
     nTimeout = m_NotifyIconData.uTimeout;
 
   return nTimeout;
@@ -908,26 +899,15 @@ BOOL CTrayNotifyIcon::SetTooltipText(LPCTSTR pszTooltipText)
   if (!m_bCreated)
     return FALSE;
 
-  if (m_ShellVersion >= Version5) //Allow the larger size tooltip text if on Shell v5 or later
-  {
-  #ifdef _DEBUG
-    NOTIFYICONDATA_2 dummy;
-    DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
-    ATLASSERT(_tcslen(pszTooltipText) < sizeof(dummy.szTip)/sizeof(TCHAR));
-  #endif
-  }
-  else 
-  {
-  #ifdef _DEBUG
-    NOTIFYICONDATA_1 dummy;
-    ATLASSERT(_tcslen(pszTooltipText) < sizeof(dummy.szTip)/sizeof(TCHAR));
-    DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
-  #endif
-  }
+  //Allow the larger size tooltip text if on Shell v5 or later
+  const size_t TIPLEN = (m_ShellVersion >= Version5) ? _NOTIFYICONDATA_2_TIPLEN : _NOTIFYICONDATA_1_TIPLEN;
+#ifdef _DEBUG
+  ATLASSERT(_tcslen(pszTooltipText) < TIPLEN);
+#endif
 
   //Call the Shell_NotifyIcon function
   m_NotifyIconData.uFlags = NIF_TIP;
-  _tcscpy_s(m_NotifyIconData.szTip, sizeof(m_NotifyIconData.szTip)/sizeof(TCHAR), pszTooltipText);
+  _tcscpy_s(m_NotifyIconData.szTip, TIPLEN, pszTooltipText);
   return Shell_NotifyIcon(NIM_MODIFY, reinterpret_cast<PNOTIFYICONDATA>(&m_NotifyIconData));
 }
 
