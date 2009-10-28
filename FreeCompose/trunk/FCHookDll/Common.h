@@ -20,7 +20,7 @@ int CompareCkes( const void*, const void* );
 
 class ByteSet {
 public:
-	ByteSet( ) {
+	inline ByteSet( ) {
 		Clear( );
 		count = 0;
 	}
