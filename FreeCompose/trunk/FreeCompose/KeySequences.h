@@ -24,6 +24,7 @@ private:
 
 	void _FillKeyComboList( void );
 
+	virtual BOOL OnInitDialog( );
 	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void OnBnClickedEdit( );
 	afx_msg void OnBnClickedRemove( );
