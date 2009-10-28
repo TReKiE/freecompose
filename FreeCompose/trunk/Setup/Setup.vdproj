@@ -27,8 +27,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_46F7027E0F674D9B9DFCEE7A253757C5"
+        "MsmKey" = "8:_5BE630B6B6864AB8A781752662B1FA67"
         "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_6EE19FEE7C2448CAA953EAB4AB930FC7"
+        "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_71AD3E6B21E84DACB15CD7B09F9BE2CA"
+        "OwnerKey" = "8:_5BE630B6B6864AB8A781752662B1FA67"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -45,26 +57,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_AC24FDD295AD411FB0337D6FAA161B6E"
-        "OwnerKey" = "8:_DE4424298AD74880BA7AB2230704E5A2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D14396680EDD4E3C8D80ACD23B6C852F"
-        "OwnerKey" = "8:_46F7027E0F674D9B9DFCEE7A253757C5"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_D6FB81937A9215920FB5749679752E5A"
+        "MsmKey" = "8:_AFDA7EF2C50CDBF015F9C0A96F231353"
         "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DE4424298AD74880BA7AB2230704E5A2"
-        "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
+        "MsmKey" = "8:_EB3D047541A24896A637DBBED1E89324"
+        "OwnerKey" = "8:_6EE19FEE7C2448CAA953EAB4AB930FC7"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -209,7 +209,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D6FB81937A9215920FB5749679752E5A"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AFDA7EF2C50CDBF015F9C0A96F231353"
             {
             "SourcePath" = "8:FCHookDll.dll"
             "TargetName" = "8:FCHookDll.dll"
@@ -296,8 +296,8 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreeCompose"
-        "ProductCode" = "8:{7ECDBE50-E8C0-4698-BFB2-3AA43AD793BD}"
-        "PackageCode" = "8:{96D59C6A-DEA2-420F-BBC7-B4D9C154CA52}"
+        "ProductCode" = "8:{1640CF22-B686-4A76-A7D5-3D46D90066E4}"
+        "PackageCode" = "8:{DAA4F6BD-D99B-43BB-9C62-29DE539F64B9}"
         "UpgradeCode" = "8:{4A0B60E6-D027-4CA8-8E16-8E98344EF382}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -1115,11 +1115,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_46F7027E0F674D9B9DFCEE7A253757C5"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_5BE630B6B6864AB8A781752662B1FA67"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_Microsoft_VC90_DebugCRT_x86.msm"
+            "SourcePath" = "8:policy_9_0_Microsoft_VC90_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -1129,11 +1129,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_AC24FDD295AD411FB0337D6FAA161B6E"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_6EE19FEE7C2448CAA953EAB4AB930FC7"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_debugmfc_x86.msm"
+            "SourcePath" = "8:policy_9_0_Microsoft_VC90_MFC_x86.msm"
                 "Properties"
                 {
                 }
@@ -1143,11 +1143,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D14396680EDD4E3C8D80ACD23B6C852F"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_71AD3E6B21E84DACB15CD7B09F9BE2CA"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_debugcrt_x86.msm"
+            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
                 "Properties"
                 {
                 }
@@ -1157,11 +1157,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_DE4424298AD74880BA7AB2230704E5A2"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_EB3D047541A24896A637DBBED1E89324"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:policy_9_0_Microsoft_VC90_DebugMFC_x86.msm"
+            "SourcePath" = "8:microsoft_vc90_mfc_x86.msm"
                 "Properties"
                 {
                 }
@@ -1176,7 +1176,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7D68380F020C4C909D732FED09C5F7D2"
             {
-            "SourcePath" = "8:..\\Release\\FreeCompose.exe"
+            "SourcePath" = "8:..\\Debug\\FreeCompose.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B0CE172377CD4EE1BC12D418A33C8CE5"

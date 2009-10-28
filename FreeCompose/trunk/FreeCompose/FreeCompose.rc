@@ -111,8 +111,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,4,1
- PRODUCTVERSION 1,0,4,1
+ FILEVERSION 1,0,4,3
+ PRODUCTVERSION 1,0,4,3
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -129,12 +129,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Zive Technology Research"
             VALUE "FileDescription", "FreeCompose"
-            VALUE "FileVersion", "1.0.4.1"
+            VALUE "FileVersion", "1.0.4.3"
             VALUE "InternalName", "FreeCompose.exe"
             VALUE "LegalCopyright", "© 2009 Zive Technology Research"
             VALUE "OriginalFilename", "FreeCompose.exe"
             VALUE "ProductName", "FreeCompose"
-            VALUE "ProductVersion", "1.0.4.1"
+            VALUE "ProductVersion", "1.0.4.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -184,11 +184,12 @@ END
 // Menu
 //
 
-IDR_POPUP_ACTIVE MENU 
+IDR_POPUP MENU 
 BEGIN
     POPUP "popup"
     BEGIN
         MENUITEM "&Disable",                    ID_APP_DISABLE
+        MENUITEM "Caps &Lock",                  ID_APP_CAPSLOCK
         MENUITEM SEPARATOR
         MENUITEM "&Configure...",               ID_APP_CONFIGURE
         MENUITEM "&About...",                   ID_APP_ABOUT
@@ -208,19 +209,6 @@ BEGIN
     POPUP "&Help"
     BEGIN
         MENUITEM "&About FreeCompose...",       ID_APP_ABOUT
-    END
-END
-
-IDR_POPUP_INACTIVE MENU 
-BEGIN
-    POPUP "popup"
-    BEGIN
-        MENUITEM "&Enable",                     ID_APP_ENABLE
-        MENUITEM SEPARATOR
-        MENUITEM "&Configure...",               ID_APP_CONFIGURE
-        MENUITEM "&About...",                   ID_APP_ABOUT
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
     END
 END
 
