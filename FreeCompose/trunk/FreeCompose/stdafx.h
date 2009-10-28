@@ -67,4 +67,6 @@
 
 #include <FCHookDll.h>
 
+#include "resource.h"
+
 #define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
