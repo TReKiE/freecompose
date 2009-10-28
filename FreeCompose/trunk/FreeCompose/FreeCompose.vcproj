@@ -213,10 +213,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ConfigureDlg.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\FreeCompose.cpp"
 				>
 			</File>
@@ -256,10 +252,6 @@
 			</File>
 			<File
 				RelativePath=".\ComposeDefaults.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ConfigureDlg.h"
 				>
 			</File>
 			<File
