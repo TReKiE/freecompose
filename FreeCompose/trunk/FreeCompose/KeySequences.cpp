@@ -7,71 +7,71 @@
 
 #include "Utils.h"
 
-static const LPCTSTR lpszVkNames[256] = {
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    _T("VK_BACK"),                          _T("VK_TAB"),                           NULL,                                   NULL,
-    _T("VK_CLEAR"),                         _T("VK_RETURN"),                        NULL,                                   NULL,
-    _T("VK_SHIFT"),                         _T("VK_CONTROL"),                       _T("VK_MENU"),                          _T("VK_PAUSE"),
-    _T("VK_CAPITAL"),                       _T("VK_KANA/VK_HANGUL"),                NULL,                                   _T("VK_JUNJA"),
-    _T("VK_FINAL"),                         _T("VK_HANJA/VK_KANJI"),                NULL,                                   _T("VK_ESCAPE"),
-    _T("VK_CONVERT"),                       _T("VK_NONCONVERT"),                    _T("VK_ACCEPT"),                        _T("VK_MODECHANGE"),
-    _T("VK_SPACE"),                         _T("VK_PRIOR"),                         _T("VK_NEXT"),                          _T("VK_END"),
-    _T("VK_HOME"),                          _T("VK_LEFT"),                          _T("VK_UP"),                            _T("VK_RIGHT"),
-    _T("VK_DOWN"),                          _T("VK_SELECT"),                        _T("VK_PRINT"),                         _T("VK_EXECUTE"),
-    _T("VK_SNAPSHOT"),                      _T("VK_INSERT"),                        _T("VK_DELETE"),                        _T("VK_HELP"),
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   _T("VK_LWIN"),
-    _T("VK_RWIN"),                          _T("VK_APPS"),                          NULL,                                   _T("VK_SLEEP"),
-    _T("VK_NUMPAD0"),                       _T("VK_NUMPAD1"),                       _T("VK_NUMPAD2"),                       _T("VK_NUMPAD3"),
-    _T("VK_NUMPAD4"),                       _T("VK_NUMPAD5"),                       _T("VK_NUMPAD6"),                       _T("VK_NUMPAD7"),
-    _T("VK_NUMPAD8"),                       _T("VK_NUMPAD9"),                       _T("VK_MULTIPLY"),                      _T("VK_ADD"),
-    _T("VK_SEPARATOR"),                     _T("VK_SUBTRACT"),                      _T("VK_DECIMAL"),                       _T("VK_DIVIDE"),
-    _T("VK_F1"),                            _T("VK_F2"),                            _T("VK_F3"),                            _T("VK_F4"),
-    _T("VK_F5"),                            _T("VK_F6"),                            _T("VK_F7"),                            _T("VK_F8"),
-    _T("VK_F9"),                            _T("VK_F10"),                           _T("VK_F11"),                           _T("VK_F12"),
-    _T("VK_F13"),                           _T("VK_F14"),                           _T("VK_F15"),                           _T("VK_F16"),
-    _T("VK_F17"),                           _T("VK_F18"),                           _T("VK_F19"),                           _T("VK_F20"),
-    _T("VK_F21"),                           _T("VK_F22"),                           _T("VK_F23"),                           _T("VK_F24"),
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    _T("VK_NUMLOCK"),                       _T("VK_SCROLL"),                        _T("VK_OEM_NEC_EQUAL/VK_OEM_FJ_JISHO"), _T("VK_OEM_FJ_MASSHOU"),
-    _T("VK_OEM_FJ_TOUROKU"),                _T("VK_OEM_FJ_LOYA"),                   _T("VK_OEM_FJ_ROYA"),                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    _T("VK_LSHIFT"),                        _T("VK_RSHIFT"),                        _T("VK_LCONTROL"),                      _T("VK_RCONTROL"),
-    _T("VK_LMENU"),                         _T("VK_RMENU"),                         _T("VK_BROWSER_BACK"),                  _T("VK_BROWSER_FORWARD"),
-    _T("VK_BROWSER_REFRESH"),               _T("VK_BROWSER_STOP"),                  _T("VK_BROWSER_SEARCH"),                _T("VK_BROWSER_FAVORITES"),
-    _T("VK_BROWSER_HOME"),                  _T("VK_VOLUME_MUTE"),                   _T("VK_VOLUME_DOWN"),                   _T("VK_VOLUME_UP"),
-    _T("VK_MEDIA_NEXT_TRACK"),              _T("VK_MEDIA_PREV_TRACK"),              _T("VK_MEDIA_STOP"),                    _T("VK_MEDIA_PLAY_PAUSE"),
-    _T("VK_LAUNCH_MAIL"),                   _T("VK_LAUNCH_MEDIA_SELECT"),           _T("VK_LAUNCH_APP1"),                   _T("VK_LAUNCH_APP2"),
-    NULL,                                   NULL,                                   _T("VK_OEM_1"),                         _T("VK_OEM_PLUS"),
-    _T("VK_OEM_COMMA"),                     _T("VK_OEM_MINUS"),                     _T("VK_OEM_PERIOD"),                    _T("VK_OEM_2"),
-    _T("VK_OEM_3"),                         NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   NULL,
-    NULL,                                   NULL,                                   NULL,                                   _T("VK_OEM_4"),
-    _T("VK_OEM_5"),                         _T("VK_OEM_6"),                         _T("VK_OEM_7"),                         _T("VK_OEM_8"),
-    NULL,                                   _T("VK_OEM_AX"),                        _T("VK_OEM_102"),                       _T("VK_ICO_HELP"),
-    _T("VK_ICO_00"),                        _T("VK_PROCESSKEY"),                    _T("VK_ICO_CLEAR"),                     _T("VK_PACKET"),
-    NULL,                                   _T("VK_OEM_RESET"),                     _T("VK_OEM_JUMP"),                      _T("VK_OEM_PA1"),
-    _T("VK_OEM_PA2"),                       _T("VK_OEM_PA3"),                       _T("VK_OEM_WSCTRL"),                    _T("VK_OEM_CUSEL"),
-    _T("VK_OEM_ATTN"),                      _T("VK_OEM_FINISH"),                    _T("VK_OEM_COPY"),                      _T("VK_OEM_AUTO"),
-    _T("VK_OEM_ENLW"),                      _T("VK_OEM_BACKTAB"),                   _T("VK_ATTN"),                          _T("VK_CRSEL"),
-    _T("VK_EXSEL"),                         _T("VK_EREOF"),                         _T("VK_PLAY"),                          _T("VK_ZOOM"),
-    _T("VK_NONAME"),                        _T("VK_PA1"),                           _T("VK_OEM_CLEAR"),                     NULL,
+static const LPCSTR lpszVkNames[256] = {
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    "VK_BACK",                          "VK_TAB",                           NULL,                               NULL,
+    "VK_CLEAR",                         "VK_RETURN",                        NULL,                               NULL,
+    "VK_SHIFT",                         "VK_CONTROL",                       "VK_MENU",                          "VK_PAUSE",
+    "VK_CAPITAL",                       "VK_KANA/VK_HANGUL",                NULL,                               "VK_JUNJA",
+    "VK_FINAL",                         "VK_KANJI/VK_HANJA",                NULL,                               "VK_ESCAPE",
+    "VK_CONVERT",                       "VK_NONCONVERT",                    "VK_ACCEPT",                        "VK_MODECHANGE",
+    "VK_SPACE",                         "VK_PRIOR",                         "VK_NEXT",                          "VK_END",
+    "VK_HOME",                          "VK_LEFT",                          "VK_UP",                            "VK_RIGHT",
+    "VK_DOWN",                          "VK_SELECT",                        "VK_PRINT",                         "VK_EXECUTE",
+    "VK_SNAPSHOT",                      "VK_INSERT",                        "VK_DELETE",                        "VK_HELP",
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               "VK_LWIN",
+    "VK_RWIN",                          "VK_APPS",                          NULL,                               "VK_SLEEP",
+    "VK_NUMPAD0",                       "VK_NUMPAD1",                       "VK_NUMPAD2",                       "VK_NUMPAD3",
+    "VK_NUMPAD4",                       "VK_NUMPAD5",                       "VK_NUMPAD6",                       "VK_NUMPAD7",
+    "VK_NUMPAD8",                       "VK_NUMPAD9",                       "VK_MULTIPLY",                      "VK_ADD",
+    "VK_SEPARATOR",                     "VK_SUBTRACT",                      "VK_DECIMAL",                       "VK_DIVIDE",
+    "VK_F1",                            "VK_F2",                            "VK_F3",                            "VK_F4",
+    "VK_F5",                            "VK_F6",                            "VK_F7",                            "VK_F8",
+    "VK_F9",                            "VK_F10",                           "VK_F11",                           "VK_F12",
+    "VK_F13",                           "VK_F14",                           "VK_F15",                           "VK_F16",
+    "VK_F17",                           "VK_F18",                           "VK_F19",                           "VK_F20",
+    "VK_F21",                           "VK_F22",                           "VK_F23",                           "VK_F24",
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    "VK_NUMLOCK",                       "VK_SCROLL",                        "VK_OEM_NEC_EQUAL/VK_OEM_FJ_JISHO", "VK_OEM_FJ_MASSHOU",
+    "VK_OEM_FJ_TOUROKU",                "VK_OEM_FJ_LOYA",                   "VK_OEM_FJ_ROYA",                   NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    "VK_LSHIFT",                        "VK_RSHIFT",                        "VK_LCONTROL",                      "VK_RCONTROL",
+    "VK_LMENU",                         "VK_RMENU",                         "VK_BROWSER_BACK",                  "VK_BROWSER_FORWARD",
+    "VK_BROWSER_REFRESH",               "VK_BROWSER_STOP",                  "VK_BROWSER_SEARCH",                "VK_BROWSER_FAVORITES",
+    "VK_BROWSER_HOME",                  "VK_VOLUME_MUTE",                   "VK_VOLUME_DOWN",                   "VK_VOLUME_UP",
+    "VK_MEDIA_NEXT_TRACK",              "VK_MEDIA_PREV_TRACK",              "VK_MEDIA_STOP",                    "VK_MEDIA_PLAY_PAUSE",
+    "VK_LAUNCH_MAIL",                   "VK_LAUNCH_MEDIA_SELECT",           "VK_LAUNCH_APP1",                   "VK_LAUNCH_APP2",
+    NULL,                               NULL,                               "VK_OEM_1",                         "VK_OEM_PLUS",
+    "VK_OEM_COMMA",                     "VK_OEM_MINUS",                     "VK_OEM_PERIOD",                    "VK_OEM_2",
+    "VK_OEM_3",                         NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               NULL,
+    NULL,                               NULL,                               NULL,                               "VK_OEM_4",
+    "VK_OEM_5",                         "VK_OEM_6",                         "VK_OEM_7",                         "VK_OEM_8",
+    NULL,                               "VK_OEM_AX",                        "VK_OEM_102",                       "VK_ICO_HELP",
+    "VK_ICO_00",                        "VK_PROCESSKEY",                    "VK_ICO_CLEAR",                     "VK_PACKET",
+    NULL,                               "VK_OEM_RESET",                     "VK_OEM_JUMP",                      "VK_OEM_PA1",
+    "VK_OEM_PA2",                       "VK_OEM_PA3",                       "VK_OEM_WSCTRL",                    "VK_OEM_CUSEL",
+    "VK_OEM_ATTN",                      "VK_OEM_FINISH",                    "VK_OEM_COPY",                      "VK_OEM_AUTO",
+    "VK_OEM_ENLW",                      "VK_OEM_BACKTAB",                   "VK_ATTN",                          "VK_CRSEL",
+    "VK_EXSEL",                         "VK_EREOF",                         "VK_PLAY",                          "VK_ZOOM",
+    "VK_NONAME",                        "VK_PA1",                           "VK_OEM_CLEAR",                     NULL,
 };
 
 const int ITEM_FUDGE_FACTOR   = 12;
@@ -96,69 +96,60 @@ CKeySequences::~CKeySequences( ) {
 
 void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 	CPropertyPage::DoDataExchange( pDX );
-	DDX_Control(pDX, IDC_KEYCOMBOLIST, m_KeyComboList);
-	DDX_Control(pDX, IDEDIT, m_btnEdit);
-	DDX_Control(pDX, IDREMOVE, m_btnRemove);
+	DDX_Control( pDX, IDC_KEYCOMBOLIST, m_KeyComboList );
+	DDX_Control( pDX, IDEDIT,           m_btnEdit );
+	DDX_Control( pDX, IDREMOVE,         m_btnRemove );
+}
+
+CString CKeySequences::_VkToString( DWORD _vk ) {
+	DWORD vk = (DWORD) ( _vk & (DWORD) 0x7FFFFFFF );
+	bool fCapital = ( _vk & (DWORD) 0x80000000 ) != 0;
+	CString str;
+
+	if ( NULL == lpszVkNames[ vk ] ) {
+		if ( ( vk >= '0' && vk <= '9' ) || ( vk >= 'A' && vk <= 'Z' ) ) {
+			str = (TCHAR) vk;
+		} else {
+			str.Format( _T("?? (VK#%d)"), vk );
+		}
+	} else {
+		str = lpszVkNames[ vk ];
+	}
+	if ( fCapital )
+		str.Insert( 0, _T("Shift+") );
+	return str;
 }
 
 void CKeySequences::_FillKeyComboList( void ) {
-	TCHAR buf[64];
-	LPCTSTR lpszCapital;
-	LPCTSTR lpszName;
-	DWORD dwVk;
-	bool fCapital;
+	CString col0, col1, col2;
+	int width;
 	BOOL ret;
-	int nwidth;
 
 	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
-		_sntprintf_s( buf, 64, _TRUNCATE, _T("%c"), ComposeKeyEntries[n].wchComposed );
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > m_nColumnWidths[0] )
-			m_nColumnWidths[0] = nwidth;
-		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, buf, 0, (UINT) -1, -1, n );
+		col0 = ComposeKeyEntries[n].wchComposed;
+		width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
+		if ( width > m_nColumnWidths[0] )
+			m_nColumnWidths[0] = width;
+		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, col0, 0, (UINT) -1, -1, n );
 		ASSERT( -1 != nItem );
 
-		dwVk = (DWORD) ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x7FFFFFFF );
-		fCapital = ( ComposeKeyEntries[n].vkFirst & (DWORD) 0x80000000 ) != 0;
-		lpszCapital = fCapital ? _T("Shift+") : _T("");
-		lpszName = lpszVkNames[ dwVk ];
-		if ( NULL == lpszName ) {
-			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
-			} else {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
-			}
-		} else {
-			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
-		}
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > m_nColumnWidths[1] )
-			m_nColumnWidths[1] = nwidth;
-		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		col1 = _VkToString( ComposeKeyEntries[n].vkFirst );
+		width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
+		if ( width > m_nColumnWidths[1] )
+			m_nColumnWidths[1] = width;
+		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
 		ASSERT( TRUE == ret );
 
-		dwVk = (DWORD) ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x7FFFFFFF );
-		fCapital = ( ComposeKeyEntries[n].vkSecond & (DWORD) 0x80000000 ) != 0;
-		lpszCapital = fCapital ? _T("Shift+") : _T("");
-		lpszName = lpszVkNames[ dwVk ];
-		if ( NULL == lpszName ) {
-			if ( ( dwVk >= '0' && dwVk <= '9' ) || ( dwVk >= 'A' && dwVk <= 'Z' ) ) {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%c"), lpszCapital, dwVk );
-			} else {
-				_sntprintf_s( buf, 64, _TRUNCATE, _T("%s?? VK#%d"), lpszCapital, dwVk );
-			}
-		} else {
-			_sntprintf_s( buf, 64, _TRUNCATE, _T("%s%s"), lpszCapital, lpszName );
-		}
-		nwidth = m_KeyComboList.GetStringWidth( buf ) + ITEM_FUDGE_FACTOR;
-		if ( nwidth > m_nColumnWidths[2] )
-			m_nColumnWidths[2] = nwidth;
-		ret = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, buf, -1, 0, (UINT) -1, 0 );
+		col2 = _VkToString( ComposeKeyEntries[n].vkSecond );
+		width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
+		if ( width > m_nColumnWidths[2] )
+			m_nColumnWidths[2] = width;
+		ret = m_KeyComboList.SetItem( nItem, 2, LVIF_STATE | LVIF_TEXT, col2, -1, 0, (UINT) -1, 0 );
 		ASSERT( TRUE == ret );
 	}
 
-	if ( m_nColumnWidths[1] > m_nColumnWidths[2] )
-		m_nColumnWidths[1] = m_nColumnWidths[2];
+	int m = max( m_nColumnWidths[1], m_nColumnWidths[2] );
+	m_nColumnWidths[1] = m_nColumnWidths[2] = m;
 	m_KeyComboList.SetColumnWidth( 0, m_nColumnWidths[0] );
 	m_KeyComboList.SetColumnWidth( 1, m_nColumnWidths[1] );
 	m_KeyComboList.SetColumnWidth( 2, m_nColumnWidths[2] );
@@ -186,19 +177,17 @@ BOOL CKeySequences::OnInitDialog( ) {
 void CKeySequences::OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult ) {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
 
-	if ( NM_RCLICK == pNMLV->hdr.code || NM_RDBLCLK == pNMLV->hdr.code )
-		goto out;
-
-	UINT nsel = m_KeyComboList.GetSelectedCount( );
-	if ( 0 == nsel ) {
-		m_btnEdit.EnableWindow( FALSE );
-		m_btnRemove.EnableWindow( FALSE );
-	} else {
-		m_btnEdit.EnableWindow( ( 1 == nsel ) );
-		m_btnRemove.EnableWindow( TRUE );
+	if ( NM_CLICK == pNMLV->hdr.code || NM_DBLCLK == pNMLV->hdr.code ) {
+		UINT nsel = m_KeyComboList.GetSelectedCount( );
+		if ( 0 == nsel ) {
+			m_btnEdit.EnableWindow( FALSE );
+			m_btnRemove.EnableWindow( FALSE );
+		} else {
+			m_btnEdit.EnableWindow( ( 1 == nsel ) );
+			m_btnRemove.EnableWindow( TRUE );
+		}
 	}
 
-out:
 	*pResult = 0;
 }
 
@@ -211,24 +200,29 @@ void CKeySequences::OnBnClickedRemove( ) {
 		return;
 
 	int ret = MessageBox( _T("Are you sure?"), _T("Remove key definitions"), MB_YESNO | MB_ICONWARNING );
-	if ( IDYES == ret ) {
-		POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
-		int i = m_KeyComboList.GetNextSelectedItem( pos );
-		int* items = new int[count];
-		int n = 0;
-
-		while ( -1 != i ) {
-			items[n++] = i;
-			i = m_KeyComboList.GetNextSelectedItem( pos );
-		}
-		qsort_s( items, count, sizeof( int ), compare_keys_reverse, NULL );
-
-		for ( UINT n = 0; n < count; n++ ) {
-			m_KeyComboList.DeleteItem( items[n] );
-			ComposeKeyEntries.RemoveAt( items[n] );
-		}
-
-		FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
+	if ( IDYES != ret ) {
+		return;
 	}
-	// XXX need to save changes to registry
+
+	POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
+	int i = m_KeyComboList.GetNextSelectedItem( pos );
+	int* items = new int[count];
+	int n = 0;
+
+	while ( -1 != i ) {
+		items[n++] = i;
+		i = m_KeyComboList.GetNextSelectedItem( pos );
+	}
+	qsort_s( items, count, sizeof( int ), compare_keys_reverse, NULL );
+
+	for ( UINT n = 0; n < count; n++ ) {
+		m_KeyComboList.DeleteItem( items[n] );
+		ComposeKeyEntries.RemoveAt( items[n] );
+	}
+
+	delete[] items;
+
+	FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
+
+	SetModified( );
 }

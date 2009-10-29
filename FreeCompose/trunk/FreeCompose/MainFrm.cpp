@@ -21,6 +21,7 @@ const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
+	//{{AFX_MSG_MAP( COptionsPropSheet )
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
 	ON_REGISTERED_MESSAGE (FCM_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
@@ -33,6 +34,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_UPDATE_COMMAND_UI  (ID_APP_DISABLE,   &CMainFrame::OnUpdateAppEnable)
 	ON_UPDATE_COMMAND_UI  (ID_APP_ENABLE,    &CMainFrame::OnUpdateAppEnable)
 	ON_UPDATE_COMMAND_UI  (ID_APP_CAPSLOCK,  &CMainFrame::OnUpdateAppCapsLock)
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 // CMainFrame construction/destruction
@@ -174,13 +176,8 @@ void CMainFrame::OnAppCapsLock( void ) {
 }
 
 void CMainFrame::OnAppConfigure( ) {
-	//COptionsDlg* pdlg = new COptionsDlg();
-	//pdlg->Create( IDD_OPTIONS );
-	//pdlg->ShowWindow( SW_SHOW );
-	
-	//CPropertySheet* ps = 
-	COptionsPropSheet ops;
-	ops.DoModal( );
+	COptionsPropSheet options( this );
+	options.DoModal( );
 }
 
 void CMainFrame::OnUpdateAppEnable( CCmdUI* pui ) {
