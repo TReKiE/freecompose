@@ -21,7 +21,7 @@ const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
-	//{{AFX_MSG_MAP( COptionsPropSheet )
+	//{{AFX_MSG_MAP( CMainFrame )
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
 	ON_REGISTERED_MESSAGE (FCM_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
@@ -41,7 +41,7 @@ END_MESSAGE_MAP()
 
 CMainFrame::CMainFrame( ):
 	m_ptni    ( NULL  ),
-	m_fActive ( FALSE )
+	m_fActive ( false )
 {
 }
 
@@ -58,11 +58,14 @@ void CMainFrame::_InitializeHook( void ) {
 	}
 	FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
 
-	if ( (BOOL) theApp.GetProfileInt( _T("Startup"), _T("StartActive"), (int) TRUE ) ) {
+	if ( m_Options.m_fStartActive ) {
 		FcEnableHook( );
-		m_fActive = TRUE;
+		m_fActive = true;
 	}
-	if ( (BOOL) theApp.GetProfileInt( _T("Features"), _T("DisableCapsLock"), (int) FALSE ) ) {
+	if ( m_Options.m_fSwapCtrlAndCaps ) {
+		// XXX TODO FcSwapCtrlAndCaps( );
+	}
+	if ( m_Options.m_fDisableCapsLock ) {
 		FcDisableCapsLock( );
 	}
 }
@@ -104,7 +107,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 void CMainFrame::OnClose( ) {
 	if ( m_fActive ) {
 		FcDisableHook( );
-		m_fActive = FALSE;
+		m_fActive = false;
 	}
 	delete m_ptni;
 	CFrameWnd::OnClose( );
@@ -153,14 +156,14 @@ void CMainFrame::OnAppAbout(void) {
 }
 
 void CMainFrame::OnAppEnable( void ) {
-	m_fActive = TRUE;
+	m_fActive = true;
 	FcEnableHook( );
 	m_ptni->SetTooltipText( _T("FreeCompose is enabled.") );
 	m_ptni->SetBalloonDetails( _T("FreeCompose is enabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
 }
 
 void CMainFrame::OnAppDisable( void ) {
-	m_fActive = FALSE;
+	m_fActive = false;
 	FcDisableHook();
 	m_ptni->SetTooltipText( _T("FreeCompose is disabled.") );
 	m_ptni->SetBalloonDetails( _T("FreeCompose is disabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
@@ -176,8 +179,20 @@ void CMainFrame::OnAppCapsLock( void ) {
 }
 
 void CMainFrame::OnAppConfigure( ) {
-	COptionsPropSheet options( this );
+	COptionsPropSheet options( this, m_Options );
 	options.DoModal( );
+
+	const COptionsData& newoptions = options.GetNewOptions( );
+	if ( m_Options != newoptions ) {
+		debug(
+			_T("OnAppConfigure: options changed: %d %d %d %d %d\n"),
+			newoptions.m_fStartActive,
+			newoptions.m_fStartWithWindows,
+			newoptions.m_fSwapCtrlAndCaps,
+			newoptions.m_fDisableCapsLock,
+			newoptions.m_ComposeKeyEntries.GetCount( )
+		);
+	}
 }
 
 void CMainFrame::OnUpdateAppEnable( CCmdUI* pui ) {
@@ -190,5 +205,5 @@ void CMainFrame::OnUpdateAppEnable( CCmdUI* pui ) {
 
 void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
 	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
-	pui->Enable( m_fActive && (BOOL) theApp.GetProfileInt( _T("Features"), _T("DisableCapsLock"), (int) FALSE ) );
+	pui->Enable( m_fActive && m_Options.m_fDisableCapsLock );
 }

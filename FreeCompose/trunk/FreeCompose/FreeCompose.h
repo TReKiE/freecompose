@@ -2,6 +2,8 @@
 //
 #pragma once
 
+typedef CArray< COMPOSE_KEY_ENTRY > CComposeKeyEntryArray;
+
 class CFreeComposeApp: public CWinApp {
 public:
 	CFreeComposeApp( );
@@ -16,7 +18,7 @@ protected:
 };
 
 extern CFreeComposeApp theApp;
-extern CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
+extern CComposeKeyEntryArray ComposeKeyEntries;
 
 void _FcLoadKeys( void );
 void _FcSaveKeys( void );

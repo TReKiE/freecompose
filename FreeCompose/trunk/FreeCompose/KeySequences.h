@@ -1,10 +1,12 @@
 #pragma once
 
+#include "OptionsData.h"
+
 class CKeySequences: public CPropertyPage {
 	DECLARE_DYNAMIC( CKeySequences )
 
 public:
-	CKeySequences( );
+	CKeySequences( COptionsData& Options );
 	virtual ~CKeySequences( );
 
 	// Dialog Data
@@ -16,6 +18,8 @@ protected:
 	DECLARE_MESSAGE_MAP( )
 
 private:
+	COptionsData& m_Options;
+
 	int m_nColumnWidths[3];
 
 	CListCtrl m_KeyComboList;
@@ -26,6 +30,7 @@ private:
 	CString _VkToString( DWORD dw );
 
 	virtual BOOL OnInitDialog( );
+
 	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void OnBnClickedEdit( );
 	afx_msg void OnBnClickedRemove( );

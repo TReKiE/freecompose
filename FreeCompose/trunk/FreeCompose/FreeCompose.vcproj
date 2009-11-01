@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Features.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FreeCompose.cpp"
 				>
 			</File>
@@ -226,6 +230,10 @@
 			</File>
 			<File
 				RelativePath=".\NTray.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsData.cpp"
 				>
 			</File>
 			<File
@@ -255,6 +263,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Features.h"
+				>
+			</File>
+			<File
 				RelativePath=".\FreeCompose.h"
 				>
 			</File>
@@ -268,6 +280,10 @@
 			</File>
 			<File
 				RelativePath=".\NTray.h"
+				>
+			</File>
+			<File
+				RelativePath=".\OptionsData.h"
 				>
 			</File>
 			<File

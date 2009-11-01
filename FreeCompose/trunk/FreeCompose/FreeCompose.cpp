@@ -14,7 +14,7 @@
 // The one and only CFreeComposeApp object
 
 CFreeComposeApp theApp;
-CArray< COMPOSE_KEY_ENTRY > ComposeKeyEntries;
+CComposeKeyEntryArray ComposeKeyEntries;
 
 
 // CFreeComposeApp

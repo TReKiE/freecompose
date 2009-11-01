@@ -3,6 +3,7 @@
 #pragma once
 
 #include "ChildView.h"
+#include "OptionsData.h"
 #include "NTray.h"
 
 class CMainFrame: public CFrameWnd {
@@ -25,7 +26,8 @@ public:
 // Implementation
 protected:
 	CTrayNotifyIcon* m_ptni;
-	BOOL m_fActive;
+	COptionsData m_Options;
+	bool m_fActive;
 
 // Generated message map functions
 protected:
