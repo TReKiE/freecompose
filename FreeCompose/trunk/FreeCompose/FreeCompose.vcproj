@@ -213,6 +213,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\EditKeySequence.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Features.cpp"
 				>
 			</File>
@@ -260,6 +264,10 @@
 			</File>
 			<File
 				RelativePath=".\ComposeDefaults.h"
+				>
+			</File>
+			<File
+				RelativePath=".\EditKeySequence.h"
 				>
 			</File>
 			<File
