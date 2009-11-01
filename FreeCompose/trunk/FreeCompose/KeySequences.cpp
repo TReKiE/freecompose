@@ -85,8 +85,9 @@ BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
 	ON_BN_CLICKED(IDREMOVE, &CKeySequences::OnBnClickedRemove)
 END_MESSAGE_MAP( )
 
-CKeySequences::CKeySequences( ):
-	CPropertyPage( CKeySequences::IDD )
+CKeySequences::CKeySequences( COptionsData& Options ):
+	CPropertyPage ( CKeySequences::IDD ),
+	m_Options     ( Options )
 {
 	memset( m_nColumnWidths, 0, sizeof( m_nColumnWidths ) );
 }
@@ -125,22 +126,25 @@ void CKeySequences::_FillKeyComboList( void ) {
 	int width;
 	BOOL ret;
 
-	for ( int n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
-		col0 = ComposeKeyEntries[n].wchComposed;
+	m_Options.m_ComposeKeyEntries.RemoveAll( );
+	m_Options.m_ComposeKeyEntries.Copy( ComposeKeyEntries );
+
+	for ( int n = 0; n < m_Options.m_ComposeKeyEntries.GetCount( ); n++ ) {
+		col0 = m_Options.m_ComposeKeyEntries[n].wchComposed;
 		width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 		if ( width > m_nColumnWidths[0] )
 			m_nColumnWidths[0] = width;
 		int nItem = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, col0, 0, (UINT) -1, -1, n );
 		ASSERT( -1 != nItem );
 
-		col1 = _VkToString( ComposeKeyEntries[n].vkFirst );
+		col1 = _VkToString( m_Options.m_ComposeKeyEntries[n].vkFirst );
 		width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 		if ( width > m_nColumnWidths[1] )
 			m_nColumnWidths[1] = width;
 		ret = m_KeyComboList.SetItem( nItem, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
 		ASSERT( TRUE == ret );
 
-		col2 = _VkToString( ComposeKeyEntries[n].vkSecond );
+		col2 = _VkToString( m_Options.m_ComposeKeyEntries[n].vkSecond );
 		width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 		if ( width > m_nColumnWidths[2] )
 			m_nColumnWidths[2] = width;
@@ -217,12 +221,10 @@ void CKeySequences::OnBnClickedRemove( ) {
 
 	for ( UINT n = 0; n < count; n++ ) {
 		m_KeyComboList.DeleteItem( items[n] );
-		ComposeKeyEntries.RemoveAt( items[n] );
+		m_Options.m_ComposeKeyEntries.RemoveAt( items[n] );
 	}
 
 	delete[] items;
-
-	FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
 
 	SetModified( );
 }

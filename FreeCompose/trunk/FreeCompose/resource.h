@@ -10,6 +10,7 @@
 #define IDR_MAINFRAME                   128
 #define IDR_POPUP                       129
 #define IDD_KEYSEQUENCES                130
+#define IDD_FEATURES                    131
 #define IDREMOVE                        1010
 #define IDEDIT                          1011
 #define IDC_KEYCOMBOLIST                1012
@@ -17,6 +18,10 @@
 #define IDC_ABOUT_COPYRIGHT             1014
 #define IDAPPLY                         1015
 #define IDC_TABS                        1016
+#define IDC_ENABLEONSTARTUP             1017
+#define IDC_STARTWITHWINDOWS            1018
+#define IDC_DISABLECAPSLOCK             1019
+#define IDC_SWAPCTRLANDCAPS             1020
 #define ID_APP_ENABLE                   32769
 #define ID_APP_DISABLE                  32770
 #define ID_APP_CONFIGURE                32771
@@ -26,9 +31,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        131
+#define _APS_NEXT_RESOURCE_VALUE        132
 #define _APS_NEXT_COMMAND_VALUE         32773
-#define _APS_NEXT_CONTROL_VALUE         1017
-#define _APS_NEXT_SYMED_VALUE           105
+#define _APS_NEXT_CONTROL_VALUE         1021
+#define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif
