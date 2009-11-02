@@ -27,7 +27,6 @@ private:
 	CButton m_btnRemove;
 
 	void _FillKeyComboList( void );
-	CString _VkToString( DWORD dw );
 
 	virtual BOOL OnInitDialog( );
 

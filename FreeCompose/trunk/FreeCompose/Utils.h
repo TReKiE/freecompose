@@ -2,6 +2,7 @@
 
 void debug( LPCTSTR lpsz, ... );
 bool IsCapsLock( void );
+CString VkToString( DWORD dw );
 
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
 	T elem1 = *( (T*) _elem1 );
