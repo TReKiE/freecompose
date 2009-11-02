@@ -13,8 +13,6 @@
 #define IDEDIT                          1011
 #define IDC_KEYCOMBOLIST                1012
 #define IDC_ABOUT_VERSION               1013
-#define IDEDIT2                         1013
-#define IDADD                           1013
 #define IDC_ABOUT_COPYRIGHT             1014
 #define IDAPPLY                         1015
 #define IDC_TABS                        1016
@@ -25,6 +23,7 @@
 #define IDC_FIRSTKEY                    1021
 #define IDC_SECONDKEY                   1022
 #define IDC_RESULT                      1023
+#define IDADD                           1024
 #define ID_APP_ENABLE                   32769
 #define ID_APP_DISABLE                  32770
 #define ID_APP_CONFIGURE                32771
@@ -36,7 +35,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        133
 #define _APS_NEXT_COMMAND_VALUE         32773
-#define _APS_NEXT_CONTROL_VALUE         1024
-#define _APS_NEXT_SYMED_VALUE           104
+#define _APS_NEXT_CONTROL_VALUE         1025
+#define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
