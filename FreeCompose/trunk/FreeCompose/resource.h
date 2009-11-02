@@ -13,6 +13,8 @@
 #define IDEDIT                          1011
 #define IDC_KEYCOMBOLIST                1012
 #define IDC_ABOUT_VERSION               1013
+#define IDEDIT2                         1013
+#define IDADD                           1013
 #define IDC_ABOUT_COPYRIGHT             1014
 #define IDAPPLY                         1015
 #define IDC_TABS                        1016
