@@ -78,7 +78,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 		m_fActive ? _T("FreeCompose is enabled.") : _T("FreeCompose is disabled."),
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
 		FCM_NOTIFYICON,
-		IDR_POPUP
+		IDM_POPUP
 	);
 }
 
