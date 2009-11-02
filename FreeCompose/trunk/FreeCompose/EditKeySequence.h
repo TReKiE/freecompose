@@ -5,7 +5,7 @@ class CEditKeySequence: public CDialog {
 	DECLARE_DYNAMIC( CEditKeySequence )
 
 public:
-	CEditKeySequence( CWnd* pParent = NULL );
+	CEditKeySequence( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent = NULL );
 	virtual ~CEditKeySequence( );
 
 	// Dialog Data
@@ -17,6 +17,11 @@ protected:
 	DECLARE_MESSAGE_MAP( )
 
 private:
+	COMPOSE_KEY_ENTRY m_cke;
+	bool m_fAdd;
+
+	virtual BOOL OnInitDialog( );
+
 	CEdit m_editFirstKey;
 	CEdit m_editSecondKey;
 	CEdit m_editResult;
