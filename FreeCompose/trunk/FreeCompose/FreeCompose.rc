@@ -82,7 +82,7 @@ BEGIN
 END
 
 IDD_KEYSEQUENCES DIALOGEX 0, 0, 252, 196
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_TABSTOP
 EXSTYLE WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT
 CAPTION "Key sequences"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -95,8 +95,8 @@ BEGIN
 END
 
 IDD_FEATURES DIALOGEX 0, 0, 252, 196
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
-EXSTYLE WS_EX_TRANSPARENT | WS_EX_CONTROLPARENT
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_DISABLED | WS_CAPTION | WS_TABSTOP
+EXSTYLE WS_EX_CONTROLPARENT
 CAPTION "Features"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
@@ -361,7 +361,8 @@ LANGUAGE 9, 4
 #pragma code_page(1252)
 #include "res\FreeCompose.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components
-#endif
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
