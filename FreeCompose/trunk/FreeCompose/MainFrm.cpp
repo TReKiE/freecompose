@@ -8,14 +8,13 @@
 #include "AboutDlg.h"
 #include "OptionsPropSheet.h"
 
-#include "ComposeDefaults.h"
 #include "Utils.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-const UINT FCM_NOTIFYICON = RegisterWindowMessage( _T("FreeCompose.FCM_NOTIFYICON") );
+const UINT APP_NOTIFYICON = RegisterWindowMessage( _T("FreeCompose.APP_NOTIFYICON") );
 const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
@@ -24,7 +23,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP( CMainFrame )
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
-	ON_REGISTERED_MESSAGE (FCM_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
+	ON_REGISTERED_MESSAGE (APP_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
 	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
 	ON_COMMAND            (ID_APP_ABOUT,     &CMainFrame::OnAppAbout)
 	ON_COMMAND            (ID_APP_DISABLE,   &CMainFrame::OnAppDisable)
@@ -40,32 +39,28 @@ END_MESSAGE_MAP()
 // CMainFrame construction/destruction
 
 CMainFrame::CMainFrame( ):
-	m_ptni    ( NULL  ),
-	m_fActive ( false )
+	m_ptni     ( NULL ),
+	m_pOptions ( NULL ),
+	m_fActive  ( false )
 {
 }
 
 CMainFrame::~CMainFrame( ) {
 }
 
-void CMainFrame::_InitializeHook( void ) {
-	_FcLoadKeys( );
-	if ( 0 == ComposeKeyEntries.GetCount() ) {
-		for ( int n = 0; n < countof( DefaultComposeKeyEntries ); n++ ) {
-			ComposeKeyEntries.Add( DefaultComposeKeyEntries[n] );
-		}
-		_FcSaveKeys( );
-	}
-	FcSetComposeKeyEntries( ComposeKeyEntries.GetData( ), (DWORD) ComposeKeyEntries.GetCount( ) );
+void CMainFrame::_Initialize( void ) {
+	m_pOptions = new COptionsData( );
 
-	if ( m_Options.m_fStartActive ) {
+	FcSetComposeKeyEntries( m_pOptions->m_ComposeKeyEntries.GetData( ), (DWORD) m_pOptions->m_ComposeKeyEntries.GetCount( ) );
+
+	if ( m_pOptions->m_fStartActive ) {
 		FcEnableHook( );
 		m_fActive = true;
 	}
-	if ( m_Options.m_fSwapCtrlAndCaps ) {
+	if ( m_pOptions->m_fSwapCtrlAndCaps ) {
 		// XXX TODO FcSwapCtrlAndCaps( );
 	}
-	if ( m_Options.m_fDisableCapsLock ) {
+	if ( m_pOptions->m_fDisableCapsLock ) {
 		FcDisableCapsLock( );
 	}
 }
@@ -77,7 +72,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 		1,
 		m_fActive ? _T("FreeCompose is enabled.") : _T("FreeCompose is disabled."),
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
-		FCM_NOTIFYICON,
+		APP_NOTIFYICON,
 		IDM_POPUP
 	);
 }
@@ -98,7 +93,7 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 		return FALSE;
 	}
 
-	_InitializeHook( );
+	_Initialize( );
 	_SetupTrayIcon( );
 
 	return 0;
@@ -179,11 +174,12 @@ void CMainFrame::OnAppCapsLock( void ) {
 }
 
 void CMainFrame::OnAppConfigure( ) {
-	COptionsPropSheet options( this, m_Options );
-	options.DoModal( );
+	COptionsPropSheet options( *m_pOptions );
+	if ( IDOK != options.DoModal( ) )
+		return;
 
 	const COptionsData& newoptions = options.GetNewOptions( );
-	if ( m_Options != newoptions ) {
+	if ( *m_pOptions != newoptions ) {
 		debug(
 			_T("OnAppConfigure: options changed: %d %d %d %d %d\n"),
 			newoptions.m_fStartActive,
@@ -205,5 +201,11 @@ void CMainFrame::OnUpdateAppEnable( CCmdUI* pui ) {
 
 void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
 	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
-	pui->Enable( m_fActive && m_Options.m_fDisableCapsLock );
+	pui->Enable( m_fActive && m_pOptions->m_fDisableCapsLock );
+}
+
+BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
+	if ( IsDialogMessage( pMsg ) )
+		return TRUE;
+	return CFrameWnd::PreTranslateMessage( pMsg );
 }

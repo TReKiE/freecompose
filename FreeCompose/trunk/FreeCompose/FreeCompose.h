@@ -18,7 +18,3 @@ protected:
 };
 
 extern CFreeComposeApp theApp;
-extern CComposeKeyEntryArray ComposeKeyEntries;
-
-void _FcLoadKeys( void );
-void _FcSaveKeys( void );

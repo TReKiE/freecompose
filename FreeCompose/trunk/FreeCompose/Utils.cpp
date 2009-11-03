@@ -100,4 +100,3 @@ CString VkToString( DWORD _vk ) {
 		str.Insert( 0, _T("Shift+") );
 	return str;
 }
-

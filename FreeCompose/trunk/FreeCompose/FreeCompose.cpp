@@ -14,7 +14,6 @@
 // The one and only CFreeComposeApp object
 
 CFreeComposeApp theApp;
-CComposeKeyEntryArray ComposeKeyEntries;
 
 
 // CFreeComposeApp
@@ -88,36 +87,4 @@ BOOL CFreeComposeApp::InitInstance()
 	// call DragAcceptFiles only if there's a suffix
 	//  In an SDI app, this should occur after ProcessShellCommand
 	return TRUE;
-}
-
-// CFreeComposeApp message handlers
-
-void _FcLoadKeys( void ) {
-	int lim = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
-
-	ComposeKeyEntries.RemoveAll( );
-	ComposeKeyEntries.SetSize( lim );
-
-	COMPOSE_KEY_ENTRY cke;
-	CString section;
-	for ( int n = 0; n < lim; n++ ) {
-		section.Format( _T("Mapping\\%d"), n );
-		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( section, _T("First"),    0 );
-		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( section, _T("Second"),   0 );
-		cke.wchComposed = (wchar_t) theApp.GetProfileInt( section, _T("Composed"), 0 );
-		ComposeKeyEntries[n] = cke;
-	}
-}
-
-void _FcSaveKeys( void ) {
-	TCHAR tszSection[32];
-
-	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( _T("Mapping") ) );
-	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), ComposeKeyEntries.GetCount( ) );
-	for ( LONG n = 0; n < ComposeKeyEntries.GetCount( ); n++ ) {
-		_sntprintf_s( tszSection, 32, _TRUNCATE, _T("Mapping\\%d"), n );
-		theApp.WriteProfileInt( tszSection, _T("First"),    (int) ComposeKeyEntries[n].vkFirst     );
-		theApp.WriteProfileInt( tszSection, _T("Second"),   (int) ComposeKeyEntries[n].vkSecond    );
-		theApp.WriteProfileInt( tszSection, _T("Composed"), (int) ComposeKeyEntries[n].wchComposed );
-	}
 }
