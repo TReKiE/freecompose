@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "ChildView.h"
 #include "OptionsData.h"
 #include "NTray.h"
 
@@ -11,27 +10,7 @@ public:
 	CMainFrame( );
 	virtual ~CMainFrame( );
 
-protected: 
-	DECLARE_DYNAMIC( CMainFrame )
-
-// Attributes
-public:
-
-// Operations
-public:
-
-// Overrides
-public:
-
-// Implementation
-protected:
-	CTrayNotifyIcon* m_ptni;
-	COptionsData m_Options;
-	bool m_fActive;
-
-// Generated message map functions
-protected:
-	DECLARE_MESSAGE_MAP( )
+	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	afx_msg LRESULT OnNotifyIcon( WPARAM, LPARAM );
@@ -45,7 +24,16 @@ protected:
 	afx_msg void OnUpdateAppEnable( CCmdUI* );
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
 
+protected:
+	DECLARE_MESSAGE_MAP( )
+
 private:
-	void _InitializeHook( void );
+	CTrayNotifyIcon* m_ptni;
+	COptionsData* m_pOptions;
+	bool m_fActive;
+
+	void _Initialize( void );
 	void _SetupTrayIcon( void );
+
+	DECLARE_DYNAMIC( CMainFrame )
 };

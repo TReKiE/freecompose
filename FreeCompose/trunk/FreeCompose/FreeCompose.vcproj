@@ -205,10 +205,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ChildView.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\ComposeDefaults.cpp"
 				>
 			</File>
@@ -256,10 +252,6 @@
 			>
 			<File
 				RelativePath=".\AboutDlg.h"
-				>
-			</File>
-			<File
-				RelativePath=".\ChildView.h"
 				>
 			</File>
 			<File

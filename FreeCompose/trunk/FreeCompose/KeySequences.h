@@ -3,18 +3,22 @@
 #include "OptionsData.h"
 
 class CKeySequences: public CPropertyPage {
-	DECLARE_DYNAMIC( CKeySequences )
-
 public:
+	enum { IDD = IDD_KEYSEQUENCES };
+
 	CKeySequences( COptionsData& Options );
 	virtual ~CKeySequences( );
 
-	// Dialog Data
-	enum { IDD = IDD_KEYSEQUENCES };
+	virtual void DoDataExchange( CDataExchange* pDX );
+	virtual BOOL OnInitDialog( );
+	virtual BOOL PreTranslateMessage( MSG* pMsg );
+
+	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
+	afx_msg void OnBnClickedAdd( );
+	afx_msg void OnBnClickedEdit( );
+	afx_msg void OnBnClickedRemove( );
 
 protected:
-	virtual void DoDataExchange( CDataExchange* pDX );
-
 	DECLARE_MESSAGE_MAP( )
 
 private:
@@ -32,10 +36,5 @@ private:
 	void _FillKeyComboList( void );
 	void _AddNewKeySequence( const COMPOSE_KEY_ENTRY& cke );
 
-	virtual BOOL OnInitDialog( );
-
-	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
-	afx_msg void OnBnClickedAdd( );
-	afx_msg void OnBnClickedEdit( );
-	afx_msg void OnBnClickedRemove( );
+	DECLARE_DYNAMIC( CKeySequences )
 };

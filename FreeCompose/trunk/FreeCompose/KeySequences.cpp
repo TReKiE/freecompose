@@ -74,8 +74,6 @@ void CKeySequences::_AdjustColumns( void ) {
 }
 
 void CKeySequences::_FillKeyComboList( void ) {
-	m_Options.m_ComposeKeyEntries.RemoveAll( );
-	m_Options.m_ComposeKeyEntries.Copy( ComposeKeyEntries );
 	m_KeyComboList.DeleteAllItems( );
 
 	for ( int n = 0; n < m_Options.m_ComposeKeyEntries.GetCount( ); n++ ) {
@@ -110,16 +108,15 @@ BOOL CKeySequences::OnInitDialog( ) {
 
 void CKeySequences::OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult ) {
 	LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
+	debug( _T("OnKCLItemChanged: %d %d\n"), pNMLV->hdr.code, pNMLV->hdr.idFrom );
 
-	if ( NM_CLICK == pNMLV->hdr.code || NM_DBLCLK == pNMLV->hdr.code ) {
-		UINT nsel = m_KeyComboList.GetSelectedCount( );
-		if ( 0 == nsel ) {
-			m_btnEdit.EnableWindow( FALSE );
-			m_btnRemove.EnableWindow( FALSE );
-		} else {
-			m_btnEdit.EnableWindow( ( 1 == nsel ) );
-			m_btnRemove.EnableWindow( TRUE );
-		}
+	UINT nsel = m_KeyComboList.GetSelectedCount( );
+	if ( 0 == nsel ) {
+		m_btnEdit.EnableWindow( FALSE );
+		m_btnRemove.EnableWindow( FALSE );
+	} else {
+		m_btnEdit.EnableWindow( ( 1 == nsel ) );
+		m_btnRemove.EnableWindow( TRUE );
 	}
 
 	*pResult = 0;
@@ -127,7 +124,6 @@ void CKeySequences::OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult )
 
 void CKeySequences::OnBnClickedAdd( ) {
 	COMPOSE_KEY_ENTRY newcke;
-
 	CEditKeySequence edit( newcke, true, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
@@ -167,10 +163,10 @@ void CKeySequences::OnBnClickedRemove( ) {
 	}
 
 	POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
-	int i = m_KeyComboList.GetNextSelectedItem( pos );
 	int* items = new int[count];
 	int n = 0;
 
+	int i = m_KeyComboList.GetNextSelectedItem( pos );
 	while ( -1 != i ) {
 		items[n++] = i;
 		i = m_KeyComboList.GetNextSelectedItem( pos );
@@ -185,4 +181,10 @@ void CKeySequences::OnBnClickedRemove( ) {
 	delete[] items;
 
 	SetModified( );
+}
+
+BOOL CKeySequences::PreTranslateMessage( MSG* pMsg ) {
+	if ( IsDialogMessage( pMsg ) )
+		return TRUE;
+	return CPropertyPage::PreTranslateMessage( pMsg );
 }

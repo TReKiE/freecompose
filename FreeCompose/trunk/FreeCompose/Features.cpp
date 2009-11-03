@@ -38,3 +38,9 @@ BOOL CFeatures::OnInitDialog( ) {
 void CFeatures::OnCheckboxChanged( UINT /*uID*/ ) {
 	SetModified( );
 }
+
+BOOL CFeatures::PreTranslateMessage( MSG* pMsg ) {
+	if ( IsDialogMessage( pMsg ) )
+		return TRUE;
+	return CPropertyPage::PreTranslateMessage( pMsg );
+}
