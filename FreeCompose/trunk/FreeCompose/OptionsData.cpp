@@ -62,7 +62,7 @@ void COptionsData::_FcLoadKeys( void ) {
 
 	int lim = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
 	if ( lim < 1 ) {
-		lim = countof( DefaultComposeKeyEntries );
+		lim = _countof( DefaultComposeKeyEntries );
 		m_ComposeKeyEntries.SetSize( lim );
 		for ( int n = 0; n < lim; n++ ) {
 			m_ComposeKeyEntries.Add( DefaultComposeKeyEntries[n] );
