@@ -29,11 +29,11 @@
 #define _WIN32_WINDOWS 0x0400
 #define _WIN32_IE 0x0500
 
-
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
+#define NOMINMAX
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
 
 // turns off MFC's hiding of some common and often safely ignored warning messages
-#define _AFX_ALL_WARNINGS
+//#define _AFX_ALL_WARNINGS
 
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
@@ -63,10 +63,8 @@
 #include <atlcom.h>
 #include <atlwin.h>
 
-#include <limits.h>
+#include <stdlib.h>
 
 #include <FCHookDll.h>
 
 #include "resource.h"
-
-#define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
