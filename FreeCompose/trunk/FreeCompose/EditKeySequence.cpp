@@ -28,6 +28,8 @@ void CEditKeySequence::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Key     ( pDX, IDC_FIRSTKEY,  m_cke.vkFirst     );
 	DDX_Key     ( pDX, IDC_SECONDKEY, m_cke.vkSecond    );
 	DDX_Char    ( pDX, IDC_RESULT,    m_cke.wchComposed );
+	DDV_Key     ( pDX, m_cke.vkFirst );
+	DDV_Key     ( pDX, m_cke.vkSecond );
 }
 
 void CEditKeySequence::DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk ) {
@@ -45,6 +47,16 @@ void CEditKeySequence::DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk ) {
 		}
 	} else {
 		dwVk = 0;
+	}
+}
+
+void CEditKeySequence::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
+	if ( ! pDX->m_bSaveAndValidate ) {
+		return;
+	}
+	if ( 0 == dwVk ) {
+		MessageBox( _T("Key may not be left blank"), m_fAdd ? _T("Add key sequence") : _T("Edit key sequence"), MB_OK|MB_ICONERROR );
+		pDX->Fail( );
 	}
 }
 
