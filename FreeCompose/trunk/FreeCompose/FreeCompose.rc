@@ -129,8 +129,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,5,1
- PRODUCTVERSION 1,0,5,1
+ FILEVERSION 1,0,5,2
+ PRODUCTVERSION 1,0,5,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -147,12 +147,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Zive Technology Research"
             VALUE "FileDescription", "FreeCompose"
-            VALUE "FileVersion", "1.0.5.1"
+            VALUE "FileVersion", "1.0.5.2"
             VALUE "InternalName", "FreeCompose.exe"
             VALUE "LegalCopyright", "© 2009 Zive Technology Research"
             VALUE "OriginalFilename", "FreeCompose.exe"
             VALUE "ProductName", "FreeCompose"
-            VALUE "ProductVersion", "1.0.5.1"
+            VALUE "ProductVersion", "1.0.5.2"
         END
     END
     BLOCK "VarFileInfo"
@@ -220,7 +220,7 @@ BEGIN
         MENUITEM "&Configure...",               ID_APP_CONFIGURE
         MENUITEM "&About...",                   ID_APP_ABOUT
         MENUITEM SEPARATOR
-		MENUITEM "E&xit",                       ID_APP_EXIT
+        MENUITEM "E&xit",                       ID_APP_EXIT
     END
 END
 
@@ -348,6 +348,10 @@ BEGIN
                             "FC API version mismatch: DLL %d vs. host %d"
     IDS_MAINFRAME_MENU_ENABLE "&Enable"
     IDS_MAINFRAME_MENU_DISABLE "&Disable"
+END
+
+STRINGTABLE 
+BEGIN
     IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
 END
 
