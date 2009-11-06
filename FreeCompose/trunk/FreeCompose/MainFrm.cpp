@@ -27,12 +27,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
 	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
 	ON_COMMAND            (ID_APP_ABOUT,     &CMainFrame::OnAppAbout)
-	ON_COMMAND            (ID_APP_DISABLE,   &CMainFrame::OnAppDisable)
-	ON_COMMAND            (ID_APP_ENABLE,    &CMainFrame::OnAppEnable)
+	ON_COMMAND            (ID_APP_TOGGLE,    &CMainFrame::OnAppToggle)
 	ON_COMMAND            (ID_APP_CAPSLOCK,  &CMainFrame::OnAppCapsLock)
 	ON_COMMAND            (ID_APP_CONFIGURE, &CMainFrame::OnAppConfigure)
-	ON_UPDATE_COMMAND_UI  (ID_APP_DISABLE,   &CMainFrame::OnUpdateAppEnable)
-	ON_UPDATE_COMMAND_UI  (ID_APP_ENABLE,    &CMainFrame::OnUpdateAppEnable)
+	ON_UPDATE_COMMAND_UI  (ID_APP_TOGGLE,    &CMainFrame::OnUpdateAppToggle)
 	ON_UPDATE_COMMAND_UI  (ID_APP_CAPSLOCK,  &CMainFrame::OnUpdateAppCapsLock)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
@@ -40,13 +38,19 @@ END_MESSAGE_MAP()
 // CMainFrame construction/destruction
 
 CMainFrame::CMainFrame( ):
-	m_ptni     ( NULL ),
-	m_pOptions ( NULL ),
-	m_fActive  ( false )
+	m_ptni        ( NULL ),
+	m_pOptions    ( NULL ),
+	m_fActive     ( false ),
+	m_strTitle    ( (LPCTSTR) AFX_IDS_APP_TITLE ),
+	m_strEnabled  ( (LPCTSTR) IDS_MAINFRAME_ENABLED ),
+	m_strDisabled ( (LPCTSTR) IDS_MAINFRAME_DISABLED )
 {
 }
 
 CMainFrame::~CMainFrame( ) {
+	if ( m_pOptions ) {
+		delete m_pOptions;
+	}
 }
 
 void CMainFrame::_Initialize( void ) {
@@ -83,7 +87,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 	m_ptni->Create(
 		this,
 		1,
-		m_fActive ? _T("FreeCompose is enabled.") : _T("FreeCompose is disabled."),
+		m_fActive ? m_strEnabled : m_strDisabled,
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
 		APP_NOTIFYICON,
 		IDM_POPUP
@@ -100,8 +104,8 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 	debug( _T("CMainFrame::OnCreate: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
-		str.Format( _T(" FC API version mismatch: DLL %d vs. host %d" ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
-		MessageBox( (LPCTSTR) str, _T( "Uh oh" ), MB_ICONHAND );
+		str.Format( CString( (LPCTSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+		MessageBox( str, CString( (LPCTSTR) IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
 		// Hey, maybe we can use Windows Installer to try to repair the file!
 		return FALSE;
 	}
@@ -173,18 +177,18 @@ void CMainFrame::OnAppAbout(void) {
 	aboutDlg.DoModal( );
 }
 
-void CMainFrame::OnAppEnable( void ) {
-	m_fActive = true;
-	FcEnableHook( );
-	m_ptni->SetTooltipText( _T("FreeCompose is enabled.") );
-	m_ptni->SetBalloonDetails( _T("FreeCompose is enabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
-}
-
-void CMainFrame::OnAppDisable( void ) {
-	m_fActive = false;
-	FcDisableHook();
-	m_ptni->SetTooltipText( _T("FreeCompose is disabled.") );
-	m_ptni->SetBalloonDetails( _T("FreeCompose is disabled."), _T("FreeCompose"), CTrayNotifyIcon::Info, 10 );
+void CMainFrame::OnAppToggle( void ) {
+	if ( m_fActive ) {
+		m_fActive = false;
+		FcDisableHook();
+		m_ptni->SetTooltipText( m_strDisabled );
+		m_ptni->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+	} else {
+		m_fActive = true;
+		FcEnableHook( );
+		m_ptni->SetTooltipText( m_strEnabled );
+		m_ptni->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+	}
 }
 
 void CMainFrame::OnAppCapsLock( void ) {
@@ -207,11 +211,11 @@ void CMainFrame::OnAppConfigure( ) {
 	}
 }
 
-void CMainFrame::OnUpdateAppEnable( CCmdUI* pui ) {
+void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 	if ( m_fActive ) {
-		pui->SetText( _T("&Disable") );
+		pui->SetText( CString( (LPCTSTR) IDS_MAINFRAME_MENU_DISABLE ) );
 	} else {
-		pui->SetText( _T("&Enable") );
+		pui->SetText( CString( (LPCTSTR) IDS_MAINFRAME_MENU_ENABLE ) );
 	}
 }
 

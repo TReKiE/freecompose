@@ -122,7 +122,11 @@ BOOL CKeySequences::OnInitDialog( ) {
 	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
 	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 
-	CString strLabels[3] = { CString( _T("Character") ), CString( _T("Key 1") ), CString( _T("Key 2") ), };
+	CString strLabels[3] = {
+		CString( (LPCTSTR) IDS_KEYSEQUENCES_CHARACTER ),
+		CString( (LPCTSTR) IDS_KEYSEQUENCES_KEY1 ),
+		CString( (LPCTSTR) IDS_KEYSEQUENCES_KEY2 ),
+	};
 
 	int widths[3];
 	for ( int n = 0; n < 3; n++ ) {
@@ -195,7 +199,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 	if ( count < 1 )
 		return;
 
-	int ret = MessageBox( _T("Are you sure?"), _T("Remove key definitions"), MB_YESNO | MB_ICONWARNING );
+	int ret = MessageBox( CString( (LPCTSTR) IDS_KEYSEQUENCES_CONFIRM_PROMPT ), CString( (LPCTSTR) IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
 	if ( IDYES != ret ) {
 		return;
 	}

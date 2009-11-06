@@ -24,10 +24,25 @@
 #define IDC_SECONDKEY                   1022
 #define IDC_RESULT                      1023
 #define IDADD                           1024
-#define ID_APP_ENABLE                   32769
-#define ID_APP_DISABLE                  32770
-#define ID_APP_CONFIGURE                32771
-#define ID_APP_CAPSLOCK                 32772
+#define IDS_ABOUT_VERSION               22001
+#define IDS_EDITKEYSEQUENCE_TITLE_EDIT  22002
+#define IDS_EDITKEYSEQUENCE_TITLE_ADD   22003
+#define IDS_EDITKEYSEQUENCE_CANTBEBLANK 22004
+#define IDS_KEYSEQUENCES_CHARACTER      22005
+#define IDS_KEYSEQUENCES_KEY1           22006
+#define IDS_KEYSEQUENCES_KEY2           22007
+#define IDS_KEYSEQUENCES_CONFIRM_TITLE  22008
+#define IDS_KEYSEQUENCES_CONFIRM_PROMPT 22009
+#define IDS_MAINFRAME_ENABLED           22010
+#define IDS_MAINFRAME_DISABLED          22011
+#define IDS_MAINFRAME_MISMATCH_TITLE    22012
+#define IDS_MAINFRAME_MISMATCH_PROMPT   22013
+#define IDS_MAINFRAME_MENU_ENABLE       22014
+#define IDS_MAINFRAME_MENU_DISABLE      22015
+#define IDS_OPTIONSPROPSHEET_TITLE      22016
+#define ID_APP_TOGGLE                   32769
+#define ID_APP_CONFIGURE                32770
+#define ID_APP_CAPSLOCK                 32771
 
 // Next default values for new objects
 // 

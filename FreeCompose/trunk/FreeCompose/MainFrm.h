@@ -18,11 +18,10 @@ public:
 	afx_msg LRESULT OnFcmPip( WPARAM wPip, LPARAM );
 	afx_msg void OnClose( );
 	afx_msg void OnAppAbout( );
-	afx_msg void OnAppEnable( );
-	afx_msg void OnAppDisable( );
+	afx_msg void OnAppToggle( );
 	afx_msg void OnAppCapsLock( );
 	afx_msg void OnAppConfigure( );
-	afx_msg void OnUpdateAppEnable( CCmdUI* );
+	afx_msg void OnUpdateAppToggle( CCmdUI* );
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
 
 protected:
@@ -32,6 +31,9 @@ private:
 	CTrayNotifyIcon* m_ptni;
 	COptionsData* m_pOptions;
 	bool m_fActive;
+	CString m_strEnabled;
+	CString m_strDisabled;
+	CString m_strTitle;
 
 	void _Initialize( void );
 	void _Reconfigure( void );
