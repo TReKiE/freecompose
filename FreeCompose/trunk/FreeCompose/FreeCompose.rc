@@ -220,12 +220,13 @@ BEGIN
         MENUITEM "&Configure...",               ID_APP_CONFIGURE
         MENUITEM "&About...",                   ID_APP_ABOUT
         MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
+		MENUITEM "E&xit",                       ID_APP_EXIT
     END
 END
 
 IDR_MAINFRAME MENU 
 BEGIN
+    MENUITEM "E&xit",                       ID_APP_EXIT
 END
 
 
