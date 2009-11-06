@@ -10,6 +10,8 @@ public:
 	bool operator==( const COptionsData& );
 	bool operator!=( const COptionsData& );
 
+	void Save( void );
+
 	CComposeKeyEntryArray m_ComposeKeyEntries;
  
 	BOOL m_fStartActive;
