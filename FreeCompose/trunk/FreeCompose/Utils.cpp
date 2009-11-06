@@ -83,6 +83,10 @@ bool IsCapsLock( void ) {
 }
 
 CString VkToString( DWORD _vk ) {
+	if ( 0 == _vk ) {
+		return CString( );
+	}
+
 	DWORD vk = (DWORD) ( _vk & (DWORD) 0x7FFFFFFF );
 	bool fCapital = ( _vk & (DWORD) 0x80000000 ) != 0;
 	CString str;
