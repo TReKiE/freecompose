@@ -38,6 +38,7 @@ BOOL CFreeComposeApp::InitInstance()
 	// visual styles.  Otherwise, any window creation will fail.
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
+
 	// Set this to include all the common control classes you want to use
 	// in your application.
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
@@ -52,9 +53,11 @@ BOOL CFreeComposeApp::InitInstance()
 		return FALSE;
 	}
 	AfxEnableControlContainer();
+
 	// Parse command line for standard shell commands, DDE, file open
 	CCommandLineInfo cmdInfo;
 	ParseCommandLine(cmdInfo);
+
 	// App was launched with /Embedding or /Automation switch.
 	// Run app as automation server.
 	if (cmdInfo.m_bRunEmbedded || cmdInfo.m_bRunAutomated)
@@ -62,6 +65,7 @@ BOOL CFreeComposeApp::InitInstance()
 		// Don't show the main window
 		return TRUE;
 	}
+
 	// Standard initialization
 	// If you are not using these features and wish to reduce the size
 	// of your final executable, you should remove from the following
@@ -70,6 +74,7 @@ BOOL CFreeComposeApp::InitInstance()
 	// TODO: You should modify this string to be something appropriate
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Zive Technology Research"));
+
 	// To create the main window, this code creates a new frame window
 	// object and then sets it as the application's main window object
 	CMainFrame* pFrame = new CMainFrame;

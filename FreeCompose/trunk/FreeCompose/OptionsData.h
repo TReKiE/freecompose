@@ -22,4 +22,5 @@ public:
 private:
 	void _FcLoadKeys( void );
 	void _FcSaveKeys( void );
+	void _UpdateRunKey( void );
 };

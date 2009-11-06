@@ -27,20 +27,26 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_60A84A6045E04A13B0256250A7E931BD"
+        "OwnerKey" = "8:_7857EE08F74B42AAA147802F1851E554"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7122DBB0DC7748578CD101232EBDBD75"
+        "OwnerKey" = "8:_B34334C16B834B0AADC09A67B425759B"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7857EE08F74B42AAA147802F1851E554"
+        "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_85F6279047DA44D184555A1DB37E1580"
-        "OwnerKey" = "8:_E466CFD8485844DC9905FB708DC01147"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8CF3318B913E4F1388E2A9D8172BF4CB"
-        "OwnerKey" = "8:_C5A294CDC89D4F36B3B1E06A147961B8"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -57,13 +63,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_C5A294CDC89D4F36B3B1E06A147961B8"
-        "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_E466CFD8485844DC9905FB708DC01147"
+        "MsmKey" = "8:_B34334C16B834B0AADC09A67B425759B"
         "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -106,7 +106,7 @@
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
-        "Compression" = "3:2"
+        "Compression" = "3:3"
         "SignOutput" = "11:FALSE"
         "CertificateFile" = "8:"
         "PrivateKeyFile" = "8:"
@@ -296,14 +296,14 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreeCompose"
-        "ProductCode" = "8:{1640CF22-B686-4A76-A7D5-3D46D90066E4}"
-        "PackageCode" = "8:{6250BF30-2A6E-4B6E-8E41-F5554D4D1B0D}"
+        "ProductCode" = "8:{3DBF8266-637C-4EF6-83E8-72B3474A57E7}"
+        "PackageCode" = "8:{03EDBED3-1672-4D09-BC8A-144F49F55A76}"
         "UpgradeCode" = "8:{4A0B60E6-D027-4CA8-8E16-8E98344EF382}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.4"
+        "ProductVersion" = "8:1.0.5"
         "Manufacturer" = "8:Zive Technology Research"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1115,21 +1115,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_85F6279047DA44D184555A1DB37E1580"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8CF3318B913E4F1388E2A9D8172BF4CB"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_60A84A6045E04A13B0256250A7E931BD"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -1143,7 +1129,21 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_C5A294CDC89D4F36B3B1E06A147961B8"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7122DBB0DC7748578CD101232EBDBD75"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:microsoft_vc90_crt_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_7857EE08F74B42AAA147802F1851E554"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
@@ -1157,7 +1157,7 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_E466CFD8485844DC9905FB708DC01147"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B34334C16B834B0AADC09A67B425759B"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
