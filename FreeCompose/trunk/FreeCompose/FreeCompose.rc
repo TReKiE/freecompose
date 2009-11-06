@@ -129,8 +129,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,4,5
- PRODUCTVERSION 1,0,4,5
+ FILEVERSION 1,0,5,1
+ PRODUCTVERSION 1,0,5,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -147,12 +147,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Zive Technology Research"
             VALUE "FileDescription", "FreeCompose"
-            VALUE "FileVersion", "1.0.4.5"
+            VALUE "FileVersion", "1.0.5.1"
             VALUE "InternalName", "FreeCompose.exe"
             VALUE "LegalCopyright", "© 2009 Zive Technology Research"
             VALUE "OriginalFilename", "FreeCompose.exe"
             VALUE "ProductName", "FreeCompose"
-            VALUE "ProductVersion", "1.0.4.5"
+            VALUE "ProductVersion", "1.0.5.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -214,7 +214,7 @@ IDM_POPUP MENU
 BEGIN
     POPUP "popup"
     BEGIN
-        MENUITEM "&Disable",                    ID_APP_DISABLE
+        MENUITEM "toggle",                      ID_APP_TOGGLE
         MENUITEM "Caps &Lock",                  ID_APP_CAPSLOCK
         MENUITEM SEPARATOR
         MENUITEM "&Configure...",               ID_APP_CONFIGURE
@@ -226,16 +226,6 @@ END
 
 IDR_MAINFRAME MENU 
 BEGIN
-    POPUP "&File"
-    BEGIN
-        MENUITEM "&Disable",                    ID_APP_DISABLE
-        MENUITEM SEPARATOR
-        MENUITEM "E&xit",                       ID_APP_EXIT
-    END
-    POPUP "&Help"
-    BEGIN
-        MENUITEM "&About FreeCompose...",       ID_APP_ABOUT
-    END
 END
 
 
@@ -337,6 +327,27 @@ STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUT_VERSION       "%s version %d.%d.%d.%d"
+    IDS_EDITKEYSEQUENCE_TITLE_EDIT "Edit key sequence"
+    IDS_EDITKEYSEQUENCE_TITLE_ADD "Add key sequence"
+    IDS_EDITKEYSEQUENCE_CANTBEBLANK "Key may not be left blank."
+    IDS_KEYSEQUENCES_CHARACTER "Character"
+    IDS_KEYSEQUENCES_KEY1   "Key 1"
+    IDS_KEYSEQUENCES_KEY2   "Key 2"
+    IDS_KEYSEQUENCES_CONFIRM_TITLE "Remove key sequences"
+    IDS_KEYSEQUENCES_CONFIRM_PROMPT "Are you sure?"
+    IDS_MAINFRAME_ENABLED   "FreeCompose is enabled."
+    IDS_MAINFRAME_DISABLED  "FreeCompose is disabled."
+    IDS_MAINFRAME_MISMATCH_TITLE "Uh oh"
+    IDS_MAINFRAME_MISMATCH_PROMPT 
+                            "FC API version mismatch: DLL %d vs. host %d"
+    IDS_MAINFRAME_MENU_ENABLE "&Enable"
+    IDS_MAINFRAME_MENU_DISABLE "&Disable"
+    IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
 END
 
 #endif    // English (Canada) resources

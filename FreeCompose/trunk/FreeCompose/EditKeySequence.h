@@ -23,6 +23,7 @@ protected:
 private:
 	COMPOSE_KEY_ENTRY& m_cke;
 	bool m_fAdd;
+	CString m_strTitle;
 
 	virtual BOOL OnInitDialog( );
 

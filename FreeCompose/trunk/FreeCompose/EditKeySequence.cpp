@@ -11,9 +11,10 @@ BEGIN_MESSAGE_MAP(CEditKeySequence, CDialog)
 END_MESSAGE_MAP()
 
 CEditKeySequence::CEditKeySequence( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent ):
-	CDialog       ( CEditKeySequence::IDD, pParent ),
-	m_cke         ( cke ),
-	m_fAdd        ( fAddMode )
+	CDialog    ( CEditKeySequence::IDD, pParent ),
+	m_cke      ( cke ),
+	m_fAdd     ( fAddMode ),
+	m_strTitle ( (LPCTSTR) ( m_fAdd ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
 {
 }
 
@@ -55,7 +56,7 @@ void CEditKeySequence::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
 		return;
 	}
 	if ( 0 == dwVk ) {
-		MessageBox( _T("Key may not be left blank"), m_fAdd ? _T("Add key sequence") : _T("Edit key sequence"), MB_OK|MB_ICONERROR );
+		MessageBox( CString( (LPCTSTR) IDS_EDITKEYSEQUENCE_CANTBEBLANK ), m_strTitle, MB_OK|MB_ICONERROR );
 		pDX->Fail( );
 	}
 }
@@ -86,8 +87,7 @@ BOOL CEditKeySequence::OnInitDialog( ) {
 	if ( ! CDialog::OnInitDialog( ) )
 		return FALSE;
 
-	if ( m_fAdd )
-		this->SetWindowText( _T("Add key sequence") );
+	SetWindowText( m_strTitle );
 
 	m_editResult.SetLimitText( 1 );
 	UpdateData( FALSE );
