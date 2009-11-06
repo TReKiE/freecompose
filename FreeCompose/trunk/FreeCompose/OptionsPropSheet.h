@@ -3,11 +3,14 @@
 #include "KeySequences.h"
 #include "Features.h"
 
+extern const UINT APP_RECONFIGURE;
+
 class COptionsPropSheet: public CPropertySheet {
 public:
-	COptionsPropSheet( const COptionsData& options );
+	COptionsPropSheet( const COptionsData& options, CWnd* pParentWnd, UINT iSelectPage = 0 );
 	virtual ~COptionsPropSheet( );
 
+	virtual void OnApplyNow( );
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpcs );

@@ -14,6 +14,7 @@ public:
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
 	afx_msg LRESULT OnNotifyIcon( WPARAM, LPARAM );
+	afx_msg LRESULT OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet );
 	afx_msg LRESULT OnFcmPip( WPARAM wPip, LPARAM );
 	afx_msg void OnClose( );
 	afx_msg void OnAppAbout( );
@@ -33,6 +34,7 @@ private:
 	bool m_fActive;
 
 	void _Initialize( void );
+	void _Reconfigure( void );
 	void _SetupTrayIcon( void );
 
 	DECLARE_DYNAMIC( CMainFrame )

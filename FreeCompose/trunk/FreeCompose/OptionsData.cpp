@@ -95,3 +95,14 @@ void COptionsData::_FcSaveKeys( void ) {
 		theApp.WriteProfileInt( section, _T("Composed"), (int) m_ComposeKeyEntries[n].wchComposed );
 	}
 }
+
+void COptionsData::Save( void ) {
+	theApp.WriteProfileInt( _T("Startup"), _T("StartActive"),      (int) m_fStartActive );
+	theApp.WriteProfileInt( _T("Startup"), _T("StartWithWindows"), (int) m_fStartWithWindows );
+	// TODO need to frob HKCU\Software\Microsoft\Windows\Startup\FreeCompose or whatever the hell
+
+	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCtrlAndCaps"), (int) m_fSwapCtrlAndCaps );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("DisableCapsLock"), (int) m_fDisableCapsLock );
+
+	_FcSaveKeys( );
+}

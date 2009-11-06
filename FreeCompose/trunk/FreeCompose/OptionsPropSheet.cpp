@@ -10,11 +10,14 @@ IMPLEMENT_DYNAMIC( COptionsPropSheet, CPropertySheet )
 BEGIN_MESSAGE_MAP( COptionsPropSheet, CPropertySheet )
 	//{{AFX_MSG_MAP( COptionsPropSheet )
 	ON_WM_CREATE( )
+	ON_COMMAND( ID_APPLY_NOW, OnApplyNow )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-COptionsPropSheet::COptionsPropSheet( const COptionsData& options ):
-	CPropertySheet ( _T("FreeCompose options"), NULL ),
+const UINT APP_RECONFIGURE = RegisterWindowMessage( _T("FreeCompose.APP_RECONFIGURE") );
+
+COptionsPropSheet::COptionsPropSheet( const COptionsData& options, CWnd* pParentWnd, UINT iSelectPage ):
+	CPropertySheet ( _T("FreeCompose options"), pParentWnd, iSelectPage ),
 	m_CurOptions   ( options ),
 	m_NewOptions   ( m_CurOptions ),
 	m_KeySequences ( m_NewOptions ),
@@ -37,4 +40,16 @@ BOOL COptionsPropSheet::PreTranslateMessage( MSG* pMsg ) {
 	if ( IsDialogMessage( pMsg ) )
 		return TRUE;
 	return CPropertySheet::PreTranslateMessage( pMsg );
+}
+
+void COptionsPropSheet::OnApplyNow( ) {
+	m_KeySequences.UpdateData( TRUE );
+	m_Features.UpdateData( TRUE );
+
+	if ( m_pParentWnd && m_CurOptions != m_NewOptions ) {
+		m_pParentWnd->SendMessage( APP_RECONFIGURE, 0, (LPARAM) this );
+	}
+	
+	m_KeySequences.SetModified( FALSE );
+	m_Features.SetModified( FALSE );
 }

@@ -33,6 +33,7 @@ private:
 	CButton m_btnRemove;
 
 	void _DoAddOneKeySequence( const int n );
+	void _DoUpdateOneKeySequence( const int n );
 	void _AdjustColumns( void );
 	void _FillKeyComboList( void );
 	void _AddNewKeySequence( const int n );

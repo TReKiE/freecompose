@@ -24,6 +24,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
 	ON_REGISTERED_MESSAGE (APP_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
+	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
 	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
 	ON_COMMAND            (ID_APP_ABOUT,     &CMainFrame::OnAppAbout)
 	ON_COMMAND            (ID_APP_DISABLE,   &CMainFrame::OnAppDisable)
@@ -50,18 +51,30 @@ CMainFrame::~CMainFrame( ) {
 
 void CMainFrame::_Initialize( void ) {
 	m_pOptions = new COptionsData( );
+	_Reconfigure( );
+}
 
+void CMainFrame::_Reconfigure( void ) {
 	FcSetComposeKeyEntries( m_pOptions->m_ComposeKeyEntries.GetData( ), (DWORD) m_pOptions->m_ComposeKeyEntries.GetCount( ) );
 
 	if ( m_pOptions->m_fStartActive ) {
 		FcEnableHook( );
 		m_fActive = true;
+	} else {
+		FcDisableHook( );
+		m_fActive = false;
 	}
+
 	if ( m_pOptions->m_fSwapCtrlAndCaps ) {
-		// XXX TODO FcSwapCtrlAndCaps( );
+		// TODO FcEnableSwapCtrlAndCaps( );
+	} else {
+		// TODO FcDisableSwapCtrlAndCaps( );
 	}
+
 	if ( m_pOptions->m_fDisableCapsLock ) {
 		FcDisableCapsLock( );
+	} else {
+		FcEnableCapsLock( );
 	}
 }
 
@@ -110,6 +123,16 @@ void CMainFrame::OnClose( ) {
 
 LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam) {
 	return m_ptni->OnTrayNotification( wParam, lParam );
+}
+
+LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
+	COptionsPropSheet* poptions = reinterpret_cast< COptionsPropSheet* >( lparamOptionsPropSheet );
+
+	*m_pOptions = poptions->GetNewOptions( );
+	m_pOptions->Save( );
+	_Reconfigure( );
+
+	return 0;
 }
 
 LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
@@ -174,20 +197,13 @@ void CMainFrame::OnAppCapsLock( void ) {
 }
 
 void CMainFrame::OnAppConfigure( ) {
-	COptionsPropSheet options( *m_pOptions );
+	COptionsPropSheet options( *m_pOptions, this );
 	if ( IDOK != options.DoModal( ) )
 		return;
 
 	const COptionsData& newoptions = options.GetNewOptions( );
 	if ( *m_pOptions != newoptions ) {
-		debug(
-			_T("OnAppConfigure: options changed: %d %d %d %d %d\n"),
-			newoptions.m_fStartActive,
-			newoptions.m_fStartWithWindows,
-			newoptions.m_fSwapCtrlAndCaps,
-			newoptions.m_fDisableCapsLock,
-			newoptions.m_ComposeKeyEntries.GetCount( )
-		);
+		OnReconfigure( 0, (LPARAM) &options );
 	}
 }
 

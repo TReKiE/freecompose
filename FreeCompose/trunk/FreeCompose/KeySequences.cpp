@@ -71,6 +71,31 @@ void CKeySequences::_DoAddOneKeySequence( const int n ) {
 	ASSERT( TRUE == ret );
 }
 
+void CKeySequences::_DoUpdateOneKeySequence( const int n ) {
+	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
+
+	CString col0, col1, col2;
+	int width;
+
+	col0 = cke.wchComposed;
+	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
+	if ( width > m_nColumnWidths[0] )
+		m_nColumnWidths[0] = width;
+	m_KeyComboList.SetItem( n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
+
+	col1 = VkToString( cke.vkFirst );
+	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
+	if ( width > m_nColumnWidths[1] )
+		m_nColumnWidths[1] = width;
+	m_KeyComboList.SetItem( n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
+
+	col2 = VkToString( cke.vkSecond );
+	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
+	if ( width > m_nColumnWidths[1] )
+		m_nColumnWidths[1] = width;
+	m_KeyComboList.SetItem( n, 2, LVIF_TEXT, col2, -1, 0, 0, 0 );
+}
+
 void CKeySequences::_AdjustColumns( void ) {
 	m_KeyComboList.SetColumnWidth( 0, m_nColumnWidths[0] );
 	m_KeyComboList.SetColumnWidth( 1, m_nColumnWidths[1] );
@@ -136,7 +161,7 @@ void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResu
 }
 
 void CKeySequences::OnBnClickedAdd( ) {
-	COMPOSE_KEY_ENTRY newcke;
+	COMPOSE_KEY_ENTRY newcke = { 0, 0, 0, };
 	CEditKeySequence edit( newcke, true, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
@@ -159,7 +184,8 @@ void CKeySequences::OnBnClickedEdit( ) {
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
 		m_Options.m_ComposeKeyEntries[ k ] = cke;
-		m_KeyComboList.Update( k );
+		_DoUpdateOneKeySequence( k );
+		_AdjustColumns( );
 		SetModified( );
 	}
 }
