@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_53FD0A65C4DDE36FBD210E0F16FC72E1"
+        "OwnerKey" = "8:_7D68380F020C4C909D732FED09C5F7D2"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_60A84A6045E04A13B0256250A7E931BD"
         "OwnerKey" = "8:_7857EE08F74B42AAA147802F1851E554"
         "MsmSig" = "8:_UNDEFINED"
@@ -189,6 +195,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_53FD0A65C4DDE36FBD210E0F16FC72E1"
+            {
+            "SourcePath" = "8:PSAPI.DLL"
+            "TargetName" = "8:PSAPI.DLL"
+            "Tag" = "8:"
+            "Folder" = "8:_B0CE172377CD4EE1BC12D418A33C8CE5"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9E0B25A9ACEA4EAA836E9F672470258F"
             {
             "SourcePath" = "8:..\\FreeCompose\\res\\Zive Compose.bmp"
@@ -297,7 +323,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreeCompose"
         "ProductCode" = "8:{3DBF8266-637C-4EF6-83E8-72B3474A57E7}"
-        "PackageCode" = "8:{03EDBED3-1672-4D09-BC8A-144F49F55A76}"
+        "PackageCode" = "8:{AAE205DD-C548-454D-920F-3D6E7AC4D020}"
         "UpgradeCode" = "8:{4A0B60E6-D027-4CA8-8E16-8E98344EF382}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
