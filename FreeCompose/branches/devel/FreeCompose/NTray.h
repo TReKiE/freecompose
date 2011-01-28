@@ -3,7 +3,7 @@ Module : NTray.h
 Purpose: Interface for a MFC class to encapsulate Shell_NotifyIcon
 Created: PJN / 14-05-1997
 
-Copyright (c) 1997 - 2008 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
+Copyright (c) 1997 - 2010 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
 
 All rights reserved.
 
@@ -48,15 +48,6 @@ class CTRAYNOTIFYICON_EXT_CLASS CTrayNotifyIcon : public CWindowImpl<CTrayNotify
 {
 public:
 //Enums / Typedefs
-//Enums
-  enum ShellVersion
-  {
-    Version4     = 0, //PreWin2k
-    Version5     = 1, //Win2k
-    Version6     = 2, //XP
-    VersionVista = 3  //Vista
-  };
-
 #ifndef CTRAYNOTIFYICON_NOWIN2K
   enum BalloonStyle
   {
@@ -71,7 +62,6 @@ public:
 //We use our own definitions of the NOTIFYICONDATA structs so that
 //we can use all the functionality without requiring client code to 
 //define _WIN32_IE >= 0x500
-  static const size_t _NOTIFYICONDATA_1_TIPLEN = 64;
   typedef struct _NOTIFYICONDATA_1 //The version of the structure supported by Shell v4
   {
     DWORD cbSize;
@@ -80,10 +70,9 @@ public:
     UINT uFlags;
     UINT uCallbackMessage;
     HICON hIcon;
-    TCHAR szTip[_NOTIFYICONDATA_1_TIPLEN];
+    TCHAR szTip[64];
   } NOTIFYICONDATA_1;
 
-  static const size_t _NOTIFYICONDATA_2_TIPLEN = 128;
   typedef struct _NOTIFYICONDATA_2 //The version of the structure supported by Shell v5
   {
     DWORD cbSize;
@@ -92,7 +81,7 @@ public:
     UINT uFlags;
     UINT uCallbackMessage;
     HICON hIcon;
-    TCHAR szTip[_NOTIFYICONDATA_2_TIPLEN];
+    TCHAR szTip[128];
     DWORD dwState;
     DWORD dwStateMask;
     TCHAR szInfo[256];
@@ -162,22 +151,23 @@ public:
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);                  
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
 #else
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);                  
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bShow = TRUE);
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
 #endif  
 
 //Sets or gets the Tooltip text
   BOOL                  SetTooltipText(LPCTSTR pszTooltipText);
   BOOL                  SetTooltipText(UINT nID);
   CTrayNotifyIconString GetTooltipText() const;
+  int	                  GetTooltipMaxSize();
 
 //Sets or gets the icon displayed
   BOOL SetIcon(HICON hIcon);
@@ -230,8 +220,7 @@ public:
   UINT                  GetBalloonTimeout() const;
 
 //Other functionality
-  BOOL SetVersion(UINT ShellVersion);
-  ShellVersion GetVersion() const { return m_ShellVersion; }
+  BOOL SetVersion(UINT uVersion);
   BOOL SetFocus();
 
 //Helper functions to load tray icon from resources
@@ -252,6 +241,16 @@ protected:
   void         OnDestroy();
   DWORD        GetNOTIFYICONDATASizeForOS();
 
+//Enums
+  enum ShellVersion
+  {
+    Version4     = 0, //PreWin2k
+    Version5     = 1, //Win2k
+    Version6     = 2, //XP
+    VersionVista = 3, //Vista
+    Version7     = 4, //Windows7
+  };
+
 //Member variables
   NOTIFYICONDATA_4 m_NotifyIconData;
   BOOL             m_bCreated;
@@ -270,6 +269,7 @@ protected:
   int              m_nNumIcons;
   UINT_PTR         m_nTimerID;
   int              m_nCurrentIconIndex;
+  int              m_nTooltipMaxSize;
 };
 
 #endif //_NTRAY_H__
