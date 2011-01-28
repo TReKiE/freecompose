@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeCompose", "FreeCompose\FreeCompose.vcproj", "{E4ABDDFB-9594-4428-AAA7-49F5718377D6}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeCompose", "FreeCompose\FreeCompose.vcxproj", "{E4ABDDFB-9594-4428-AAA7-49F5718377D6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCHookDll", "FCHookDll\FCHookDll.vcproj", "{526574F1-C735-469C-A193-35235DF232BD}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCHookDll", "FCHookDll\FCHookDll.vcxproj", "{526574F1-C735-469C-A193-35235DF232BD}"
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}"
 EndProject
