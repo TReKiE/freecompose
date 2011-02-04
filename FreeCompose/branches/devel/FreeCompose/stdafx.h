@@ -20,6 +20,7 @@
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
+#include <afxtempl.h>
 
 #include <atlwin.h>
 
