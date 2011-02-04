@@ -1411,11 +1411,9 @@ LRESULT CTrayNotifyIcon::OnTaskbarCreated(WPARAM /*wParam*/, LPARAM /*lParam*/)
   return 0;
 }
 
-#ifdef _DEBUG
+#pragma warning(push)
+#pragma warning(disable: 4100)
 void CTrayNotifyIcon::OnTimer(UINT_PTR nIDEvent)
-#else
-void CTrayNotifyIcon::OnTimer(UINT_PTR /*nIDEvent*/)  //Just to avoid a compiler warning 
-#endif                                                //when being built for release
 {
   //Validate our parameters
   ATLASSERT(nIDEvent == m_nTimerID);
@@ -1429,6 +1427,7 @@ void CTrayNotifyIcon::OnTimer(UINT_PTR /*nIDEvent*/)  //Just to avoid a compiler
   m_NotifyIconData.hIcon = m_phIcons[m_nCurrentIconIndex];
   Shell_NotifyIcon(NIM_MODIFY, reinterpret_cast<PNOTIFYICONDATA>(&m_NotifyIconData));
 }
+#pragma warning(pop)
 
 BOOL CTrayNotifyIcon::CreateHelperWindow()
 {
