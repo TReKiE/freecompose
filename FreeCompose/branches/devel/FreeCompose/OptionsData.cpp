@@ -62,21 +62,20 @@ bool COptionsData::operator!=( const COptionsData& options ) {
 void COptionsData::_FcLoadKeys( void ) {
 	m_ComposeKeyEntries.RemoveAll( );
 
-	int lim = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
-	if ( lim < 1 ) {
-		lim = _countof( DefaultComposeKeyEntries );
-		m_ComposeKeyEntries.SetSize( lim );
-		for ( int n = 0; n < lim; n++ ) {
-			m_ComposeKeyEntries.Add( DefaultComposeKeyEntries[n] );
+	int count = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
+	if ( count < 1 ) {
+		count = _countof( DefaultComposeKeyEntries );
+		m_ComposeKeyEntries.SetSize( count );
+		for ( int n = 0; n < count; n++ ) {
+			m_ComposeKeyEntries[n] = DefaultComposeKeyEntries[n];
 		}
 		return;
 	}
 
 	COMPOSE_KEY_ENTRY cke;
 	CString section;
-
-	m_ComposeKeyEntries.SetSize( lim );
-	for ( int n = 0; n < lim; n++ ) {
+	m_ComposeKeyEntries.SetSize( count );
+	for ( int n = 0; n < count; n++ ) {
 		section.Format( _T("Mapping\\%d"), n );
 		cke.vkFirst     = (DWORD)   theApp.GetProfileInt( section, _T("First"),    0 );
 		cke.vkSecond    = (DWORD)   theApp.GetProfileInt( section, _T("Second"),   0 );
@@ -86,16 +85,21 @@ void COptionsData::_FcLoadKeys( void ) {
 }
 
 void COptionsData::_FcSaveKeys( void ) {
-	CString section;
-
 	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( _T("Mapping") ) );
-	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), m_ComposeKeyEntries.GetCount( ) );
-	for ( LONG n = 0; n < m_ComposeKeyEntries.GetCount( ); n++ ) {
-		section.Format( _T("Mapping\\%d"), n );
+
+	CString section;
+	int count = 0;
+	for ( int n = 0; n < (int) m_ComposeKeyEntries.GetSize( ); n++ ) {
+		if ( !m_ComposeKeyEntries[n].vkFirst && !m_ComposeKeyEntries[n].vkSecond && !m_ComposeKeyEntries[n].wchComposed ) {
+			continue;
+		}
+		section.Format( _T("Mapping\\%d"), count++ );
 		theApp.WriteProfileInt( section, _T("First"),    (int) m_ComposeKeyEntries[n].vkFirst     );
 		theApp.WriteProfileInt( section, _T("Second"),   (int) m_ComposeKeyEntries[n].vkSecond    );
 		theApp.WriteProfileInt( section, _T("Composed"), (int) m_ComposeKeyEntries[n].wchComposed );
 	}
+
+	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), count );
 }
 
 void COptionsData::Save( void ) {
