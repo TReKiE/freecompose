@@ -192,7 +192,7 @@ void CMainFrame::OnAppToggle( void ) {
 }
 
 void CMainFrame::OnAppCapsLock( void ) {
-	bool fCaps = ! IsCapsLock( );
+	bool fCaps = ! IsAsyncCapsLock( );
 
 	BYTE keys[256];
 	GetKeyboardState( keys );
@@ -220,7 +220,7 @@ void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 }
 
 void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
-	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
+	pui->SetCheck( IsAsyncCapsLock( ) ? 1 : 0 );
 	pui->Enable( m_fActive && m_pOptions->m_fDisableCapsLock );
 }
 

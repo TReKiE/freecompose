@@ -20,87 +20,53 @@ END_MESSAGE_MAP()
 					    ( (x) >= VK_OEM_1 && (x) <= VK_OEM_3 ) || \
 					    ( (x) >= VK_OEM_4 && (x) <= VK_OEM_7 )    )
 
-CKeyEdit::CKeyEdit( ):
-	dwVk ( 0 )
-{
+CKeyEdit::CKeyEdit( ): m_dwVk ( 0 ) {
 }
 
 CKeyEdit::~CKeyEdit( ) {
 }
 
-void CKeyEdit::_ChangeText( const DWORD dwVk ) {
-	CString str( VkToString( dwVk ) );
+void CKeyEdit::_Update( ) {
+	CString str( VkToString( m_dwVk ) );
 	SetWindowText( str );
 	SetSel( str.GetLength( ), str.GetLength( ), TRUE );
-}
-
-void CKeyEdit::SetKey( const DWORD _dwVk ) {
-	dwVk = _dwVk;
-	_ChangeText( dwVk );
-}
-
-DWORD CKeyEdit::GetKey( void ) const {
-	return dwVk;
 }
 
 void CKeyEdit::OnKeyDown( UINT nChar, UINT nRepCnt, UINT nFlags ) {
 	debug( _T("OnKeyDown: nChar=%u nRepCnt=%u nFlags=%08x\n"), nChar, nRepCnt, nFlags );
 
-	if ( ( GetKeyState( VK_MENU ) & 0x8000 ) == 0x8000 ) {
+	if ( IsKeyDown( VK_MENU ) ) {
 		return;
 	}
-	if ( ( GetKeyState( VK_CONTROL ) & 0x8000 ) == 0x8000 ) {
-		return;
-	}
-	if ( ! KEY_XALNUM( nChar ) )
-		return;
-
-	DWORD dwCapital = 0;
-	if ( ( GetKeyState( VK_SHIFT ) & 0x8000 ) == 0x8000 ) {
-		dwCapital = 0x80000000;
-	}
-
-	dwVk = nChar | dwCapital;
-
-	CString str( VkToString( dwVk ) );
-
-	SetWindowText( str );
-	SetSel( str.GetLength( ), str.GetLength( ), TRUE );
-
-//	CEdit::OnKeyDown( nChar, nRepCnt, nFlags );
-}
-
-void CKeyEdit::OnKeyUp( UINT nChar, UINT nRepCnt, UINT nFlags ) {
-	debug( _T("OnKeyDown: nChar=%u nRepCnt=%u nFlags=%08x\n"), nChar, nRepCnt, nFlags );
-
-	if ( ( GetKeyState( VK_MENU ) & 0x8000 ) == 0x8000 ) {
-		return;
-	}
-	if ( ( GetKeyState( VK_CONTROL ) & 0x8000 ) == 0x8000 ) {
+	if ( IsKeyDown( VK_CONTROL ) ) {
 		return;
 	}
 	if ( ! KEY_XALNUM( nChar ) )
 		return;
 
-	CString str( VkToString( dwVk ) );
-	SetWindowText( str );
-	SetSel( str.GetLength( ), str.GetLength( ), TRUE );
+	m_dwVk = (DWORD) nChar | ( IsKeyDown( VK_SHIFT ) ? 0x80000000UL : 0UL );
+	_Update( );
 }
 
-void CKeyEdit::OnChar(UINT /*nChar*/, UINT /*nRepCnt*/, UINT /*nFlags*/) {
-	_ChangeText( dwVk );
+void CKeyEdit::OnKeyUp( UINT /*nChar*/, UINT /*nRepCnt*/, UINT /*nFlags*/ ) {
+	// do nothing
+}
+
+void CKeyEdit::OnChar( UINT /*nChar*/, UINT /*nRepCnt*/, UINT /*nFlags*/ ) {
+	// do nothing
 }
 
 int CKeyEdit::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-	if (CEdit::OnCreate(lpCreateStruct) == -1)
+	if ( -1 == CEdit::OnCreate(lpCreateStruct) ) {
 		return -1;
+	}
 
-	debug( _T("OnCreate: dwVk=%08x\n"), dwVk );
-	_ChangeText( dwVk );
-
+	_Update( );
 	return 0;
 }
 
 void CKeyEdit::OnEnSetFocus( ) {
-	_ChangeText( dwVk );
+	//_Update( );
+	int n = GetWindowTextLength( );
+	SetSel( n, n, TRUE );
 }

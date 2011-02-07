@@ -1,8 +1,11 @@
 #pragma once
 
+#define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
+
 void debug( LPCTSTR lpsz, ... );
-bool IsCapsLock( void );
-CString VkToString( DWORD dw );
+CString VscToString( DWORD vsc );
+CString VkToString( DWORD vk );
+DWORD VkToVsc( DWORD vk );
 
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
 	T elem1 = *( (T*) _elem1 );
@@ -37,4 +40,13 @@ inline bool operator==( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b )
 
 inline bool operator!=( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b ) {
 	return ! operator==( a, b );
+}
+
+inline bool IsAsyncCapsLock( void ) {
+	return ( GetAsyncKeyState( VK_CAPITAL ) & 1 ) == 1;
+}
+
+inline bool IsKeyDown( const DWORD vk ) {
+	unsigned u = (unsigned short) GetKeyState( vk );
+	return ( u & 0x8000U ) == 0x8000U;
 }

@@ -41,9 +41,9 @@ void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Control( pDX, IDREMOVE,         m_btnRemove    );
 }
 
+// TODO error handling
 void CKeySequences::_DoAddOneKeySequence( const int n ) {
 	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
-
 	CString col0, col1, col2;
 	int item;
 	int width;
@@ -71,6 +71,7 @@ void CKeySequences::_DoAddOneKeySequence( const int n ) {
 	ASSERT( TRUE == ret );
 }
 
+// TODO error handling
 void CKeySequences::_DoUpdateOneKeySequence( const int n ) {
 	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
 
