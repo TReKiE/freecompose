@@ -154,7 +154,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 				if ( KEY_XALNUM() ) {
 					debug(_T("LLKP: 2=>0 Xalnum down\n"));
 					WantedKeys.Add( pkb->vkCode );
-					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_3, 0 );
 					key2 = ( (DWORD) shift << 31 ) | pkb->vkCode;
 
 					debug(_T("LLKP: 2=>0 keys %08x %08x\n"), key1, key2);
@@ -163,6 +162,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 						::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_FAIL, 0 );
 					} else {
 						debug(_T("LLKP: 2=>0 translate succeeded\n"));
+						::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_3, 0 );
 					}
 					ComposeState = 0;
 					return 1;
