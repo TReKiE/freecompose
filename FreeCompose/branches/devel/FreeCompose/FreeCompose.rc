@@ -16,10 +16,8 @@
 // English (Canada) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -81,7 +79,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,16,WS_GROUP
 END
 
-IDD_KEYSEQUENCES DIALOG  0, 0, 252, 196
+IDD_KEYSEQUENCES DIALOG 0, 0, 252, 196
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Key sequences"
 FONT 8, "MS Shell Dlg"
@@ -93,10 +91,10 @@ BEGIN
     PUSHBUTTON      "&Remove",IDREMOVE,189,168,50,14,WS_DISABLED
 END
 
-IDD_FEATURES DIALOG  0, 0, 252, 196
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FEATURES DIALOGEX 0, 0, 252, 196
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Features"
-FONT 8, "MS Shell Dlg"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Startup",IDC_STATIC,7,7,238,49,WS_GROUP
     CONTROL         "&Enable on startup",IDC_ENABLEONSTARTUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,21,224,10
@@ -104,7 +102,7 @@ BEGIN
     GROUPBOX        "Keyboard",IDC_STATIC,7,63,238,49,WS_GROUP
     CONTROL         "&Disable Caps Lock key",IDC_DISABLECAPSLOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,92,224,10
     CONTROL         "S&wap Ctrl and Caps Lock keys",IDC_SWAPCTRLANDCAPS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,77,224,10
+                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,77,224,10
 END
 
 IDD_EDITKEYSEQUENCE DIALOGEX 0, 0, 188, 95
@@ -168,7 +166,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -210,7 +208,7 @@ END
 // Menu
 //
 
-IDM_POPUP MENU 
+IDM_POPUP MENU
 BEGIN
     POPUP "popup"
     BEGIN
@@ -224,7 +222,7 @@ BEGIN
     END
 END
 
-IDR_MAINFRAME MENU 
+IDR_MAINFRAME MENU
 BEGIN
     MENUITEM "E&xit",                       ID_APP_EXIT
 END
@@ -235,7 +233,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
     "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
@@ -255,23 +253,23 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDR_MAINFRAME           "FreeCompose"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_APP_TITLE       "FreeCompose"
     AFX_IDS_IDLEMESSAGE     "Ready"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_EDIT_CLEAR           "Erase the selection\nErase"
     ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
@@ -286,24 +284,24 @@ BEGIN
     ID_EDIT_REDO            "Redo the previously undone action\nRedo"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
     ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
     ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_INDICATOR_EXT        "EXT"
     ID_INDICATOR_CAPS       "CAP"
@@ -313,7 +311,7 @@ BEGIN
     ID_INDICATOR_REC        "REC"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCSIZE          "Change the window size"
     AFX_IDS_SCMOVE          "Change the window position"
@@ -324,13 +322,13 @@ BEGIN
     AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     AFX_IDS_SCRESTORE       "Restore the window to normal size"
     AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUT_VERSION       "%s version %d.%d.%d.%d"
     IDS_EDITKEYSEQUENCE_TITLE_EDIT "Edit key sequence"
@@ -350,7 +348,7 @@ BEGIN
     IDS_MAINFRAME_MENU_DISABLE "&Disable"
 END
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
 END
