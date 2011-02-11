@@ -120,25 +120,24 @@ void COptionsData::_UpdateRunKey( void ) {
 	
 	rc = RegOpenKeyEx( HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_SET_VALUE, &hk );
 	if ( ERROR_SUCCESS != rc ) {
-		debug( _T("RegOpenKeyEx failed: %d\n"), rc );
+		debug( _T("COptionsData::_UpdateRunKey: RegOpenKeyEx failed: %d\n"), rc );
 		return;
 	}
 
 	if ( m_fStartWithWindows ) {
 		TCHAR lpszImageFilename[4096];
-		//if ( 0 == GetProcessImageFileName( GetCurrentProcess( ), lpszImageFilename, 4096 ) ) {
 		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, 4096 ) > 0 ) {
 			rc = RegSetValueEx( hk, _T("Zive Compose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, sizeof(TCHAR) * ( _tcslen( lpszImageFilename ) + 1 ) );
 			if ( ERROR_SUCCESS != rc ) {
-				debug( _T("RegSetValueEx failed: %d\n"), rc );
+				debug( _T("COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n"), rc );
 			}
 		} else {
-			debug( _T("GetProcessImageFileName failed: %d\n"), GetLastError( ) );
+			debug( _T("COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n"), GetLastError( ) );
 		}
 	} else {
 		rc = RegDeleteValue( hk, _T("Zive Compose") );
 		if ( ERROR_SUCCESS != rc ) {
-			debug( _T("RegDeleteValue failed: %d\n"), rc );
+			debug( _T("COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n"), rc );
 		}
 	}
 
