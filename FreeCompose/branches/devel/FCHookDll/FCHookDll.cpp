@@ -64,20 +64,19 @@ FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD c
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
 	BOOL ret = TRUE;
 
-	debug( _T( "EnableHook\n" ) );
+	debug( _T( "FcEnableHook\n" ) );
 	LOCK( cs ) {
 		if ( NULL != hHook ) {
-			debug( _T( "EnableHook: hook already registered!!\n" ) );
+			debug( _T( "FcEnableHook: hook already registered!!\n" ) );
 			ret = FALSE;
-			goto out;
+			break;
 		}
 		hHook = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc, hDllInst, 0 );
 		if ( NULL == hHook ) {
-			debug( _T( "EnableHook: SetWindowsHookEx failed, %d\n" ), GetLastError( ) );
+			debug( _T( "FcEnableHook: SetWindowsHookEx failed, %d\n" ), GetLastError( ) );
 			ret = FALSE;
-			goto out;
+			break;
 		}
-out:	;
 	} UNLOCK( cs );
 	return ret;
 }
@@ -85,20 +84,19 @@ out:	;
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
 	BOOL ret = TRUE;
 
-	debug( _T( "DisableHook\n" ) );
+	debug( _T( "FcDisableHook\n" ) );
 	LOCK( cs ) {
 		if ( NULL == hHook ) {
-			debug( _T( "DisableHook: hook not registered!!\n" ) );
+			debug( _T( "FcDisableHook: hook not registered!!\n" ) );
 			ret = FALSE;
-			goto out;
+			break;
 		}
 		if ( ! UnhookWindowsHookEx( hHook ) ) {
-			debug( _T( "DisableHook: UnhookWindowsHookEx failed, %d\n" ), GetLastError( ) );
+			debug( _T( "FcDisableHook: UnhookWindowsHookEx failed, %d\n" ), GetLastError( ) );
 			ret = FALSE;
-			goto out;
+			break;
 		}
 		hHook = NULL;
-out:	;
 	} UNLOCK( cs );
 	return ret;
 }
