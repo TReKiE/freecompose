@@ -20,9 +20,7 @@ CString VscToString( DWORD vsc ) {
 	ATLASSERT( 0 == ( vsc & 0x80000000 ) );
 
 	memset( buf, 0, sizeof( buf ) );
-	debug( _T("VscToString: 1st 0x%08x\n"), vsc );
 	vsc |= 1 << 25;
-	debug( _T("VscToString: 2nd 0x%08x\n"), vsc );
 	rc = GetKeyNameText( vsc, buf, countof( buf ) );
 	if ( 0 == rc ) {
 		debug( _T("VscToString(0x%08x): GetKeyNameText: error %d\n"), vsc, GetLastError( ) );
