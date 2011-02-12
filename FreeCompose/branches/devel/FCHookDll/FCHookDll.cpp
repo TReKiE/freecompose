@@ -10,31 +10,33 @@
 #endif
 
 #pragma data_seg( push, ".shareddata" )
-int cClients = 0;
+volatile LONG cClients = 0;
 #pragma data_seg( pop )
 
 HINSTANCE hDllInst = NULL;
 
-BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpReserved*/ ) {
-	debug( _T( "DllMain: hModule=%08x ulReasonForCall=%d\n" ), hModule, ulReasonForCall );
+static void _SetComposeKeyEntriesImpl( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries ) {
+	LOCK( cs ) {
+		if ( NULL != ComposeKeyEntries ) {
+			free( ComposeKeyEntries );
+		}
+		ComposeKeyEntries = rgEntries;
+		cComposeKeyEntries = cEntries;
+	} UNLOCK( cs );
+}
 
+BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpReserved*/ ) {
 	switch ( ulReasonForCall ) {
 		case DLL_PROCESS_ATTACH:
 			hDllInst = hModule;
-			cClients++;
-			if ( 1 == cClients )
+			if ( 1 == InterlockedIncrement( &cClients ) ) {
 				InitializeCriticalSection( &cs );
+			}
 			break;
 
 		case DLL_PROCESS_DETACH:
-			cClients--;
-			if ( 0 == cClients ) {
-				LOCK( cs ) {
-					if ( NULL != ComposeKeyEntries )
-						free( ComposeKeyEntries );
-					ComposeKeyEntries = NULL;
-					cComposeKeyEntries = 0;
-				} UNLOCK( cs );
+			if ( 0 == InterlockedDecrement( &cClients ) ) {
+				_SetComposeKeyEntriesImpl( NULL, 0 );
 				DeleteCriticalSection( &cs );
 			}
 			break;
@@ -51,20 +53,13 @@ FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD c
 	COMPOSE_KEY_ENTRY* pcke = (COMPOSE_KEY_ENTRY*) calloc( cEntries, sizeof( COMPOSE_KEY_ENTRY ) );
 	memcpy( pcke, rgEntries, sizeof( COMPOSE_KEY_ENTRY ) * cEntries );
 	qsort( pcke, cEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
-
-	LOCK( cs ) {
-		if ( NULL != ComposeKeyEntries )
-			free( ComposeKeyEntries );
-		ComposeKeyEntries = pcke;
-		cComposeKeyEntries = cEntries;
-	} UNLOCK( cs );
+	_SetComposeKeyEntriesImpl( pcke, cEntries );
 	return TRUE;
 }
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
 	BOOL ret = TRUE;
 
-	debug( _T( "FcEnableHook\n" ) );
 	LOCK( cs ) {
 		if ( NULL != hHook ) {
 			debug( _T( "FcEnableHook: hook already registered!!\n" ) );
@@ -84,7 +79,6 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
 	BOOL ret = TRUE;
 
-	debug( _T( "FcDisableHook\n" ) );
 	LOCK( cs ) {
 		if ( NULL == hHook ) {
 			debug( _T( "FcDisableHook: hook not registered!!\n" ) );
