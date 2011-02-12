@@ -12,11 +12,11 @@ __declspec(selectany) COMPOSE_KEY_ENTRY* ComposeKeyEntries  = NULL;
 __declspec(selectany) int                cComposeKeyEntries = 0;
 __declspec(selectany) HHOOK              hHook              = NULL;
 __declspec(selectany) volatile bool      fDisableCapsLock   = false;
+__declspec(selectany) DWORD              vkCompose          = VK_APPS;
 #pragma data_seg( pop )
 
 void debug( LPCTSTR lpszMessage, ... );
 int CompareCkes( const void*, const void* );
-
 
 class ByteSet {
 public:

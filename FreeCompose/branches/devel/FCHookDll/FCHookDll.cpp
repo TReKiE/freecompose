@@ -118,3 +118,14 @@ FCHOOKDLL_API BOOL FcDisableCapsLock( void ) {
 	//} UNLOCK( cs );
 	return TRUE;
 }
+
+FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
+	LOCK( cs ) {
+		vkCompose = _vkCompose;
+	} UNLOCK( cs );
+	return TRUE;
+}
+
+FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
+	return vkCompose;
+}
