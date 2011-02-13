@@ -138,7 +138,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					return 1;
 				} else if ( KEY_COMPOSE() && ! WantedKeys.Contains( vkCompose ) ) {
 					debug(_T("LLKP: 1=>0: Apps down abort\n"));
-					WantedKeys.Add( vkCompose );
 					ComposeState = 0;
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
 					goto acceptKey;
@@ -172,7 +171,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					return 1;
 				} else if ( KEY_COMPOSE() && ! WantedKeys.Contains( vkCompose ) ) {
 					debug(_T("LLKP: 2=>0: Apps down abort\n"));
-					WantedKeys.Add( vkCompose );
 					ComposeState = 0;
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
 					return 1;
