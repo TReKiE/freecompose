@@ -37,7 +37,7 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 	COMPOSE_KEY_ENTRY dummy2 = { vk2, vk1 };
 	COMPOSE_KEY_ENTRY* pkey = NULL;
 
-	debug( _T( "TranslateKey: vk1=%08x vk2=%08x\n" ), vk1, vk2 );
+	debug( _T("TranslateKey: vk1=%08x vk2=%08x\n"), vk1, vk2 );
 	LOCK( cs ) {
 		if ( NULL != cComposeKeyEntries && cComposeKeyEntries > 0 ) {
 			pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy1, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
@@ -47,7 +47,7 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 		}
 	} UNLOCK( cs );
 	if ( NULL == pkey ) {
-		debug( _T( "TranslateKey: failed: no mapping found\n" ) );
+		debug( _T("TranslateKey: failed: no mapping found\n") );
 		return false;
 	}
 
@@ -66,12 +66,12 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 
 	UINT u = SendInput( 2, inputs, sizeof( INPUT ) );
 	if ( u < 2 ) {
-		debug( _T( "TranslateKey: SendInput failed? u=%d %d\n" ), u, GetLastError( ) );
+		debug( _T("TranslateKey: SendInput failed? u=%d %d\n"), u, GetLastError( ) );
 	}
 
 	::PostMessage( HWND_BROADCAST, FCM_KEY, (WPARAM) pkey->wchComposed, 0 );
 
-	debug( _T( "TranslateKey: succeeded\n" ) );
+	debug( _T("TranslateKey: succeeded\n") );
 	return true;
 }
 
@@ -82,19 +82,17 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 
 	if ( KEY_INJECTED() ) {
-		debug( _T( "LowLevelKeyboardProc: injected event, ignoring (CS=%d)\n" ), ComposeState );
-//		ComposeState = 0;
+		debug( _T("LowLevelKeyboardProc: injected event, ignoring (CS=%d)\n"), ComposeState );
 		goto acceptKey;
 	}
 
 	if ( fDisableCapsLock && VK_CAPITAL == pkb->vkCode ) {
-		// eat Caps Lock key
-		debug( _T( "LowLevelKeyboardProc: eating Caps Lock\n" ) );
+		debug( _T("LowLevelKeyboardProc: eating Caps Lock\n") );
 		return 1;
 	}
 
 	if ( KEY_ALTDOWN() ) {
-		debug( _T( "LowLevelKeyboardProc: ALT key down, ignoring\n" ) );
+		debug( _T("LowLevelKeyboardProc: ALT key down, ignoring\n") );
 		ComposeState = 0;
 		goto acceptKey;
 	}
@@ -110,7 +108,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 #ifdef _DEBUG
 	if ( ComposeState > 0 )
-		debug( _T( "LowLevelKeyboardProc: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n" ), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
+		debug( _T("LowLevelKeyboardProc: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n"), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
 #endif
 
 	switch ( ComposeState ) {
