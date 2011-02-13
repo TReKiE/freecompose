@@ -82,17 +82,17 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 
 	if ( KEY_INJECTED() ) {
-		debug( _T("LowLevelKeyboardProc: injected event, ignoring (CS=%d)\n"), ComposeState );
+		debug( _T("LLKP: injected event, ignoring (CS=%d)\n"), ComposeState );
 		goto acceptKey;
 	}
 
 	if ( fDisableCapsLock && VK_CAPITAL == pkb->vkCode ) {
-		debug( _T("LowLevelKeyboardProc: eating Caps Lock\n") );
+		debug( _T("LLKP: eating Caps Lock\n") );
 		return 1;
 	}
 
 	if ( KEY_ALTDOWN() ) {
-		debug( _T("LowLevelKeyboardProc: ALT key down, ignoring\n") );
+		debug( _T("LLKP: ALT key down, ignoring\n") );
 		ComposeState = 0;
 		goto acceptKey;
 	}
@@ -108,7 +108,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 #ifdef _DEBUG
 	if ( ComposeState > 0 )
-		debug( _T("LowLevelKeyboardProc: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n"), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
+		debug( _T("LLKP: nCode=%d wParam=%04x vk=%08x scan=%08x flags=%08x\n"), nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
 #endif
 
 	switch ( ComposeState ) {
