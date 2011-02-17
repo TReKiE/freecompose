@@ -25,11 +25,13 @@
 #define _WIN32_IE 0x0500
 
 
+#define _T(x) L ## x
+
+
 #include <windows.h>
 
 #include <stdarg.h>
 #include <wtypes.h>
-#include <tchar.h>
 
 #include <set>
 

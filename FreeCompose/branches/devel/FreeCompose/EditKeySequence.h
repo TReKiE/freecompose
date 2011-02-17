@@ -14,7 +14,7 @@ public:
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
-	virtual void DDX_Char( CDataExchange* pDX, int nIDC, wchar_t& wch );
+	virtual void DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch );
 	virtual void DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk );
 	virtual void DDV_Key( CDataExchange* pDX, DWORD& dwVk );
 

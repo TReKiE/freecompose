@@ -16,6 +16,8 @@
 
 const UINT APP_NOTIFYICON = RegisterWindowMessage( _T("FreeCompose.APP_NOTIFYICON") );
 const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
+const UINT FCM_KEY        = RegisterWindowMessage( _T("FcHookDll.FCM_KEY") );
+
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 

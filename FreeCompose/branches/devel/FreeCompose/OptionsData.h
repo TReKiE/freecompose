@@ -10,6 +10,7 @@ public:
 	bool operator==( const COptionsData& );
 	bool operator!=( const COptionsData& );
 
+	void Load( void );
 	void Save( void );
 
 	CComposeKeyEntryArray m_ComposeKeyEntries;
@@ -20,6 +21,7 @@ public:
 	BOOL m_fDisableCapsLock;
 
 private:
+	bool _FcValidateCke( const COMPOSE_KEY_ENTRY& cke );
 	void _FcLoadKeys( void );
 	void _FcSaveKeys( void );
 	void _UpdateRunKey( void );

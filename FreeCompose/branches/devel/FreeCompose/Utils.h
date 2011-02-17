@@ -2,7 +2,7 @@
 
 #define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
 
-void debug( LPCTSTR lpsz, ... );
+void debug( LPCWSTR format, ... );
 CString VscToString( DWORD vsc );
 CString VkToString( DWORD vk );
 DWORD VkToVsc( DWORD vk );
@@ -34,7 +34,7 @@ template<typename T> inline T compare_keys_reverse( void* /*context*/, const voi
 inline bool operator==( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b ) {
 	if ( a.vkFirst     != b.vkFirst     ) return false;
 	if ( a.vkSecond    != b.vkSecond    ) return false;
-	if ( a.wchComposed != b.wchComposed ) return false;
+	if ( a.u32Composed != b.u32Composed ) return false;
 	return true;
 }
 

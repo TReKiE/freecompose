@@ -1,15 +1,144 @@
 #include "stdafx.h"
 #include "Utils.h"
 
-void debug( LPCTSTR lpsz, ... ) {
-	TCHAR szbuf[1024];
+#include <errno.h>
+#include <share.h>
+
+#include <ShlObj.h>
+#include <ShObjIdl.h>
+#include <KnownFolders.h>
+
+#ifdef NDEBUG
+void InitializeDebug( void ) {
+	// do nothing
+}
+
+void TerminateDebug( void ) {
+	// do nothing
+}
+
+void debug( LPCWSTR /*format*/, ... ) {
+	// do nothing
+}
+#else
+static FILE* debugFile = NULL;
+
+static bool _GetAppDataFolderFromKfm( CString& str ) {
+	IKnownFolderManager* pkfm = NULL;
+	IKnownFolder* pkf = NULL;
+	LPWSTR path = NULL;
+	bool ret = false;
+	HRESULT hr;
+
+	hr = CoCreateInstance( CLSID_KnownFolderManager, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS( &pkfm ) );
+	if ( FAILED(hr) ) {
+		debug( L"CoCreateInstance(CLSID_KnownFolderManager) failed: %08x\n", hr );
+		goto out1;
+	}
+
+	hr = pkfm->GetFolder( FOLDERID_RoamingAppData, &pkf );
+	if ( FAILED( hr ) ) {
+		debug( L"pkfm->GetFolder(FOLDERID_RoamingAppData) failed: %08x\n", hr );
+		goto out2;
+	}
+
+	hr = pkf->GetPath( 0, &path );
+	if ( FAILED( hr ) ) {
+		debug( L"pkf->GetPath failed: %08x\n", hr );
+		goto out3;
+	}
+
+	str = path;
+	CoTaskMemFree( path );
+
+	ret = true;
+
+out3:	pkf->Release( );
+out2:	pkfm->Release( );
+out1:	return ret;
+}
+
+static bool _GetAppDataFolderFromShell( CString& str ) {
+	wchar_t buf[MAX_PATH];
+
+	if ( ! SHGetSpecialFolderPath( NULL, buf, CSIDL_APPDATA, FALSE ) ) {
+		debug( L"SHGetSpecialFolderPath failed: %d\n", GetLastError( ) );
+		return false;
+	}
+
+	str = buf;
+	return true;
+}
+
+void InitializeDebug( void ) {
+	CString folder;
+
+	if ( ! _GetAppDataFolderFromKfm( folder ) ) {
+		if ( ! _GetAppDataFolderFromShell( folder ) ) {
+			debug( L"Can't get AppData folder\n" );
+			return;
+		}
+	}
+
+	CString companyName ( (LPCWSTR) AFX_IDS_COMPANY_NAME );
+	CString appName     ( (LPCWSTR) AFX_IDS_APP_TITLE );
+	CString buf;
+
+	buf.Format( L"%s\\%s", folder, companyName );
+	if ( ! CreateDirectory( buf, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
+		debug( L"CreateDirectory('%s') failed: %d\n", buf, GetLastError( ) );
+		return;
+	}
+
+	buf.Format( L"%s\\%s\\%s", folder, companyName, appName );
+	if ( ! CreateDirectory( (LPCWSTR) buf, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
+		debug( L"CreateDirectory('%s') failed: %d\n", (LPCWSTR) buf, GetLastError( ) );
+		return;
+	}
+
+	buf.Format( L"%s\\%s\\%s\\debug.log", folder, companyName, appName );
+	errno = 0;
+	debugFile = _wfsopen( buf, L"at+,ccs=UTF-16LE", _SH_DENYNO );
+	if ( NULL == debugFile ) {
+		debug( L"_wfsopen('%s') failed: %d\n", (LPCWSTR) buf, errno );
+		return;
+	}
+
+	setvbuf(  debugFile, NULL, _IONBF, 0 );
+
+	{
+		wchar_t buf[128];
+		tm* ptmnow;
+		time_t timenow;
+		
+		timenow = time( NULL );
+		ptmnow = localtime( &timenow );
+		wcsftime( buf, 1024, L"========  Log opened at %Y-%m-%d %H:%M:%S  ========\n", ptmnow );
+		fputws( buf, debugFile );
+	}
+}
+
+void TerminateDebug( void ) {
+	if ( debugFile ) {
+		fclose( debugFile );
+		debugFile = NULL;
+	}
+}
+
+void debug( LPCWSTR format, ... ) {
+	CString buf;
 	va_list va;
 
-	va_start( va, lpsz );
-	_vsntprintf_s( szbuf, 1024, _TRUNCATE, lpsz, va );
+	va_start( va, format );
+	buf.FormatV( format, va );
 	va_end( va );
-	OutputDebugString( szbuf );
+
+	OutputDebugString( buf );
+	if ( debugFile ) {
+		fputws( buf, debugFile );
+	}
 }
+#endif
 
 CString VscToString( DWORD vsc ) {
 	TCHAR buf[256];
@@ -17,7 +146,7 @@ CString VscToString( DWORD vsc ) {
 
 	ATLASSERT( 0 != LOWORD( vsc ) );
 	ATLASSERT( 0 != HIWORD( vsc ) );
-	ATLASSERT( 0 == ( vsc & 0x80000000 ) );
+	ATLASSERT( 0 == ( vsc & 0x80000000UL ) );
 
 	memset( buf, 0, sizeof( buf ) );
 	vsc |= 1 << 25;
