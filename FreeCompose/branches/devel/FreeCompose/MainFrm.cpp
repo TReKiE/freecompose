@@ -43,9 +43,9 @@ CMainFrame::CMainFrame( ):
 	m_ptni        ( NULL ),
 	m_pOptions    ( NULL ),
 	m_fActive     ( false ),
-	m_strTitle    ( (LPCTSTR) AFX_IDS_APP_TITLE ),
-	m_strEnabled  ( (LPCTSTR) IDS_MAINFRAME_ENABLED ),
-	m_strDisabled ( (LPCTSTR) IDS_MAINFRAME_DISABLED )
+	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
+	m_strEnabled  ( (LPCWSTR) IDS_MAINFRAME_ENABLED ),
+	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED )
 {
 }
 
@@ -106,8 +106,8 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 	debug( _T("CMainFrame::OnCreate: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
-		str.Format( CString( (LPCTSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
-		MessageBox( str, CString( (LPCTSTR) IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
+		str.Format( CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+		MessageBox( str, CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
 		// Hey, maybe we can use Windows Installer to try to repair the file!
 		return FALSE;
 	}
@@ -215,9 +215,9 @@ void CMainFrame::OnAppConfigure( ) {
 
 void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 	if ( m_fActive ) {
-		pui->SetText( CString( (LPCTSTR) IDS_MAINFRAME_MENU_DISABLE ) );
+		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_DISABLE ) );
 	} else {
-		pui->SetText( CString( (LPCTSTR) IDS_MAINFRAME_MENU_ENABLE ) );
+		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_ENABLE ) );
 	}
 }
 

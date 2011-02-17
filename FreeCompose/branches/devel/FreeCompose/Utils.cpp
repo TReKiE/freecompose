@@ -141,7 +141,7 @@ void debug( LPCWSTR format, ... ) {
 #endif
 
 CString VscToString( DWORD vsc ) {
-	TCHAR buf[256];
+	wchar_t buf[256];
 	int rc;
 
 	ATLASSERT( 0 != LOWORD( vsc ) );

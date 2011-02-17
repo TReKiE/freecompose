@@ -17,7 +17,7 @@ END_MESSAGE_MAP()
 const UINT APP_RECONFIGURE = RegisterWindowMessage( _T("FreeCompose.APP_RECONFIGURE") );
 
 COptionsPropSheet::COptionsPropSheet( const COptionsData& options, CWnd* pParentWnd, UINT iSelectPage ):
-	CPropertySheet ( CString( (LPCTSTR) IDS_OPTIONSPROPSHEET_TITLE ), pParentWnd, iSelectPage ),
+	CPropertySheet ( CString( (LPCWSTR) IDS_OPTIONSPROPSHEET_TITLE ), pParentWnd, iSelectPage ),
 	m_CurOptions   ( options ),
 	m_NewOptions   ( m_CurOptions ),
 	m_KeySequences ( m_NewOptions ),

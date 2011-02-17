@@ -24,7 +24,7 @@ protected:
 
 private:
 	COptionsPropSheet( UINT nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
-	COptionsPropSheet( LPCTSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
+	COptionsPropSheet( LPCWSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
 
 	CKeySequences m_KeySequences;
 	CFeatures m_Features;

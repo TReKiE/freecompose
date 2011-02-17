@@ -125,9 +125,9 @@ BOOL CKeySequences::OnInitDialog( ) {
 	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
 
 	CString strLabels[3] = {
-		CString( (LPCTSTR) IDS_KEYSEQUENCES_CHARACTER ),
-		CString( (LPCTSTR) IDS_KEYSEQUENCES_KEY1 ),
-		CString( (LPCTSTR) IDS_KEYSEQUENCES_KEY2 ),
+		CString( (LPCWSTR) IDS_KEYSEQUENCES_CHARACTER ),
+		CString( (LPCWSTR) IDS_KEYSEQUENCES_KEY1 ),
+		CString( (LPCWSTR) IDS_KEYSEQUENCES_KEY2 ),
 	};
 
 	int widths[3];
@@ -201,7 +201,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 	if ( count < 1 )
 		return;
 
-	int ret = MessageBox( CString( (LPCTSTR) IDS_KEYSEQUENCES_CONFIRM_PROMPT ), CString( (LPCTSTR) IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
+	int ret = MessageBox( CString( (LPCWSTR) IDS_KEYSEQUENCES_CONFIRM_PROMPT ), CString( (LPCWSTR) IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
 	if ( IDYES != ret ) {
 		return;
 	}
