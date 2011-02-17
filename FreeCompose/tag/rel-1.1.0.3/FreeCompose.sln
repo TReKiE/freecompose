@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeCompose", "FreeCompose\FreeCompose.vcproj", "{E4ABDDFB-9594-4428-AAA7-49F5718377D6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCHookDll", "FCHookDll\FCHookDll.vcproj", "{526574F1-C735-469C-A193-35235DF232BD}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E4ABDDFB-9594-4428-AAA7-49F5718377D6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4ABDDFB-9594-4428-AAA7-49F5718377D6}.Debug|Win32.Build.0 = Debug|Win32
+		{E4ABDDFB-9594-4428-AAA7-49F5718377D6}.Release|Win32.ActiveCfg = Release|Win32
+		{E4ABDDFB-9594-4428-AAA7-49F5718377D6}.Release|Win32.Build.0 = Release|Win32
+		{526574F1-C735-469C-A193-35235DF232BD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{526574F1-C735-469C-A193-35235DF232BD}.Debug|Win32.Build.0 = Debug|Win32
+		{526574F1-C735-469C-A193-35235DF232BD}.Release|Win32.ActiveCfg = Release|Win32
+		{526574F1-C735-469C-A193-35235DF232BD}.Release|Win32.Build.0 = Release|Win32
+		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Debug|Win32.ActiveCfg = Debug
+		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|Win32.ActiveCfg = Release
+		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|Win32.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
