@@ -5,9 +5,9 @@
 #pragma once
 
 // Allow use of features specific to Windows XP or later.
-#define NTDDI_VERSION  NTDDI_WINXP
-#define WINVER         _WIN32_WINNT_WINXP
-#define _WIN32_WINNT   _WIN32_WINNT_WINXP
+#define NTDDI_VERSION  NTDDI_VISTA
+#define WINVER         _WIN32_WINNT_VISTA
+#define _WIN32_WINNT   _WIN32_WINNT_VISTA
 #define _WIN32_IE      _WIN32_IE_IE60
 
 #define NOMINMAX

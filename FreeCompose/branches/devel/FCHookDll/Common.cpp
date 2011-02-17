@@ -12,7 +12,7 @@ void debug( LPCTSTR lpszMessage, ... ) {
 
 	va_list va;
 	va_start( va, lpszMessage );
-	_vsntprintf_s( buf, countof( buf ), _TRUNCATE, lpszMessage, va );
+	_vsnwprintf_s( buf, countof( buf ), _TRUNCATE, lpszMessage, va );
 	va_end( va );
 	OutputDebugString( buf );
 }

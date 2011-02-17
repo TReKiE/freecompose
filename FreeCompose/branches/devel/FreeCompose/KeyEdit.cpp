@@ -27,6 +27,11 @@ CKeyEdit::~CKeyEdit( ) {
 }
 
 void CKeyEdit::_Update( ) {
+	if ( 0 == m_dwVk ) {
+		SetWindowText( L"" );
+		return;
+	}
+
 	CString str( VkToString( m_dwVk ) );
 	SetWindowText( str );
 	SetSel( str.GetLength( ), str.GetLength( ), TRUE );

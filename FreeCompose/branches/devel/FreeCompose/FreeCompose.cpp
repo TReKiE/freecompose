@@ -1,8 +1,7 @@
-// FreeCompose.cpp : Defines the class behaviors for the application.
-
 #include "stdafx.h"
 #include "FreeCompose.h"
 #include "MainFrm.h"
+#include "Utils.h"
 
 #include <initguid.h>
 
@@ -10,13 +9,8 @@
 #define new DEBUG_NEW
 #endif
 
-
-// The one and only CFreeComposeApp object
-
-CFreeComposeApp theApp;
-
-
-// CFreeComposeApp
+extern void InitializeDebug( void );
+extern void TerminateDebug( void );
 
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//{{AFX_MSG_MAP( COptionsPropSheet )
@@ -24,35 +18,39 @@ BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
 
-// CFreeComposeApp construction
+CFreeComposeApp theApp;
 
-CFreeComposeApp::CFreeComposeApp() {
+CFreeComposeApp::CFreeComposeApp( ) {
 }
 
-// CFreeComposeApp initialization
-
-BOOL CFreeComposeApp::InitInstance()
-{
+BOOL CFreeComposeApp::InitInstance( ) {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
-	InitCommonControlsEx(&InitCtrls);
+	InitCommonControlsEx( &InitCtrls );
 
-	CWinApp::InitInstance();
+	CoInitializeEx( NULL, COINIT_MULTITHREADED );
+	SetRegistryKey( AFX_IDS_COMPANY_NAME );
+	InitializeDebug( );
 
-	SetRegistryKey(_T("Zive Technology Research"));
+	CWinApp::InitInstance( );
 
 	CMainFrame* pFrame = new CMainFrame;
-	if (!pFrame)
+	if ( ! pFrame ) {
 		return FALSE;
+	}
 	m_pMainWnd = pFrame;
-	pFrame->LoadFrame(IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL);
-
-	pFrame->ShowWindow(SW_HIDE);
-	pFrame->UpdateWindow();
+	pFrame->LoadFrame( IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL );
+	pFrame->ShowWindow( SW_HIDE );
+	pFrame->UpdateWindow( );
 
 	return TRUE;
+}
+
+int CFreeComposeApp::ExitInstance( ) {
+	TerminateDebug( );
+	return CWinApp::ExitInstance( );
 }

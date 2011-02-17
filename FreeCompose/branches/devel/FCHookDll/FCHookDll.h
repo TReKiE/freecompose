@@ -6,12 +6,12 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x001F
+#define FCHOOKDLL_API_VERSION 0x0020
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
 	DWORD vkSecond;
-	wchar_t wchComposed;
+	unsigned u32Composed;
 };
 
 FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries );

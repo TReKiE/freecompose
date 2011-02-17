@@ -8,6 +8,7 @@
 #include "KeySequences.h"
 #include "EditKeySequence.h"
 
+#include "Unicode.h"
 #include "Utils.h"
 
 const int ITEM_FUDGE_FACTOR   = 12;
@@ -49,7 +50,7 @@ void CKeySequences::_DoAddOneKeySequence( const int n ) {
 	int width;
 	BOOL ret;
 
-	col0 = cke.wchComposed;
+	Utf32ToUtf16( cke.u32Composed, col0 );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
@@ -78,7 +79,7 @@ void CKeySequences::_DoUpdateOneKeySequence( const int n ) {
 	CString col0, col1, col2;
 	int width;
 
-	col0 = cke.wchComposed;
+	Utf32ToUtf16( cke.u32Composed, col0 );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;

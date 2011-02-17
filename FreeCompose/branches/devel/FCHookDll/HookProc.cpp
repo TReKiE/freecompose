@@ -32,6 +32,28 @@ ByteSet WantedKeys;
 const UINT FCM_PIP = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
 const UINT FCM_KEY = RegisterWindowMessage( _T("FcHookDll.FCM_KEY") );
 
+inline void makeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = 0;
+	input.ki.wScan = ch;
+	input.ki.dwFlags = KEYEVENTF_UNICODE;
+}
+
+inline void makeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = 0;
+	input.ki.wScan = ch;
+	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+}
+
+inline wchar_t makeFirstSurrogate( unsigned ch ) {
+	return (wchar_t) ( 0xD800 + ( ( ch - 0x10000 ) >> 10 ) );
+}
+
+inline wchar_t makeSecondSurrogate( unsigned ch ) {
+	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
+}
+
 bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 	COMPOSE_KEY_ENTRY dummy1 = { vk1, vk2 };
 	COMPOSE_KEY_ENTRY dummy2 = { vk2, vk1 };
@@ -51,25 +73,32 @@ bool TranslateKey( DWORD vk1, DWORD vk2 ) {
 		return false;
 	}
 
-	INPUT inputs[2];
-	memset( inputs, 0, sizeof( inputs ) );
+	UINT numInputsToSend;
+	INPUT input[4];
+	memset( input, 0, sizeof( input ) );
 
-	inputs[0].type = INPUT_KEYBOARD;
-	inputs[0].ki.wVk = 0;
-	inputs[0].ki.wScan = pkey->wchComposed;
-	inputs[0].ki.dwFlags = KEYEVENTF_UNICODE;
+	unsigned composed = pkey->u32Composed;
+	if ( composed >= 0x10000 ) {
+		wchar_t ch[2];
+		ch[0] = makeFirstSurrogate  ( composed );
+		ch[1] = makeSecondSurrogate ( composed );
+		makeUnicodeKeyDown ( input[0], ch[0] );
+		makeUnicodeKeyUp   ( input[1], ch[0] );
+		makeUnicodeKeyDown ( input[2], ch[1] );
+		makeUnicodeKeyUp   ( input[3], ch[1] );
+		numInputsToSend = 4;
+	} else {
+		makeUnicodeKeyDown ( input[0], (wchar_t) composed );
+		makeUnicodeKeyUp   ( input[1], (wchar_t) composed );
+		numInputsToSend = 2;
+	}
 
-	inputs[1].type = INPUT_KEYBOARD;
-	inputs[1].ki.wVk = 0;
-	inputs[1].ki.wScan = pkey->wchComposed;
-	inputs[1].ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
-
-	UINT u = SendInput( 2, inputs, sizeof( INPUT ) );
-	if ( u < 2 ) {
+	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
+	if ( u < numInputsToSend ) {
 		debug( _T("TranslateKey: SendInput failed? u=%d %d\n"), u, GetLastError( ) );
 	}
 
-	::PostMessage( HWND_BROADCAST, FCM_KEY, (WPARAM) pkey->wchComposed, 0 );
+	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) pkey->u32Composed );
 
 	debug( _T("TranslateKey: succeeded\n") );
 	return true;
