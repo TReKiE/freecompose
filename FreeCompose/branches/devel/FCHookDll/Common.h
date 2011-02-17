@@ -15,7 +15,7 @@ __declspec(selectany) volatile bool      fDisableCapsLock   = false;
 __declspec(selectany) DWORD              vkCompose          = VK_APPS;
 #pragma data_seg( pop )
 
-void debug( LPCTSTR lpszMessage, ... );
+void debug( LPCWSTR lpszMessage, ... );
 int CompareCkes( const void*, const void* );
 
 class ByteSet {

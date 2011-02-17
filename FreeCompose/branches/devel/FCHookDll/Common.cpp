@@ -7,8 +7,8 @@
 #define new DEBUG_NEW
 #endif
 
-void debug( LPCTSTR lpszMessage, ... ) {
-	TCHAR buf[4096];
+void debug( LPCWSTR lpszMessage, ... ) {
+	wchar_t buf[1024];
 
 	va_list va;
 	va_start( va, lpszMessage );

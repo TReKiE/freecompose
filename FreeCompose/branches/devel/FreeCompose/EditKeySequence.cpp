@@ -15,7 +15,7 @@ CEditKeySequence::CEditKeySequence( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd*
 	CDialog    ( CEditKeySequence::IDD, pParent ),
 	m_cke      ( cke ),
 	m_fAdd     ( fAddMode ),
-	m_strTitle ( (LPCTSTR) ( m_fAdd ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
+	m_strTitle ( (LPCWSTR) ( m_fAdd ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
 {
 }
 
@@ -57,7 +57,7 @@ void CEditKeySequence::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
 		return;
 	}
 	if ( 0 == dwVk ) {
-		MessageBox( CString( (LPCTSTR) IDS_EDITKEYSEQUENCE_CANTBEBLANK ), m_strTitle, MB_OK|MB_ICONERROR );
+		MessageBox( CString( (LPCWSTR) IDS_EDITKEYSEQUENCE_CANTBEBLANK ), m_strTitle, MB_OK|MB_ICONERROR );
 		pDX->Fail( );
 	}
 }

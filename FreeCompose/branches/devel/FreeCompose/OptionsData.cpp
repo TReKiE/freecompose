@@ -133,9 +133,9 @@ void COptionsData::_UpdateRunKey( void ) {
 	}
 
 	if ( m_fStartWithWindows ) {
-		TCHAR lpszImageFilename[4096];
-		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, 4096 ) > 0 ) {
-			rc = RegSetValueEx( hk, _T("Zive Compose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, sizeof(TCHAR) * ( _tcslen( lpszImageFilename ) + 1 ) );
+		wchar_t lpszImageFilename[1024];
+		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, countof(lpszImageFilename) ) > 0 ) {
+			rc = RegSetValueEx( hk, _T("Zive Compose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) );
 			if ( ERROR_SUCCESS != rc ) {
 				debug( _T("COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n"), rc );
 			}

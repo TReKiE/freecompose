@@ -56,8 +56,8 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	pvsffi = (VS_FIXEDFILEINFO*) pvffi;
 	
 	m_strVersion.Format(
-		CString( (LPCTSTR) IDS_ABOUT_VERSION ),
-		CString( (LPCTSTR) AFX_IDS_APP_TITLE ),
+		CString( (LPCWSTR) IDS_ABOUT_VERSION ),
+		CString( (LPCWSTR) AFX_IDS_APP_TITLE ),
 		HIWORD( pvsffi->dwProductVersionMS ), LOWORD( pvsffi->dwProductVersionMS ),
 		HIWORD( pvsffi->dwProductVersionLS ), LOWORD( pvsffi->dwProductVersionLS )
 	);
