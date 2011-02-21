@@ -82,6 +82,8 @@ void CMainFrame::_Reconfigure( void ) {
 	} else {
 		FcEnableCapsLock( );
 	}
+
+	FcSetComposeKey( m_pOptions->m_vkCompose );
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
