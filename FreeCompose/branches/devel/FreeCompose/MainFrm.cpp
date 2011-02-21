@@ -103,15 +103,6 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 		return -1;
 	}
 
-	debug( _T("CMainFrame::OnCreate: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
-	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
-		CString str;
-		str.Format( CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
-		MessageBox( str, CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
-		// Hey, maybe we can use Windows Installer to try to repair the file!
-		return FALSE;
-	}
-
 	_Initialize( );
 	_SetupTrayIcon( );
 

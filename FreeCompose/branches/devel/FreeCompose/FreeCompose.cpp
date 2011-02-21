@@ -32,6 +32,15 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx( &InitCtrls );
 
+	debug( _T("CFreeComposeApp::InitInstance: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
+		CString str;
+		str.Format( CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+		MessageBox( NULL, str, CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
+		// Hey, maybe we can use Windows Installer to try to repair the file!
+		return FALSE;
+	}
+
 	CoInitializeEx( NULL, COINIT_MULTITHREADED );
 	SetRegistryKey( AFX_IDS_COMPANY_NAME );
 	InitializeDebug( );
