@@ -6,7 +6,7 @@
 
 #include "FreeCompose.h"
 #include "KeySequences.h"
-#include "EditKeySequence.h"
+#include "ComposeSequenceEditor.h"
 
 #include "Unicode.h"
 #include "Utils.h"
@@ -168,7 +168,7 @@ void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResu
 
 void CKeySequences::OnBnClickedAdd( ) {
 	COMPOSE_KEY_ENTRY newcke = { 0, 0, 0, };
-	CEditKeySequence edit( newcke, true, this );
+	CComposeSequenceEditor edit( newcke, true, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
 		_AddNewKeySequence( m_Options.m_ComposeKeyEntries.Add( newcke ) );
@@ -186,7 +186,7 @@ void CKeySequences::OnBnClickedEdit( ) {
 
 	int k = m_KeyComboList.GetNextSelectedItem( pos );
 	COMPOSE_KEY_ENTRY cke( m_Options.m_ComposeKeyEntries[ k ] );
-	CEditKeySequence edit( cke, false, this );
+	CComposeSequenceEditor edit( cke, false, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
 		m_Options.m_ComposeKeyEntries[ k ] = cke;

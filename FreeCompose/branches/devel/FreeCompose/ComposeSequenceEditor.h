@@ -2,12 +2,12 @@
 
 #include "KeyEdit.h"
 
-class CEditKeySequence: public CDialog {
-	DECLARE_DYNAMIC( CEditKeySequence )
+class CComposeSequenceEditor: public CDialog {
+	DECLARE_DYNAMIC( CComposeSequenceEditor )
 
 public:
-	CEditKeySequence( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent = NULL );
-	virtual ~CEditKeySequence( );
+	CComposeSequenceEditor( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent = NULL );
+	virtual ~CComposeSequenceEditor( );
 
 	// Dialog Data
 	enum { IDD = IDD_EDITKEYSEQUENCE };

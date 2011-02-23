@@ -1,28 +1,28 @@
 #include "stdafx.h"
 
 #include "FreeCompose.h"
-#include "EditKeySequence.h"
+#include "ComposeSequenceEditor.h"
 
 #include "Unicode.h"
 #include "Utils.h"
 
-IMPLEMENT_DYNAMIC(CEditKeySequence, CDialog)
+IMPLEMENT_DYNAMIC(CComposeSequenceEditor, CDialog)
 
-BEGIN_MESSAGE_MAP(CEditKeySequence, CDialog)
+BEGIN_MESSAGE_MAP(CComposeSequenceEditor, CDialog)
 END_MESSAGE_MAP()
 
-CEditKeySequence::CEditKeySequence( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent ):
-	CDialog    ( CEditKeySequence::IDD, pParent ),
+CComposeSequenceEditor::CComposeSequenceEditor( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent ):
+	CDialog    ( CComposeSequenceEditor::IDD, pParent ),
 	m_cke      ( cke ),
 	m_fAdd     ( fAddMode ),
 	m_strTitle ( (LPCWSTR) ( m_fAdd ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
 {
 }
 
-CEditKeySequence::~CEditKeySequence( ) {
+CComposeSequenceEditor::~CComposeSequenceEditor( ) {
 }
 
-void CEditKeySequence::DoDataExchange( CDataExchange* pDX ) {
+void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
 	DDX_Control ( pDX, IDC_FIRSTKEY,  m_editFirstKey    );
 	DDX_Control ( pDX, IDC_SECONDKEY, m_editSecondKey   );
@@ -34,7 +34,7 @@ void CEditKeySequence::DoDataExchange( CDataExchange* pDX ) {
 	DDV_Key     ( pDX, m_cke.vkSecond );
 }
 
-void CEditKeySequence::DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk ) {
+void CComposeSequenceEditor::DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk ) {
 	if ( IDC_FIRSTKEY == nIDC ) {
 		if ( pDX->m_bSaveAndValidate ) {
 			dwVk = m_editFirstKey.GetKey( );
@@ -52,7 +52,7 @@ void CEditKeySequence::DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk ) {
 	}
 }
 
-void CEditKeySequence::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
+void CComposeSequenceEditor::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
 	if ( ! pDX->m_bSaveAndValidate ) {
 		return;
 	}
@@ -62,9 +62,9 @@ void CEditKeySequence::DDV_Key( CDataExchange* pDX, DWORD& dwVk ) {
 	}
 }
 
-void CEditKeySequence::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch ) {
+void CComposeSequenceEditor::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch ) {
 	if ( IDC_RESULT != nIDC ) {
-		debug( L"CEditKeySequence::DDX_Char: wrong control ID?!\n", nIDC );
+		debug( L"CComposeSequenceEditor::DDX_Char: wrong control ID?!\n", nIDC );
 		return;
 	}
 
@@ -74,9 +74,9 @@ void CEditKeySequence::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch ) {
 		m_editResult.GetWindowText( str );
 		if ( ! str.IsEmpty( ) && ! Utf16ToUtf32( str, ch ) ) {
 			if ( 1 == str.GetLength( ) ) {
-				debug( L"CEditKeySequence::DDX_Char: Couldn't convert UTF-16 character U+%04hX to UTF-32?\n", str[0] );
+				debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-16 character U+%04hX to UTF-32?\n", str[0] );
 			} else {
-				debug( L"CEditKeySequence::DDX_Char: Couldn't convert UTF-16 characters U+%04hX U+%04hX to UTF-32?\n", str[0], str[1] );
+				debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-16 characters U+%04hX U+%04hX to UTF-32?\n", str[0], str[1] );
 			}
 			MessageBox( L"UTF-16 fail 3", m_strTitle, MB_OK|MB_ICONERROR );
 			pDX->Fail( );
@@ -87,12 +87,12 @@ void CEditKeySequence::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch ) {
 		} else if ( Utf32ToUtf16( ch, str ) ) {
 			m_editResult.SetWindowText( str );
 		} else {
-			debug( L"CEditKeySequence::DDX_Char: Couldn't convert UTF-32 value U+%04x to UTF-16??\n", ch );
+			debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-32 value U+%04x to UTF-16??\n", ch );
 		}
 	}
 }
 
-BOOL CEditKeySequence::OnInitDialog( ) {
+BOOL CComposeSequenceEditor::OnInitDialog( ) {
 	if ( ! CDialog::OnInitDialog( ) )
 		return FALSE;
 
