@@ -253,7 +253,7 @@
   <ItemGroup>
     <ClCompile Include="AboutDlg.cpp" />
     <ClCompile Include="ComposeDefaults.cpp" />
-    <ClCompile Include="EditKeySequence.cpp" />
+    <ClCompile Include="ComposeSequenceEditor.cpp" />
     <ClCompile Include="Features.cpp" />
     <ClCompile Include="FreeCompose.cpp" />
     <ClCompile Include="KeyEdit.cpp" />
@@ -273,7 +273,7 @@
   <ItemGroup>
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="ComposeDefaults.h" />
-    <ClInclude Include="EditKeySequence.h" />
+    <ClInclude Include="ComposeSequenceEditor.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="FreeCompose.h" />
     <ClInclude Include="KeyEdit.h" />
