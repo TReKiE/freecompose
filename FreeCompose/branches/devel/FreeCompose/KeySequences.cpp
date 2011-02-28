@@ -43,7 +43,7 @@ void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 }
 
 // TODO error handling
-void CKeySequences::_DoAddOneKeySequence( const int n ) {
+void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
 	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
 	CString col0, col1, col2;
 	int item;
@@ -54,7 +54,7 @@ void CKeySequences::_DoAddOneKeySequence( const int n ) {
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
-	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, n, col0, 0, (UINT) -1, -1, n );
+	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, (int) n, col0, 0, (UINT) -1, -1, n );
 	ASSERT( n == item );
 
 	col1 = VkToString( cke.vkFirst );
@@ -73,7 +73,7 @@ void CKeySequences::_DoAddOneKeySequence( const int n ) {
 }
 
 // TODO error handling
-void CKeySequences::_DoUpdateOneKeySequence( const int n ) {
+void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
 	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
 
 	CString col0, col1, col2;
@@ -83,19 +83,19 @@ void CKeySequences::_DoUpdateOneKeySequence( const int n ) {
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
-	m_KeyComboList.SetItem( n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
+	m_KeyComboList.SetItem( (int) n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
 
 	col1 = VkToString( cke.vkFirst );
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
-	m_KeyComboList.SetItem( n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
+	m_KeyComboList.SetItem( (int) n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
 
 	col2 = VkToString( cke.vkSecond );
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
-	m_KeyComboList.SetItem( n, 2, LVIF_TEXT, col2, -1, 0, 0, 0 );
+	m_KeyComboList.SetItem( (int) n, 2, LVIF_TEXT, col2, -1, 0, 0, 0 );
 }
 
 void CKeySequences::_AdjustColumns( void ) {
@@ -112,7 +112,7 @@ void CKeySequences::_FillKeyComboList( void ) {
 	_AdjustColumns( );
 }
 
-void CKeySequences::_AddNewKeySequence( const int n ) {
+void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
 	_DoAddOneKeySequence( n );
 	_AdjustColumns( );
 }
