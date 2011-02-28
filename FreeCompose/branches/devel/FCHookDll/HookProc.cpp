@@ -54,53 +54,60 @@ inline wchar_t makeSecondSurrogate( unsigned ch ) {
 	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
 }
 
-bool TranslateKey( DWORD vk1, DWORD vk2 ) {
+bool TranslateKey( DWORD vk1, DWORD vk2, COMPOSE_KEY_ENTRY& cke ) {
 	COMPOSE_KEY_ENTRY dummy1 = { vk1, vk2 };
 	COMPOSE_KEY_ENTRY dummy2 = { vk2, vk1 };
 	COMPOSE_KEY_ENTRY* pkey = NULL;
 
-	debug( _T("TranslateKey: vk1=%08x vk2=%08x\n"), vk1, vk2 );
 	LOCK( cs ) {
-		if ( NULL != cComposeKeyEntries && cComposeKeyEntries > 0 ) {
-			pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy1, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
-			if ( NULL == pkey ) {
-				pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy2, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
-			}
-		}
+		if ( NULL == cComposeKeyEntries || cComposeKeyEntries < 1 )
+			break;
+		
+		pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy1, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
+		if ( NULL != pkey )
+			break;
+		
+		pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy2, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
 	} UNLOCK( cs );
+
 	if ( NULL == pkey ) {
-		debug( _T("TranslateKey: failed: no mapping found\n") );
 		return false;
 	}
 
+	cke = *pkey;
+	return true;
+}
+
+bool SendKey( COMPOSE_KEY_ENTRY& cke ) {
 	UINT numInputsToSend;
 	INPUT input[4];
-	memset( input, 0, sizeof( input ) );
+	wchar_t ch[4];
 
-	unsigned composed = pkey->u32Composed;
-	if ( composed >= 0x10000 ) {
-		wchar_t ch[2];
-		ch[0] = makeFirstSurrogate  ( composed );
-		ch[1] = makeSecondSurrogate ( composed );
-		makeUnicodeKeyDown ( input[0], ch[0] );
-		makeUnicodeKeyUp   ( input[1], ch[0] );
-		makeUnicodeKeyDown ( input[2], ch[1] );
-		makeUnicodeKeyUp   ( input[3], ch[1] );
-		numInputsToSend = 4;
-	} else {
-		makeUnicodeKeyDown ( input[0], (wchar_t) composed );
-		makeUnicodeKeyUp   ( input[1], (wchar_t) composed );
+	memset( input, 0, sizeof( input ) );
+	memset( ch, 0, sizeof( ch ) );
+	if ( cke.u32Composed < 0x10000 ) {
 		numInputsToSend = 2;
+		ch[0] = (wchar_t) cke.u32Composed;
+	} else {
+		numInputsToSend = 4;
+		ch[0] = makeFirstSurrogate( cke.u32Composed );
+		ch[1] = makeSecondSurrogate( cke.u32Composed );
+	}
+	debug( _T("SendKey: u32Composed=U+%08x '%s' numInputsToSend=%d\n"), cke.u32Composed, ch, numInputsToSend );
+	makeUnicodeKeyDown( input[0], ch[0] );
+	makeUnicodeKeyUp( input[1], ch[0] );
+	if ( ch[1] ) {
+		makeUnicodeKeyDown( input[2], ch[1] );
+		makeUnicodeKeyUp( input[3], ch[1] );
 	}
 
 	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
 	if ( u < numInputsToSend ) {
-		debug( _T("TranslateKey: SendInput failed? u=%d %d\n"), u, GetLastError( ) );
+		debug( _T("SendKey: SendInput failed? sent=%d err=%d\n"), u, GetLastError( ) );
+		return false;
 	}
 
-	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) pkey->u32Composed );
-
-	debug( _T("TranslateKey: succeeded\n") );
+	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) cke.u32Composed );
 	return true;
 }
 
@@ -121,7 +128,9 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	if ( KEY_ALTDOWN() ) {
-		debug( _T("LLKP: ALT key down, ignoring\n") );
+		if ( ComposeState > 0 ) {
+			debug( _T("LLKP: ALT key down seen, aborting compose\n") );
+		}
 		ComposeState = 0;
 		goto acceptKey;
 	}
@@ -130,7 +139,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 	}
 	if ( KEY_UP() && WantedKeys.Contains( pkb->vkCode ) ) {
-		debug(_T("LLKP: WK eating wanted key\n"));
+		debug(_T("LLKP: eating wanted key\n"));
 		WantedKeys.Remove( pkb->vkCode );
 		return 1;
 	}
@@ -183,18 +192,23 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			if ( KEY_DOWN() ) {
 				if ( KEY_XALNUM() ) {
 					debug(_T("LLKP: 2=>0 Xalnum down\n"));
+					ComposeState = 0;
 					WantedKeys.Add( pkb->vkCode );
 					key2 = ( (DWORD) shift << 31 ) | pkb->vkCode;
 
+					COMPOSE_KEY_ENTRY cke;
+					WPARAM pip = PIP_FAIL;
 					debug(_T("LLKP: 2=>0 keys %08x %08x\n"), key1, key2);
-					if ( ! TranslateKey( key1, key2 ) ) {
+					if ( ! TranslateKey( key1, key2, cke ) ) {
 						debug(_T("LLKP: 2=>0 translate failed\n"));
-						::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_FAIL, 0 );
 					} else {
-						debug(_T("LLKP: 2=>0 translate succeeded\n"));
-						::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_3, 0 );
+						if ( ! SendKey( cke ) ) {
+							debug(_T("LLKP: 2=>0 send failed\n"));
+						} else {
+							pip = PIP_OK_3;
+						}
 					}
-					ComposeState = 0;
+					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_FAIL, 0 );
 					return 1;
 				} else if ( KEY_COMPOSE() && ! WantedKeys.Contains( vkCompose ) ) {
 					debug(_T("LLKP: 2=>0: Apps down abort\n"));
@@ -220,8 +234,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 rejectKey:
-	ComposeState = 0;
 	debug(_T("LLKP: rejectKey\n"));
+	ComposeState = 0;
 	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	WantedKeys.Add( vkCompose );
 	return 1;
