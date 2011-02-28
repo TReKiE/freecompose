@@ -4,11 +4,19 @@
 
 #pragma once
 
-// Allow use of features specific to Windows XP or later.
+#ifdef THIS_FILE_TARGETS_VISTA
+// Target Windows Vista or later.
 #define NTDDI_VERSION  NTDDI_VISTA
 #define WINVER         _WIN32_WINNT_VISTA
 #define _WIN32_WINNT   _WIN32_WINNT_VISTA
 #define _WIN32_IE      _WIN32_IE_IE60
+#else
+// Target Windows 2000 or later.
+#define NTDDI_VERSION  NTDDI_WIN2K
+#define WINVER         _WIN32_WINNT_WIN2K
+#define _WIN32_WINNT   _WIN32_WINNT_WIN2K
+#define _WIN32_IE      _WIN32_IE_IE50
+#endif
 
 #define NOMINMAX
 #define _ATL_APARTMENT_THREADED 
