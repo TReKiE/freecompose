@@ -96,13 +96,19 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Features"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Startup",IDC_STATIC,7,7,238,49,WS_GROUP
+    GROUPBOX        "Startup",IDC_STATIC,7,7,238,45,WS_GROUP
     CONTROL         "&Enable on startup",IDC_ENABLEONSTARTUP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,21,224,10
     CONTROL         "&Start with Windows",IDC_STARTWITHWINDOWS,"Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,14,35,224,10
-    GROUPBOX        "Keyboard",IDC_STATIC,7,63,238,49,WS_GROUP
-    CONTROL         "&Disable Caps Lock key",IDC_DISABLECAPSLOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,92,224,10
-    CONTROL         "S&wap Ctrl and Caps Lock keys",IDC_SWAPCTRLANDCAPS,
-                    "Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,14,77,224,10
+    GROUPBOX        "Keyboard",IDC_STATIC,7,59,238,108,WS_GROUP
+    LTEXT           "&Compose key",IDC_STATIC,14,75,44,8,NOT WS_GROUP
+    COMBOBOX        IDC_COMPOSE_KEY,118,73,120,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "S&wap Caps Lock with",IDC_SWAPCAPSLOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,91,97,10
+    COMBOBOX        IDC_SWAPCAPSLOCK_KEY,118,90,120,30,CBS_DROPDOWNLIST | CBS_SORT | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Caps Lock mode:",IDC_STATIC,14,109,55,8
+    CONTROL         "&Normal",IDC_CAPSLOCKMODE_NORMAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP,14,122,38,10
+    CONTROL         "&Press twice to activate",IDC_CAPSLOCKMODE_PRESSTWICE,
+                    "Button",BS_AUTORADIOBUTTON,14,137,89,10
+    CONTROL         "&Disable completely",IDC_CAPSLOCKMODE_DISABLED,"Button",BS_AUTORADIOBUTTON,14,152,75,10
 END
 
 IDD_EDITKEYSEQUENCE DIALOGEX 0, 0, 188, 95
@@ -208,7 +214,7 @@ END
 // Menu
 //
 
-IDM_POPUP MENU
+IDM_TRAY_MENU MENU
 BEGIN
     POPUP "popup"
     BEGIN
@@ -352,6 +358,23 @@ END
 STRINGTABLE
 BEGIN
     IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_VK_LCONTROL         "Left Control"
+    IDS_VK_RCONTROL         "Right Control"
+    IDS_VK_LMENU            "Left Alt"
+    IDS_VK_RMENU            "Right Alt"
+    IDS_VK_LWIN             "Left Windows"
+    IDS_VK_RWIN             "Right Windows"
+    IDS_VK_APPS             "Application"
+    IDS_VK_CAPITAL          "Caps Lock"
+    IDS_VK_NUMLOCK          "Num Lock"
+    IDS_VK_SCROLL           "Scroll Lock"
+    IDS_VK_ESCAPE           "Escape"
+    IDS_VK_PRINT            "Print"
+    IDS_VK_PAUSE            "Pause"
 END
 
 #endif    // English (Canada) resources

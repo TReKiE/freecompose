@@ -17,9 +17,10 @@ public:
  
 	BOOL m_fStartActive;
 	BOOL m_fStartWithWindows;
-	BOOL m_fSwapCtrlAndCaps;
-	BOOL m_fDisableCapsLock;
+	BOOL m_fSwapCapsLock;
+	CAPS_LOCK_MODE m_CapsLockMode;
 	DWORD m_vkCompose;
+	DWORD m_vkSwapCapsLock;
 
 private:
 	bool _FcValidateCke( const COMPOSE_KEY_ENTRY& cke );

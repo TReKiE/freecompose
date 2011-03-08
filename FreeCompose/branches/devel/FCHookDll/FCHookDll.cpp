@@ -1,5 +1,3 @@
-// FCHookDll.cpp : Defines the entry point for the DLL application.
-
 #include "stdafx.h"
 #include "FCHookDll.h"
 #include "HookProc.h"
@@ -49,6 +47,14 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
     return TRUE;
 }
 
+//
+// FC API
+//
+
+FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
+	return FCHOOKDLL_API_VERSION;
+}
+
 FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries ) {
 	COMPOSE_KEY_ENTRY* pcke = (COMPOSE_KEY_ENTRY*) calloc( cEntries, sizeof( COMPOSE_KEY_ENTRY ) );
 	memcpy( pcke, rgEntries, sizeof( COMPOSE_KEY_ENTRY ) * cEntries );
@@ -62,8 +68,6 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 
 	LOCK( cs ) {
 		if ( NULL != hHook ) {
-			debug( _T( "FcEnableHook: hook already registered!!\n" ) );
-			ret = FALSE;
 			break;
 		}
 		hHook = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc, hDllInst, 0 );
@@ -81,8 +85,6 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 
 	LOCK( cs ) {
 		if ( NULL == hHook ) {
-			debug( _T( "FcDisableHook: hook not registered!!\n" ) );
-			ret = FALSE;
 			break;
 		}
 		if ( ! UnhookWindowsHookEx( hHook ) ) {
@@ -95,31 +97,39 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 	return ret;
 }
 
-FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
-	return FCHOOKDLL_API_VERSION;
-}
-
-FCHOOKDLL_API BOOL FcEnableCapsLock( void ) {
-	//LOCK( cs ) {
-		fDisableCapsLock = false;
-	//} UNLOCK( cs );
+FCHOOKDLL_API BOOL FcSetCapsLockMode( CAPS_LOCK_MODE mode ) {
+	clmCapsLockMode = mode;
 	return TRUE;
 }
 
-FCHOOKDLL_API BOOL FcDisableCapsLock( void ) {
-	//LOCK( cs ) {
-		fDisableCapsLock = true;
-	//} UNLOCK( cs );
+FCHOOKDLL_API CAPS_LOCK_MODE FcGetCapsLockMode( void ) {
+	return clmCapsLockMode;
+}
+
+FCHOOKDLL_API BOOL FcEnableSwapCapsLock( void ) {
+	fSwapCapsLock = true;
+	return TRUE;
+}
+
+FCHOOKDLL_API BOOL FcDisableSwapCapsLock( void ) {
+	fSwapCapsLock = false;
 	return TRUE;
 }
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
-	LOCK( cs ) {
-		vkCompose = _vkCompose;
-	} UNLOCK( cs );
+	vkCompose = _vkCompose;
 	return TRUE;
 }
 
 FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
 	return vkCompose;
+}
+
+FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD _vkCapsLockSwap ) {
+	vkCapsLockSwap = _vkCapsLockSwap;
+	return TRUE;
+}
+
+FCHOOKDLL_API DWORD FcGetSwapCapsLockKey( void ) {
+	return vkCapsLockSwap;
 }

@@ -71,19 +71,16 @@ void CMainFrame::_Reconfigure( void ) {
 		m_fActive = false;
 	}
 
-	if ( m_pOptions->m_fSwapCtrlAndCaps ) {
-		// TODO FcEnableSwapCtrlAndCaps( );
-	} else {
-		// TODO FcDisableSwapCtrlAndCaps( );
-	}
+	FcSetCapsLockMode( m_pOptions->m_CapsLockMode );
 
-	if ( m_pOptions->m_fDisableCapsLock ) {
-		FcDisableCapsLock( );
+	if ( m_pOptions->m_fSwapCapsLock ) {
+		FcEnableSwapCapsLock( );
 	} else {
-		FcEnableCapsLock( );
+		FcDisableSwapCapsLock( );
 	}
 
 	FcSetComposeKey( m_pOptions->m_vkCompose );
+	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
@@ -94,7 +91,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 		m_fActive ? m_strEnabled : m_strDisabled,
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
 		APP_NOTIFYICON,
-		IDM_POPUP
+		IDM_TRAY_MENU
 	);
 }
 
@@ -135,6 +132,8 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 }
 
 LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
+	debug( L"CMainFrame::OnFcmPip: wPip=%d\n", wPip );
+
 	switch ( wPip ) {
 		case PIP_OK_1:
 			::Beep( 523, 100 );
@@ -216,7 +215,7 @@ void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 
 void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
 	pui->SetCheck( IsAsyncCapsLock( ) ? 1 : 0 );
-	pui->Enable( m_fActive && m_pOptions->m_fDisableCapsLock );
+	pui->Enable( m_fActive && ( CLM_DISABLED == m_pOptions->m_CapsLockMode ) );
 }
 
 BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
