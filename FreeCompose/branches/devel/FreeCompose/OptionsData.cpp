@@ -140,7 +140,7 @@ void COptionsData::_UpdateRunKey( void ) {
 	if ( m_fStartWithWindows ) {
 		wchar_t lpszImageFilename[1024];
 		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, countof(lpszImageFilename) ) > 0 ) {
-			rc = RegSetValueEx( hk, _T("Zive Compose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
+			rc = RegSetValueEx( hk, _T("FreeCompose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
 				debug( _T("COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n"), rc );
 			}
@@ -148,7 +148,7 @@ void COptionsData::_UpdateRunKey( void ) {
 			debug( _T("COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n"), GetLastError( ) );
 		}
 	} else {
-		rc = RegDeleteValue( hk, _T("Zive Compose") );
+		rc = RegDeleteValue( hk, _T("FreeCompose") );
 		if ( ERROR_SUCCESS != rc ) {
 			debug( _T("COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n"), rc );
 		}
