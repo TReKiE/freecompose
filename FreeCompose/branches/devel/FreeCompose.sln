@@ -5,7 +5,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeCompose", "FreeCompose\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCHookDll", "FCHookDll\FCHookDll.vcxproj", "{526574F1-C735-469C-A193-35235DF232BD}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{FC37083F-FE77-4D25-97B1-57C7B3A588FA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2926CC61-E345-4303-9DF7-C129C5DDE354}"
+	ProjectSection(SolutionItems) = preProject
+		Licence.rtf = Licence.rtf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -35,12 +40,11 @@ Global
 		{526574F1-C735-469C-A193-35235DF232BD}.Release|Win32.Build.0 = Release|Win32
 		{526574F1-C735-469C-A193-35235DF232BD}.Release|x64.ActiveCfg = Release|x64
 		{526574F1-C735-469C-A193-35235DF232BD}.Release|x64.Build.0 = Release|x64
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Debug|Win32.ActiveCfg = Debug
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Debug|x64.ActiveCfg = Debug
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|Win32.ActiveCfg = Release
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|Win32.Build.0 = Release
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|x64.ActiveCfg = Release
-		{7A139B41-7EFB-412C-A0CA-FB5F8980A5ED}.Release|x64.Build.0 = Release
+		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Debug|Win32.ActiveCfg = Debug
+		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Debug|x64.ActiveCfg = Debug
+		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|Win32.ActiveCfg = Release
+		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|Win32.Build.0 = Release
+		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
