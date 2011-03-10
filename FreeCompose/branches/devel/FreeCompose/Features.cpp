@@ -128,7 +128,7 @@ void CFeatures::OnComposeKeyChanged( ) {
 	if ( CB_ERR == dw )
 		return;
 
-	m_Options.m_vkCompose = dw;
+	m_Options.m_vkCompose = (DWORD) dw;
 	SetModified( );
 }
 
@@ -150,7 +150,7 @@ void CFeatures::OnSwapCapsLockKeyChanged( ) {
 	if ( CB_ERR == dw )
 		return;
 
-	m_Options.m_vkSwapCapsLock = dw;
+	m_Options.m_vkSwapCapsLock = (DWORD) dw;
 	SetModified( );
 }
 
