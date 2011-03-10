@@ -12,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Licence.rtf = Licence.rtf
 	EndProjectSection
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup x64", "Setup x64\Setup x64.vdproj", "{3E86E306-9E61-4059-9099-13AC33FC03A9}"
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -45,6 +47,11 @@ Global
 		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|Win32.ActiveCfg = Release
 		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|Win32.Build.0 = Release
 		{FC37083F-FE77-4D25-97B1-57C7B3A588FA}.Release|x64.ActiveCfg = Release
+		{3E86E306-9E61-4059-9099-13AC33FC03A9}.Debug|Win32.ActiveCfg = Debug
+		{3E86E306-9E61-4059-9099-13AC33FC03A9}.Debug|x64.ActiveCfg = Debug
+		{3E86E306-9E61-4059-9099-13AC33FC03A9}.Release|Win32.ActiveCfg = Release
+		{3E86E306-9E61-4059-9099-13AC33FC03A9}.Release|x64.ActiveCfg = Release
+		{3E86E306-9E61-4059-9099-13AC33FC03A9}.Release|x64.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

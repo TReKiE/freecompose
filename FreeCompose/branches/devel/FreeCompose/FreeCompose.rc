@@ -133,8 +133,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,0,3
- PRODUCTVERSION 1,1,0,3
+ FILEVERSION 1,1,0,4
+ PRODUCTVERSION 1,1,0,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -151,12 +151,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Zive Technology Research"
             VALUE "FileDescription", "FreeCompose"
-            VALUE "FileVersion", "1.1.0.3"
+            VALUE "FileVersion", "1.1.0.4"
             VALUE "InternalName", "FreeCompose.exe"
             VALUE "LegalCopyright", "© Zive Technology Research"
             VALUE "OriginalFilename", "FreeCompose.exe"
             VALUE "ProductName", "FreeCompose"
-            VALUE "ProductVersion", "1.1.0.3"
+            VALUE "ProductVersion", "1.1.0.4"
         END
     END
     BLOCK "VarFileInfo"
