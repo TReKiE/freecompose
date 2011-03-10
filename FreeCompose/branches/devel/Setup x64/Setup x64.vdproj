@@ -1,9 +1,9 @@
-﻿"DeployProject"
+"DeployProject"
 {
 "VSVersion" = "3:800"
 "ProjectType" = "8:{978C614F-708E-4E1A-B201-565925725DBA}"
 "IsWebType" = "8:FALSE"
-"ProjectName" = "8:Setup"
+"ProjectName" = "8:Setup x64"
 "LanguageId" = "3:1033"
 "CodePage" = "3:1252"
 "UILanguageId" = "3:1033"
@@ -15,13 +15,13 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_08F882136E2C407EBFA0813DD782E6EF"
+        "MsmKey" = "8:_17953E60876C09E1A0E997F070CA7386"
         "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_17953E60876C09E1A0E997F070CA7386"
+        "MsmKey" = "8:_1ADBBE49D476DB1991A8E3027F975729"
         "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,13 +33,19 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4A977EF0F9E344848E90E78EB823C908"
+        "MsmKey" = "8:_4F93A8B42A1642A59ECB96475B4030A4"
         "OwnerKey" = "8:_3D379301E55C487DAF74FDFA4F124EA7"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_4A977EF0F9E344848E90E78EB823C908"
+        "MsmKey" = "8:_4F93A8B42A1642A59ECB96475B4030A4"
+        "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_588D8C3D759E41B795331CAF07881DF9"
         "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -67,12 +73,6 @@
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
-        "Entry"
-        {
-        "MsmKey" = "8:_FF2E85B1AA437093D390721D00505CF2"
-        "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
-        "MsmSig" = "8:_UNDEFINED"
-        }
     }
     "Configurations"
     {
@@ -81,7 +81,7 @@
         "DisplayName" = "8:Debug"
         "IsDebugOnly" = "11:TRUE"
         "IsReleaseOnly" = "11:FALSE"
-        "OutputFilename" = "8:..\\Build\\Win32\\Debug\\setup\\FreeCompose-x86.msi"
+        "OutputFilename" = "8:..\\Build\\x64\\Debug\\setup\\FreeCompose-x64.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -113,7 +113,7 @@
         "DisplayName" = "8:Release"
         "IsDebugOnly" = "11:FALSE"
         "IsReleaseOnly" = "11:TRUE"
-        "OutputFilename" = "8:..\\Build\\Win32\\Release\\setup\\FreeCompose-x86.msi"
+        "OutputFilename" = "8:..\\Build\\x64\\Release\\setup\\FreeCompose-x64.msi"
         "PackageFilesAs" = "3:2"
         "PackageFileSize" = "3:-2147483648"
         "CabType" = "3:1"
@@ -164,6 +164,26 @@
             {
             "SourcePath" = "8:PSAPI.DLL"
             "TargetName" = "8:PSAPI.DLL"
+            "Tag" = "8:"
+            "Folder" = "8:_DB89ED39D8734E6FBB201A560CCD2A41"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1ADBBE49D476DB1991A8E3027F975729"
+            {
+            "SourcePath" = "8:FCHookDll.dll"
+            "TargetName" = "8:FCHookDll.dll"
             "Tag" = "8:"
             "Folder" = "8:_DB89ED39D8734E6FBB201A560CCD2A41"
             "Condition" = "8:"
@@ -240,26 +260,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FF2E85B1AA437093D390721D00505CF2"
-            {
-            "SourcePath" = "8:FCHookDll.dll"
-            "TargetName" = "8:FCHookDll.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_DB89ED39D8734E6FBB201A560CCD2A41"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -301,7 +301,7 @@
             }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_DB89ED39D8734E6FBB201A560CCD2A41"
             {
-            "DefaultLocation" = "8:[ProgramFilesFolder][Manufacturer]\\[ProductName]"
+            "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
             "AlwaysCreate" = "11:FALSE"
             "Condition" = "8:"
@@ -328,7 +328,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:FreeCompose"
         "ProductCode" = "8:{35BDA5E1-44B8-42C4-8E03-DA7B231BFF85}"
-        "PackageCode" = "8:{CD3BBAA9-B700-4072-BDB8-37ED7B55271B}"
+        "PackageCode" = "8:{3F4A2F7D-0ABE-43CC-B54C-D3685276AC42}"
         "UpgradeCode" = "8:{4A0B60E6-D027-4CA8-8E16-8E98344EF382}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -349,7 +349,7 @@
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
-        "TargetPlatform" = "3:0"
+        "TargetPlatform" = "3:1"
         "PreBuildEvent" = "8:"
         "PostBuildEvent" = "8:"
         "RunPostBuildEvent" = "3:0"
@@ -1288,11 +1288,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_08F882136E2C407EBFA0813DD782E6EF"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4F93A8B42A1642A59ECB96475B4030A4"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_MFC_x86.msm"
+            "SourcePath" = "8:Microsoft_VC100_CRT_x64.msm"
                 "Properties"
                 {
                 }
@@ -1302,11 +1302,11 @@
             "Feature" = "8:"
             "IsolateTo" = "8:"
             }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_4A977EF0F9E344848E90E78EB823C908"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_588D8C3D759E41B795331CAF07881DF9"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_CRT_x86.msm"
+            "SourcePath" = "8:Microsoft_VC100_MFC_x64.msm"
                 "Properties"
                 {
                 }
@@ -1321,7 +1321,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_3D379301E55C487DAF74FDFA4F124EA7"
             {
-            "SourcePath" = "8:..\\Build\\Win32\\Release\\bin\\FCHookDll.dll"
+            "SourcePath" = "8:..\\Build\\x64\\Release\\bin\\FCHookDll.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DB89ED39D8734E6FBB201A560CCD2A41"
@@ -1339,7 +1339,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Win32"
+            "OutputConfiguration" = "8:Release|x64"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{526574F1-C735-469C-A193-35235DF232BD}"
             "ShowKeyOutput" = "11:TRUE"
@@ -1349,7 +1349,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
             {
-            "SourcePath" = "8:..\\Build\\Win32\\Release\\bin\\FreeCompose.exe"
+            "SourcePath" = "8:..\\Build\\x64\\Release\\bin\\FreeCompose.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_DB89ED39D8734E6FBB201A560CCD2A41"
@@ -1367,7 +1367,7 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Win32"
+            "OutputConfiguration" = "8:Release|x64"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{E4ABDDFB-9594-4428-AAA7-49F5718377D6}"
             "ShowKeyOutput" = "11:TRUE"
