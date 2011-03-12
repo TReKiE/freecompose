@@ -1,5 +1,3 @@
-// Features.cpp : implementation file
-
 #include "stdafx.h"
 
 #include "FreeCompose.h"
@@ -15,7 +13,6 @@ const DWORD SpecialKeys[] = {
 };
 
 IMPLEMENT_DYNAMIC( CFeatures, CPropertyPage )
-
 BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 	ON_BN_CLICKED( IDC_ENABLEONSTARTUP, &CFeatures::OnChanged )
 	ON_BN_CLICKED( IDC_STARTWITHWINDOWS, &CFeatures::OnChanged )
