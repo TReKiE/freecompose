@@ -126,6 +126,13 @@ BEGIN
     LTEXT           "Result:",IDC_STATIC,7,51,24,8
 END
 
+IDD_SOUNDS DIALOGEX 0, 0, 252, 196
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
+CAPTION "Sounds"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -204,6 +211,14 @@ BEGIN
         RIGHTMARGIN, 181
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
+    END
+
+    IDD_SOUNDS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 189
     END
 END
 #endif    // APSTUDIO_INVOKED

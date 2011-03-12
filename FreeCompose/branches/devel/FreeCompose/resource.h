@@ -9,12 +9,16 @@
 #define IDD_KEYSEQUENCES                130
 #define IDD_FEATURES                    131
 #define IDD_EDITKEYSEQUENCE             132
+#define IDD_SOUNDS                      133
+// IDD_ABOUTBOX
 #define IDC_ABOUT_VERSION               2001
 #define IDC_ABOUT_COPYRIGHT             2002
+// IDD_KEYSEQUENCES
 #define IDC_KEYCOMBOLIST                3001
 #define IDADD                           3002
 #define IDEDIT                          3003
 #define IDREMOVE                        3004
+// IDD_FEATURES
 #define IDC_ENABLEONSTARTUP             4001
 #define IDC_STARTWITHWINDOWS            4002
 #define IDC_COMPOSE_KEY                 4003
@@ -23,23 +27,27 @@
 #define IDC_CAPSLOCKMODE_NORMAL         4006
 #define IDC_CAPSLOCKMODE_PRESSTWICE     4007
 #define IDC_CAPSLOCKMODE_DISABLED       4008
+// IDD_EDITKEYSEQUENCE
 #define IDC_FIRSTKEY                    5001
 #define IDC_SECONDKEY                   5002
 #define IDC_RESULT                      5003
-#define IDS_VK_NAMES_BASE               8001
-#define IDS_VK_LCONTROL                 8001
-#define IDS_VK_RCONTROL                 8002
-#define IDS_VK_LMENU                    8003
-#define IDS_VK_RMENU                    8004
-#define IDS_VK_LWIN                     8005
-#define IDS_VK_RWIN                     8006
-#define IDS_VK_APPS                     8007
-#define IDS_VK_CAPITAL                  8008
-#define IDS_VK_NUMLOCK                  8009
-#define IDS_VK_SCROLL                   8010
-#define IDS_VK_ESCAPE                   8011
-#define IDS_VK_PRINT                    8012
-#define IDS_VK_PAUSE                    8013
+// IDD_SOUNDS
+// VK names
+#define IDS_VK_NAMES_BASE               8000
+#define IDS_VK_LCONTROL                 8000
+#define IDS_VK_RCONTROL                 8001
+#define IDS_VK_LMENU                    8002
+#define IDS_VK_RMENU                    8003
+#define IDS_VK_LWIN                     8004
+#define IDS_VK_RWIN                     8005
+#define IDS_VK_APPS                     8006
+#define IDS_VK_CAPITAL                  8007
+#define IDS_VK_NUMLOCK                  8008
+#define IDS_VK_SCROLL                   8009
+#define IDS_VK_ESCAPE                   8010
+#define IDS_VK_PRINT                    8011
+#define IDS_VK_PAUSE                    8012
+// strings
 #define IDS_ABOUT_VERSION               22001
 #define IDS_EDITKEYSEQUENCE_TITLE_EDIT  22002
 #define IDS_EDITKEYSEQUENCE_TITLE_ADD   22003
@@ -64,7 +72,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        133
+#define _APS_NEXT_RESOURCE_VALUE        134
 #define _APS_NEXT_COMMAND_VALUE         32773
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

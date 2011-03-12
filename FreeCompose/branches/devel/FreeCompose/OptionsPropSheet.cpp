@@ -31,7 +31,7 @@ COptionsPropSheet::~COptionsPropSheet( ) {
 }
 
 int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
-	ModifyStyle( 0, WS_MINIMIZEBOX );
+	ModifyStyle( 0, ( DS_3DLOOK|DS_CONTROL|WS_CHILD|WS_TABSTOP ) | WS_MINIMIZEBOX );
 	ModifyStyleEx( 0, WS_EX_APPWINDOW );
 	return CPropertySheet::OnCreate( lpcs );
 }

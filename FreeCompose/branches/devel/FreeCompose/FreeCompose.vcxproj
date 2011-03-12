@@ -260,6 +260,7 @@
     <ClCompile Include="NTray.cpp" />
     <ClCompile Include="OptionsData.cpp" />
     <ClCompile Include="OptionsPropSheet.cpp" />
+    <ClCompile Include="Sounds.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -286,6 +287,7 @@
     <ClInclude Include="NTray.h" />
     <ClInclude Include="OptionsData.h" />
     <ClInclude Include="OptionsPropSheet.h" />
+    <ClInclude Include="Sounds.h" />
     <ClInclude Include="Unicode.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Resource.h" />
