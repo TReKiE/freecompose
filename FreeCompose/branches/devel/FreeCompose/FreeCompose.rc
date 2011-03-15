@@ -239,7 +239,7 @@ BEGIN
         MENUITEM "toggle",                      ID_APP_TOGGLE
         MENUITEM "Caps &Lock",                  ID_APP_CAPSLOCK
         MENUITEM SEPARATOR
-        MENUITEM "&Configure...",               ID_APP_CONFIGURE
+        MENUITEM "&Options...",                 ID_APP_CONFIGURE
         MENUITEM "&About...",                   ID_APP_ABOUT
         MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_APP_EXIT
