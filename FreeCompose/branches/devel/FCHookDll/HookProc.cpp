@@ -153,6 +153,21 @@ void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
+bool HandleCapsLock( void ) {
+	if ( CLM_DISABLED == clmCapsLockMode ) {
+		debug( L"HandleCapsLock: disabled, eating\n" );
+		return true;
+	}
+	if ( CLM_PRESSTWICE == clmCapsLockMode ) {
+		// first press, don't let through
+		debug( L"HandleCapsLock: press-twice mode, first press\n" );
+		WantedKeys.Add( VK_CAPITAL );
+		ComposeState = 3;
+		return true;
+	}
+	return false;
+}
+
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
 	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
 	bool fRegenerate = false;
@@ -207,17 +222,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					WantedKeys.Add( vkCompose );
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_1, 0 );
 					return 1;
-				} else if ( KEY_CAPSLOCK() ) {
-					if ( CLM_DISABLED == clmCapsLockMode ) {
-						debug( L"LLKP|0=>0 CapsLock: disabled, eating\n" );
-						return 1;
-					} else if ( CLM_PRESSTWICE == clmCapsLockMode ) {
-						// first press, don't let through
-						debug( L"LLKP|0=>3 CapsLock: press-twice mode, first press\n" );
-						WantedKeys.Add( VK_CAPITAL );
-						ComposeState = 3;
-						return 1;
-					}
+				} else if ( KEY_CAPSLOCK() && HandleCapsLock( ) ) {
+					return 1;
 				}
 			}
 
@@ -236,6 +242,9 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					debug(L"LLKP|1=>0: Apps down abort\n");
 					ComposeState = 0;
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
+					if ( KEY_CAPSLOCK() && HandleCapsLock( ) ) {
+						return 1;
+					}
 					goto acceptKey;
 				} else {
 					debug(L"LLKP|1=>0 rejecting\n");
