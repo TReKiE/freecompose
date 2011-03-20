@@ -10,7 +10,7 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0023
+#define FCHOOKDLL_API_VERSION 0x0024
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;

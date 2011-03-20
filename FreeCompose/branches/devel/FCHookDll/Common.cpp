@@ -3,10 +3,6 @@
 #include "HookProc.h"
 #include "Common.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 void debug( LPCWSTR lpszMessage, ... ) {
 	wchar_t buf[1024];
 

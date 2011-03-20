@@ -42,10 +42,6 @@ inline bool operator!=( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b )
 	return ! operator==( a, b );
 }
 
-inline bool IsAsyncCapsLock( void ) {
-	return ( GetAsyncKeyState( VK_CAPITAL ) & 1 ) == 1;
-}
-
 inline bool IsKeyDown( const DWORD vk ) {
 	unsigned u = (unsigned short) GetKeyState( vk );
 	return ( u & 0x8000U ) == 0x8000U;

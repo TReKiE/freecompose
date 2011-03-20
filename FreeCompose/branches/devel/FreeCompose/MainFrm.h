@@ -5,11 +5,17 @@
 #include "OptionsData.h"
 #include "NTray.h"
 
+#undef USE_TIMER
+
 class CMainFrame: public CFrameWnd {
+	DECLARE_DYNAMIC( CMainFrame )
+	DECLARE_MESSAGE_MAP( )
+
 public:
 	CMainFrame( );
 	virtual ~CMainFrame( );
 
+protected:
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
@@ -23,11 +29,14 @@ public:
 	afx_msg void OnAppConfigure( );
 	afx_msg void OnUpdateAppToggle( CCmdUI* );
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
-
-protected:
-	DECLARE_MESSAGE_MAP( )
+#ifdef USE_TIMER
+	afx_msg void OnTimer( UINT_PTR nId );
+#endif
 
 private:
+#ifdef USE_TIMER
+	UINT_PTR m_uTimerId;
+#endif
 	CTrayNotifyIcon* m_ptni;
 	COptionsData* m_pOptions;
 	bool m_fActive;
@@ -38,6 +47,4 @@ private:
 	void _Initialize( void );
 	void _Reconfigure( void );
 	void _SetupTrayIcon( void );
-
-	DECLARE_DYNAMIC( CMainFrame )
 };

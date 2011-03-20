@@ -11,7 +11,6 @@ public:
 
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
-	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
 	afx_msg void OnKeyComboListDoubleClick( NMHDR* pNMHDR, LRESULT* pResult );

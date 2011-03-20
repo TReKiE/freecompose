@@ -22,7 +22,6 @@ private:
 	COptionsPropSheet( LPCWSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
 
 	virtual void OnApplyNow( );
-	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpcs );
 

@@ -5,10 +5,6 @@
 
 #include <initguid.h>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 extern void InitializeDebug( void );
 extern void TerminateDebug( void );
 
@@ -47,6 +43,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 
 	CWinApp::InitInstance( );
 
+	debug(L"sizeof(CMainFrame)=%d\n", sizeof(CMainFrame));
 	CMainFrame* pFrame = new CMainFrame;
 	if ( ! pFrame ) {
 		return FALSE;
