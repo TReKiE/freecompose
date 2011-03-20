@@ -28,7 +28,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx( &InitCtrls );
 
-	debug( _T("CFreeComposeApp::InitInstance: DLL %d host %d\n"), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
+	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %d, DLL %d\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
 		str.Format( CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
@@ -39,11 +39,10 @@ BOOL CFreeComposeApp::InitInstance( ) {
 
 	CoInitializeEx( NULL, COINIT_MULTITHREADED );
 	SetRegistryKey( AFX_IDS_COMPANY_NAME );
-	InitializeDebug( );
-
 	CWinApp::InitInstance( );
 
-	debug(L"sizeof(CMainFrame)=%d\n", sizeof(CMainFrame));
+	InitializeDebug( );
+
 	CMainFrame* pFrame = new CMainFrame;
 	if ( ! pFrame ) {
 		return FALSE;
