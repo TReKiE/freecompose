@@ -38,10 +38,6 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 				DeleteCriticalSection( &cs );
 			}
 			break;
-
-		case DLL_THREAD_ATTACH:
-		case DLL_THREAD_DETACH:
-			break;
 	}
 
     return TRUE;

@@ -36,12 +36,6 @@ int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
 	return CPropertySheet::OnCreate( lpcs );
 }
 
-BOOL COptionsPropSheet::PreTranslateMessage( MSG* pMsg ) {
-	if ( IsDialogMessage( pMsg ) )
-		return TRUE;
-	return CPropertySheet::PreTranslateMessage( pMsg );
-}
-
 void COptionsPropSheet::OnApplyNow( ) {
 	m_KeySequences.UpdateData( TRUE );
 	m_Features.UpdateData( TRUE );

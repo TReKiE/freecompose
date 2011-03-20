@@ -226,9 +226,3 @@ void CKeySequences::OnBnClickedRemove( ) {
 
 	SetModified( );
 }
-
-BOOL CKeySequences::PreTranslateMessage( MSG* pMsg ) {
-	if ( IsDialogMessage( pMsg ) )
-		return TRUE;
-	return CPropertyPage::PreTranslateMessage( pMsg );
-}

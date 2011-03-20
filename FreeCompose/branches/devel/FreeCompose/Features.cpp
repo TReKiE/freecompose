@@ -50,10 +50,10 @@ BOOL CFeatures::OnInitDialog( ) {
 	if ( ! CPropertyPage::OnInitDialog( ) )
 		return FALSE;
 
-	debug( L"CFeatures::OnInitDialog: %c%c%c %d 0x%02x 0x%02x\n",
-		m_Options.m_fStartActive      ? 'T' : 'f',
-		m_Options.m_fStartWithWindows ? 'T' : 'f',
-		m_Options.m_fSwapCapsLock     ? 'T' : 'f',
+	debug( L"CFeatures::OnInitDialog: SA:%c SWW:%c SCL:%c CLM:%d VC:0x%02x VSCL:0x%02x\n",
+		m_Options.m_fStartActive      ? L'T' : L'f',
+		m_Options.m_fStartWithWindows ? L'T' : L'f',
+		m_Options.m_fSwapCapsLock     ? L'T' : L'f',
 		m_Options.m_CapsLockMode,
 		m_Options.m_vkCompose,
 		m_Options.m_vkSwapCapsLock
@@ -95,13 +95,6 @@ BOOL CFeatures::OnInitDialog( ) {
 
 	UpdateData( FALSE );
 	return TRUE;
-}
-
-BOOL CFeatures::PreTranslateMessage( MSG* pMsg ) {
-	if ( IsDialogMessage( pMsg ) )
-		return TRUE;
-
-	return CPropertyPage::PreTranslateMessage( pMsg );
 }
 
 //

@@ -182,7 +182,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 	}
 
-	debug( L"LLKP|ComposeState=%d nCode=%d wParam=%04x vk=%02x scan=%08x flags=%08x\n", ComposeState, nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
+	//debug( L"LLKP|ComposeState=%d nCode=%d wParam=%04x vk=%02x scan=%08x flags=%08x\n", ComposeState, nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	if ( fSwapCapsLock ) {
 		if ( VK_CAPITAL == pkb->vkCode ) {

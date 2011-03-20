@@ -17,7 +17,6 @@ public:
 private:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
-	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg void OnChanged( void );
 	afx_msg void OnComposeKeyChanged( );
