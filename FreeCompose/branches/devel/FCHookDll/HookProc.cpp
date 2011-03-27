@@ -2,6 +2,7 @@
 #include "FCHookDll.h"
 #include "HookProc.h"
 #include "Common.h"
+#include "KeyIsXAlnum.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -12,34 +13,10 @@
 #define KEY_INJECTED() ( 0 != ( pkb->flags & LLKHF_INJECTED ) )
 #define KEY_ALTDOWN()  ( 0 != ( pkb->flags & LLKHF_ALTDOWN  ) )
 
-#define KEY_XALNUM() ( keyIsXAlNum.Test( pkb->vkCode ) )
-#define KEY_SHIFT() ( VK_LSHIFT == pkb->vkCode || VK_RSHIFT == pkb->vkCode )
+#define KEY_XALNUM() ( KeyIsXAlnum::Test( pkb->vkCode ) )
+#define KEY_SHIFT() ( ( VK_LSHIFT == pkb->vkCode ) || ( VK_RSHIFT == pkb->vkCode ) )
 #define KEY_COMPOSE() ( vkCompose == pkb->vkCode )
 #define KEY_CAPSLOCK() ( VK_CAPITAL == pkb->vkCode )
-
-class KeyIsXAlNum {
-public:
-	KeyIsXAlNum( ) {
-		for ( int n = '0'; n <= '9'; n++ )
-			map[n] = true;
-		for ( int n = 'A'; n <= 'Z'; n++ )
-			map[n] = true;
-		for ( int n = VK_OEM_1; n <= VK_OEM_3; n++ )
-			map[n] = true;
-		for ( int n = VK_OEM_4; n <= VK_OEM_7; n++ )
-			map[n] = true;
-		map[VK_OEM_102] = true;
-	}
-
-	inline bool Test( const DWORD dw ) const {
-		if ( dw >= 256 )
-			return false;
-		return map[dw];
-	}
-
-private:
-	bool map[256];
-};
 
 #pragma data_seg( push, ".shareddata" )
 int ComposeState = 0;
@@ -48,7 +25,6 @@ DWORD key2 = 0;
 bool shift = false;
 
 ByteSet WantedKeys;
-const KeyIsXAlNum keyIsXAlNum;
 #pragma data_seg( pop )
 
 const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );

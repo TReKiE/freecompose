@@ -32,9 +32,6 @@
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FCHookDll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HookProc.h">
       <Filter>Header Files</Filter>
     </ClInclude>

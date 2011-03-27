@@ -3,6 +3,7 @@
 #include "FreeCompose.h"
 #include "KeyEdit.h"
 
+#include "KeyIsXAlnum.h"
 #include "Utils.h"
 
 IMPLEMENT_DYNAMIC(CKeyEdit, CEdit)
@@ -15,10 +16,7 @@ BEGIN_MESSAGE_MAP(CKeyEdit, CEdit)
 	ON_CONTROL_REFLECT(EN_SETFOCUS, &CKeyEdit::OnEnSetFocus)
 END_MESSAGE_MAP()
 
-#define KEY_XALNUM(x) ( ( (x) >= '0'      && (x) <= '9'      ) || \
-					    ( (x) >= 'A'      && (x) <= 'Z'      ) || \
-					    ( (x) >= VK_OEM_1 && (x) <= VK_OEM_3 ) || \
-					    ( (x) >= VK_OEM_4 && (x) <= VK_OEM_7 )    )
+#define KEY_XALNUM(x) ( KeyIsXAlnum::Test( (x) ) )
 
 CKeyEdit::CKeyEdit( ): m_dwVk ( 0 ) {
 }
