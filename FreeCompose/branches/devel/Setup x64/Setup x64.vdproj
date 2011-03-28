@@ -15,18 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0E93F71032C246BA912B384C30DB9195"
-        "OwnerKey" = "8:_3D379301E55C487DAF74FDFA4F124EA7"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0E93F71032C246BA912B384C30DB9195"
-        "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_17953E60876C09E1A0E997F070CA7386"
         "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
         "MsmSig" = "8:_UNDEFINED"
@@ -41,12 +29,6 @@
         {
         "MsmKey" = "8:_3D379301E55C487DAF74FDFA4F124EA7"
         "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_53F50F19414E45B7B7774F06BDD3BE3C"
-        "OwnerKey" = "8:_E69C4A6EA9BE4D4C9B7F6A45CB5A2E58"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -903,7 +885,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:Start with Windows"
+                            "Value" = "8:Start FreeCompose when Windows starts"
                             "DefaultValue" = "8:#1234"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -955,7 +937,7 @@
                             "ContextData" = "8:"
                             "Attributes" = "3:0"
                             "Setting" = "3:2"
-                            "Value" = "8:Enable on startup"
+                            "Value" = "8:Enable Compose key when FreeCompose starts"
                             "DefaultValue" = "8:#1235"
                             "UsePlugInResources" = "11:TRUE"
                             }
@@ -1288,34 +1270,6 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_0E93F71032C246BA912B384C30DB9195"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_CRT_x64.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_53F50F19414E45B7B7774F06BDD3BE3C"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_MFC_x64.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "ProjectOutput"
         {
