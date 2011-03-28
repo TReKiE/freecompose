@@ -97,7 +97,7 @@ CAPTION "Features"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Startup",IDC_STATIC,7,7,238,45,WS_GROUP
-    CONTROL         "&Start FreeCompose with Windows",IDC_STARTWITHWINDOWS,
+    CONTROL         "&Start FreeCompose when Windows starts",IDC_STARTWITHWINDOWS,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,14,21,224,10
     CONTROL         "&Enable Compose key when FreeCompose starts",IDC_ENABLEONSTARTUP,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,35,224,10
