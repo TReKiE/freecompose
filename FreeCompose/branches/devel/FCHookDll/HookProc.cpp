@@ -31,6 +31,7 @@ const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 inline void makeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
+	memset( &input, 0, sizeof( input ) );
 	input.type = INPUT_KEYBOARD;
 	input.ki.wVk = 0;
 	input.ki.wScan = ch;
@@ -38,6 +39,7 @@ inline void makeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
 }
 
 inline void makeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
+	memset( &input, 0, sizeof( input ) );
 	input.type = INPUT_KEYBOARD;
 	input.ki.wVk = 0;
 	input.ki.wScan = ch;
@@ -79,19 +81,20 @@ bool TranslateKey( DWORD vk1, DWORD vk2, COMPOSE_KEY_ENTRY& cke ) {
 bool SendKey( COMPOSE_KEY_ENTRY& cke ) {
 	UINT numInputsToSend;
 	INPUT input[4];
-	wchar_t ch[4];
+	wchar_t ch[3];
 
-	memset( input, 0, sizeof( input ) );
-	memset( ch, 0, sizeof( ch ) );
 	if ( cke.u32Composed < 0x10000 ) {
 		numInputsToSend = 2;
 		ch[0] = (wchar_t) cke.u32Composed;
+		ch[1] = 0;
 	} else {
 		numInputsToSend = 4;
 		ch[0] = makeFirstSurrogate( cke.u32Composed );
 		ch[1] = makeSecondSurrogate( cke.u32Composed );
 	}
-	debug( L"SendKey: u32Composed=U+%08x '%s' numInputsToSend=%d\n", cke.u32Composed, ch, numInputsToSend );
+	ch[2] = 0;
+	debug( L"SendKey: u32Composed=U+%06x '%s' numInputsToSend=%u\n", cke.u32Composed, ch, numInputsToSend );
+
 	makeUnicodeKeyDown( input[0], ch[0] );
 	makeUnicodeKeyUp( input[1], ch[0] );
 	if ( ch[1] ) {
@@ -101,7 +104,7 @@ bool SendKey( COMPOSE_KEY_ENTRY& cke ) {
 
 	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
 	if ( u < numInputsToSend ) {
-		debug( L"SendKey: SendInput failed? sent=%d err=%d\n", u, GetLastError( ) );
+		debug( L"SendKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
 		return false;
 	}
 
@@ -125,16 +128,16 @@ void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 
 	UINT u = SendInput( 1, &input, sizeof(input) );
 	if ( u < 1 ) {
-		debug( L"RegenerateKey: SendInput failed? sent=%d err=%d\n", u, GetLastError( ) );
+		debug( L"RegenerateKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
 	}
 }
 
 bool HandleCapsLock( void ) {
-	if ( CLM_DISABLED == clmCapsLockMode ) {
+	if ( CLTM_DISABLED == clToggleMode ) {
 		debug( L"HandleCapsLock: disabled, eating\n" );
 		return true;
 	}
-	if ( CLM_PRESSTWICE == clmCapsLockMode ) {
+	if ( CLTM_PRESSTWICE == clToggleMode ) {
 		// first press, don't let through
 		debug( L"HandleCapsLock: press-twice mode, first press\n" );
 		WantedKeys.Add( VK_CAPITAL );
@@ -184,7 +187,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 	}
 	if ( KEY_UP() && WantedKeys.Contains( pkb->vkCode ) ) {
-		debug( L"LLKP|eating wanted key %d\n", pkb->vkCode );
+		debug( L"LLKP|eating wanted key %u\n", pkb->vkCode );
 		WantedKeys.Remove( pkb->vkCode );
 		return 1;
 	}
