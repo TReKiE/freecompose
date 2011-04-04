@@ -10,7 +10,7 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0024
+#define FCHOOKDLL_API_VERSION 0x0025
 
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
@@ -18,10 +18,15 @@ struct COMPOSE_KEY_ENTRY {
 	unsigned u32Composed;
 };
 
-enum CAPS_LOCK_MODE {
-	CLM_NORMAL     = 1,
-	CLM_PRESSTWICE,
-	CLM_DISABLED,
+enum CAPS_LOCK_TOGGLE_MODE {
+	CLTM_NORMAL     = 1,
+	CLTM_PRESSTWICE,
+	CLTM_DISABLED,
+};
+
+enum CAPS_LOCK_SWAP_MODE {
+	CLSM_SWAP    = 1,
+	CLSM_REPLACE,
 };
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
@@ -31,8 +36,11 @@ FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD c
 FCHOOKDLL_API BOOL FcEnableHook( void );
 FCHOOKDLL_API BOOL FcDisableHook( void );
 
-FCHOOKDLL_API BOOL FcSetCapsLockMode( CAPS_LOCK_MODE mode );
-FCHOOKDLL_API CAPS_LOCK_MODE FcGetCapsLockMode( void );
+FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode );
+FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void );
+
+FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode );
+FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void );
 
 FCHOOKDLL_API BOOL FcEnableSwapCapsLock( void );
 FCHOOKDLL_API BOOL FcDisableSwapCapsLock( void );

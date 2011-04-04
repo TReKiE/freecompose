@@ -21,14 +21,15 @@ COptionsData::~COptionsData( ) {
 }
 
 COptionsData& COptionsData::operator=( const COptionsData& options ) {
-	m_fStartActive      = options.m_fStartActive;
-	m_fStartWithWindows = options.m_fStartWithWindows;
+	m_fStartActive       = options.m_fStartActive;
+	m_fStartWithWindows  = options.m_fStartWithWindows;
 
-	m_fSwapCapsLock     = options.m_fSwapCapsLock;
-	m_CapsLockMode      = options.m_CapsLockMode;
+	m_fSwapCapsLock      = options.m_fSwapCapsLock;
+	m_CapsLockToggleMode = options.m_CapsLockToggleMode;
+	m_CapsLockSwapMode   = options.m_CapsLockSwapMode;
 
-	m_vkCompose         = options.m_vkCompose;
-	m_vkSwapCapsLock    = options.m_vkSwapCapsLock;
+	m_vkCompose          = options.m_vkCompose;
+	m_vkSwapCapsLock     = options.m_vkSwapCapsLock;
 
 	m_ComposeKeyEntries.RemoveAll( );
 	m_ComposeKeyEntries.Copy( options.m_ComposeKeyEntries );
@@ -37,12 +38,13 @@ COptionsData& COptionsData::operator=( const COptionsData& options ) {
 }
 
 bool COptionsData::operator==( const COptionsData& options ) {
-	if ( m_fStartActive      != options.m_fStartActive      ) return false;
-	if ( m_fStartWithWindows != options.m_fStartWithWindows ) return false;
-	if ( m_fSwapCapsLock     != options.m_fSwapCapsLock     ) return false;
-	if ( m_CapsLockMode      != options.m_CapsLockMode      ) return false;
-	if ( m_vkCompose         != options.m_vkCompose         ) return false;
-	if ( m_vkSwapCapsLock    != options.m_vkSwapCapsLock    ) return false;
+	if ( m_fStartActive       != options.m_fStartActive       ) return false;
+	if ( m_fStartWithWindows  != options.m_fStartWithWindows  ) return false;
+	if ( m_fSwapCapsLock      != options.m_fSwapCapsLock      ) return false;
+	if ( m_CapsLockToggleMode != options.m_CapsLockToggleMode ) return false;
+	if ( m_CapsLockSwapMode   != options.m_CapsLockSwapMode   ) return false;
+	if ( m_vkCompose          != options.m_vkCompose          ) return false;
+	if ( m_vkSwapCapsLock     != options.m_vkSwapCapsLock     ) return false;
 
 	if ( m_ComposeKeyEntries.GetCount( ) != options.m_ComposeKeyEntries.GetCount( ) )
 		return false;
@@ -158,27 +160,33 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
-	m_fStartActive      = (BOOL)           theApp.GetProfileInt( _T("Startup"),  _T("StartActive"),      TRUE );
-	m_fStartWithWindows = (BOOL)           theApp.GetProfileInt( _T("Startup"),  _T("StartWithWindows"), FALSE );
+	m_fStartActive       = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartActive"),        TRUE );
+	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartWithWindows"),   FALSE );
 
-	m_fSwapCapsLock     = (BOOL)           theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLock"),     FALSE );
-	m_CapsLockMode      = (CAPS_LOCK_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockMode"),     CLM_NORMAL );
+	m_fSwapCapsLock      = (BOOL)  theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLock"),       FALSE );
 
-	m_vkCompose         = (DWORD)          theApp.GetProfileInt( _T("Keyboard"), _T("ComposeKey"),       VK_APPS );
-	m_vkSwapCapsLock    = (DWORD)          theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),  VK_LCONTROL );
+	m_CapsLockToggleMode =
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockToggleMode"), 
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockMode"),       CLTM_NORMAL ) );
+	m_CapsLockSwapMode   =
+			 (CAPS_LOCK_SWAP_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockSwapMode"),   CLSM_SWAP );
+
+	m_vkCompose          = (DWORD) theApp.GetProfileInt( _T("Keyboard"), _T("ComposeKey"),         VK_APPS );
+	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),    VK_LCONTROL );
 
 	_FcLoadKeys( );
 }
 
 void COptionsData::Save( void ) {
-	theApp.WriteProfileInt( _T("Startup"), _T("StartActive"),      (int) m_fStartActive );
-	theApp.WriteProfileInt( _T("Startup"), _T("StartWithWindows"), (int) m_fStartWithWindows );
+	theApp.WriteProfileInt( _T("Startup"), _T("StartActive"),         (int) m_fStartActive );
+	theApp.WriteProfileInt( _T("Startup"), _T("StartWithWindows"),    (int) m_fStartWithWindows );
 
-	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLock"),    (int) m_fSwapCapsLock );
-	theApp.WriteProfileInt( _T("Keyboard"), _T("CapsLockMode"),    (int) m_CapsLockMode );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLock"),       (int) m_fSwapCapsLock );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("CapsLockToggleMode"), (int) m_CapsLockToggleMode );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("CapsLockSwapMode"),   (int) m_CapsLockSwapMode );
 
-	theApp.WriteProfileInt( _T("Keyboard"), _T("ComposeKey"),      (int) m_vkCompose );
-	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"), (int) m_vkSwapCapsLock );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("ComposeKey"),         (int) m_vkCompose );
+	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),    (int) m_vkSwapCapsLock );
 
 	_FcSaveKeys( );
 

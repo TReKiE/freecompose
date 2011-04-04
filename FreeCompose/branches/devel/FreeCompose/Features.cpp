@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 	ON_CBN_SELCHANGE( IDC_COMPOSE_KEY, &CFeatures::OnComposeKeyChanged )
 	ON_BN_CLICKED( IDC_SWAPCAPSLOCK, &CFeatures::OnSwapCapsLockChanged )
 	ON_CBN_SELCHANGE( IDC_SWAPCAPSLOCK_KEY, &CFeatures::OnSwapCapsLockKeyChanged )
-	ON_CONTROL_RANGE( BN_CLICKED, IDC_CAPSLOCKMODE_NORMAL, IDC_CAPSLOCKMODE_DISABLED, &CFeatures::OnCapsLockModeChanged )
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_CAPSLOCKTOGGLEMODE_NORMAL, IDC_CAPSLOCKTOGGLEMODE_DISABLED, &CFeatures::OnCapsLockModeChanged )
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):
@@ -38,12 +38,12 @@ void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.m_fStartWithWindows );
 	DDX_Check( pDX, IDC_SWAPCAPSLOCK,     m_Options.m_fSwapCapsLock );
 
-	DDX_Control( pDX, IDC_COMPOSE_KEY,             m_cbComposeKey );
-	DDX_Control( pDX, IDC_SWAPCAPSLOCK,            m_btnSwapCapsLock );
-	DDX_Control( pDX, IDC_SWAPCAPSLOCK_KEY,        m_cbSwapCapsLockKey );
-	DDX_Control( pDX, IDC_CAPSLOCKMODE_NORMAL,     m_btnClmNormal );
-	DDX_Control( pDX, IDC_CAPSLOCKMODE_PRESSTWICE, m_btnClmPressTwice );
-	DDX_Control( pDX, IDC_CAPSLOCKMODE_DISABLED,   m_btnClmDisabled );
+	DDX_Control( pDX, IDC_COMPOSE_KEY,                   m_cbComposeKey );
+	DDX_Control( pDX, IDC_SWAPCAPSLOCK,                  m_btnSwapCapsLock );
+	DDX_Control( pDX, IDC_SWAPCAPSLOCK_KEY,              m_cbSwapCapsLockKey );
+	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_NORMAL,     m_btnCltmNormal );
+	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE, m_btnCltmPressTwice );
+	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_DISABLED,   m_btnCltmDisabled );
 }
 
 BOOL CFeatures::OnInitDialog( ) {
@@ -54,7 +54,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		m_Options.m_fStartActive      ? L'T' : L'f',
 		m_Options.m_fStartWithWindows ? L'T' : L'f',
 		m_Options.m_fSwapCapsLock     ? L'T' : L'f',
-		m_Options.m_CapsLockMode,
+		m_Options.m_CapsLockToggleMode,
 		m_Options.m_vkCompose,
 		m_Options.m_vkSwapCapsLock
 	);
@@ -87,10 +87,10 @@ BOOL CFeatures::OnInitDialog( ) {
 
 	m_cbSwapCapsLockKey.EnableWindow( m_Options.m_fSwapCapsLock ? TRUE : FALSE );
 
-	switch ( m_Options.m_CapsLockMode ) {
-		case CLM_NORMAL:     m_btnClmNormal    .SetCheck( BST_CHECKED ); break;
-		case CLM_PRESSTWICE: m_btnClmPressTwice.SetCheck( BST_CHECKED ); break;
-		case CLM_DISABLED:   m_btnClmDisabled  .SetCheck( BST_CHECKED ); break;
+	switch ( m_Options.m_CapsLockToggleMode ) {
+		case CLTM_NORMAL:     m_btnCltmNormal    .SetCheck( BST_CHECKED ); break;
+		case CLTM_PRESSTWICE: m_btnCltmPressTwice.SetCheck( BST_CHECKED ); break;
+		case CLTM_DISABLED:   m_btnCltmDisabled  .SetCheck( BST_CHECKED ); break;
 	}
 
 	UpdateData( FALSE );
@@ -149,16 +149,16 @@ void CFeatures::OnCapsLockModeChanged( UINT uID ) {
 
 	SetModified( );
 	switch ( uID ) {
-		case IDC_CAPSLOCKMODE_NORMAL:
-			m_Options.m_CapsLockMode = CLM_NORMAL;
+		case IDC_CAPSLOCKTOGGLEMODE_NORMAL:
+			m_Options.m_CapsLockToggleMode = CLTM_NORMAL;
 			break;
 
-		case IDC_CAPSLOCKMODE_PRESSTWICE:
-			m_Options.m_CapsLockMode = CLM_PRESSTWICE;
+		case IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE:
+			m_Options.m_CapsLockToggleMode = CLTM_PRESSTWICE;
 			break;
 
-		case IDC_CAPSLOCKMODE_DISABLED:
-			m_Options.m_CapsLockMode = CLM_DISABLED;
+		case IDC_CAPSLOCKTOGGLEMODE_DISABLED:
+			m_Options.m_CapsLockToggleMode = CLTM_DISABLED;
 			break;
 	}
 }

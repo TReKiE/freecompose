@@ -81,7 +81,7 @@ void CMainFrame::_Reconfigure( void ) {
 		m_fActive = false;
 	}
 
-	FcSetCapsLockMode( m_pOptions->m_CapsLockMode );
+	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
 
 	if ( m_pOptions->m_fSwapCapsLock ) {
 		FcEnableSwapCapsLock( );

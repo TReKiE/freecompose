@@ -30,7 +30,7 @@ private:
 	CComboBox m_cbComposeKey;
 	CComboBox m_cbSwapCapsLockKey;
 	CButton m_btnSwapCapsLock;
-	CButton m_btnClmNormal;
-	CButton m_btnClmPressTwice;
-	CButton m_btnClmDisabled;
+	CButton m_btnCltmNormal;
+	CButton m_btnCltmPressTwice;
+	CButton m_btnCltmDisabled;
 };

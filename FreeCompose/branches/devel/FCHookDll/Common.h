@@ -7,17 +7,18 @@
 #define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
 
 #pragma data_seg( push, ".shareddata" )
-__declspec(selectany) CRITICAL_SECTION   cs;
-__declspec(selectany) HHOOK              hHook              = NULL;
+__declspec(selectany) CRITICAL_SECTION      cs;
+__declspec(selectany) HHOOK                 hHook              = NULL;
 
-__declspec(selectany) COMPOSE_KEY_ENTRY* ComposeKeyEntries  = NULL;
-__declspec(selectany) int                cComposeKeyEntries = 0;
+__declspec(selectany) COMPOSE_KEY_ENTRY*    ComposeKeyEntries  = NULL;
+__declspec(selectany) int                   cComposeKeyEntries = 0;
 
-__declspec(selectany) CAPS_LOCK_MODE     clmCapsLockMode    = CLM_NORMAL;
-__declspec(selectany) bool               fSwapCapsLock      = false;
+__declspec(selectany) CAPS_LOCK_TOGGLE_MODE clToggleMode       = CLTM_NORMAL;
+__declspec(selectany) CAPS_LOCK_SWAP_MODE   clSwapMode         = CLSM_SWAP;
+__declspec(selectany) bool                  fSwapCapsLock      = false;
 
-__declspec(selectany) DWORD              vkCompose          = VK_APPS;
-__declspec(selectany) DWORD              vkCapsLockSwap     = VK_CAPITAL;
+__declspec(selectany) DWORD                 vkCompose          = VK_APPS;
+__declspec(selectany) DWORD                 vkCapsLockSwap     = VK_CAPITAL;
 #pragma data_seg( pop )
 
 void debug( LPCWSTR lpszMessage, ... );
