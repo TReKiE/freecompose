@@ -18,7 +18,8 @@ public:
 	BOOL m_fStartActive;
 	BOOL m_fStartWithWindows;
 	BOOL m_fSwapCapsLock;
-	CAPS_LOCK_MODE m_CapsLockMode;
+	CAPS_LOCK_TOGGLE_MODE m_CapsLockToggleMode;
+	CAPS_LOCK_SWAP_MODE m_CapsLockSwapMode;
 	DWORD m_vkCompose;
 	DWORD m_vkSwapCapsLock;
 

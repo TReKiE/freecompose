@@ -93,13 +93,22 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 	return ret;
 }
 
-FCHOOKDLL_API BOOL FcSetCapsLockMode( CAPS_LOCK_MODE mode ) {
-	clmCapsLockMode = mode;
+FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode ) {
+	clToggleMode = mode;
 	return TRUE;
 }
 
-FCHOOKDLL_API CAPS_LOCK_MODE FcGetCapsLockMode( void ) {
-	return clmCapsLockMode;
+FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void ) {
+	return clToggleMode;
+}
+
+FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode ) {
+	clSwapMode = mode;
+	return TRUE;
+}
+
+FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void ) {
+	return clSwapMode;
 }
 
 FCHOOKDLL_API BOOL FcEnableSwapCapsLock( void ) {
