@@ -9,7 +9,7 @@ const DWORD SpecialKeys[] = {
 	VK_LCONTROL, VK_RCONTROL, VK_LMENU,    VK_RMENU,
 	VK_LWIN,     VK_RWIN,     VK_APPS,     VK_CAPITAL,
 	VK_NUMLOCK,  VK_SCROLL,   VK_ESCAPE,   VK_PRINT,
-	VK_PAUSE,
+	VK_PAUSE,    VK_TAB,      VK_BACK,
 };
 
 IMPLEMENT_DYNAMIC( CFeatures, CPropertyPage )
@@ -23,8 +23,8 @@ BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):
-	CPropertyPage   ( CFeatures::IDD ),
-	m_Options       ( Options )
+	CPropertyPage ( CFeatures::IDD ),
+	m_Options     ( Options )
 {
 }
 
