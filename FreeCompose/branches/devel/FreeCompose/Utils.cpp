@@ -8,6 +8,9 @@
 #include <ShObjIdl.h>
 #include <KnownFolders.h>
 
+extern bool _GetAppDataFolderFromKfm( CString& str );
+static bool _GetAppDataFolderFromShell( CString& str );
+
 #ifdef NDEBUG
 void InitializeDebug( void ) {
 	// do nothing
@@ -23,28 +26,12 @@ void debug( LPCWSTR /*format*/, ... ) {
 #else
 static FILE* debugFile = NULL;
 
-extern bool _GetAppDataFolderFromKfm( CString& str );
-
-static bool _GetAppDataFolderFromShell( CString& str ) {
-	wchar_t buf[MAX_PATH];
-
-	if ( ! SHGetSpecialFolderPath( NULL, buf, CSIDL_APPDATA, FALSE ) ) {
-		debug( L"SHGetSpecialFolderPath failed: %d\n", GetLastError( ) );
-		return false;
-	}
-
-	str = buf;
-	return true;
-}
-
 void InitializeDebug( void ) {
 	CString folder;
 
-	if ( ! _GetAppDataFolderFromKfm( folder ) ) {
-		if ( ! _GetAppDataFolderFromShell( folder ) ) {
-			debug( L"Can't get AppData folder\n" );
-			return;
-		}
+	if ( ! GetAppDataFolder( folder ) ) {
+		debug( L"Can't get AppData folder\n" );
+		return;
 	}
 
 	CString companyName ( (LPCWSTR) AFX_IDS_COMPANY_NAME );
@@ -130,4 +117,25 @@ DWORD VkToVsc( DWORD vk ) {
 		return 0;
 
 	return MAKELONG( 1, vsc );
+}
+
+static bool _GetAppDataFolderFromShell( CString& str ) {
+	wchar_t buf[MAX_PATH];
+
+	if ( ! SHGetSpecialFolderPath( NULL, buf, CSIDL_APPDATA, FALSE ) ) {
+		debug( L"SHGetSpecialFolderPath failed: %d\n", GetLastError( ) );
+		return false;
+	}
+
+	str = buf;
+	return true;
+}
+
+bool GetAppDataFolder( OUT CString& str ) {
+	if ( ! _GetAppDataFolderFromKfm ( str ) ) {
+		if ( ! _GetAppDataFolderFromShell( str ) ) {
+			return false;
+		}
+	}
+	return true;
 }
