@@ -6,6 +6,7 @@ void debug( LPCWSTR format, ... );
 CString VscToString( DWORD vsc );
 CString VkToString( DWORD vk );
 DWORD VkToVsc( DWORD vk );
+bool GetAppDataFolder( OUT CString& str );
 
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
 	T elem1 = *( (T*) _elem1 );
