@@ -311,6 +311,7 @@
     <None Include="res\FreeCompose.ico" />
     <None Include="res\FreeCompose.rc2" />
     <None Include="res\Zive Compose.bmp" />
+    <None Include="Sample Configuration.xml" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="FreeCompose.rc" />

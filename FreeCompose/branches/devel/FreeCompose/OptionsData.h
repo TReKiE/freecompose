@@ -13,6 +13,9 @@ public:
 	void Load( void );
 	void Save( void );
 
+	void LoadFromXml( void );
+	void SaveToXml( void );
+
 	CComposeKeyEntryArray m_ComposeKeyEntries;
  
 	BOOL m_fStartActive;

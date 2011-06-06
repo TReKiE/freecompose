@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FreeCompose>
+	<Options>
+		<Startup>
+			<StartActive>true</StartActive>
+			<StartWithWindows>true</StartWithWindows>
+		</Startup>
+		<Keyboard>
+			<SwapCapsLock>false</SwapCapsLock>
+			<CapsLockToggleMode>pressTwice</CapsLockToggleMode>
+			<CapsLockSwapMode>swap</CapsLockSwapMode>
+			<ComposeKey>93</ComposeKey>
+			<SwapCapsLockKey>27</SwapCapsLockKey>
+		</Keyboard>
+	</Options>
+</FreeCompose>
