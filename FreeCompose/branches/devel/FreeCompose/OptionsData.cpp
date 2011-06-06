@@ -2,6 +2,8 @@
 
 #include <psapi.h>
 
+#import <msxml6.dll>
+
 #include "FreeCompose.h"
 #include "OptionsData.h"
 
@@ -175,9 +177,15 @@ void COptionsData::Load( void ) {
 	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),    VK_LCONTROL );
 
 	_FcLoadKeys( );
+
+	// HACK HACK HACK HACK HACK
+	// yes it should be LoadFromXml here, but it's SaveToXml for testing purposes!!
+	SaveToXml( );
 }
 
 void COptionsData::Save( void ) {
+	SaveToXml( );
+
 	theApp.WriteProfileInt( _T("Startup"), _T("StartActive"),         (int) m_fStartActive );
 	theApp.WriteProfileInt( _T("Startup"), _T("StartWithWindows"),    (int) m_fStartWithWindows );
 
@@ -191,4 +199,126 @@ void COptionsData::Save( void ) {
 	_FcSaveKeys( );
 
 	_UpdateRunKey( );
+}
+
+// =============================================================================
+// New-fangled XML stuff starts here!
+// =============================================================================
+
+typedef MSXML2::IXMLDOMDocumentPtr XDocument;
+typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
+typedef MSXML2::IXMLDOMElementPtr XElement;
+typedef MSXML2::IXMLDOMAttributePtr XAttribute;
+
+static const _bstr_t mapBoolToString[ ] = {
+	L"false",
+	L"true",
+};
+
+static const _bstr_t mapCapsLockToggleModeToString[ ] = {
+	(LPCWSTR) NULL,
+	L"normal",
+	L"pressTwice",
+	L"disabled",
+};
+
+static const _bstr_t mapCapsLockSwapModeToString[ ] = {
+	(LPCWSTR) NULL,
+	L"swap",
+	L"replace",
+};
+
+inline _bstr_t strFromBool( const bool _ ) {
+	return mapBoolToString[_];
+}
+
+inline _bstr_t strFromCapsLockToggleMode( const CAPS_LOCK_TOGGLE_MODE _ ) {
+	return mapCapsLockToggleModeToString[_];
+}
+
+inline _bstr_t strFromCapsLockSwapMode( const CAPS_LOCK_SWAP_MODE _ ) {
+	return _bstr_t( mapCapsLockSwapModeToString[_] );
+}
+
+inline _bstr_t strFromInt( const int _ ) {
+	return _bstr_t( _variant_t( _ ) );
+}
+
+void COptionsData::LoadFromXml( void ) {
+}
+
+void COptionsData::SaveToXml( void ) {
+	CString pathname;
+	if ( ! GetAppDataFolder( pathname ) ) {
+		debug( L"COptionsData::SaveToXml: GetAppDataFolder failed\n" );
+		return;
+	}
+
+	XDocument doc;
+	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
+	if ( FAILED(hr) ) {
+		debug( L"NewFangledStuff: Can't create instance of DOMDocument: hr=0x%08x\n", hr );
+		return;
+	}
+
+	try {
+		doc->async = VARIANT_FALSE;
+		doc->validateOnParse = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+		
+		XProcessingInstruction pi = doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-8'" );
+        doc->appendChild( pi );
+
+		XElement FreeCompose = doc->createElement( L"FreeCompose" );
+		
+			XElement Options = doc->createElement( L"Options" );
+
+				XElement Startup = doc->createElement( L"Startup" );
+
+					XElement StartActive = doc->createElement( L"StartActive" );
+					StartActive->text = strFromBool( !!m_fStartActive );
+
+					XElement StartWithWindows = doc->createElement( L"StartWithWindows" );
+					StartWithWindows->text = strFromBool( !!m_fStartWithWindows );
+
+				Startup->appendChild( StartActive );
+				Startup->appendChild( StartWithWindows );
+
+				XElement Keyboard = doc->createElement( L"Keyboard" );
+
+					XElement SwapCapsLock = doc->createElement( L"SwapCapsLock" );
+					SwapCapsLock->text = strFromBool( !!m_fSwapCapsLock );
+
+					XElement CapsLockToggleMode = doc->createElement( L"CapsLockToggleMode" );
+					CapsLockToggleMode->text = strFromCapsLockToggleMode( m_CapsLockToggleMode );
+
+					XElement CapsLockSwapMode = doc->createElement( L"CapsLockSwapMode" );
+					CapsLockSwapMode->text = strFromCapsLockSwapMode( m_CapsLockSwapMode );
+
+					XElement ComposeKey = doc->createElement( L"ComposeKey" );
+					ComposeKey->text = strFromInt( m_vkCompose );
+
+					XElement SwapCapsLockKey = doc->createElement( L"SwapCapsLockKey" );
+					SwapCapsLockKey->text = strFromInt( m_vkSwapCapsLock );
+
+				Keyboard->appendChild( SwapCapsLock );
+				Keyboard->appendChild( CapsLockToggleMode );
+				Keyboard->appendChild( CapsLockSwapMode );
+				Keyboard->appendChild( ComposeKey );
+				Keyboard->appendChild( SwapCapsLockKey );
+
+			Options->appendChild( Startup );
+			Options->appendChild( Keyboard );
+
+		FreeCompose->appendChild( Options );
+
+		doc->appendChild( FreeCompose );
+
+		doc->save( L"C:/Users/jsc/AppData/Local/Temp/FreeCompose.xml" );
+	}
+	catch ( _com_error e ) {
+		debug( L"NewFangledStuff: caught exception. HRESULT=0x%08x\n", e.Error( ) );
+	}
+
+	doc = NULL;
 }
