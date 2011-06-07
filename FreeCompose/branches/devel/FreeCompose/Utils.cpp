@@ -32,12 +32,7 @@ void InitializeDebug( void ) {
 		return;
 	}
 
-	CString str;
-	if ( ! GetFreeComposeFolder( str ) ) {
-		debug( L"InitializeDebug: Can't get path to our AppData folder\n" );
-		return;
-	}
-
+	CString str( GetFreeComposeFolder( ) );
 	str.Append( L"\\debug.log" );
 	errno = 0;
 	debugFile = _wfsopen( str, L"at+,ccs=UTF-16LE", _SH_DENYNO );
@@ -119,47 +114,64 @@ static bool _GetAppDataFolderFromShell( CString& str ) {
 	return true;
 }
 
-bool GetAppDataFolder( OUT CString& str ) {
+CString GetAppDataFolder( void ) {
+	CString str;
 	if ( ! _GetAppDataFolderFromKfm ( str ) ) {
 		if ( ! _GetAppDataFolderFromShell( str ) ) {
-			return false;
+			return CString( );
 		}
 	}
-	return true;
+	return str;
 }
 
-bool GetFreeComposeFolder( OUT CString& str ) {
-	CString appDataFolder;
-	if ( ! GetAppDataFolder( appDataFolder ) ) {
-		return false;
+CString GetFreeComposeFolder( void ) {
+	CString appDataFolder( GetAppDataFolder( ) );
+	if ( appDataFolder.IsEmpty( ) ) {
+		return CString( );
 	}
 
-	CString companyName ( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
-	CString appName     ( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
-	if ( companyName.IsEmpty( ) || appName.IsEmpty( ) ) {
-		return false;
+	CString companyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
+	if ( companyName.IsEmpty( ) ) {
+		return CString( );
 	}
 
-	str.Format( L"%s\\%s\\%s", appDataFolder, companyName, appName );
-	return true;
+	CString appName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
+	if ( appName.IsEmpty( ) ) {
+		return CString( );
+	}
+
+	appDataFolder.AppendChar( '\\' );
+	appDataFolder.Append( companyName );
+	appDataFolder.AppendChar( '\\' );
+	appDataFolder.Append( appName );
+	return appDataFolder;
 }
 
 bool EnsureFreeComposeFolderExists( void ) {
-	CString folder;
-	if ( ! GetAppDataFolder( folder ) ) {
+	CString folder( GetAppDataFolder( ) );
+	if ( folder.IsEmpty( ) ) {
 		return false;
 	}
 
-	CString companyName ( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
-	CString appName     ( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
+	CString companyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
+	if ( companyName.IsEmpty( ) ) {
+		return false;
+	}
 
-	folder.AppendFormat( L"\\%s", companyName );
+	folder.AppendChar( '\\' );
+	folder.Append( companyName );
 	if ( ! CreateDirectory( folder, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
 		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
 		return false;
 	}
 
-	folder.AppendFormat( L"\\%s", appName );
+	CString appName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
+	if ( appName.IsEmpty( ) ) {
+		return false;
+	}
+
+	folder.AppendChar( '\\' );
+	folder.Append( appName );
 	if ( ! CreateDirectory( folder, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
 		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
 		return false;
