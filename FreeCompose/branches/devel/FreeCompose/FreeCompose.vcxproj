@@ -259,6 +259,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NTray.cpp" />
     <ClCompile Include="OptionsData.cpp" />
+    <ClCompile Include="OptionsDataXml.cpp" />
     <ClCompile Include="OptionsPropSheet.cpp" />
     <ClCompile Include="Sounds.cpp" />
     <ClCompile Include="stdafx2.cpp">
