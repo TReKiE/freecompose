@@ -13,8 +13,8 @@ public:
 	void Load( void );
 	void Save( void );
 
-	void LoadFromXml( void );
-	void SaveToXml( void );
+	bool LoadFromXml( void );
+	bool SaveToXml( void );
 
 	CComposeKeyEntryArray m_ComposeKeyEntries;
  
