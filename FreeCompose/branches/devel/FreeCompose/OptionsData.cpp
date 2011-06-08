@@ -160,9 +160,9 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
-	// HACK for testing purposes
-	LoadFromXml( );
-	// HACK ends
+	if ( LoadFromXml( ) ) {
+		return;
+	}
 
 	m_fStartActive       = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartActive"),        TRUE );
 	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartWithWindows"),   FALSE );
@@ -183,18 +183,5 @@ void COptionsData::Load( void ) {
 
 void COptionsData::Save( void ) {
 	SaveToXml( );
-
-	theApp.WriteProfileInt( _T("Startup"), _T("StartActive"),         (int) m_fStartActive );
-	theApp.WriteProfileInt( _T("Startup"), _T("StartWithWindows"),    (int) m_fStartWithWindows );
-
-	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLock"),       (int) m_fSwapCapsLock );
-	theApp.WriteProfileInt( _T("Keyboard"), _T("CapsLockToggleMode"), (int) m_CapsLockToggleMode );
-	theApp.WriteProfileInt( _T("Keyboard"), _T("CapsLockSwapMode"),   (int) m_CapsLockSwapMode );
-
-	theApp.WriteProfileInt( _T("Keyboard"), _T("ComposeKey"),         (int) m_vkCompose );
-	theApp.WriteProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),    (int) m_vkSwapCapsLock );
-
-	_FcSaveKeys( );
-
 	_UpdateRunKey( );
 }
