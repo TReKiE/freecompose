@@ -132,6 +132,16 @@ static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
 	return 0 == ( (CString) (LPCWSTR) elt->nodeName ).Compare( name );
 }
 
+static inline XDocument CreateDOMDocument( void ) {
+	XDocument doc;
+	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
+	if ( FAILED( hr ) ) {
+		debug( L"CreateDOMDocument: failed, hr 0x%08x\n", hr );
+		return NULL;
+	}
+	return doc;
+}
+
 //==============================================================================
 // COptionsData implementation
 //==============================================================================
@@ -145,10 +155,9 @@ bool COptionsData::LoadFromXml( void ) {
 	CString str( GetFreeComposeFolder( ) );
 	str.Append( L"\\FreeCompose.xml" );
 
-	XDocument doc;
-	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
-	if ( FAILED(hr) ) {
-		debug( L"COptionsData::LoadFromXml: Can't create instance of DOMDocument: hr=0x%08x\n", hr );
+	XDocument doc = CreateDOMDocument( );
+	if ( ! doc ) {
+		debug( L"COptionsData::LoadFromXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -189,21 +198,24 @@ bool COptionsData::LoadFromXml( void ) {
 		}
 
 		XElement Options = FreeCompose->selectSingleNode( L"Options" );
-			XElement Startup = Options->selectSingleNode( L"Startup" );
-				m_fStartActive = BoolFromXElement( Startup->selectSingleNode( L"StartActive" ) );
-				m_fStartWithWindows = BoolFromXElement( Startup->selectSingleNode( L"StartWithWindows" ) );
-			XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
-				m_fSwapCapsLock = BoolFromXElement( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
-				m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
-				m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
-				m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
-				m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+
+		XElement Startup = Options->selectSingleNode( L"Startup" );
+		m_fStartActive = BoolFromXElement( Startup->selectSingleNode( L"StartActive" ) );
+		m_fStartWithWindows = BoolFromXElement( Startup->selectSingleNode( L"StartWithWindows" ) );
+
+		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
+		m_fSwapCapsLock = BoolFromXElement( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
+		m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
+		m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
+		m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+
 		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
-			XNodeList nodes = Mappings->selectNodes( L"Mapping" );
-			m_ComposeKeyEntries.SetSize( nodes->length );
-			for ( int n = 0; n < nodes->length; n++ ) {
-				m_ComposeKeyEntries[n] = CkeFromElement( nodes->nextNode( ) );
-			}
+		XNodeList mappingNodes = Mappings->selectNodes( L"Mapping" );
+		m_ComposeKeyEntries.SetSize( mappingNodes->length );
+		for ( int n = 0; n < mappingNodes->length; n++ ) {
+			m_ComposeKeyEntries[n] = CkeFromElement( mappingNodes->nextNode( ) );
+		}
 	}
 	catch ( _com_error e ) {
 		debug( L"COptionsData::LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
@@ -226,10 +238,9 @@ bool COptionsData::SaveToXml( void ) {
 	CString str( GetFreeComposeFolder( ) );
 	str.Append( L"\\FreeCompose.xml" );
 
-	XDocument doc;
-	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
-	if ( FAILED(hr) ) {
-		debug( L"COptionsData::SaveToXml: Can't create instance of DOMDocument: hr=0x%08x\n", hr );
+	XDocument doc = CreateDOMDocument( );
+	if ( ! doc ) {
+		debug( L"COptionsData::SaveToXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
