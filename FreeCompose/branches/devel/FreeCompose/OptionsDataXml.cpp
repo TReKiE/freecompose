@@ -7,8 +7,13 @@
 #include "Utils.h"
 
 //==============================================================================
-// Type aliases
+// Types and type aliases
 //==============================================================================
+
+enum CONVERSION_FAILURE_REASON {
+	CFR_NULL_INPUT = 1,
+	CFR_INVALID_INPUT,
+};
 
 typedef MSXML2::IXMLDOMDocumentPtr XDocument;
 typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
@@ -38,23 +43,58 @@ static const _bstr_t mapCapsLockSwapModeToString[ ] = {
 };
 
 //==============================================================================
-// Functions for XML type mapping
+// Local functions
 //==============================================================================
 
-static inline _bstr_t strFromBool( const bool _ ) {
+static inline _bstr_t StrFromBool( const bool _ ) {
 	return mapBoolToString[_];
 }
 
-static inline _bstr_t strFromCapsLockToggleMode( const CAPS_LOCK_TOGGLE_MODE _ ) {
+static inline _bstr_t StrFromCapsLockToggleMode( const CAPS_LOCK_TOGGLE_MODE _ ) {
 	return mapCapsLockToggleModeToString[_];
 }
 
-static inline _bstr_t strFromCapsLockSwapMode( const CAPS_LOCK_SWAP_MODE _ ) {
+static inline _bstr_t StrFromCapsLockSwapMode( const CAPS_LOCK_SWAP_MODE _ ) {
 	return _bstr_t( mapCapsLockSwapModeToString[_] );
 }
 
-static inline _bstr_t strFromInt( const int _ ) {
+static inline _bstr_t StrFromInt( const int _ ) {
 	return _bstr_t( _variant_t( _ ) );
+}
+
+static inline bool BoolFromXElement( const XElement& _ ) {
+	if ( NULL == _ ) { throw; }
+	for ( int n = 0; n < _countof( mapBoolToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapBoolToString[n] ) ) {
+			return n != 0;
+		}
+	}
+	throw -1;
+}
+
+static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XElement& _ ) {
+	if ( NULL == _ ) { throw; }
+	for ( int n = 1; n < _countof( mapCapsLockToggleModeToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapCapsLockToggleModeToString[n] ) ) {
+			return (CAPS_LOCK_TOGGLE_MODE) n;
+		}
+	}
+	throw -1;
+}
+
+static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& _ ) {
+	if ( NULL == _ ) { throw; }
+	for ( int n = 1; n < _countof( mapCapsLockSwapModeToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapCapsLockSwapModeToString[n] ) ) {
+			return (CAPS_LOCK_SWAP_MODE) n;
+		}
+	}
+	throw -1;
+}
+
+static inline int IntFromXElement( const XElement& _ ) {
+	if ( NULL == _ ) { throw -1; }
+	return (int) _variant_t( _->text );
 }
 
 static XElement CkeToXml( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
@@ -81,13 +121,97 @@ static XElement CkeToXml( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 	return mapping;
 }
 
+static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
+	return 0 == ( (CString) (LPCWSTR) elt->nodeName ).Compare( name );
+}
+
+//==============================================================================
+// COptionsData implementation
+//==============================================================================
+
 bool COptionsData::LoadFromXml( void ) {
-	return false;
+	if ( ! EnsureFreeComposeFolderExists( ) ) {
+		debug( L"COptionsData::LoadFromXml: Can't ensure app data folder exists\n" );
+		return false;
+	}
+
+	CString str( GetFreeComposeFolder( ) );
+	str.Append( L"\\FreeCompose.xml" );
+
+	XDocument doc;
+	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
+	if ( FAILED(hr) ) {
+		debug( L"COptionsData::LoadFromXml: Can't create instance of DOMDocument: hr=0x%08x\n", hr );
+		return false;
+	}
+
+	//
+	// Configure DOMDocument object
+	//
+	try {
+		doc->async = VARIANT_FALSE;
+		doc->validateOnParse = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+		doc->preserveWhiteSpace = VARIANT_FALSE;
+	}
+	catch ( _com_error e ) {
+		debug( L"COptionsData::LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		return false;
+	}
+
+	//
+	// Load XML from disk
+	//
+	try {
+		_variant_t result = doc->load( (LPCWSTR) str );
+		if ( ! (bool) result ) {
+			debug( L"COptionsData::LoadFromXML: doc->load failed: line %d column %d: %s\n", doc->parseError->line, doc->parseError->linepos, doc->parseError->reason );
+			return false;
+		}
+	}
+	catch ( _com_error e ) {
+		debug( L"COptionsData::LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		return false;
+	}
+
+	try {
+		XElement FreeCompose = doc->documentElement;
+		if ( ! CompareNodeName( FreeCompose, L"FreeCompose" ) ) {
+			debug( L"COptionsData::LoadFromXml: document element is not <FreeCompose>, aborting load\n" );
+			return false;
+		}
+
+		XElement Options = FreeCompose->selectSingleNode( L"Options" );
+			XElement Startup = Options->selectSingleNode( L"Startup" );
+				m_fStartActive = BoolFromXElement( Startup->selectSingleNode( L"StartActive" ) );
+				m_fStartWithWindows = BoolFromXElement( Startup->selectSingleNode( L"StartWithWindows" ) );
+			XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
+				m_fSwapCapsLock = BoolFromXElement( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
+				m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
+				m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
+				m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
+				m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
+	}
+	catch ( _com_error e ) {
+		debug( L"COptionsData::LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
+		return false;
+	}
+	catch ( CONVERSION_FAILURE_REASON e ) {
+		debug( L"COptionsData::LoadFromXml: Conversion error %d parsing configuration\n", e );
+		return false;
+	}
+	catch ( ... ) {
+		debug( L"COptionsData::LoadFromXml: something bad happened??\n" );
+		return false;
+	}
+
+	return true;
 }
 
 bool COptionsData::SaveToXml( void ) {
 	if ( ! EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::SaveToXml: Can't make sure app data folder exists\n" );
+		debug( L"COptionsData::SaveToXml: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -108,6 +232,7 @@ bool COptionsData::SaveToXml( void ) {
 		doc->async = VARIANT_FALSE;
 		doc->validateOnParse = VARIANT_FALSE;
 		doc->resolveExternals = VARIANT_FALSE;
+		doc->preserveWhiteSpace = VARIANT_FALSE;
 	}
 	catch ( _com_error e ) {
 		debug( L"COptionsData::SaveToXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
@@ -132,34 +257,34 @@ bool COptionsData::SaveToXml( void ) {
 
 					XElement StartActive = doc->createElement( L"StartActive" );
 					Startup->appendChild( StartActive );
-					StartActive->text = strFromBool( !!m_fStartActive );
+					StartActive->text = StrFromBool( !!m_fStartActive );
 
 					XElement StartWithWindows = doc->createElement( L"StartWithWindows" );
 					Startup->appendChild( StartWithWindows );
-					StartWithWindows->text = strFromBool( !!m_fStartWithWindows );
+					StartWithWindows->text = StrFromBool( !!m_fStartWithWindows );
 
 				XElement Keyboard = doc->createElement( L"Keyboard" );
 				Options->appendChild( Keyboard );
 
 					XElement SwapCapsLock = doc->createElement( L"SwapCapsLock" );
 					Keyboard->appendChild( SwapCapsLock );
-					SwapCapsLock->text = strFromBool( !!m_fSwapCapsLock );
+					SwapCapsLock->text = StrFromBool( !!m_fSwapCapsLock );
 
 					XElement CapsLockToggleMode = doc->createElement( L"CapsLockToggleMode" );
 					Keyboard->appendChild( CapsLockToggleMode );
-					CapsLockToggleMode->text = strFromCapsLockToggleMode( m_CapsLockToggleMode );
+					CapsLockToggleMode->text = StrFromCapsLockToggleMode( m_CapsLockToggleMode );
 
 					XElement CapsLockSwapMode = doc->createElement( L"CapsLockSwapMode" );
 					Keyboard->appendChild( CapsLockSwapMode );
-					CapsLockSwapMode->text = strFromCapsLockSwapMode( m_CapsLockSwapMode );
+					CapsLockSwapMode->text = StrFromCapsLockSwapMode( m_CapsLockSwapMode );
 
 					XElement ComposeKey = doc->createElement( L"ComposeKey" );
 					Keyboard->appendChild( ComposeKey );
-					ComposeKey->text = strFromInt( m_vkCompose );
+					ComposeKey->text = StrFromInt( m_vkCompose );
 
 					XElement SwapCapsLockKey = doc->createElement( L"SwapCapsLockKey" );
 					Keyboard->appendChild( SwapCapsLockKey );
-					SwapCapsLockKey->text = strFromInt( m_vkSwapCapsLock );
+					SwapCapsLockKey->text = StrFromInt( m_vkSwapCapsLock );
 
 			XElement Mappings = doc->createElement( L"Mappings" );
 			FreeCompose->appendChild( Mappings );
