@@ -10,15 +10,10 @@
 // Types and type aliases
 //==============================================================================
 
-enum CONVERSION_FAILURE_REASON {
-	CFR_NULL_INPUT = 1,
-	CFR_INVALID_INPUT,
-};
-
 typedef MSXML2::IXMLDOMDocumentPtr XDocument;
-typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
 typedef MSXML2::IXMLDOMElementPtr XElement;
-typedef MSXML2::IXMLDOMAttributePtr XAttribute;
+typedef MSXML2::IXMLDOMNodeListPtr XNodeList;
+typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
 
 //==============================================================================
 // Constants for XML type mapping
@@ -62,42 +57,7 @@ static inline _bstr_t StrFromInt( const int _ ) {
 	return _bstr_t( _variant_t( _ ) );
 }
 
-static inline bool BoolFromXElement( const XElement& _ ) {
-	if ( NULL == _ ) { throw; }
-	for ( int n = 0; n < _countof( mapBoolToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapBoolToString[n] ) ) {
-			return n != 0;
-		}
-	}
-	throw -1;
-}
-
-static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XElement& _ ) {
-	if ( NULL == _ ) { throw; }
-	for ( int n = 1; n < _countof( mapCapsLockToggleModeToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapCapsLockToggleModeToString[n] ) ) {
-			return (CAPS_LOCK_TOGGLE_MODE) n;
-		}
-	}
-	throw -1;
-}
-
-static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& _ ) {
-	if ( NULL == _ ) { throw; }
-	for ( int n = 1; n < _countof( mapCapsLockSwapModeToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapCapsLockSwapModeToString[n] ) ) {
-			return (CAPS_LOCK_SWAP_MODE) n;
-		}
-	}
-	throw -1;
-}
-
-static inline int IntFromXElement( const XElement& _ ) {
-	if ( NULL == _ ) { throw -1; }
-	return (int) _variant_t( _->text );
-}
-
-static XElement CkeToXml( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
+static XElement ElementFromCke( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 	XElement mapping = doc->createElement( L"Mapping" );
 
 		XElement first = doc->createElement( L"First" );
@@ -119,6 +79,53 @@ static XElement CkeToXml( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 		composed->text = _bstr_t( _variant_t( (unsigned) cke.u32Composed ) );
 
 	return mapping;
+}
+
+static inline bool BoolFromXElement( const XElement& _ ) {
+	for ( int n = 0; n < _countof( mapBoolToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapBoolToString[n] ) ) {
+			return n != 0;
+		}
+	}
+	throw;
+}
+
+static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XElement& _ ) {
+	for ( int n = 1; n < _countof( mapCapsLockToggleModeToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapCapsLockToggleModeToString[n] ) ) {
+			return (CAPS_LOCK_TOGGLE_MODE) n;
+		}
+	}
+	throw;
+}
+
+static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& _ ) {
+	for ( int n = 1; n < _countof( mapCapsLockSwapModeToString ); n++ ) {
+		if ( 0 == wcscmp( _->text, mapCapsLockSwapModeToString[n] ) ) {
+			return (CAPS_LOCK_SWAP_MODE) n;
+		}
+	}
+	throw;
+}
+
+static inline int IntFromXElement( const XElement& _ ) {
+	return (int) _variant_t( _->text );
+}
+
+static COMPOSE_KEY_ENTRY CkeFromElement( XElement Mapping ) {
+	COMPOSE_KEY_ENTRY cke;
+	memset( &cke, 0, sizeof( cke ) );
+	cke.vkFirst = IntFromXElement( Mapping->selectSingleNode( L"First" ) );
+	cke.vkSecond = IntFromXElement( Mapping->selectSingleNode( L"Second" ) );
+	cke.u32Composed = IntFromXElement( Mapping->selectSingleNode( L"Composed" ) );
+	if ( NULL != Mapping->selectSingleNode( L"First/Shift" ) ) {
+		cke.vkFirst |= 0x80000000;
+	}
+	if ( NULL != Mapping->selectSingleNode( L"Second/Shift" ) ) {
+		cke.vkSecond |= 0x80000000;
+	}
+
+	return cke;
 }
 
 static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
@@ -192,13 +199,14 @@ bool COptionsData::LoadFromXml( void ) {
 				m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
 				m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
+			XNodeList nodes = Mappings->selectNodes( L"Mapping" );
+			m_ComposeKeyEntries.SetSize( nodes->length );
+			for ( int n = 0; n < nodes->length; n++ ) {
+				m_ComposeKeyEntries[n] = CkeFromElement( nodes->nextNode( ) );
+			}
 	}
 	catch ( _com_error e ) {
 		debug( L"COptionsData::LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
-		return false;
-	}
-	catch ( CONVERSION_FAILURE_REASON e ) {
-		debug( L"COptionsData::LoadFromXml: Conversion error %d parsing configuration\n", e );
 		return false;
 	}
 	catch ( ... ) {
@@ -294,7 +302,7 @@ bool COptionsData::SaveToXml( void ) {
 					if ( ! m_ComposeKeyEntries[n].u32Composed ) {
 						continue;
 					}
-					Mappings->appendChild( CkeToXml( doc, m_ComposeKeyEntries[n] ) );
+					Mappings->appendChild( ElementFromCke( doc, m_ComposeKeyEntries[n] ) );
 					count++;
 				}
 	}
