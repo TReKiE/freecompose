@@ -50,7 +50,7 @@ void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
 	int width;
 	BOOL ret;
 
-	Utf32ToUtf16( cke.u32Composed, col0 );
+	col0.Format( L"U+%04X %s", cke.u32Composed, Utf32ToUtf16( cke.u32Composed ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
@@ -79,7 +79,7 @@ void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
 	CString col0, col1, col2;
 	int width;
 
-	Utf32ToUtf16( cke.u32Composed, col0 );
+	col0.Format( L"U+%04X %s", cke.u32Composed, Utf32ToUtf16( cke.u32Composed ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;

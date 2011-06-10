@@ -20,15 +20,17 @@ inline wchar_t MakeSecondSurrogate( unsigned ch ) {
 	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
 }
 
-inline bool Utf32ToUtf16( unsigned ch, CString& s ) {
-	s.Empty( );
+inline CString Utf32ToUtf16( unsigned ch ) {
 	if ( ch >= 0x10000 ) {
-		s.Insert( 0, MakeFirstSurrogate( ch ) );
-		s.Insert( 1, MakeSecondSurrogate( ch ) );
+		wchar_t tmp[3] = {
+			MakeFirstSurrogate( ch ),
+			MakeSecondSurrogate( ch ),
+			0
+		};
+		return CString( tmp );
 	} else {
-		s.Insert( 0, (wchar_t) ch );
+		return CString( (wchar_t) ch );
 	}
-	return true;
 }
 
 inline bool Utf16ToUtf32( CString& s, unsigned& ch ) {
