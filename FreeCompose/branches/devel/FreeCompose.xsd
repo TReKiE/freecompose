@@ -13,10 +13,8 @@
 			<xs:enumeration value="replace" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:complexType mixed="true" name="VirtualKey">
-		<xs:sequence minOccurs="0" maxOccurs="1">
-			<xs:element name="Shift" />
-		</xs:sequence>
+	<xs:complexType name="VirtualKey">
+		<xs:attribute name="Shifted" type="xs:boolean" />
 	</xs:complexType>
 	<xs:element name="FreeCompose">
 		<xs:complexType>
@@ -49,13 +47,20 @@
 				<xs:element name="Mappings">
 					<xs:complexType>
 						<xs:sequence>
-							<xs:element maxOccurs="unbounded" name="Mapping">
+							<xs:element name="Group" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="First" type="VirtualKey" />
-										<xs:element name="Second" type="VirtualKey" />
-										<xs:element name="Composed" type="xs:unsignedInt" />
+										<xs:element name="Mapping" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="First" type="VirtualKey" />
+													<xs:element name="Second" type="VirtualKey" />
+													<xs:element name="Composed" type="xs:unsignedInt" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
 									</xs:sequence>
+									<xs:attribute name="Name" type="xs:string" use="required" />
 								</xs:complexType>
 							</xs:element>
 						</xs:sequence>
