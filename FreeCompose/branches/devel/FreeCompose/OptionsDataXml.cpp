@@ -10,8 +10,10 @@
 // Types and type aliases
 //==============================================================================
 
+typedef MSXML2::IXMLDOMAttributePtr XAttribute;
 typedef MSXML2::IXMLDOMDocumentPtr XDocument;
 typedef MSXML2::IXMLDOMElementPtr XElement;
+typedef MSXML2::IXMLDOMNodePtr XNode;
 typedef MSXML2::IXMLDOMNodeListPtr XNodeList;
 typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
 
@@ -63,14 +65,14 @@ static XElement ElementFromCke( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 		XElement first = doc->createElement( L"First" );
 		mapping->appendChild( first );
 		if ( ( cke.vkFirst & 0x80000000 ) != 0 ) {
-			first->appendChild( doc->createElement( L"Shift" ) );
+			first->setAttribute( L"Shifted", L"true" );
 		}
 		first->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( cke.vkFirst & 0xFF ) ) ) ) );
 
 		XElement second = doc->createElement( L"Second" );
 		mapping->appendChild( second );
 		if ( ( cke.vkSecond & 0x80000000 ) != 0 ) {
-			second->appendChild( doc->createElement( L"Shift" ) );
+			first->setAttribute( L"Shifted", L"true" );
 		}
 		second->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( cke.vkSecond & 0xFF ) ) ) ) );
 
@@ -81,13 +83,13 @@ static XElement ElementFromCke( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 	return mapping;
 }
 
-static inline bool BoolFromXElement( const XElement& _ ) {
+static inline bool BoolFromXNode( const XNode& _ ) {
 	for ( int n = 0; n < _countof( mapBoolToString ); n++ ) {
 		if ( 0 == wcscmp( _->text, mapBoolToString[n] ) ) {
-			return n != 0;
+			return !!n;
 		}
 	}
-	throw;
+	return false;
 }
 
 static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XElement& _ ) {
@@ -96,7 +98,7 @@ static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XEleme
 			return (CAPS_LOCK_TOGGLE_MODE) n;
 		}
 	}
-	throw;
+	return (CAPS_LOCK_TOGGLE_MODE) 0;
 }
 
 static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& _ ) {
@@ -105,7 +107,7 @@ static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& 
 			return (CAPS_LOCK_SWAP_MODE) n;
 		}
 	}
-	throw;
+	return (CAPS_LOCK_SWAP_MODE) 0;
 }
 
 static inline int IntFromXElement( const XElement& _ ) {
@@ -118,10 +120,14 @@ static COMPOSE_KEY_ENTRY CkeFromElement( XElement Mapping ) {
 	cke.vkFirst = IntFromXElement( Mapping->selectSingleNode( L"First" ) );
 	cke.vkSecond = IntFromXElement( Mapping->selectSingleNode( L"Second" ) );
 	cke.u32Composed = IntFromXElement( Mapping->selectSingleNode( L"Composed" ) );
-	if ( NULL != Mapping->selectSingleNode( L"First/Shift" ) ) {
+
+	XAttribute shifted;
+	shifted = Mapping->selectSingleNode( L"First/@Shifted" );
+	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
 		cke.vkFirst |= 0x80000000;
 	}
-	if ( NULL != Mapping->selectSingleNode( L"Second/Shift" ) ) {
+	shifted = Mapping->selectSingleNode( L"Second/@Shifted" );
+	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
 		cke.vkSecond |= 0x80000000;
 	}
 
@@ -200,11 +206,11 @@ bool COptionsData::LoadFromXml( void ) {
 		XElement Options = FreeCompose->selectSingleNode( L"Options" );
 
 		XElement Startup = Options->selectSingleNode( L"Startup" );
-		m_fStartActive = BoolFromXElement( Startup->selectSingleNode( L"StartActive" ) );
-		m_fStartWithWindows = BoolFromXElement( Startup->selectSingleNode( L"StartWithWindows" ) );
+		m_fStartActive = BoolFromXNode( Startup->selectSingleNode( L"StartActive" ) );
+		m_fStartWithWindows = BoolFromXNode( Startup->selectSingleNode( L"StartWithWindows" ) );
 
 		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
-		m_fSwapCapsLock = BoolFromXElement( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
+		m_fSwapCapsLock = BoolFromXNode( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
 		m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
 		m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
 		m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
@@ -308,12 +314,16 @@ bool COptionsData::SaveToXml( void ) {
 			XElement Mappings = doc->createElement( L"Mappings" );
 			FreeCompose->appendChild( Mappings );
 
+				XElement Group = doc->createElement( L"Group" );
+				Mappings->appendChild( Group );
+				Group->setAttribute( L"Name", L"" );
+
 				unsigned count = 0;
 				for ( int n = 0; n < (int) m_ComposeKeyEntries.GetSize( ); n++ ) {
 					if ( ! m_ComposeKeyEntries[n].u32Composed ) {
 						continue;
 					}
-					Mappings->appendChild( ElementFromCke( doc, m_ComposeKeyEntries[n] ) );
+					Group->appendChild( ElementFromCke( doc, m_ComposeKeyEntries[n] ) );
 					count++;
 				}
 	}
