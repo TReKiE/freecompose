@@ -84,10 +84,9 @@ void CComposeSequenceEditor::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& c
 	} else {
 		if ( 0 == ch ) {
 			m_editResult.SetWindowText( L"" );
-		} else if ( Utf32ToUtf16( ch, str ) ) {
-			m_editResult.SetWindowText( str );
 		} else {
-			debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-32 value U+%04x to UTF-16??\n", ch );
+			str.Format( L"U+%04X %s", ch, Utf32ToUtf16( ch ) );
+			m_editResult.SetWindowText( str );
 		}
 	}
 }
