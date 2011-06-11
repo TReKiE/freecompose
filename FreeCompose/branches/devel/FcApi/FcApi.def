@@ -1,5 +1,3 @@
-; FcApi.def : Declares the module parameters.
-
 LIBRARY
 
 EXPORTS
@@ -7,4 +5,4 @@ EXPORTS
 	DllGetClassObject	PRIVATE
 	DllRegisterServer	PRIVATE
 	DllUnregisterServer	PRIVATE
-	DllInstall		PRIVATE
+	DllInstall			PRIVATE

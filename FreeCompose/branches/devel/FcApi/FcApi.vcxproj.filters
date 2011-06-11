@@ -34,15 +34,15 @@
     <ClCompile Include="FcApi_i.c">
       <Filter>Generated Files</Filter>
     </ClCompile>
+    <ClCompile Include="FreeComposeController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="dllmain.h">
@@ -53,6 +53,12 @@
     </ClInclude>
     <ClInclude Include="FcApi_i.h">
       <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FreeComposeController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -67,6 +73,9 @@
     </None>
     <None Include="FcApi.def">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="FreeComposeController.rgs">
+      <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
