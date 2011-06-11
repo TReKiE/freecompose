@@ -1,0 +1,18 @@
+// FcApi.idl : IDL source for FcApi
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (FcApi.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+	uuid(52AE64DA-58B6-42B4-8171-18A78E837931),
+	version(1.0),
+]
+library FcApiLib
+{
+	importlib("stdole2.tlb");
+};
+
