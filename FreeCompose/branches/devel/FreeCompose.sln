@@ -31,8 +31,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FCShared", "FCShared\FCShar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewFrontEnd", "NewFrontEnd\NewFrontEnd.csproj", "{D01B7AF7-CE95-42BA-9544-23017449D901}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FcApi", "FcApi\FcApi.vcxproj", "{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}"
-EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -87,14 +85,6 @@ Global
 		{D01B7AF7-CE95-42BA-9544-23017449D901}.Release|Win32.Build.0 = Release|x86
 		{D01B7AF7-CE95-42BA-9544-23017449D901}.Release|x64.ActiveCfg = Release|x64
 		{D01B7AF7-CE95-42BA-9544-23017449D901}.Release|x64.Build.0 = Release|x64
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Debug|Win32.ActiveCfg = Debug|Win32
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Debug|Win32.Build.0 = Debug|Win32
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Debug|x64.ActiveCfg = Debug|x64
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Debug|x64.Build.0 = Debug|x64
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Release|Win32.ActiveCfg = Release|Win32
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Release|Win32.Build.0 = Release|Win32
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Release|x64.ActiveCfg = Release|x64
-		{BEBA9FF3-4A2D-4329-9535-0283AC7F8307}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
