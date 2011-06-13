@@ -111,6 +111,15 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 	return ret;
 }
 
+FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
+	BOOL ret;
+
+	LOCK( cs ) {
+		ret = ( NULL != hHook );
+	} UNLOCK( cs );
+	return ret;
+}
+
 FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode ) {
 	clToggleMode = mode;
 	return TRUE;

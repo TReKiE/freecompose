@@ -10,8 +10,9 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0026
+#define FCHOOKDLL_API_VERSION 0x0027
 
+#ifndef NOTYPES
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
 	DWORD vkSecond;
@@ -28,6 +29,7 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_SWAP    = 1,
 	CLSM_REPLACE,
 };
+#endif
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
@@ -35,6 +37,7 @@ FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD c
 
 FCHOOKDLL_API BOOL FcEnableHook( void );
 FCHOOKDLL_API BOOL FcDisableHook( void );
+FCHOOKDLL_API BOOL FcIsHookEnabled( void );
 
 FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode );
 FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void );
