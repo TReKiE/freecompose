@@ -91,7 +91,7 @@ namespace NewFrontEnd {
             }
             catch ( Exception e ) {
                 Debug.Print( "Configuration.Load: Exception: {0}", e.ToString( ) );
-                throw e;
+                throw;
             }
         }
 
