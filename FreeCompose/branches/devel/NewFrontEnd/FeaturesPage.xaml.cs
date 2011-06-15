@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +13,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace NewFrontEnd {
-
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for FeaturesPage.xaml
     /// </summary>
-    public partial class MainWindow: Window {
-
-        public MainWindow( ) {
+    public partial class FeaturesPage: Page {
+        public FeaturesPage( ) {
             InitializeComponent( );
         }
-
     }
-
 }
