@@ -148,6 +148,10 @@ FCHOOKDLL_API BOOL FcDisableSwapCapsLock( void ) {
 	return TRUE;
 }
 
+FCHOOKDLL_API BOOL FcIsSwapCapsLockEnabled( void ) {
+	return fSwapCapsLock;
+}
+
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
 	vkCompose = _vkCompose;
 	return TRUE;

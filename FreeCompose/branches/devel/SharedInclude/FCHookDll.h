@@ -10,7 +10,7 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0027
+#define FCHOOKDLL_API_VERSION 0x0028
 
 #ifndef NOTYPES
 struct COMPOSE_KEY_ENTRY {
@@ -47,6 +47,7 @@ FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void );
 
 FCHOOKDLL_API BOOL FcEnableSwapCapsLock( void );
 FCHOOKDLL_API BOOL FcDisableSwapCapsLock( void );
+FCHOOKDLL_API BOOL FcIsSwapCapsLockEnabled( void );
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD vkCompose );
 FCHOOKDLL_API DWORD FcGetComposeKey( void );
