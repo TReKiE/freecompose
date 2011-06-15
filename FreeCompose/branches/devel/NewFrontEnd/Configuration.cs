@@ -12,7 +12,7 @@ namespace NewFrontEnd {
     public class Configuration {
 
         public Configuration( ) {
-            MappingGroups = new Dictionary<string, MappingGroup>( );
+            MappingGroups = new ObservableCollection<MappingGroup>( );
         }
 
         Dictionary< string, FcApi.CapsLockToggleModes > mapCltm = new Dictionary< string, FcApi.CapsLockToggleModes > {
@@ -86,7 +86,7 @@ namespace NewFrontEnd {
                         group.KeySequences.Add( Mapping );
                     }
 
-                    MappingGroups.Add( group.Name, group );
+                    MappingGroups.Add( group );
                 }
             }
             catch ( Exception e ) {
@@ -105,28 +105,15 @@ namespace NewFrontEnd {
         public FcApi.CapsLockSwapModes CapsLockSwapMode { get; set; }
         public uint ComposeKey { get; set; }
         public uint SwapCapsLockKey { get; set; }
-        public Dictionary<string, MappingGroup> MappingGroups { get; set; }
+        public ObservableCollection<MappingGroup> MappingGroups { get; set; }
     }
 
     public class MappingGroup {
-        private string name;
-        public string Name {
-            get {
-                return name;
-            }
-            set {
-                if ( string.IsNullOrWhiteSpace( value ) ) {
-                    name = " default";
-                } else {
-                    name = value.Trim( );
-                }
-            }
-        }
-
-        public List< FcApi.KeySequence > KeySequences { get; set; }
+        public string Name { get; set; }
+        public ObservableCollection<FcApi.KeySequence> KeySequences { get; set; }
 
         public MappingGroup( ) {
-            KeySequences = new List<FcApi.KeySequence>( );
+            KeySequences = new ObservableCollection<FcApi.KeySequence>( );
         }
     }
 
