@@ -72,7 +72,7 @@ static XElement ElementFromCke( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
 		XElement second = doc->createElement( L"Second" );
 		mapping->appendChild( second );
 		if ( ( cke.vkSecond & 0x80000000 ) != 0 ) {
-			first->setAttribute( L"Shifted", L"true" );
+			second->setAttribute( L"Shifted", L"true" );
 		}
 		second->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( cke.vkSecond & 0xFF ) ) ) ) );
 
