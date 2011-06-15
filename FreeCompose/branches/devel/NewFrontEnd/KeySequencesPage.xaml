@@ -4,15 +4,14 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
-      d:DesignHeight="300" d:DesignWidth="300"
-      DataContext="{Binding RelativeSource={RelativeSource Self}}">
+      d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <ListView Name="listView" ItemsSource="{Binding KeySequenceCollection}">
+        <ListView Name="listView">
             <ListView.View>
-                <GridView RenderOptions.ClearTypeHint="Enabled">
-                    <GridViewColumn Header="Character" Width="Auto" DisplayMemberBinding="{Binding u32Composed}" />
-                    <GridViewColumn Header="First key" Width="Auto" DisplayMemberBinding="{Binding vkFirst}" />
-                    <GridViewColumn Header="Second key" Width="Auto" DisplayMemberBinding="{Binding vkSecond}" />
+                <GridView>
+                    <GridViewColumn Header="Character" Width="Auto" />
+                    <GridViewColumn Header="First key" Width="Auto" />
+                    <GridViewColumn Header="Second key" Width="Auto" />
                 </GridView>
             </ListView.View>
         </ListView>

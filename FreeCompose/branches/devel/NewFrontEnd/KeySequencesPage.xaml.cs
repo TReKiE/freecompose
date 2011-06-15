@@ -20,25 +20,8 @@ namespace NewFrontEnd {
     /// </summary>
     public partial class KeySequences: Page {
 
-        public ObservableCollection<FcApi.KeySequence> KeySequenceCollection { get; set; }
-
-        private FcApi.KeySequence copy( FcApi.KeySequence ks ) {
-            var _ = new FcApi.KeySequence( );
-            _.vkFirst = ks.vkFirst;
-            _.vkSecond = ks.vkSecond;
-            _.u32Composed = ks.u32Composed;
-            return _;
-        }
-
         public KeySequences( ) {
             InitializeComponent( );
-            KeySequenceCollection = new ObservableCollection<FcApi.KeySequence>( );
-            foreach ( KeyValuePair<string,MappingGroup> pair in ( (App) Application.Current ).Configuration.MappingGroups ) {
-                MappingGroup group = pair.Value;
-                foreach ( FcApi.KeySequence keySequence in group.KeySequences ) {
-                    KeySequenceCollection.Add( copy( keySequence ) );
-                }
-            }
         }
 
     }
