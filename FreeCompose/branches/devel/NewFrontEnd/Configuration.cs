@@ -15,15 +15,15 @@ namespace NewFrontEnd {
             MappingGroups = new ObservableCollection<MappingGroup>( );
         }
 
-        Dictionary< string, FcApi.CapsLockToggleModes > mapCltm = new Dictionary< string, FcApi.CapsLockToggleModes > {
-            { "normal",     FcApi.CapsLockToggleModes.Normal     },
-            { "pressTwice", FcApi.CapsLockToggleModes.PressTwice },
-            { "disabled",   FcApi.CapsLockToggleModes.Disabled   },
+        Dictionary< string, CapsLockToggleModes > mapCltm = new Dictionary< string, CapsLockToggleModes > {
+            { "normal",     CapsLockToggleModes.Normal     },
+            { "pressTwice", CapsLockToggleModes.PressTwice },
+            { "disabled",   CapsLockToggleModes.Disabled   },
         };
 
-        Dictionary< string, FcApi.CapsLockSwapModes > mapClsm = new Dictionary< string, FcApi.CapsLockSwapModes > {
-            { "swap",    FcApi.CapsLockSwapModes.Swap    },
-            { "replace", FcApi.CapsLockSwapModes.Replace },
+        Dictionary< string, CapsLockSwapModes > mapClsm = new Dictionary< string, CapsLockSwapModes > {
+            { "swap",    CapsLockSwapModes.Swap    },
+            { "replace", CapsLockSwapModes.Replace },
         };
 
         private string getString( XmlElement elt, string name ) {
@@ -56,10 +56,14 @@ namespace NewFrontEnd {
                         continue;
                     }
 
-                    var group = new MappingGroup { Name = eltGroup.GetAttribute( "Name" ) };
+                    string name = eltGroup.GetAttribute( "Name" );
+                    if ( string.IsNullOrWhiteSpace( name ) ) {
+                        name = "(default)";
+                    }
+                    var group = new MappingGroup { Name = name  };
                     foreach ( XmlNode nodeMapping in eltGroup.SelectNodes( "Mapping" ) ) {
                         var eltMapping = (XmlElement) nodeMapping;
-                        var Mapping = new FcApi.KeySequence( );
+                        var Mapping = new KeySequence( );
 
                         var First = getString( eltMapping, "First" );
                         var FirstShifted = eltMapping.SelectSingleNode( "First/@Shifted" );
@@ -101,8 +105,8 @@ namespace NewFrontEnd {
         public bool StartActive { get; set; }
         public bool StartWithWindows { get; set; }
         public bool SwapCapsLock { get; set; }
-        public FcApi.CapsLockToggleModes CapsLockToggleMode { get; set; }
-        public FcApi.CapsLockSwapModes CapsLockSwapMode { get; set; }
+        public CapsLockToggleModes CapsLockToggleMode { get; set; }
+        public CapsLockSwapModes CapsLockSwapMode { get; set; }
         public uint ComposeKey { get; set; }
         public uint SwapCapsLockKey { get; set; }
         public ObservableCollection<MappingGroup> MappingGroups { get; set; }
@@ -110,10 +114,10 @@ namespace NewFrontEnd {
 
     public class MappingGroup {
         public string Name { get; set; }
-        public ObservableCollection<FcApi.KeySequence> KeySequences { get; set; }
+        public ObservableCollection<KeySequence> KeySequences { get; set; }
 
         public MappingGroup( ) {
-            KeySequences = new ObservableCollection<FcApi.KeySequence>( );
+            KeySequences = new ObservableCollection<KeySequence>( );
         }
     }
 
