@@ -46,7 +46,7 @@ namespace NewFrontEnd {
                 throw;
             }
 
-            return string.Format( @"{0}\{1}\{2}\FreeCompose.xml", ApplicationDataPath, CompanyName, ProductName );
+            return string.Format( @"{0}\{1}\{2}\{2}.xml", ApplicationDataPath, CompanyName, ProductName );
         }
 
         void App_Startup( object sender, StartupEventArgs e ) {
