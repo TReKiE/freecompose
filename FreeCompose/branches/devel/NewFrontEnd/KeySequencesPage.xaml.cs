@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace NewFrontEnd {
 
     /// <summary>
-    /// Interaction logic for KeySequences.xaml
+    /// Interaction logic for KeySequencesPage.xaml
     /// </summary>
-    public partial class KeySequences: Page {
+    public partial class KeySequencesPage: Page {
 
-        public KeySequences( ) {
+        public KeySequencesPage( ) {
             InitializeComponent( );
         }
 
