@@ -2,25 +2,25 @@
 
 namespace NewFrontEnd {
 
+    [StructLayout( LayoutKind.Sequential )]
+    public struct KeySequence {
+        public uint vkFirst;
+        public uint vkSecond;
+        public uint u32Composed;
+    }
+
+    public enum CapsLockToggleModes {
+        Normal = 1,
+        PressTwice,
+        Disabled,
+    }
+
+    public enum CapsLockSwapModes {
+        Swap = 1,
+        Replace,
+    }
+
     public static class FcApi {
-
-        [StructLayout( LayoutKind.Sequential )]
-        public struct KeySequence {
-            public uint vkFirst;
-            public uint vkSecond;
-            public uint u32Composed;
-        }
-
-        public enum CapsLockToggleModes {
-            Normal = 1,
-            PressTwice,
-            Disabled,
-        }
-
-        public enum CapsLockSwapModes {
-            Swap = 1,
-            Replace,
-        }
 
         public const uint FCHOOKDLL_API_VERSION = 0x0028u;
 
