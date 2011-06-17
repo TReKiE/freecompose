@@ -12,7 +12,7 @@ namespace NewFrontEnd {
     public class Configuration {
 
         public Configuration( ) {
-            MappingGroups = new ObservableCollection<MappingGroup>( );
+            KeySequenceCollection = new ObservableCollection<KeySequenceItem>( );
         }
 
         Dictionary< string, CapsLockToggleModes > mapCltm = new Dictionary< string, CapsLockToggleModes > {
@@ -56,14 +56,14 @@ namespace NewFrontEnd {
                         continue;
                     }
 
-                    string name = eltGroup.GetAttribute( "Name" );
-                    if ( string.IsNullOrWhiteSpace( name ) ) {
-                        name = "(default)";
+                    string groupName = eltGroup.GetAttribute( "Name" );
+                    if ( string.IsNullOrWhiteSpace( groupName ) ) {
+                        groupName = "(default)";
                     }
-                    var group = new MappingGroup { Name = name  };
+
                     foreach ( XmlNode nodeMapping in eltGroup.SelectNodes( "Mapping" ) ) {
                         var eltMapping = (XmlElement) nodeMapping;
-                        var Mapping = new KeySequence( );
+                        var keySequence = new KeySequenceItem( );
 
                         var First = getString( eltMapping, "First" );
                         var FirstShifted = eltMapping.SelectSingleNode( "First/@Shifted" );
@@ -71,26 +71,25 @@ namespace NewFrontEnd {
                         var SecondShifted = eltMapping.SelectSingleNode( "Second/@Shifted" );
                         var Composed = getString( eltMapping, "Composed" );
 
-                        Mapping.vkFirst = uint.Parse( First );
-                        Mapping.vkSecond = uint.Parse( Second );
-                        Mapping.u32Composed = uint.Parse( Composed );
+                        keySequence.First = uint.Parse( First );
+                        keySequence.Second = uint.Parse( Second );
+                        keySequence.Composed = uint.Parse( Composed );
+                        keySequence.Group = groupName;
                         if ( null != FirstShifted ) {
                             bool t = bool.Parse( ( (XmlAttribute) FirstShifted ).Value );
                             if ( t ) {
-                                Mapping.vkFirst |= 0x80000000;
+                                keySequence.First |= 0x80000000;
                             }
                         }
                         if ( null != SecondShifted ) {
                             bool t = bool.Parse( ( (XmlAttribute) SecondShifted ).Value );
                             if ( t ) {
-                                Mapping.vkSecond |= 0x80000000;
+                                keySequence.Second |= 0x80000000;
                             }
                         }
 
-                        group.KeySequences.Add( Mapping );
+                        KeySequenceCollection.Add( keySequence );
                     }
-
-                    MappingGroups.Add( group );
                 }
             }
             catch ( Exception e ) {
@@ -109,16 +108,14 @@ namespace NewFrontEnd {
         public CapsLockSwapModes CapsLockSwapMode { get; set; }
         public uint ComposeKey { get; set; }
         public uint SwapCapsLockKey { get; set; }
-        public ObservableCollection<MappingGroup> MappingGroups { get; set; }
+        public ObservableCollection<KeySequenceItem> KeySequenceCollection { get; set; }
     }
 
-    public class MappingGroup {
-        public string Name { get; set; }
-        public ObservableCollection<KeySequence> KeySequences { get; set; }
-
-        public MappingGroup( ) {
-            KeySequences = new ObservableCollection<KeySequence>( );
-        }
+    public struct KeySequenceItem {
+        public string Group { get; set; }
+        public uint First { get; set; }
+        public uint Second { get; set; }
+        public uint Composed { get; set; }
     }
 
 }

@@ -9,17 +9,19 @@
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300">
     <Page.Resources>
-        <CollectionViewSource x:Key="groupsData" Source="{Binding Source={x:Static Application.Current}, Path=Configuration.MappingGroups}">
+        <CollectionViewSource x:Key="keySequenceData" Source="{Binding Source={x:Static Application.Current}, Path=Configuration.KeySequenceCollection}">
             <CollectionViewSource.GroupDescriptions>
-                <dat:PropertyGroupDescription PropertyName="Name" />
+                <dat:PropertyGroupDescription PropertyName="Group" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
+        <src:ComposedCharacterConverter x:Key="composedCharacterConverter" />
+        <src:VirtualKeyConverter x:Key="virtualKeyConverter" />
     </Page.Resources>
 
     <Grid>
 
-        <ListView Name="listView" ItemsSource="{Binding Source={StaticResource groupsData}}">
+        <ListView Name="listView" ItemsSource="{Binding Source={StaticResource keySequenceData}}">
             <ListView.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.ContainerStyle>
@@ -48,9 +50,9 @@
             </ListView.GroupStyle>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Character" Width="Auto" DisplayMemberBinding="{Binding KeySequences/u32Composed, StringFormat=\{0\}}" />
-                    <GridViewColumn Header="First key" Width="Auto" DisplayMemberBinding="{Binding KeySequences/vkFirst, StringFormat=\{0\}}" />
-                    <GridViewColumn Header="Second key" Width="Auto" DisplayMemberBinding="{Binding KeySequences/vkSecond, StringFormat=\{0\}}" />
+                    <GridViewColumn Header="Character" Width="Auto" DisplayMemberBinding="{Binding Path=Composed, Converter={StaticResource composedCharacterConverter}}" />
+                    <GridViewColumn Header="First key" Width="Auto" DisplayMemberBinding="{Binding Path=First, Converter={StaticResource virtualKeyConverter}}" />
+                    <GridViewColumn Header="Second key" Width="Auto" DisplayMemberBinding="{Binding Path=Second, Converter={StaticResource virtualKeyConverter}}" />
                 </GridView>
             </ListView.View>
         </ListView>
