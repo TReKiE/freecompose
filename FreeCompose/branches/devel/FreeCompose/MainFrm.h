@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include "OptionsData.h"
 #include "NTray.h"
+
+#include "OptionsPropSheet.h"
+#include "OptionsData.h"
 
 #undef USE_TIMER
 
@@ -27,6 +29,7 @@ protected:
 	afx_msg void OnAppToggle( );
 	afx_msg void OnAppCapsLock( );
 	afx_msg void OnAppConfigure( );
+	afx_msg void OnAppExit( );
 	afx_msg void OnUpdateAppToggle( CCmdUI* );
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
 #ifdef USE_TIMER
@@ -43,6 +46,8 @@ private:
 	CString m_strEnabled;
 	CString m_strDisabled;
 	CString m_strTitle;
+	COptionsPropSheet* m_pPropSheet;
+	CRITICAL_SECTION m_csPropSheet;
 
 	void _Initialize( void );
 	void _Reconfigure( void );
