@@ -217,10 +217,12 @@ bool COptionsData::LoadFromXml( void ) {
 		m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 
 		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
-		XNodeList mappingNodes = Mappings->selectNodes( L"Mapping" );
-		m_ComposeKeyEntries.SetSize( mappingNodes->length );
-		for ( int n = 0; n < mappingNodes->length; n++ ) {
-			m_ComposeKeyEntries[n] = CkeFromElement( mappingNodes->nextNode( ) );
+		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
+		for ( XElement group = groupNodes->nextNode( ); NULL != group; group = groupNodes->nextNode( ) ) {
+			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
+			for ( XElement mapping = mappingNodes->nextNode( ); NULL != mapping; mapping = mappingNodes->nextNode( ) ) {
+				m_ComposeKeyEntries.Add( CkeFromElement( mapping ) );
+			}
 		}
 	}
 	catch ( _com_error e ) {
