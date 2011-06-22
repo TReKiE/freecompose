@@ -31,9 +31,33 @@ COptionsPropSheet::~COptionsPropSheet( ) {
 }
 
 int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
-	ModifyStyle( 0, ( DS_3DLOOK|DS_CONTROL|WS_CHILD|WS_TABSTOP ) | WS_MINIMIZEBOX );
-	ModifyStyleEx( 0, WS_EX_APPWINDOW );
-	return CPropertySheet::OnCreate( lpcs );
+	int ret = CPropertySheet::OnCreate( lpcs );
+	if ( 0 != ret ) {
+		return ret;
+	}
+
+	// Default Property Sheet window styles:
+	//
+	//      -- style:   1000 0100 1100 1000 0010 0000 1100 0100
+	//                  |     |   ||   |      |       ||    `--- DS_3DLOOK
+	//                  |     |   ||   |      |       |`-------- DS_SETFONT
+	//                  |     |   ||   |      |       `--------- DS_MODALFRAME
+	//                  |     |   ||   |      `----------------- WS_MINIMIZEBOX
+	//                  |     |   ||   `------------------------ WS_SYSMENU
+	//                  |     |   |`---------------------------- WS_DLGFRAME \ together,
+	//                  |     |   `----------------------------- WS_BORDER   / WS_CAPTION
+	//                  |     `--------------------------------- WS_CLIPSIBLINGS
+	//                  `--------------------------------------- WS_POPUP
+	//
+	//      -- exstyle: 0000 0000 0000 0001 0000 0001 0000 0001
+	//                                    |         |         `- WS_EX_DLGMODALFRAME
+	//                                    |         `----------- WS_EX_WINDOWEDGE
+	//                                    `--------------------- WS_EX_CONTROLPARENT
+
+	ModifyStyle( WS_MAXIMIZEBOX, WS_MINIMIZEBOX );
+	ModifyStyleEx( 0U, WS_EX_APPWINDOW );
+
+	return 0;
 }
 
 void COptionsPropSheet::OnApplyNow( ) {
