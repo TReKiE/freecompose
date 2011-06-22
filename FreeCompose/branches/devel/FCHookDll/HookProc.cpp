@@ -132,17 +132,38 @@ void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-bool HandleCapsLock( void ) {
+bool HandleCLToggleMode( void ) {
 	if ( CLTM_DISABLED == clToggleMode ) {
-		debug( L"HandleCapsLock: disabled, eating\n" );
+		debug( L"HandleCLToggleMode: disabled, eating\n" );
 		return true;
 	}
 	if ( CLTM_PRESSTWICE == clToggleMode ) {
 		// first press, don't let through
-		debug( L"HandleCapsLock: press-twice mode, first press\n" );
+		debug( L"HandleCLToggleMode: press-twice mode, first press\n" );
 		WantedKeys.Add( VK_CAPITAL );
 		ComposeState = 3;
 		return true;
+	}
+	return false;
+}
+
+bool HandleCLSwapMode( KBDLLHOOKSTRUCT* pkb ) {
+	if ( CLSM_SWAP == clSwapMode ) {
+		if ( VK_CAPITAL == pkb->vkCode ) {
+			debug( L"HandleCLSwapMode: swapping VK_CAPITAL with 0x%02x\n", vkCapsLockSwap );
+			pkb->vkCode = vkCapsLockSwap;
+			return true;
+		} else if ( vkCapsLockSwap == pkb->vkCode ) {
+			debug( L"HandleCLSwapMode: swapping 0x%02x with VK_CAPITAL\n", pkb->vkCode );
+			pkb->vkCode = VK_CAPITAL;
+			return true;
+		}
+	} else if ( CLSM_REPLACE == clSwapMode ) {
+		if ( VK_CAPITAL == pkb->vkCode ) {
+			debug( L"HandleCLSwapMode: replacing VK_CAPITAL with 0x%02x\n", vkCapsLockSwap );
+			pkb->vkCode = vkCapsLockSwap;
+			return true;
+		}
 	}
 	return false;
 }
@@ -201,7 +222,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					WantedKeys.Add( vkCompose );
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_1, 0 );
 					return 1;
-				} else if ( KEY_CAPSLOCK() && HandleCapsLock( ) ) {
+				} else if ( KEY_CAPSLOCK() && HandleCLToggleMode( ) ) {
 					return 1;
 				}
 			}
@@ -221,7 +242,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					debug(L"LLKP|1=>0: Apps down abort\n");
 					ComposeState = 0;
 					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
-					if ( KEY_CAPSLOCK() && HandleCapsLock( ) ) {
+					if ( KEY_CAPSLOCK() && HandleCLToggleMode( ) ) {
 						return 1;
 					}
 					goto acceptKey;
