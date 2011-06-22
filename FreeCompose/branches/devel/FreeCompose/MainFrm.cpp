@@ -28,6 +28,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND            (ID_APP_TOGGLE,    &CMainFrame::OnAppToggle)
 	ON_COMMAND            (ID_APP_CAPSLOCK,  &CMainFrame::OnAppCapsLock)
 	ON_COMMAND            (ID_APP_CONFIGURE, &CMainFrame::OnAppConfigure)
+	ON_COMMAND            (ID_APP_EXIT,      &CMainFrame::OnAppExit)
 	ON_UPDATE_COMMAND_UI  (ID_APP_TOGGLE,    &CMainFrame::OnUpdateAppToggle)
 	ON_UPDATE_COMMAND_UI  (ID_APP_CAPSLOCK,  &CMainFrame::OnUpdateAppCapsLock)
 	//}}AFX_MSG_MAP
@@ -48,14 +49,17 @@ CMainFrame::CMainFrame( ):
 	m_fActive     ( false ),
 	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
 	m_strEnabled  ( (LPCWSTR) IDS_MAINFRAME_ENABLED ),
-	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED )
+	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED ),
+	m_pPropSheet  ( NULL )
 {
+	InitializeCriticalSection( &m_csPropSheet );
 }
 
 CMainFrame::~CMainFrame( ) {
 	if ( m_pOptions ) {
 		delete m_pOptions;
 	}
+	DeleteCriticalSection( &m_csPropSheet );
 }
 
 void CMainFrame::_Initialize( void ) {
@@ -106,6 +110,19 @@ void CMainFrame::_SetupTrayIcon( void ) {
 }
 
 // CMainFrame message handlers
+
+void CMainFrame::OnAppExit( ) {
+	bool fPropSheetOpen;
+	LOCK( m_csPropSheet ) {
+		MemoryBarrier( );
+		fPropSheetOpen = ( NULL != m_pPropSheet );
+	} UNLOCK( m_csPropSheet );
+	if ( fPropSheetOpen ) {
+		MessageBox( L"Please close the FreeCompose options dialog before exiting FreeCompose.", L"FreeCompose", MB_ICONWARNING|MB_OK );
+	} else {
+		OnClose( );
+	}
+}
 
 int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 	if ( -1 == CFrameWnd::OnCreate( lpCreateStruct ) ) {
@@ -219,8 +236,25 @@ void CMainFrame::OnAppCapsLock( void ) {
 }
 
 void CMainFrame::OnAppConfigure( ) {
+	bool reused = false;
+
+	LOCK( m_csPropSheet ) {
+		MemoryBarrier( );
+		if ( NULL != m_pPropSheet ) {
+			debug( L"CMainFrame::OnAppConfigure: reusing existing prop sheet\n" );
+			m_pPropSheet->ShowWindow( SW_SHOW );
+			reused = true;
+		}
+	} UNLOCK( m_csPropSheet );
+	if ( reused )
+		return;
+
 	COptionsPropSheet options( *m_pOptions, this );
-	if ( IDOK != options.DoModal( ) ) {
+	LOCK( m_csPropSheet ) { m_pPropSheet = &options; MemoryBarrier( ); } UNLOCK( m_csPropSheet );
+	INT_PTR rc = options.DoModal( );
+	LOCK( m_csPropSheet ) { m_pPropSheet = NULL;     MemoryBarrier( ); } UNLOCK( m_csPropSheet );
+
+	if ( IDOK != rc ) {
 		return;
 	}
 
