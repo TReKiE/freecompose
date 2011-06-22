@@ -9,8 +9,7 @@ extern void InitializeDebug( void );
 extern void TerminateDebug( void );
 
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
-	//{{AFX_MSG_MAP( COptionsPropSheet )
-	ON_COMMAND(ID_APP_EXIT, &CFreeComposeApp::OnAppExit)
+	//{{AFX_MSG_MAP( CFreeComposeApp )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
 
