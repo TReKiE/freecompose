@@ -121,8 +121,17 @@ BOOL CKeySequences::OnInitDialog( ) {
 	if ( ! CPropertyPage::OnInitDialog( ) )
 		return FALSE;
 
-	m_KeyComboList.ModifyStyle( LVS_SINGLESEL, 0 );
-	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES );
+	DWORD dwExtendedStyles =
+		  LVS_EX_FLATSB
+		| LVS_EX_FULLROWSELECT
+		| LVS_EX_GRIDLINES
+		| LVS_EX_HEADERDRAGDROP
+		| LVS_EX_LABELTIP
+		| LVS_EX_TWOCLICKACTIVATE;
+	if ( GetComCtl32Version( ) >= 0x00060000 ) {
+		dwExtendedStyles |= LVS_EX_DOUBLEBUFFER;
+	}
+	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | dwExtendedStyles );
 
 	CString strLabels[3] = {
 		CString( (LPCWSTR) IDS_KEYSEQUENCES_CHARACTER ),
