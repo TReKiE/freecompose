@@ -11,6 +11,8 @@
 extern bool _GetAppDataFolderFromKfm( CString& str );
 static bool _GetAppDataFolderFromShell( CString& str );
 
+static DWORD ComCtl32Version = 0UL;
+
 #ifdef NDEBUG
 void InitializeDebug( void ) {
 	// do nothing
@@ -178,4 +180,39 @@ bool EnsureFreeComposeFolderExists( void ) {
 	}
 
 	return true;
+}
+
+DWORD GetComCtl32Version( void ) {
+	if ( 0 != ComCtl32Version ) {
+		goto out1;
+	}
+
+	HMODULE hmod = LoadLibrary( L"COMCTL32.DLL" );
+	if ( NULL == hmod ) {
+		debug( L"GetComCtl32Version: LoadLibrary failed: %d\n", GetLastError( ) );
+		goto out1;
+	}
+
+	DLLGETVERSIONPROC dgvp = (DLLGETVERSIONPROC) GetProcAddress( hmod, "DllGetVersion" );
+	if ( NULL == dgvp ) {
+		debug( L"GetComCtl32Version: GetProcAddress failed: %d\n", GetLastError( ) );
+		goto out2;
+	}
+
+	DLLVERSIONINFO dvi;
+	HRESULT hr;
+	ZeroMemory( &dvi, sizeof( dvi ) );
+	dvi.cbSize = sizeof( dvi );
+	hr = (*dgvp)( &dvi );
+	if ( FAILED(hr) ) {
+		debug( L"GetComCtl32Version: DLLGETVERSIONPROC call failed, hr=0x%08x\n", hr );
+		goto out2;
+	}
+
+	ComCtl32Version = MAKELONG( dvi.dwMinorVersion, dvi.dwMajorVersion );
+
+out2:
+	FreeLibrary( hmod );
+out1:
+	return ComCtl32Version;
 }

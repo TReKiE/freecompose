@@ -31,6 +31,8 @@ DWORD VkToVsc( DWORD vk );
 CString GetFreeComposeFolder( void );
 bool EnsureFreeComposeFolderExists( void );
 
+DWORD GetComCtl32Version( void );
+
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
 	T elem1 = *( (T*) _elem1 );
 	T elem2 = *( (T*) _elem2 );
