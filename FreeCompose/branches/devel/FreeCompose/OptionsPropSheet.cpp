@@ -25,6 +25,9 @@ COptionsPropSheet::COptionsPropSheet( const COptionsData& options, CWnd* pParent
 {
 	AddPage( &m_KeySequences );
 	AddPage( &m_Features );
+
+	m_psh.hIcon = AfxGetApp()->LoadIcon( IDR_MAINFRAME );
+	m_psh.dwFlags |= PSH_USEHICON;
 }
 
 COptionsPropSheet::~COptionsPropSheet( ) {
