@@ -7,7 +7,6 @@
 
 #include "Utils.h"
 
-#ifndef NDEBUG
 bool _GetAppDataFolderFromKfm( CString& str ) {
 	IKnownFolderManager* pkfm = NULL;
 	IKnownFolder* pkf = NULL;
@@ -42,4 +41,3 @@ out3:	pkf->Release( );
 out2:	pkfm->Release( );
 out1:	return ret;
 }
-#endif
