@@ -2,7 +2,8 @@
 #include "FCHookDll.h"
 #include "HookProc.h"
 #include "Common.h"
-#include "KeyIsXAlnum.h"
+
+#include <KeyIsXAlnum.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

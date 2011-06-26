@@ -17,6 +17,8 @@
 
 #include <set>
 
+#include "FCShared.h"
+
 using namespace std;
 
 #define _T(x) L ## x
