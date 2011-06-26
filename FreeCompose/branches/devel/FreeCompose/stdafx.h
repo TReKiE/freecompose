@@ -36,6 +36,7 @@
 #include <cstdlib>
 
 #include <FCHookDll.h>
+#include <FCShared.h>
 
 #include "resource.h"
 

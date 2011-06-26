@@ -143,6 +143,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
