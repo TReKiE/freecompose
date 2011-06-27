@@ -27,12 +27,18 @@
     <ClInclude Include="TestVehicle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Keys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TestVehicle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
