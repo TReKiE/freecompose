@@ -30,7 +30,7 @@ void CKeyEdit::_Update( ) {
 		return;
 	}
 
-	CString str( VkToString( m_dwVk ) );
+	CString str( VkToKeyLabel( m_dwVk ) );
 	SetWindowText( str );
 	SetSel( str.GetLength( ), str.GetLength( ), TRUE );
 }

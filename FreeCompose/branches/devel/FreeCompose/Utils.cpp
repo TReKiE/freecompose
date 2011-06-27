@@ -74,7 +74,7 @@ void debug( LPCWSTR format, ... ) {
 }
 #endif
 
-CString VscToString( DWORD vsc ) {
+CString VscToString( UINT vsc ) {
 	wchar_t buf[256];
 	int rc;
 
@@ -89,6 +89,22 @@ CString VscToString( DWORD vsc ) {
 }
 
 CString VkToString( DWORD vk ) {
+	UINT vsc = MapVirtualKeyEx( vk & 0x7fffffffUL, MAPVK_VK_TO_VSC, GetKeyboardLayout( 0 ) );
+	if ( ! vsc ) {
+		return CString( );
+	}
+
+	BYTE keyState[256] = { 0, };
+	wchar_t keyBuf[8] = { 0, };
+
+	if ( 0 != ( vk & 0x80000000 ) ) {
+		keyState[VK_SHIFT] = 0x80;
+	}
+	ToUnicodeEx( vk, vsc, keyState, keyBuf, 256, 0, GetKeyboardLayout( 0 ) );
+	return CString( keyBuf );
+}
+
+CString VkToKeyLabel( DWORD vk ) {
 	CString str( VscToString( VkToVsc( vk ) ) );
 	if ( 0 != ( vk & 0x80000000UL ) ) {
 		str.Insert( 0, VscToString( VkToVsc( VK_SHIFT ) ) + CString( _T("+") ) );
@@ -96,7 +112,7 @@ CString VkToString( DWORD vk ) {
 	return str;
 }
 
-DWORD VkToVsc( DWORD vk ) {
+UINT VkToVsc( DWORD vk ) {
 	UINT vsc = MapVirtualKeyEx( vk & 0x7fffffffUL, MAPVK_VK_TO_VSC, GetKeyboardLayout( 0 ) );
 	if ( 0 == vsc )
 		return 0;

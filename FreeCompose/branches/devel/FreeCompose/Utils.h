@@ -2,9 +2,10 @@
 
 void debug( LPCWSTR format, ... );
 
-CString VscToString( DWORD vsc );
+CString VscToString( UINT vsc );
+CString VkToKeyLabel( DWORD vk );
 CString VkToString( DWORD vk );
-DWORD VkToVsc( DWORD vk );
+UINT VkToVsc( DWORD vk );
 
 CString GetFreeComposeFolder( void );
 bool EnsureFreeComposeFolderExists( void );
