@@ -1,10 +1,6 @@
 #pragma once
 
-#ifdef FCSHARED_EXPORTS
-#define FCSHARED_API __declspec(dllexport)
-#else
-#define FCSHARED_API __declspec(dllimport)
-#endif
+#include "FCShared.h"
 
 class FCSHARED_API KeyIsXAlnum {
 public:
