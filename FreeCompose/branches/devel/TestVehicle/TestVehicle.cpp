@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "TestVehicle.h"
+#include "Keys.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -16,6 +17,8 @@ int wmain( int /*argc*/, wchar_t* /*argv*/[], wchar_t* /*envp*/[] ) {
 		fwprintf( stderr, L"Initialization failed\n" );
 		return 1;
 	}
+
+	Keys( );
 
 	return 0;
 }
