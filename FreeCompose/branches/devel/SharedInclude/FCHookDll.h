@@ -12,6 +12,10 @@ extern "C" {
 
 #define FCHOOKDLL_API_VERSION 0x0028
 
+#define VKM_SHIFT 0x80000000
+#define VKM_ALTGR 0x40000000
+#define VKM_MASK  0xC0000000
+
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
 	DWORD vkSecond;

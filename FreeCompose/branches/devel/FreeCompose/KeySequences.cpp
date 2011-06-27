@@ -57,14 +57,14 @@ void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
 	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, (int) n, col0, 0, (UINT) -1, -1, n );
 	ASSERT( n == item );
 
-	col1 = VkToString( cke.vkFirst );
+	col1 = VkToKeyLabel( cke.vkFirst );
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	ret = m_KeyComboList.SetItem( item, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
 	ASSERT( TRUE == ret );
 
-	col2 = VkToString( cke.vkSecond );
+	col2 = VkToKeyLabel( cke.vkSecond );
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
@@ -85,13 +85,13 @@ void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
 		m_nColumnWidths[0] = width;
 	m_KeyComboList.SetItem( (int) n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
 
-	col1 = VkToString( cke.vkFirst );
+	col1 = VkToKeyLabel( cke.vkFirst );
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	m_KeyComboList.SetItem( (int) n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
 
-	col2 = VkToString( cke.vkSecond );
+	col2 = VkToKeyLabel( cke.vkSecond );
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
