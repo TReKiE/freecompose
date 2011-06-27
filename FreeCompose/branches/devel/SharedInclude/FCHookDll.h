@@ -12,7 +12,6 @@ extern "C" {
 
 #define FCHOOKDLL_API_VERSION 0x0028
 
-#ifndef NOTYPES
 struct COMPOSE_KEY_ENTRY {
 	DWORD vkFirst;
 	DWORD vkSecond;
@@ -29,7 +28,6 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_SWAP    = 1,
 	CLSM_REPLACE,
 };
-#endif
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
