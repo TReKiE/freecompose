@@ -30,7 +30,7 @@
 #define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
 
 #ifdef NDEBUG
-static inline void debug( LPCWSTR format, ... ) { }
+static inline void debug( LPCWSTR /*format*/, ... ) { }
 #else
 FCSHARED_API void debug( LPCWSTR format, ... );
 #endif
