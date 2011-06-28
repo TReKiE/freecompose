@@ -16,7 +16,6 @@ __declspec(selectany) DWORD                 vkCompose          = VK_APPS;
 __declspec(selectany) DWORD                 vkCapsLockSwap     = VK_CAPITAL;
 #pragma data_seg( pop )
 
-void debug( LPCWSTR lpszMessage, ... );
 int CompareCkes( const void*, const void* );
 
 class ByteSet {

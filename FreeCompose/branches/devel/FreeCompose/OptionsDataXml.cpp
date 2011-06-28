@@ -148,6 +148,18 @@ static inline XDocument CreateDOMDocument( void ) {
 	return doc;
 }
 
+static CString _GetFreeComposeFolder( void ) {
+	CString str;
+	LPWSTR lpsz;
+	if ( ! GetFreeComposeFolder( lpsz ) ) {
+		debug( L"_GetFreeComposeFolder: Can't get our app data folder name\n" );
+	} else {
+		str = lpsz;
+		CoTaskMemFree( lpsz );
+	}
+	return str;
+}
+
 //==============================================================================
 // COptionsData implementation
 //==============================================================================
@@ -158,7 +170,7 @@ bool COptionsData::LoadFromXml( void ) {
 		return false;
 	}
 
-	CString str( GetFreeComposeFolder( ) );
+	CString str( _GetFreeComposeFolder( ) );
 	str.Append( L"\\FreeCompose.xml" );
 
 	XDocument doc = CreateDOMDocument( );
@@ -243,7 +255,7 @@ bool COptionsData::SaveToXml( void ) {
 		return false;
 	}
 
-	CString str( GetFreeComposeFolder( ) );
+	CString str( _GetFreeComposeFolder( ) );
 	str.Append( L"\\FreeCompose.xml" );
 
 	XDocument doc = CreateDOMDocument( );
