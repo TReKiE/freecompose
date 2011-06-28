@@ -2,7 +2,6 @@
 
 #include "OptionsData.h"
 #include "KeyEdit.h"
-#include "afxwin.h"
 
 class CFeatures: public CPropertyPage {
 	DECLARE_DYNAMIC( CFeatures )
