@@ -40,7 +40,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	SetRegistryKey( AFX_IDS_COMPANY_NAME );
 	CWinApp::InitInstance( );
 
-	InitializeDebug( );
+	InitializeDebugLogFile( );
 
 	CMainFrame* pFrame = new CMainFrame;
 	if ( ! pFrame ) {
@@ -55,6 +55,6 @@ BOOL CFreeComposeApp::InitInstance( ) {
 }
 
 int CFreeComposeApp::ExitInstance( ) {
-	TerminateDebug( );
+	TerminateDebugLogFile( );
 	return CWinApp::ExitInstance( );
 }

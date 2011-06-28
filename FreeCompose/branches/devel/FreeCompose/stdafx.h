@@ -4,20 +4,12 @@
 
 #pragma once
 
-#ifdef THIS_FILE_TARGETS_VISTA
-// Target Windows Vista or later.
-#define NTDDI_VERSION  NTDDI_VISTA
-#define WINVER         _WIN32_WINNT_VISTA
-#define _WIN32_WINNT   _WIN32_WINNT_VISTA
-#define _WIN32_IE      _WIN32_IE_IE60
-#else
 // Target Windows XP or later.
 // (We still support Windows 2000, but we need to target XP in order to make some #defines available.)
 #define NTDDI_VERSION  NTDDI_WINXP
 #define WINVER         _WIN32_WINNT_WINXP
 #define _WIN32_WINNT   _WIN32_WINNT_WINXP
 #define _WIN32_IE      _WIN32_IE_IE501
-#endif
 
 #define NOMINMAX
 #define _ATL_APARTMENT_THREADED 

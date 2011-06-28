@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "FCShared.h"
+#include "Internal.h"
 
 HINSTANCE hDllInst = NULL;
 

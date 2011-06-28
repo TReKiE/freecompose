@@ -3,16 +3,6 @@
 #include "HookProc.h"
 #include "Common.h"
 
-void debug( LPCWSTR lpszMessage, ... ) {
-	wchar_t buf[1024];
-
-	va_list va;
-	va_start( va, lpszMessage );
-	_vsnwprintf_s( buf, countof( buf ), _TRUNCATE, lpszMessage, va );
-	va_end( va );
-	OutputDebugString( buf );
-}
-
 int CompareCkes( const void* pv1, const void* pv2 ) {
 	COMPOSE_KEY_ENTRY* pcke1 = (COMPOSE_KEY_ENTRY*) pv1;
 	COMPOSE_KEY_ENTRY* pcke2 = (COMPOSE_KEY_ENTRY*) pv2;

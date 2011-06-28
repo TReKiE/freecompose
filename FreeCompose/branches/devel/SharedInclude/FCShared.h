@@ -28,3 +28,15 @@
 
 #define LOCK(x) EnterCriticalSection(&(x)); do
 #define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
+
+#ifdef NDEBUG
+static inline void debug( LPCWSTR format, ... ) { }
+#else
+FCSHARED_API void debug( LPCWSTR format, ... );
+#endif
+
+FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz );
+FCSHARED_API bool EnsureFreeComposeFolderExists( void );
+
+FCSHARED_API void InitializeDebugLogFile( void );
+FCSHARED_API void TerminateDebugLogFile( void );

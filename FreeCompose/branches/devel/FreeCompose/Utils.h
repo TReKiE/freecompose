@@ -1,14 +1,9 @@
 #pragma once
 
-void debug( LPCWSTR format, ... );
-
 CString VscToString( UINT vsc );
 CString VkToKeyLabel( DWORD vk );
 CString VkToString( DWORD vk );
 UINT VkToVsc( DWORD vk );
-
-CString GetFreeComposeFolder( void );
-bool EnsureFreeComposeFolderExists( void );
 
 DWORD GetComCtl32Version( void );
 

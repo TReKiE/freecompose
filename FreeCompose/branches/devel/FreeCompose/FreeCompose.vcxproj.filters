@@ -51,16 +51,10 @@
     <ClCompile Include="ComposeSequenceEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Utils2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Sounds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OptionsDataXml.cpp">
