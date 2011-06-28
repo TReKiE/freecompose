@@ -12,13 +12,6 @@
 
 #include <windows.h>
 
-#include <stdarg.h>
-#include <wtypes.h>
-
-#include <set>
-
 #include "FCShared.h"
-
-using namespace std;
 
 #define _T(x) L ## x

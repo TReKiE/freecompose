@@ -11,12 +11,14 @@
 #define _WIN32_WINNT   _WIN32_WINNT_WINXP
 #define _WIN32_IE      _WIN32_IE_IE501
 
+#include <sdkddkver.h>
+
+#define VC_EXTRALEAN
+#define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #define _ATL_APARTMENT_THREADED 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
 #define _SECURE_ATL 1
-
-#include <sdkddkver.h>
 
 #include <afxwin.h>
 #include <afxcmn.h>
@@ -24,8 +26,6 @@
 #include <afxtempl.h>
 
 #include <atlwin.h>
-
-#include <cstdlib>
 
 #include <FCHookDll.h>
 #include <FCShared.h>
