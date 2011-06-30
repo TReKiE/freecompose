@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:simpleType name="CapsLockToggleModeEnumeration">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="normal" />
+			<xs:enumeration value="pressTwice" />
+			<xs:enumeration value="disabled" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="CapsLockSwapModeEnumeration">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="swap" />
+			<xs:enumeration value="replace" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="VirtualKey">
+		<xs:attribute name="Shifted" type="xs:boolean" />
+	</xs:complexType>
+	<xs:element name="FreeCompose">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Options">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Startup">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="StartActive" type="xs:boolean" />
+										<xs:element name="StartWithWindows" type="xs:boolean" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Keyboard">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SwapCapsLock" type="xs:boolean" />
+										<xs:element name="CapsLockToggleMode" type="CapsLockToggleModeEnumeration" />
+										<xs:element name="CapsLockSwapMode" type="CapsLockSwapModeEnumeration" />
+										<xs:element name="ComposeKey" type="xs:unsignedByte" />
+										<xs:element name="SwapCapsLockKey" type="xs:unsignedByte" />
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Mappings">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Group" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="Mapping" minOccurs="0" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="First" type="VirtualKey" />
+													<xs:element name="Second" type="VirtualKey" />
+													<xs:element name="Composed" type="xs:unsignedInt" />
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+									<xs:attribute name="Name" type="xs:string" use="required" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

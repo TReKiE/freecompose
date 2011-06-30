@@ -1,0 +1,13 @@
+﻿<Window x:Class="NewFrontEnd.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FreeCompose options" Height="350" Width="525">
+    <TabControl Name="tabControl">
+        <TabItem Name="tabKeySequences" Header="_Key Sequences">
+            <Frame Source="KeySequencesPage.xaml" NavigationUIVisibility="Hidden" />
+        </TabItem>
+        <TabItem Name="tabFeatures" Header="_Features">
+            <Frame Source="FeaturesPage.xaml" NavigationUIVisibility="Hidden" />
+        </TabItem>
+    </TabControl>
+</Window>
