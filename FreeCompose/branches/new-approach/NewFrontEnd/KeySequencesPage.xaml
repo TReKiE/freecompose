@@ -1,0 +1,61 @@
+﻿<Page x:Class="NewFrontEnd.KeySequencesPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:dat="clr-namespace:System.Windows.Data;assembly=PresentationFramework"
+      xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      xmlns:src="clr-namespace:NewFrontEnd"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300">
+    <Page.Resources>
+        <CollectionViewSource x:Key="keySequenceData" Source="{Binding Source={x:Static Application.Current}, Path=Configuration.KeySequenceCollection}">
+            <CollectionViewSource.GroupDescriptions>
+                <dat:PropertyGroupDescription PropertyName="Group" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
+        <src:ComposedCharacterConverter x:Key="composedCharacterConverter" />
+        <src:VirtualKeyConverter x:Key="virtualKeyConverter" />
+    </Page.Resources>
+
+    <Grid>
+
+        <ListView Name="listView" ItemsSource="{Binding Source={StaticResource keySequenceData}}">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0,0,0,5" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True" BorderBrush="#FFA4B97F" BorderThickness="0,0,0,1">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Name}" Margin="5,0,0,0" Width="100" />
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=ItemCount}" />
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <Expander.Content>
+                                                <ItemsPresenter Name="ItemsPresenter" />
+                                            </Expander.Content>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Character" Width="Auto" DisplayMemberBinding="{Binding Path=Composed, Converter={StaticResource composedCharacterConverter}}" />
+                    <GridViewColumn Header="First key" Width="Auto" DisplayMemberBinding="{Binding Path=First, Converter={StaticResource virtualKeyConverter}}" />
+                    <GridViewColumn Header="Second key" Width="Auto" DisplayMemberBinding="{Binding Path=Second, Converter={StaticResource virtualKeyConverter}}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </Grid>
+</Page>
