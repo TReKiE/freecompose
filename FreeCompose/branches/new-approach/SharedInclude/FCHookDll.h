@@ -10,16 +10,16 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0028
+#define FCHOOKDLL_API_VERSION 0x0029
 
 #define VKM_SHIFT 0x80000000
 #define VKM_ALTGR 0x40000000
 #define VKM_MASK  0xC0000000
 
-struct COMPOSE_KEY_ENTRY {
-	DWORD vkFirst;
-	DWORD vkSecond;
-	unsigned u32Composed;
+struct COMPOSE_SEQUENCE {
+	unsigned chFirst;
+	unsigned chSecond;
+	unsigned chComposed;
 };
 
 enum CAPS_LOCK_TOGGLE_MODE {
@@ -35,7 +35,7 @@ enum CAPS_LOCK_SWAP_MODE {
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
-FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries );
+FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
 
 FCHOOKDLL_API BOOL FcEnableHook( void );
 FCHOOKDLL_API BOOL FcDisableHook( void );
