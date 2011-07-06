@@ -25,7 +25,7 @@ public:
 		count = 0;
 	}
 
-	inline void Clear   ( void )                { for ( int n = 0; n < countof( bits ); n++ ) bits[n] = 0;                   }
+	inline void Clear   ( void )                { for ( int n = 0; n < _countof( bits ); n++ ) bits[n] = 0;                  }
 	inline void Add     ( const DWORD x )       { if ( ! Contains( x ) ) { count++; bits[ x >> 3 ] |=  ( 1 << ( x & 7 ) ); } }
 	inline void Remove  ( const DWORD x )       { if (   Contains( x ) ) { count--; bits[ x >> 3 ] &= ~( 1 << ( x & 7 ) ); } }
 	inline bool Contains( const DWORD x ) const { return ( bits[ x >> 3 ] & ( 1 << ( x & 7 ) ) ) != 0;                       }
