@@ -12,8 +12,7 @@ bool _GetAppDataFolderFromShell( LPWSTR& lpsz ) {
 		return false;
 	}
 
-	lpsz = (LPWSTR) CoTaskMemAlloc( wcslen( buf ) + 1 );
-	wcscpy_s( lpsz, MAX_PATH, buf );
+	lpsz = _CoTaskMemDuplicateStringW( buf );
 	return true;
 }
 

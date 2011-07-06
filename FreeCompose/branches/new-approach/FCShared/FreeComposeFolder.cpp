@@ -30,10 +30,7 @@ FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
 
 	wchar_t buf[1024];
 	swprintf_s( buf, 1024, L"%s\\%s\\%s", appDataFolder, companyName, appName );
-
-	lpsz = reinterpret_cast<LPWSTR>( CoTaskMemAlloc( ( wcslen( buf ) + 1 ) * sizeof(wchar_t) ) );
-	wcscpy_s( lpsz, 1024, buf );
-
+	lpsz = _CoTaskMemDuplicateStringW( buf );
 	ret = true;
 
 ret:

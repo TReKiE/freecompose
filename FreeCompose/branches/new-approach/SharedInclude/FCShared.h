@@ -6,9 +6,8 @@
 #define FCSHARED_API __declspec(dllimport)
 #endif
 
-#define countof(x) ( sizeof((x)) / sizeof((x)[0]) )
-
 //=============================================================================
+
 //
 // Ice Karma's standard lock constructs. Use like this:
 //
@@ -28,6 +27,8 @@
 
 #define LOCK(x) EnterCriticalSection(&(x)); do
 #define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
+
+//=============================================================================
 
 #ifdef NDEBUG
 static inline void debug( LPCWSTR /*format*/, ... ) { }

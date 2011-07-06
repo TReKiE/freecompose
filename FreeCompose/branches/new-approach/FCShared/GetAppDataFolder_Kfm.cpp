@@ -2,7 +2,6 @@
 #include "FCShared.h"
 #include "Internal.h"
 
-//#include <WTypes.h>
 #include <ShObjIdl.h>
 #include <KnownFolders.h>
 
