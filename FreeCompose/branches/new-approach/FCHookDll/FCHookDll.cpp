@@ -3,23 +3,19 @@
 #include "HookProc.h"
 #include "Common.h"
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 #pragma data_seg( push, ".shareddata" )
 volatile LONG cClients = 0;
 #pragma data_seg( pop )
 
 HINSTANCE hDllInst = NULL;
 
-static void _SetComposeKeyEntriesImpl( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries ) {
+static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
-		if ( NULL != ComposeKeyEntries ) {
-			free( ComposeKeyEntries );
+		if ( NULL != ComposeSequences ) {
+			delete[] ComposeSequences;
 		}
-		ComposeKeyEntries = rgEntries;
-		cComposeKeyEntries = cEntries;
+		ComposeSequences = pSequences;
+		cComposeSequences = cSequences;
 	} UNLOCK( cs );
 }
 
@@ -34,7 +30,7 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 
 		case DLL_PROCESS_DETACH:
 			if ( 0 == InterlockedDecrement( &cClients ) ) {
-				_SetComposeKeyEntriesImpl( NULL, 0 );
+				_SetComposeSequencesImpl( NULL, 0 );
 				DeleteCriticalSection( &cs );
 			}
 			break;
@@ -51,11 +47,11 @@ FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 	return FCHOOKDLL_API_VERSION;
 }
 
-FCHOOKDLL_API BOOL FcSetComposeKeyEntries( COMPOSE_KEY_ENTRY* rgEntries, DWORD cEntries ) {
-	COMPOSE_KEY_ENTRY* pcke = (COMPOSE_KEY_ENTRY*) calloc( cEntries, sizeof( COMPOSE_KEY_ENTRY ) );
-	memcpy( pcke, rgEntries, sizeof( COMPOSE_KEY_ENTRY ) * cEntries );
-	qsort( pcke, cEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
-	_SetComposeKeyEntriesImpl( pcke, cEntries );
+FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, INT_PTR cInSequences ) {
+	COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];
+	memcpy( pSequences, pInSequences, sizeof( COMPOSE_SEQUENCE ) * cInSequences );
+	qsort( pSequences, cInSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
+	_SetComposeSequencesImpl( pSequences, cInSequences );
 	return TRUE;
 }
 

@@ -5,10 +5,6 @@
 
 #include <KeyIsXAlnum.h>
 
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
-
 #define KEY_DOWN()     ( 0 == ( pkb->flags & LLKHF_UP       ) )
 #define KEY_UP()       ( 0 != ( pkb->flags & LLKHF_UP       ) )
 #define KEY_INJECTED() ( 0 != ( pkb->flags & LLKHF_INJECTED ) )
@@ -55,46 +51,46 @@ inline wchar_t makeSecondSurrogate( unsigned ch ) {
 	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
 }
 
-bool TranslateKey( DWORD vk1, DWORD vk2, COMPOSE_KEY_ENTRY& cke ) {
-	COMPOSE_KEY_ENTRY dummy1 = { vk1, vk2 };
-	COMPOSE_KEY_ENTRY dummy2 = { vk2, vk1 };
-	COMPOSE_KEY_ENTRY* pkey = NULL;
+bool TranslateKey( DWORD vk1, DWORD vk2, OUT COMPOSE_SEQUENCE& match ) {
+	COMPOSE_SEQUENCE needle1 = { vk1, vk2 };
+	COMPOSE_SEQUENCE needle2 = { vk2, vk1 };
+	COMPOSE_SEQUENCE* pmatch = NULL;
 
 	LOCK( cs ) {
-		if ( NULL == cComposeKeyEntries || cComposeKeyEntries < 1 )
+		if ( NULL == cComposeSequences || cComposeSequences < 1 )
 			break;
 		
-		pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy1, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
-		if ( NULL != pkey )
+		pmatch = (COMPOSE_SEQUENCE*) bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
+		if ( NULL != pmatch )
 			break;
 		
-		pkey = (COMPOSE_KEY_ENTRY*) bsearch( &dummy2, ComposeKeyEntries, cComposeKeyEntries, sizeof( COMPOSE_KEY_ENTRY ), CompareCkes );
+		pmatch = (COMPOSE_SEQUENCE*) bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
 	} UNLOCK( cs );
 
-	if ( NULL == pkey ) {
+	if ( NULL == pmatch ) {
 		return false;
 	}
 
-	cke = *pkey;
+	match = *pmatch;
 	return true;
 }
 
-bool SendKey( COMPOSE_KEY_ENTRY& cke ) {
+bool SendKey( COMPOSE_SEQUENCE& sequence ) {
 	UINT numInputsToSend;
 	INPUT input[4];
 	wchar_t ch[3];
 
-	if ( cke.u32Composed < 0x10000 ) {
+	if ( sequence.chComposed < 0x10000 ) {
 		numInputsToSend = 2;
-		ch[0] = (wchar_t) cke.u32Composed;
+		ch[0] = (wchar_t) sequence.chComposed;
 		ch[1] = 0;
 	} else {
 		numInputsToSend = 4;
-		ch[0] = makeFirstSurrogate( cke.u32Composed );
-		ch[1] = makeSecondSurrogate( cke.u32Composed );
+		ch[0] = makeFirstSurrogate( sequence.chComposed );
+		ch[1] = makeSecondSurrogate( sequence.chComposed );
 	}
 	ch[2] = 0;
-	debug( L"SendKey: u32Composed=U+%06x '%s' numInputsToSend=%u\n", cke.u32Composed, ch, numInputsToSend );
+	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence.chComposed, ch, numInputsToSend );
 
 	makeUnicodeKeyDown( input[0], ch[0] );
 	makeUnicodeKeyUp( input[1], ch[0] );
@@ -109,7 +105,7 @@ bool SendKey( COMPOSE_KEY_ENTRY& cke ) {
 		return false;
 	}
 
-	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) cke.u32Composed );
+	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) sequence.chComposed );
 	return true;
 }
 
@@ -267,13 +263,13 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					WantedKeys.Add( pkb->vkCode );
 					key2 = ( (DWORD) shift << 31 ) | pkb->vkCode;
 
-					COMPOSE_KEY_ENTRY cke;
+					COMPOSE_SEQUENCE sequence;
 					WPARAM pip = PIP_FAIL;
 					debug(L"LLKP|2=>0 keys %08x %08x\n", key1, key2);
-					if ( ! TranslateKey( key1, key2, cke ) ) {
+					if ( ! TranslateKey( key1, key2, sequence ) ) {
 						debug(L"LLKP|2=>0 translate failed\n");
 					} else {
-						if ( ! SendKey( cke ) ) {
+						if ( ! SendKey( sequence ) ) {
 							debug(L"LLKP|2=>0 send failed\n");
 						} else {
 							pip = PIP_OK_3;
