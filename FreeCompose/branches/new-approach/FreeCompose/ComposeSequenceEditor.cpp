@@ -78,15 +78,13 @@ void CComposeSequenceEditor::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& c
 			} else {
 				debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-16 characters U+%04hX U+%04hX to UTF-32?\n", str[0], str[1] );
 			}
-			// XXX
-			MessageBox( L"UTF-16 fail 3", m_strTitle, MB_OK|MB_ICONERROR );
 			pDX->Fail( );
 		}
 	} else {
 		if ( 0 == ch ) {
 			m_editResult.SetWindowText( L"" );
 		} else {
-			str.Format( L"U+%04X %s", ch, Utf32ToUtf16( ch ) );
+			str.Format( L"U+%06X %s", ch, Utf32ToUtf16( ch ) );
 			m_editResult.SetWindowText( str );
 		}
 	}
