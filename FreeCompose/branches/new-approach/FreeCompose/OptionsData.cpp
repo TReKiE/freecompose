@@ -17,7 +17,7 @@ COptionsData::COptionsData( const COptionsData& options ) {
 }
 
 COptionsData::~COptionsData( ) {
-	m_ComposeKeyEntries.RemoveAll( );
+	m_ComposeSequences.RemoveAll( );
 }
 
 COptionsData& COptionsData::operator=( const COptionsData& options ) {
@@ -31,8 +31,8 @@ COptionsData& COptionsData::operator=( const COptionsData& options ) {
 	m_vkCompose          = options.m_vkCompose;
 	m_vkSwapCapsLock     = options.m_vkSwapCapsLock;
 
-	m_ComposeKeyEntries.RemoveAll( );
-	m_ComposeKeyEntries.Copy( options.m_ComposeKeyEntries );
+	m_ComposeSequences.RemoveAll( );
+	m_ComposeSequences.Copy( options.m_ComposeSequences );
 
 	return *this;
 }
@@ -46,10 +46,10 @@ bool COptionsData::operator==( const COptionsData& options ) {
 	if ( m_vkCompose          != options.m_vkCompose          ) return false;
 	if ( m_vkSwapCapsLock     != options.m_vkSwapCapsLock     ) return false;
 
-	if ( m_ComposeKeyEntries.GetCount( ) != options.m_ComposeKeyEntries.GetCount( ) )
+	if ( m_ComposeSequences.GetCount( ) != options.m_ComposeSequences.GetCount( ) )
 		return false;
-	for ( int n = 0; n < m_ComposeKeyEntries.GetCount( ); n++ ) {
-		if ( m_ComposeKeyEntries[n] != options.m_ComposeKeyEntries[n] )
+	for ( int n = 0; n < m_ComposeSequences.GetCount( ); n++ ) {
+		if ( m_ComposeSequences[n] != options.m_ComposeSequences[n] )
 			return false;
 	}
 
@@ -60,51 +60,51 @@ bool COptionsData::operator!=( const COptionsData& options ) {
 	return ! operator==( options );
 }
 
-bool COptionsData::_FcValidateCke( const COMPOSE_KEY_ENTRY& cke ) {
-	if ( 0 == ( cke.vkFirst &  0xFFUL ) )
+bool COptionsData::_FcValidateSequence( const COMPOSE_SEQUENCE& sequence ) {
+	if ( 0 == ( sequence.chFirst &  0xFF ) )
 		return false;
-	if ( 0 != ( cke.vkFirst & ~0x800000FFUL ) )
-		return false;
-
-	if ( 0 == ( cke.vkSecond &  0xFFUL ) )
-		return false;
-	if ( 0 != ( cke.vkSecond & ~0x800000FFUL ) )
+	if ( 0 != ( sequence.chFirst & ~0x800000FF ) )
 		return false;
 
-	if ( 0 == cke.u32Composed )
+	if ( 0 == ( sequence.chSecond &  0xFF ) )
 		return false;
-	if ( cke.u32Composed >= 0xD800U && cke.u32Composed < 0xE000U )
+	if ( 0 != ( sequence.chSecond & ~0x800000FF ) )
 		return false;
-	if ( cke.u32Composed > 0x10FFFFU )
+
+	if ( 0 == sequence.chComposed )
+		return false;
+	if ( sequence.chComposed >= 0xD800u && sequence.chComposed < 0xE000u )
+		return false;
+	if ( sequence.chComposed > 0x10FFFFu )
 		return false;
 
 	return true;
 }
 
 void COptionsData::_FcLoadKeys( void ) {
-	m_ComposeKeyEntries.RemoveAll( );
+	m_ComposeSequences.RemoveAll( );
 
 	int count = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
 	if ( count < 1 ) {
 		count = _countof( DefaultComposeKeyEntries );
-		m_ComposeKeyEntries.SetSize( count );
+		m_ComposeSequences.SetSize( count );
 		for ( int n = 0; n < count; n++ ) {
-			m_ComposeKeyEntries[n] = DefaultComposeKeyEntries[n];
+			m_ComposeSequences[n] = DefaultComposeKeyEntries[n];
 		}
 		return;
 	}
 
-	COMPOSE_KEY_ENTRY cke;
+	COMPOSE_SEQUENCE cke;
 	CString section;
-	m_ComposeKeyEntries.SetSize( count );
+	m_ComposeSequences.SetSize( count );
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
 		section.Format( _T("Mapping\\%d"), n );
-		cke.vkFirst     = (DWORD)    theApp.GetProfileInt( section, _T("First"),    0 );
-		cke.vkSecond    = (DWORD)    theApp.GetProfileInt( section, _T("Second"),   0 );
-		cke.u32Composed = (unsigned) theApp.GetProfileInt( section, _T("Composed"), 0 );
-		if ( _FcValidateCke( cke ) ) {
-			m_ComposeKeyEntries[index++] = cke;
+		cke.chFirst    = (unsigned) theApp.GetProfileInt( section, _T("First"),    0 );
+		cke.chSecond   = (unsigned) theApp.GetProfileInt( section, _T("Second"),   0 );
+		cke.chComposed = (unsigned) theApp.GetProfileInt( section, _T("Composed"), 0 );
+		if ( _FcValidateSequence( cke ) ) {
+			m_ComposeSequences[index++] = cke;
 		} else {
 			debug( _T("Bad mapping, #%d\n"), n );
 		}
@@ -116,14 +116,14 @@ void COptionsData::_FcSaveKeys( void ) {
 
 	CString section;
 	int count = 0;
-	for ( int n = 0; n < (int) m_ComposeKeyEntries.GetSize( ); n++ ) {
-		if ( !m_ComposeKeyEntries[n].vkFirst && !m_ComposeKeyEntries[n].vkSecond && !m_ComposeKeyEntries[n].u32Composed ) {
+	for ( int n = 0; n < (int) m_ComposeSequences.GetSize( ); n++ ) {
+		if ( !m_ComposeSequences[n].chFirst && !m_ComposeSequences[n].chSecond && !m_ComposeSequences[n].chComposed ) {
 			continue;
 		}
 		section.Format( _T("Mapping\\%d"), count++ );
-		theApp.WriteProfileInt( section, _T("First"),    (int) m_ComposeKeyEntries[n].vkFirst     );
-		theApp.WriteProfileInt( section, _T("Second"),   (int) m_ComposeKeyEntries[n].vkSecond    );
-		theApp.WriteProfileInt( section, _T("Composed"), (int) m_ComposeKeyEntries[n].u32Composed );
+		theApp.WriteProfileInt( section, _T("First"),    (int) m_ComposeSequences[n].chFirst    );
+		theApp.WriteProfileInt( section, _T("Second"),   (int) m_ComposeSequences[n].chSecond   );
+		theApp.WriteProfileInt( section, _T("Composed"), (int) m_ComposeSequences[n].chComposed );
 	}
 
 	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), count );
@@ -141,7 +141,7 @@ void COptionsData::_UpdateRunKey( void ) {
 
 	if ( m_fStartWithWindows ) {
 		wchar_t lpszImageFilename[1024];
-		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, countof(lpszImageFilename) ) > 0 ) {
+		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) ) > 0 ) {
 			rc = RegSetValueEx( hk, _T("FreeCompose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
 				debug( _T("COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n"), rc );
@@ -160,9 +160,11 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
+#ifdef NDEBUG
 	if ( LoadFromXml( ) ) {
 		return;
 	}
+#endif
 
 	m_fStartActive       = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartActive"),        TRUE );
 	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartWithWindows"),   FALSE );

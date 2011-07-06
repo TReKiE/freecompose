@@ -31,14 +31,14 @@ template<typename T> inline T compare_keys_reverse( void* /*context*/, const voi
 		return 0;
 }
 
-inline bool operator==( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b ) {
-	if ( a.vkFirst     != b.vkFirst     ) return false;
-	if ( a.vkSecond    != b.vkSecond    ) return false;
-	if ( a.u32Composed != b.u32Composed ) return false;
+inline bool operator==( const COMPOSE_SEQUENCE& a, const COMPOSE_SEQUENCE& b ) {
+	if ( a.chFirst    != b.chFirst    ) return false;
+	if ( a.chSecond   != b.chSecond   ) return false;
+	if ( a.chComposed != b.chComposed ) return false;
 	return true;
 }
 
-inline bool operator!=( const COMPOSE_KEY_ENTRY& a, const COMPOSE_KEY_ENTRY& b ) {
+inline bool operator!=( const COMPOSE_SEQUENCE& a, const COMPOSE_SEQUENCE& b ) {
 	return ! operator==( a, b );
 }
 

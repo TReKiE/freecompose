@@ -6,7 +6,7 @@ class CComposeSequenceEditor: public CDialog {
 	DECLARE_DYNAMIC( CComposeSequenceEditor )
 
 public:
-	CComposeSequenceEditor( COMPOSE_KEY_ENTRY& cke, bool fAddMode, CWnd* pParent = NULL );
+	CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, /*XXX*/bool fAddMode, CWnd* pParent = NULL );
 	virtual ~CComposeSequenceEditor( );
 
 	// Dialog Data
@@ -15,13 +15,13 @@ public:
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual void DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch );
-	virtual void DDX_Key( CDataExchange* pDX, int nIDC, DWORD& dwVk );
-	virtual void DDV_Key( CDataExchange* pDX, DWORD& dwVk );
+	virtual void DDX_Key( CDataExchange* pDX, int nIDC, unsigned& ch );
+	virtual void DDV_Key( CDataExchange* pDX, unsigned& dwVk );
 
 	DECLARE_MESSAGE_MAP( )
 
 private:
-	COMPOSE_KEY_ENTRY& m_cke;
+	COMPOSE_SEQUENCE& m_sequence;
 	bool m_fAdd;
 	CString m_strTitle;
 

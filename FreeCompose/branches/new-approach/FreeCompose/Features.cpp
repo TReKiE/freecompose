@@ -61,7 +61,7 @@ BOOL CFeatures::OnInitDialog( ) {
 
 	CString keyName;
 	int index;
-	for ( int n = 0; n < countof( SpecialKeys ); n++ ) {
+	for ( int n = 0; n < _countof( SpecialKeys ); n++ ) {
 		keyName.LoadString( IDS_VK_NAMES_BASE + n );
 
 		index = m_cbComposeKey.AddString( keyName );

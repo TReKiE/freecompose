@@ -59,26 +59,28 @@ static inline _bstr_t StrFromInt( const int _ ) {
 	return _bstr_t( _variant_t( _ ) );
 }
 
-static XElement ElementFromCke( XDocument doc, COMPOSE_KEY_ENTRY& cke ) {
+static XElement ElementFromSequence( XDocument doc, COMPOSE_SEQUENCE& sequence ) {
 	XElement mapping = doc->createElement( L"Mapping" );
 
 		XElement first = doc->createElement( L"First" );
 		mapping->appendChild( first );
-		if ( ( cke.vkFirst & 0x80000000 ) != 0 ) {
+		// XXX
+		if ( ( sequence.chFirst & 0x80000000 ) != 0 ) {
 			first->setAttribute( L"Shifted", L"true" );
 		}
-		first->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( cke.vkFirst & 0xFF ) ) ) ) );
+		first->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( sequence.chFirst & 0xFF ) ) ) ) );
 
 		XElement second = doc->createElement( L"Second" );
 		mapping->appendChild( second );
-		if ( ( cke.vkSecond & 0x80000000 ) != 0 ) {
+		// XXX
+		if ( ( sequence.chSecond & 0x80000000 ) != 0 ) {
 			second->setAttribute( L"Shifted", L"true" );
 		}
-		second->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( cke.vkSecond & 0xFF ) ) ) ) );
+		second->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( sequence.chSecond & 0xFF ) ) ) ) );
 
 		XElement composed = doc->createElement( L"Composed" );
 		mapping->appendChild( composed );
-		composed->text = _bstr_t( _variant_t( (unsigned) cke.u32Composed ) );
+		composed->text = _bstr_t( _variant_t( (unsigned) sequence.chComposed ) );
 
 	return mapping;
 }
@@ -110,28 +112,29 @@ static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& 
 	return (CAPS_LOCK_SWAP_MODE) 0;
 }
 
-static inline int IntFromXElement( const XElement& _ ) {
-	return (int) _variant_t( _->text );
+template<typename T> static inline T FromXElement( const XElement& _ ) {
+	return (T) _variant_t( _->text );
 }
 
-static COMPOSE_KEY_ENTRY CkeFromElement( XElement Mapping ) {
-	COMPOSE_KEY_ENTRY cke;
-	memset( &cke, 0, sizeof( cke ) );
-	cke.vkFirst = IntFromXElement( Mapping->selectSingleNode( L"First" ) );
-	cke.vkSecond = IntFromXElement( Mapping->selectSingleNode( L"Second" ) );
-	cke.u32Composed = IntFromXElement( Mapping->selectSingleNode( L"Composed" ) );
+static COMPOSE_SEQUENCE SequenceFromElement( XElement Mapping ) {
+	COMPOSE_SEQUENCE sequence;
+	memset( &sequence, 0, sizeof( sequence ) );
+	sequence.chFirst = FromXElement<unsigned>( Mapping->selectSingleNode( L"First" ) );
+	sequence.chSecond = FromXElement<unsigned>( Mapping->selectSingleNode( L"Second" ) );
+	sequence.chComposed = FromXElement<unsigned>( Mapping->selectSingleNode( L"Composed" ) );
 
+	// XXX
 	XAttribute shifted;
 	shifted = Mapping->selectSingleNode( L"First/@Shifted" );
 	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
-		cke.vkFirst |= 0x80000000;
+		sequence.chFirst |= 0x80000000;
 	}
 	shifted = Mapping->selectSingleNode( L"Second/@Shifted" );
 	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
-		cke.vkSecond |= 0x80000000;
+		sequence.chSecond |= 0x80000000;
 	}
 
-	return cke;
+	return sequence;
 }
 
 static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
@@ -225,15 +228,15 @@ bool COptionsData::LoadFromXml( void ) {
 		m_fSwapCapsLock = BoolFromXNode( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
 		m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
 		m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
-		m_vkCompose = IntFromXElement( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		m_vkSwapCapsLock = IntFromXElement( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+		m_vkCompose = FromXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		m_vkSwapCapsLock = FromXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 
 		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
 		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
 		for ( XElement group = groupNodes->nextNode( ); NULL != group; group = groupNodes->nextNode( ) ) {
 			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
 			for ( XElement mapping = mappingNodes->nextNode( ); NULL != mapping; mapping = mappingNodes->nextNode( ) ) {
-				m_ComposeKeyEntries.Add( CkeFromElement( mapping ) );
+				m_ComposeSequences.Add( SequenceFromElement( mapping ) );
 			}
 		}
 	}
@@ -288,6 +291,10 @@ bool COptionsData::SaveToXml( void ) {
 		XElement FreeCompose = doc->createElement( L"FreeCompose" );
 		doc->appendChild( FreeCompose );
 
+			XElement SyntaxVersion = doc->createElement( L"SyntaxVersion" );
+			SyntaxVersion->text = L"2";
+			FreeCompose->appendChild( SyntaxVersion );
+
 			XElement Options = doc->createElement( L"Options" );
 			FreeCompose->appendChild( Options );
 
@@ -333,11 +340,11 @@ bool COptionsData::SaveToXml( void ) {
 				Group->setAttribute( L"Name", L"" );
 
 				unsigned count = 0;
-				for ( int n = 0; n < (int) m_ComposeKeyEntries.GetSize( ); n++ ) {
-					if ( ! m_ComposeKeyEntries[n].u32Composed ) {
+				for ( int n = 0; n < (int) m_ComposeSequences.GetSize( ); n++ ) {
+					if ( ! m_ComposeSequences[n].chComposed ) {
 						continue;
 					}
-					Group->appendChild( ElementFromCke( doc, m_ComposeKeyEntries[n] ) );
+					Group->appendChild( ElementFromSequence( doc, m_ComposeSequences[n] ) );
 					count++;
 				}
 	}

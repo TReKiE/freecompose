@@ -8,7 +8,7 @@ CString VscToString( UINT vsc ) {
 	int rc;
 
 	memset( buf, 0, sizeof( buf ) );
-	rc = GetKeyNameText( vsc, buf, countof( buf ) );
+	rc = GetKeyNameText( vsc, buf, _countof( buf ) );
 	if ( 0 == rc ) {
 		debug( _T("VscToString(0x%08x): GetKeyNameText: error %d\n"), vsc, GetLastError( ) );
 		return CString( );

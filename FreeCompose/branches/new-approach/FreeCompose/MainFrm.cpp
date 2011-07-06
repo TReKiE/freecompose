@@ -75,7 +75,7 @@ void CMainFrame::_Initialize( void ) {
 }
 
 void CMainFrame::_Reconfigure( void ) {
-	FcSetComposeKeyEntries( m_pOptions->m_ComposeKeyEntries.GetData( ), (DWORD) m_pOptions->m_ComposeKeyEntries.GetCount( ) );
+	FcSetComposeSequences( m_pOptions->m_ComposeSequences.GetData( ), m_pOptions->m_ComposeSequences.GetCount( ) );
 
 	if ( m_pOptions->m_fStartActive ) {
 		FcEnableHook( );
