@@ -1,6 +1,6 @@
 #pragma once
 
-typedef CArray< COMPOSE_KEY_ENTRY > CComposeKeyEntryArray;
+typedef CArray< COMPOSE_SEQUENCE > CComposeSequenceArray;
 
 class CFreeComposeApp: public CWinApp {
 public:

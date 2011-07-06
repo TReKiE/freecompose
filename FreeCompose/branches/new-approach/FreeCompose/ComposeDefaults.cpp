@@ -42,7 +42,7 @@
 #define DOTBELOW   PERIOD
 #define MIDDLEDOT  PERIOD
 
-const COMPOSE_KEY_ENTRY DefaultComposeKeyEntries[229] = {
+const COMPOSE_SEQUENCE DefaultComposeKeyEntries[229] = {
 	{         'C',                   EQUALS,        L'€', },
 	{ CAPITAL 'C',                   EQUALS,        L'€', },
 	{         'T',                   'M',           L'™', },

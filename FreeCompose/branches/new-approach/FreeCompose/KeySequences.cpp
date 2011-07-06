@@ -44,27 +44,27 @@ void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 
 // TODO error handling
 void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
-	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
+	const COMPOSE_SEQUENCE& cke = m_Options.m_ComposeSequences[ n ];
 	CString col0, col1, col2;
 	int item;
 	int width;
 	BOOL ret;
 
-	col0.Format( L"U+%04X %s", cke.u32Composed, Utf32ToUtf16( cke.u32Composed ) );
+	col0.Format( L"U+%06X %s", cke.chComposed, Utf32ToUtf16( cke.chComposed ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
 	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, (int) n, col0, 0, (UINT) -1, -1, n );
 	ASSERT( n == item );
 
-	col1 = VkToKeyLabel( cke.vkFirst );
+	col1 = VkToKeyLabel( cke.chFirst ); // XXX
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	ret = m_KeyComboList.SetItem( item, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
 	ASSERT( TRUE == ret );
 
-	col2 = VkToKeyLabel( cke.vkSecond );
+	col2 = VkToKeyLabel( cke.chSecond ); // XXX
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
@@ -74,24 +74,23 @@ void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
 
 // TODO error handling
 void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
-	const COMPOSE_KEY_ENTRY& cke = m_Options.m_ComposeKeyEntries[ n ];
-
+	const COMPOSE_SEQUENCE& sequence = m_Options.m_ComposeSequences[ n ];
 	CString col0, col1, col2;
 	int width;
 
-	col0.Format( L"U+%04X %s", cke.u32Composed, Utf32ToUtf16( cke.u32Composed ) );
+	col0.Format( L"U+%06X %s", sequence.chComposed, Utf32ToUtf16( sequence.chComposed ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
 	m_KeyComboList.SetItem( (int) n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
 
-	col1 = VkToKeyLabel( cke.vkFirst );
+	col1 = VkToKeyLabel( sequence.chFirst ); // XXX
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	m_KeyComboList.SetItem( (int) n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
 
-	col2 = VkToKeyLabel( cke.vkSecond );
+	col2 = VkToKeyLabel( sequence.chSecond ); // XXX
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
@@ -106,7 +105,7 @@ void CKeySequences::_AdjustColumns( void ) {
 
 void CKeySequences::_FillKeyComboList( void ) {
 	m_KeyComboList.DeleteAllItems( );
-	for ( int n = 0; n < m_Options.m_ComposeKeyEntries.GetCount( ); n++ ) {
+	for ( int n = 0; n < m_Options.m_ComposeSequences.GetCount( ); n++ ) {
 		_DoAddOneKeySequence( n );
 	}
 	_AdjustColumns( );
@@ -176,11 +175,11 @@ void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResu
 }
 
 void CKeySequences::OnBnClickedAdd( ) {
-	COMPOSE_KEY_ENTRY newcke = { 0, 0, 0, };
-	CComposeSequenceEditor edit( newcke, true, this );
+	COMPOSE_SEQUENCE sequence = { 0, 0, 0, };
+	CComposeSequenceEditor edit( sequence, true, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		_AddNewKeySequence( m_Options.m_ComposeKeyEntries.Add( newcke ) );
+		_AddNewKeySequence( m_Options.m_ComposeSequences.Add( sequence ) );
 		SetModified( );
 	}
 }
@@ -194,11 +193,11 @@ void CKeySequences::OnBnClickedEdit( ) {
 		return;
 
 	int k = m_KeyComboList.GetNextSelectedItem( pos );
-	COMPOSE_KEY_ENTRY cke( m_Options.m_ComposeKeyEntries[ k ] );
-	CComposeSequenceEditor edit( cke, false, this );
+	COMPOSE_SEQUENCE sequence = m_Options.m_ComposeSequences[ k ];
+	CComposeSequenceEditor edit( sequence, false, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		m_Options.m_ComposeKeyEntries[ k ] = cke;
+		m_Options.m_ComposeSequences[ k ] = sequence;
 		_DoUpdateOneKeySequence( k );
 		_AdjustColumns( );
 		SetModified( );
@@ -228,7 +227,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 
 	for ( UINT n = 0; n < count; n++ ) {
 		m_KeyComboList.DeleteItem( items[n] );
-		m_Options.m_ComposeKeyEntries.RemoveAt( items[n] );
+		m_Options.m_ComposeSequences.RemoveAt( items[n] );
 	}
 
 	delete[] items;

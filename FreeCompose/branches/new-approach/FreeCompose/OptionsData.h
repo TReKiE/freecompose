@@ -16,7 +16,7 @@ public:
 	bool LoadFromXml( void );
 	bool SaveToXml( void );
 
-	CComposeKeyEntryArray m_ComposeKeyEntries;
+	CComposeSequenceArray m_ComposeSequences;
  
 	BOOL m_fStartActive;
 	BOOL m_fStartWithWindows;
@@ -27,7 +27,7 @@ public:
 	DWORD m_vkSwapCapsLock;
 
 private:
-	bool _FcValidateCke( const COMPOSE_KEY_ENTRY& cke );
+	bool _FcValidateSequence( const COMPOSE_SEQUENCE& sequence );
 	void _FcLoadKeys( void );
 	void _FcSaveKeys( void );
 	void _UpdateRunKey( void );
