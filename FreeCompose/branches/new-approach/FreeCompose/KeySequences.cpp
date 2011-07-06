@@ -176,7 +176,7 @@ void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResu
 
 void CKeySequences::OnBnClickedAdd( ) {
 	COMPOSE_SEQUENCE sequence = { 0, 0, 0, };
-	CComposeSequenceEditor edit( sequence, true, this );
+	CComposeSequenceEditor edit( sequence, semAdd, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
 		_AddNewKeySequence( m_Options.m_ComposeSequences.Add( sequence ) );
@@ -194,7 +194,7 @@ void CKeySequences::OnBnClickedEdit( ) {
 
 	int k = m_KeyComboList.GetNextSelectedItem( pos );
 	COMPOSE_SEQUENCE sequence = m_Options.m_ComposeSequences[ k ];
-	CComposeSequenceEditor edit( sequence, false, this );
+	CComposeSequenceEditor edit( sequence, semEdit, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
 		m_Options.m_ComposeSequences[ k ] = sequence;

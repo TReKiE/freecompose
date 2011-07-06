@@ -11,11 +11,11 @@ IMPLEMENT_DYNAMIC(CComposeSequenceEditor, CDialog)
 BEGIN_MESSAGE_MAP(CComposeSequenceEditor, CDialog)
 END_MESSAGE_MAP()
 
-CComposeSequenceEditor::CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, /*XXX*/bool fAddMode, CWnd* pParent ):
+CComposeSequenceEditor::CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
 	CDialog    ( CComposeSequenceEditor::IDD, pParent ),
 	m_sequence ( sequence ),
-	m_fAdd     ( fAddMode ),
-	m_strTitle ( (LPCWSTR) ( m_fAdd ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
+	m_mode     ( mode ),
+	m_strTitle ( (LPCWSTR) ( ( semAdd == mode ) ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
 {
 }
 
