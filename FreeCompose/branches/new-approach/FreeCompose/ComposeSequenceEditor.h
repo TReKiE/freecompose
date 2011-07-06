@@ -2,11 +2,16 @@
 
 #include "KeyEdit.h"
 
+enum SEQUENCE_EDITOR_MODE {
+	semAdd,
+	semEdit,
+};
+
 class CComposeSequenceEditor: public CDialog {
 	DECLARE_DYNAMIC( CComposeSequenceEditor )
 
 public:
-	CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, /*XXX*/bool fAddMode, CWnd* pParent = NULL );
+	CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent = NULL );
 	virtual ~CComposeSequenceEditor( );
 
 	// Dialog Data
@@ -22,7 +27,7 @@ protected:
 
 private:
 	COMPOSE_SEQUENCE& m_sequence;
-	bool m_fAdd;
+	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strTitle;
 
 	virtual BOOL OnInitDialog( );
