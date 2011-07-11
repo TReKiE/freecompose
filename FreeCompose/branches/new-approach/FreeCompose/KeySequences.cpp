@@ -44,27 +44,27 @@ void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 
 // TODO error handling
 void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
-	const COMPOSE_SEQUENCE& cke = m_Options.m_ComposeSequences[ n ];
+	const COMPOSE_SEQUENCE& sequence = m_Options.m_ComposeSequences[ n ];
 	CString col0, col1, col2;
 	int item;
 	int width;
 	BOOL ret;
 
-	col0.Format( L"U+%06X %s", cke.chComposed, Utf32ToUtf16( cke.chComposed ) );
+	col0.Format( L"U+%06X %s", sequence.chComposed, Utf32ToUtf16( sequence.chComposed ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
 	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, (int) n, col0, 0, (UINT) -1, -1, n );
 	ASSERT( n == item );
 
-	col1 = VkToKeyLabel( cke.chFirst ); // XXX
+	col1 = Utf32ToUtf16( sequence.chFirst );
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	ret = m_KeyComboList.SetItem( item, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
 	ASSERT( TRUE == ret );
 
-	col2 = VkToKeyLabel( cke.chSecond ); // XXX
+	col2 = Utf32ToUtf16( sequence.chSecond );
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
@@ -84,13 +84,13 @@ void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
 		m_nColumnWidths[0] = width;
 	m_KeyComboList.SetItem( (int) n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
 
-	col1 = VkToKeyLabel( sequence.chFirst ); // XXX
+	col1 = Utf32ToUtf16( sequence.chFirst );
 	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
 	m_KeyComboList.SetItem( (int) n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
 
-	col2 = VkToKeyLabel( sequence.chSecond ); // XXX
+	col2 = Utf32ToUtf16( sequence.chSecond );
 	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[1] )
 		m_nColumnWidths[1] = width;
