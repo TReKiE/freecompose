@@ -94,17 +94,17 @@ void COptionsData::_FcLoadKeys( void ) {
 		return;
 	}
 
-	COMPOSE_SEQUENCE cke;
+	COMPOSE_SEQUENCE sequence;
 	CString section;
 	m_ComposeSequences.SetSize( count );
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
 		section.Format( _T("Mapping\\%d"), n );
-		cke.chFirst    = (unsigned) theApp.GetProfileInt( section, _T("First"),    0 );
-		cke.chSecond   = (unsigned) theApp.GetProfileInt( section, _T("Second"),   0 );
-		cke.chComposed = (unsigned) theApp.GetProfileInt( section, _T("Composed"), 0 );
-		if ( _FcValidateSequence( cke ) ) {
-			m_ComposeSequences[index++] = cke;
+		sequence.chFirst    = (unsigned) theApp.GetProfileInt( section, _T("First"),    0 );
+		sequence.chSecond   = (unsigned) theApp.GetProfileInt( section, _T("Second"),   0 );
+		sequence.chComposed = (unsigned) theApp.GetProfileInt( section, _T("Composed"), 0 );
+		if ( _FcValidateSequence( sequence ) ) {
+			m_ComposeSequences[index++] = sequence;
 		} else {
 			debug( _T("Bad mapping, #%d\n"), n );
 		}
