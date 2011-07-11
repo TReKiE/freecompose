@@ -24,7 +24,6 @@
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxtempl.h>
-
 #include <atlwin.h>
 
 #include <FCHookDll.h>
@@ -43,3 +42,6 @@
 #pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 #endif
 #endif
+
+#undef _T
+#undef _TEXT

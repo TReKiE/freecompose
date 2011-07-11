@@ -139,8 +139,9 @@ public:
     HICON hBalloonIcon;
   } NOTIFYICONDATA_4;
 
-  DECLARE_WND_CLASS(_T("TrayNotifyIconClass"))
-
+#define _T(x) L##x
+  DECLARE_WND_CLASS(L"TrayNotifyIconClass")
+#undef _T
 
 //Constructors / Destructors
   CTrayNotifyIcon();

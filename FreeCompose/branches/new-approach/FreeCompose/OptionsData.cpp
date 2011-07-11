@@ -84,7 +84,7 @@ bool COptionsData::_FcValidateSequence( const COMPOSE_SEQUENCE& sequence ) {
 void COptionsData::_FcLoadKeys( void ) {
 	m_ComposeSequences.RemoveAll( );
 
-	int count = theApp.GetProfileInt( _T("Mapping"), _T("Count"), 0 );
+	int count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
 	if ( count < 1 ) {
 		count = _countof( DefaultComposeKeyEntries );
 		m_ComposeSequences.SetSize( count );
@@ -99,20 +99,20 @@ void COptionsData::_FcLoadKeys( void ) {
 	m_ComposeSequences.SetSize( count );
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
-		section.Format( _T("Mapping\\%d"), n );
-		sequence.chFirst    = (unsigned) theApp.GetProfileInt( section, _T("First"),    0 );
-		sequence.chSecond   = (unsigned) theApp.GetProfileInt( section, _T("Second"),   0 );
-		sequence.chComposed = (unsigned) theApp.GetProfileInt( section, _T("Composed"), 0 );
+		section.Format( L"Mapping\\%d", n );
+		sequence.chFirst    = (unsigned) theApp.GetProfileInt( section, L"First",    0 );
+		sequence.chSecond   = (unsigned) theApp.GetProfileInt( section, L"Second",   0 );
+		sequence.chComposed = (unsigned) theApp.GetProfileInt( section, L"Composed", 0 );
 		if ( _FcValidateSequence( sequence ) ) {
 			m_ComposeSequences[index++] = sequence;
 		} else {
-			debug( _T("Bad mapping, #%d\n"), n );
+			debug( L"Bad mapping #%d\n", n );
 		}
 	}
 }
 
 void COptionsData::_FcSaveKeys( void ) {
-	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( _T("Mapping") ) );
+	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( L"Mapping" ) );
 
 	CString section;
 	int count = 0;
@@ -120,39 +120,39 @@ void COptionsData::_FcSaveKeys( void ) {
 		if ( !m_ComposeSequences[n].chFirst && !m_ComposeSequences[n].chSecond && !m_ComposeSequences[n].chComposed ) {
 			continue;
 		}
-		section.Format( _T("Mapping\\%d"), count++ );
-		theApp.WriteProfileInt( section, _T("First"),    (int) m_ComposeSequences[n].chFirst    );
-		theApp.WriteProfileInt( section, _T("Second"),   (int) m_ComposeSequences[n].chSecond   );
-		theApp.WriteProfileInt( section, _T("Composed"), (int) m_ComposeSequences[n].chComposed );
+		section.Format( L"Mapping\\%d", count++ );
+		theApp.WriteProfileInt( section, L"First",    (int) m_ComposeSequences[n].chFirst    );
+		theApp.WriteProfileInt( section, L"Second",   (int) m_ComposeSequences[n].chSecond   );
+		theApp.WriteProfileInt( section, L"Composed", (int) m_ComposeSequences[n].chComposed );
 	}
 
-	theApp.WriteProfileInt( _T("Mapping"), _T("Count"), count );
+	theApp.WriteProfileInt( L"Mapping", L"Count", count );
 }
 
 void COptionsData::_UpdateRunKey( void ) {
 	LSTATUS rc;
 	HKEY hk;
 	
-	rc = RegOpenKeyEx( HKEY_CURRENT_USER, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Run"), 0, KEY_SET_VALUE, &hk );
+	rc = RegOpenKeyEx( HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hk );
 	if ( ERROR_SUCCESS != rc ) {
-		debug( _T("COptionsData::_UpdateRunKey: RegOpenKeyEx failed: %d\n"), rc );
+		debug( L"COptionsData::_UpdateRunKey: RegOpenKeyEx failed: %d\n", rc );
 		return;
 	}
 
 	if ( m_fStartWithWindows ) {
 		wchar_t lpszImageFilename[1024];
 		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) ) > 0 ) {
-			rc = RegSetValueEx( hk, _T("FreeCompose"), 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
+			rc = RegSetValueEx( hk, L"FreeCompose", 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
-				debug( _T("COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n"), rc );
+				debug( L"COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n", rc );
 			}
 		} else {
-			debug( _T("COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n"), GetLastError( ) );
+			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n", GetLastError( ) );
 		}
 	} else {
-		rc = RegDeleteValue( hk, _T("FreeCompose") );
+		rc = RegDeleteValue( hk, L"FreeCompose" );
 		if ( ERROR_SUCCESS != rc ) {
-			debug( _T("COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n"), rc );
+			debug( L"COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n", rc );
 		}
 	}
 
@@ -166,19 +166,19 @@ void COptionsData::Load( void ) {
 	}
 #endif
 
-	m_fStartActive       = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartActive"),        TRUE );
-	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( _T("Startup"),  _T("StartWithWindows"),   FALSE );
+	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
+	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
 
-	m_fSwapCapsLock      = (BOOL)  theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLock"),       FALSE );
+	m_fSwapCapsLock      = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
 
 	m_CapsLockToggleMode =
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockToggleMode"), 
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockMode"),       CLTM_NORMAL ) );
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) );
 	m_CapsLockSwapMode   =
-			 (CAPS_LOCK_SWAP_MODE) theApp.GetProfileInt( _T("Keyboard"), _T("CapsLockSwapMode"),   CLSM_SWAP );
+			 (CAPS_LOCK_SWAP_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   CLSM_SWAP );
 
-	m_vkCompose          = (DWORD) theApp.GetProfileInt( _T("Keyboard"), _T("ComposeKey"),         VK_APPS );
-	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( _T("Keyboard"), _T("SwapCapsLockKey"),    VK_LCONTROL );
+	m_vkCompose          = (DWORD) theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS );
+	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL );
 
 	_FcLoadKeys( );
 }

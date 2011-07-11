@@ -1,6 +1,8 @@
 #include "stdafx.h"
+
 #include "FreeCompose.h"
 #include "MainFrm.h"
+
 #include "Utils.h"
 
 #include <initguid.h>

@@ -10,7 +10,7 @@ CString VscToString( UINT vsc ) {
 	memset( buf, 0, sizeof( buf ) );
 	rc = GetKeyNameText( vsc, buf, _countof( buf ) );
 	if ( 0 == rc ) {
-		debug( _T("VscToString(0x%08x): GetKeyNameText: error %d\n"), vsc, GetLastError( ) );
+		debug( L"VscToString(0x%08x): GetKeyNameText: error %d\n", vsc, GetLastError( ) );
 		return CString( );
 	}
 
@@ -36,7 +36,7 @@ CString VkToString( DWORD vk ) {
 CString VkToKeyLabel( DWORD vk ) {
 	CString str( VscToString( VkToVsc( vk ) ) );
 	if ( 0 != ( vk & 0x80000000UL ) ) {
-		str.Insert( 0, VscToString( VkToVsc( VK_SHIFT ) ) + CString( _T("+") ) );
+		str.Insert( 0, VscToString( VkToVsc( VK_SHIFT ) ) + CString( L"+" ) );
 	}
 	return str;
 }

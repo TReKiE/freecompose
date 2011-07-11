@@ -296,7 +296,7 @@ to maintain a single distribution point for the source code.
 
 ///////////////////////////////// Implementation //////////////////////////////
 
-const UINT wm_TaskbarCreated = RegisterWindowMessage(_T("TaskbarCreated"));
+const UINT wm_TaskbarCreated = RegisterWindowMessage(L"TaskbarCreated");
 
 CTrayNotifyIcon::CTrayNotifyIcon() : m_bCreated(FALSE),
                                      m_bHidden(FALSE),
@@ -315,7 +315,7 @@ CTrayNotifyIcon::CTrayNotifyIcon() : m_bCreated(FALSE),
   typedef DLLGETVERSION* LPDLLGETVERSION;
 
   //Try to get the details with DllGetVersion
-  HMODULE hShell32 = GetModuleHandle(_T("SHELL32.DLL"));
+  HMODULE hShell32 = GetModuleHandle(L"SHELL32.DLL");
   if (hShell32)
   {
     LPDLLGETVERSION lpfnDllGetVersion = reinterpret_cast<LPDLLGETVERSION>(GetProcAddress(hShell32, "DllGetVersion"));
@@ -1432,5 +1432,5 @@ void CTrayNotifyIcon::OnTimer(UINT_PTR nIDEvent)
 BOOL CTrayNotifyIcon::CreateHelperWindow()
 {
   //Let the base class do its thing
-  return (CWindowImpl<CTrayNotifyIcon>::Create(NULL, CWindow::rcDefault, _T("CTrayNotifyIcon Helper Window"), WS_OVERLAPPEDWINDOW) != NULL);
+  return (CWindowImpl<CTrayNotifyIcon>::Create(NULL, CWindow::rcDefault, L"CTrayNotifyIcon Helper Window", WS_OVERLAPPEDWINDOW) != NULL);
 }

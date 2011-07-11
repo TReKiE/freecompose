@@ -25,16 +25,16 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	CString strExeName;
 	DWORD dwBytes, dwDummy;
 
-	strExeName.Format( _T("%s.exe"), theApp.m_pszExeName );
+	strExeName.Format( L"%s.exe", theApp.m_pszExeName );
 	dwBytes = GetFileVersionInfoSize( strExeName, &dwDummy );
 	if ( 0 == dwBytes ) {
-		str.Format( _T("GetFileVersionInfoSize failed: %d\n"), GetLastError() );
+		str.Format( L"GetFileVersionInfoSize failed: %d\n", GetLastError() );
 		OutputDebugString( str );
 		return FALSE;
 	}
 	pvdata = malloc( dwBytes );
 	if ( ! GetFileVersionInfo( strExeName, NULL, dwBytes, pvdata ) ) {
-		str.Format( _T("GetFileVersionInfo failed: %d\n"), GetLastError() );
+		str.Format( L"GetFileVersionInfo failed: %d\n", GetLastError() );
 		OutputDebugString( str );
 		free( pvdata );
 		return FALSE;
@@ -43,8 +43,8 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	VS_FIXEDFILEINFO* pvsffi = NULL;
 	LPVOID pvffi = NULL;
 	UINT uLen;
-	if ( ! VerQueryValue( pvdata, _T("\\"), &pvffi, &uLen ) ) {
-		str.Format( _T("VerQueryValue failed: %d\n"), GetLastError() );
+	if ( ! VerQueryValue( pvdata, L"\\", &pvffi, &uLen ) ) {
+		str.Format( L"VerQueryValue failed: %d\n", GetLastError() );
 		OutputDebugString( str );
 		free( pvdata );
 		return FALSE;
