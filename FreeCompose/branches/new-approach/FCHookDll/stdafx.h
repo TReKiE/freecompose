@@ -13,5 +13,3 @@
 #include <windows.h>
 
 #include "FCShared.h"
-
-#define _T(x) L ## x
