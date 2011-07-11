@@ -2,12 +2,13 @@
 
 #pragma once
 
-#include "NTray.h"
-
 #include "OptionsPropSheet.h"
 #include "OptionsData.h"
 
 #undef USE_TIMER
+
+// forward declaration
+class CTrayNotifyIcon;
 
 class CMainFrame: public CFrameWnd {
 	DECLARE_DYNAMIC( CMainFrame )
@@ -32,14 +33,8 @@ protected:
 	afx_msg void OnAppExit( );
 	afx_msg void OnUpdateAppToggle( CCmdUI* );
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
-#ifdef USE_TIMER
-	afx_msg void OnTimer( UINT_PTR nId );
-#endif
 
 private:
-#ifdef USE_TIMER
-	UINT_PTR m_uTimerId;
-#endif
 	CTrayNotifyIcon* m_ptni;
 	COptionsData* m_pOptions;
 	bool m_fActive;
@@ -52,4 +47,12 @@ private:
 	void _Initialize( void );
 	void _Reconfigure( void );
 	void _SetupTrayIcon( void );
+
+#ifdef USE_TIMER
+protected:
+	afx_msg void OnTimer( UINT_PTR nId );
+
+private:
+	UINT_PTR m_uTimerId;
+#endif
 };

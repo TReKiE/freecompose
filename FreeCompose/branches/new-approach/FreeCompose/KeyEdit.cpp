@@ -36,7 +36,7 @@ void CKeyEdit::_Update( ) {
 }
 
 void CKeyEdit::OnKeyDown( UINT nChar, UINT /*nRepCnt*/, UINT /*nFlags*/ ) {
-	//debug( _T("OnKeyDown: nChar=%u nRepCnt=%u nFlags=%08x\n"), nChar, nRepCnt, nFlags );
+	//debug( L"OnKeyDown: nChar=%u nRepCnt=%u nFlags=%08x\n", nChar, nRepCnt, nFlags );
 
 	if ( IsKeyDown( VK_MENU ) ) {
 		return;

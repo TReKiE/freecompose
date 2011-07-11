@@ -4,13 +4,14 @@
 #include "MainFrm.h"
 #include "AboutDlg.h"
 #include "OptionsPropSheet.h"
+#include "NTray.h"
 
 #include "Utils.h"
 
 
-const UINT APP_NOTIFYICON = RegisterWindowMessage( _T("FreeCompose.APP_NOTIFYICON") );
-const UINT FCM_PIP        = RegisterWindowMessage( _T("FcHookDll.FCM_PIP") );
-const UINT FCM_KEY        = RegisterWindowMessage( _T("FcHookDll.FCM_KEY") );
+const UINT APP_NOTIFYICON = RegisterWindowMessage( L"FreeCompose.APP_NOTIFYICON" );
+const UINT FCM_PIP        = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
+const UINT FCM_KEY        = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
