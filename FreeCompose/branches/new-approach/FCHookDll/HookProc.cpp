@@ -3,6 +3,7 @@
 #include "HookProc.h"
 #include "Common.h"
 
+#include <Bitset.h>
 #include <KeyIsXAlnum.h>
 
 #define KEY_DOWN()     ( 0 == ( pkb->flags & LLKHF_UP       ) )
@@ -21,7 +22,7 @@ DWORD key1 = 0;
 DWORD key2 = 0;
 bool shift = false;
 
-ByteSet WantedKeys;
+zive::bitset< 256, DWORD > WantedKeys;
 #pragma data_seg( pop )
 
 const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );

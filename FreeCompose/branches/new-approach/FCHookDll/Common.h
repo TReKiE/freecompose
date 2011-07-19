@@ -17,21 +17,3 @@ __declspec(selectany) DWORD                 vkCapsLockSwap     = VK_CAPITAL;
 #pragma data_seg( pop )
 
 int CompareComposeSequences( const void*, const void* );
-
-class ByteSet {
-public:
-	inline ByteSet( ) {
-		Clear( );
-		count = 0;
-	}
-
-	inline void Clear   ( void )                { for ( int n = 0; n < _countof( bits ); n++ ) bits[n] = 0;                  }
-	inline void Add     ( const DWORD x )       { if ( ! Contains( x ) ) { count++; bits[ x >> 3 ] |=  ( 1 << ( x & 7 ) ); } }
-	inline void Remove  ( const DWORD x )       { if (   Contains( x ) ) { count--; bits[ x >> 3 ] &= ~( 1 << ( x & 7 ) ); } }
-	inline bool Contains( const DWORD x ) const { return ( bits[ x >> 3 ] & ( 1 << ( x & 7 ) ) ) != 0;                       }
-	inline bool IsEmpty ( void )          const { return count == 0;                                                         }
-
-private:
-	unsigned char bits[32];
-	int count;
-};
