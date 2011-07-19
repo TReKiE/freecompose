@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "TestVehicle.h"
-#include "Keys.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -11,14 +10,23 @@ HMODULE hModule;
 
 using namespace std;
 
-int wmain( int /*argc*/, wchar_t* /*argv*/[], wchar_t* /*envp*/[] ) {
+extern void BitsetTests( void );
+
+int wmain( void ) {
 	hModule = ::GetModuleHandle( NULL );
-	if ( !hModule || !AfxWinInit( hModule, NULL, ::GetCommandLine( ), 0 ) ) {
-		fwprintf( stderr, L"Initialization failed\n" );
+	if ( ! hModule || ! AfxWinInit( hModule, NULL, ::GetCommandLine( ), 0 ) ) {
+		wcerr << L"Initialization failed!" << endl;
 		return 1;
 	}
 
-	Keys( );
+	BitsetTests( );
+
+	if ( IsDebuggerPresent( ) ) {
+		wcout << L"Press ENTER...";
+		wcout.flush( );
+		wchar_t junk[5];
+		wcin.getline( junk, 5 );
+	}
 
 	return 0;
 }
