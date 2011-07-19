@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\SharedInclude\Bitset.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />
     <ClInclude Include="Internal.h" />
