@@ -1,9 +1,10 @@
 #include "stdafx.h"
 
+#include <Unicode.h>
+
 #include "FreeCompose.h"
 #include "ComposeSequenceEditor.h"
 
-#include "Unicode.h"
 #include "Utils.h"
 
 IMPLEMENT_DYNAMIC(CComposeSequenceEditor, CDialog)
