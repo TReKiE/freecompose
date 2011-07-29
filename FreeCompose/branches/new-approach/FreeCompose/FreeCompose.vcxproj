@@ -294,7 +294,6 @@
     <ClInclude Include="OptionsData.h" />
     <ClInclude Include="OptionsPropSheet.h" />
     <ClInclude Include="Sounds.h" />
-    <ClInclude Include="Unicode.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />

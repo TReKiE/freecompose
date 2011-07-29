@@ -98,9 +98,6 @@
     <ClInclude Include="Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="Unicode.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ComposeSequenceEditor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
