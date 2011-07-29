@@ -145,7 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\FreeCompose\Unicode.h" />
     <ClInclude Include="..\SharedInclude\Bitset.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />
@@ -154,6 +153,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="targetver_vista.h" />
+    <ClInclude Include="Unicode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />

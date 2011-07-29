@@ -39,7 +39,7 @@
     <ClInclude Include="..\SharedInclude\Bitset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\FreeCompose\Unicode.h">
+    <ClInclude Include="Unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
