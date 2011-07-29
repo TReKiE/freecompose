@@ -4,11 +4,12 @@
 
 #include <numeric>
 
+#include <Unicode.h>
+
 #include "FreeCompose.h"
 #include "KeySequences.h"
 #include "ComposeSequenceEditor.h"
 
-#include "Unicode.h"
 #include "Utils.h"
 
 const int ITEM_FUDGE_FACTOR   = 12;

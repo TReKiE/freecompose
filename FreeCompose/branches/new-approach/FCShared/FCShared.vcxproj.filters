@@ -39,7 +39,7 @@
     <ClInclude Include="..\SharedInclude\Bitset.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Unicode.h">
+    <ClInclude Include="..\SharedInclude\Unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
