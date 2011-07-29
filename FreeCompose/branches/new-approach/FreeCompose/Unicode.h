@@ -20,6 +20,8 @@ inline wchar_t MakeSecondSurrogate( unsigned ch ) {
 	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
 }
 
+#ifdef __AFXSTR_H__
+
 inline CString Utf32ToUtf16( unsigned ch ) {
 	if ( ch >= 0x10000 ) {
 		wchar_t tmp[3] = {
@@ -56,3 +58,5 @@ inline bool Utf16ToUtf32( CString& s, unsigned& ch ) {
 
 	return false;
 }
+
+#endif
