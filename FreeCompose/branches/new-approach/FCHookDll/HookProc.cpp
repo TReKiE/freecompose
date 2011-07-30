@@ -1,10 +1,12 @@
 #include "stdafx.h"
-#include "FCHookDll.h"
-#include "HookProc.h"
-#include "Common.h"
 
 #include <Bitset.h>
 #include <KeyIsXAlnum.h>
+#include <Unicode.h>
+
+#include "FCHookDll.h"
+#include "HookProc.h"
+#include "Common.h"
 
 #define KEY_DOWN()     ( 0 == ( pkb->flags & LLKHF_UP       ) )
 #define KEY_UP()       ( 0 != ( pkb->flags & LLKHF_UP       ) )
@@ -44,14 +46,6 @@ inline void makeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 }
 
-inline wchar_t makeFirstSurrogate( unsigned ch ) {
-	return (wchar_t) ( 0xD800 + ( ( ch - 0x10000 ) >> 10 ) );
-}
-
-inline wchar_t makeSecondSurrogate( unsigned ch ) {
-	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
-}
-
 bool TranslateKey( DWORD vk1, DWORD vk2, OUT COMPOSE_SEQUENCE& match ) {
 	COMPOSE_SEQUENCE needle1 = { vk1, vk2 };
 	COMPOSE_SEQUENCE needle2 = { vk2, vk1 };
@@ -87,8 +81,8 @@ bool SendKey( COMPOSE_SEQUENCE& sequence ) {
 		ch[1] = 0;
 	} else {
 		numInputsToSend = 4;
-		ch[0] = makeFirstSurrogate( sequence.chComposed );
-		ch[1] = makeSecondSurrogate( sequence.chComposed );
+		ch[0] = MakeFirstSurrogate( sequence.chComposed );
+		ch[1] = MakeSecondSurrogate( sequence.chComposed );
 	}
 	ch[2] = 0;
 	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence.chComposed, ch, numInputsToSend );
