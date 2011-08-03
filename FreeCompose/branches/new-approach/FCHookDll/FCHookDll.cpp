@@ -62,7 +62,7 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 	LOCK( cs ) {
 		SetLastError( 0 );
 
-		if ( NULL != hHook ) {
+		if ( hHook ) {
 			break;
 		}
 
@@ -108,16 +108,12 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 }
 
 FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
-	BOOL ret;
-
-	LOCK( cs ) {
-		ret = ( NULL != hHook );
-	} UNLOCK( cs );
-	return ret;
+	return ( NULL != hHook );
 }
 
 FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode ) {
 	clToggleMode = mode;
+	SetUpCapsLockHandling( );
 	return TRUE;
 }
 
@@ -127,25 +123,12 @@ FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void ) {
 
 FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode ) {
 	clSwapMode = mode;
+	SetUpCapsLockHandling( );
 	return TRUE;
 }
 
 FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void ) {
 	return clSwapMode;
-}
-
-FCHOOKDLL_API BOOL FcEnableSwapCapsLock( void ) {
-	fSwapCapsLock = true;
-	return TRUE;
-}
-
-FCHOOKDLL_API BOOL FcDisableSwapCapsLock( void ) {
-	fSwapCapsLock = false;
-	return TRUE;
-}
-
-FCHOOKDLL_API BOOL FcIsSwapCapsLockEnabled( void ) {
-	return fSwapCapsLock;
 }
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
