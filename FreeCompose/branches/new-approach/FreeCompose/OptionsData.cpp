@@ -2,6 +2,8 @@
 
 #include <psapi.h>
 
+#include <Unicode.h>
+
 #include "FreeCompose.h"
 #include "OptionsData.h"
 
@@ -24,7 +26,6 @@ COptionsData& COptionsData::operator=( const COptionsData& options ) {
 	m_fStartActive       = options.m_fStartActive;
 	m_fStartWithWindows  = options.m_fStartWithWindows;
 
-	m_fSwapCapsLock      = options.m_fSwapCapsLock;
 	m_CapsLockToggleMode = options.m_CapsLockToggleMode;
 	m_CapsLockSwapMode   = options.m_CapsLockSwapMode;
 
@@ -40,7 +41,6 @@ COptionsData& COptionsData::operator=( const COptionsData& options ) {
 bool COptionsData::operator==( const COptionsData& options ) {
 	if ( m_fStartActive       != options.m_fStartActive       ) return false;
 	if ( m_fStartWithWindows  != options.m_fStartWithWindows  ) return false;
-	if ( m_fSwapCapsLock      != options.m_fSwapCapsLock      ) return false;
 	if ( m_CapsLockToggleMode != options.m_CapsLockToggleMode ) return false;
 	if ( m_CapsLockSwapMode   != options.m_CapsLockSwapMode   ) return false;
 	if ( m_vkCompose          != options.m_vkCompose          ) return false;
@@ -61,21 +61,11 @@ bool COptionsData::operator!=( const COptionsData& options ) {
 }
 
 bool COptionsData::_FcValidateSequence( const COMPOSE_SEQUENCE& sequence ) {
-	if ( 0 == ( sequence.chFirst &  0xFF ) )
+	if ( ! sequence.chFirst    || IsSurrogate( sequence.chFirst ) )
 		return false;
-	if ( 0 != ( sequence.chFirst & ~0x800000FF ) )
+	if ( ! sequence.chSecond   || IsSurrogate( sequence.chSecond ) )
 		return false;
-
-	if ( 0 == ( sequence.chSecond &  0xFF ) )
-		return false;
-	if ( 0 != ( sequence.chSecond & ~0x800000FF ) )
-		return false;
-
-	if ( 0 == sequence.chComposed )
-		return false;
-	if ( sequence.chComposed >= 0xD800u && sequence.chComposed < 0xE000u )
-		return false;
-	if ( sequence.chComposed > 0x10FFFFu )
+	if ( ! sequence.chComposed || IsSurrogate( sequence.chComposed ) )
 		return false;
 
 	return true;
@@ -142,10 +132,12 @@ void COptionsData::_UpdateRunKey( void ) {
 	if ( m_fStartWithWindows ) {
 		wchar_t lpszImageFilename[1024];
 		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) ) > 0 ) {
+#ifdef NDEBUG
 			rc = RegSetValueEx( hk, L"FreeCompose", 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
 				debug( L"COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n", rc );
 			}
+#endif
 		} else {
 			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n", GetLastError( ) );
 		}
@@ -165,20 +157,24 @@ void COptionsData::Load( void ) {
 		return;
 	}
 #endif
+	BOOL fSwapCapsLock;
+	int nCapsLockSwapMode;
 
 	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
 	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
 
-	m_fSwapCapsLock      = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
+	fSwapCapsLock        = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
 
 	m_CapsLockToggleMode =
 		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
 		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) );
-	m_CapsLockSwapMode   =
-			 (CAPS_LOCK_SWAP_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   CLSM_SWAP );
+	// 0 will map to CLSM_NORMAL if fSwapCapsLock == TRUE
+	nCapsLockSwapMode    =         theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   0 ) + 1;
 
 	m_vkCompose          = (DWORD) theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS );
 	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL );
+	
+	m_CapsLockSwapMode   = fSwapCapsLock ? (CAPS_LOCK_SWAP_MODE) nCapsLockSwapMode : CLSM_NORMAL;
 
 	_FcLoadKeys( );
 }

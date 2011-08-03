@@ -36,7 +36,7 @@ void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 
 	DDX_Check( pDX, IDC_ENABLEONSTARTUP,  m_Options.m_fStartActive );
 	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.m_fStartWithWindows );
-	DDX_Check( pDX, IDC_SWAPCAPSLOCK,     m_Options.m_fSwapCapsLock );
+	// XXX //DDX_Check( pDX, IDC_SWAPCAPSLOCK,     m_Options.m_fSwapCapsLock );
 
 	DDX_Control( pDX, IDC_COMPOSE_KEY,                   m_cbComposeKey );
 	DDX_Control( pDX, IDC_SWAPCAPSLOCK,                  m_btnSwapCapsLock );
@@ -50,11 +50,11 @@ BOOL CFeatures::OnInitDialog( ) {
 	if ( ! CPropertyPage::OnInitDialog( ) )
 		return FALSE;
 
-	debug( L"CFeatures::OnInitDialog: SA:%c SWW:%c SCL:%c CLM:%d VC:0x%02x VSCL:0x%02x\n",
+	debug( L"CFeatures::OnInitDialog: SA:%c SWW:%c CLM:%d CLS:%d VC:0x%02x VSCL:0x%02x\n",
 		m_Options.m_fStartActive      ? L'T' : L'f',
 		m_Options.m_fStartWithWindows ? L'T' : L'f',
-		m_Options.m_fSwapCapsLock     ? L'T' : L'f',
 		m_Options.m_CapsLockToggleMode,
+		m_Options.m_CapsLockSwapMode,
 		m_Options.m_vkCompose,
 		m_Options.m_vkSwapCapsLock
 	);
@@ -85,7 +85,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		}
 	}
 
-	m_cbSwapCapsLockKey.EnableWindow( m_Options.m_fSwapCapsLock ? TRUE : FALSE );
+	// XXX //m_cbSwapCapsLockKey.EnableWindow( m_Options.m_fSwapCapsLock ? TRUE : FALSE );
 
 	switch ( m_Options.m_CapsLockToggleMode ) {
 		case CLTM_NORMAL:     m_btnCltmNormal    .SetCheck( BST_CHECKED ); break;

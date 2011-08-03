@@ -39,7 +39,9 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	}
 
 	CoInitializeEx( NULL, COINIT_MULTITHREADED );
-	SetRegistryKey( AFX_IDS_COMPANY_NAME );
+	CString str( (LPCWSTR) AFX_IDS_COMPANY_NAME );
+	str.Append( L" DEBUG" );
+	SetRegistryKey( str );
 	CWinApp::InitInstance( );
 
 	InitializeDebugLogFile( );

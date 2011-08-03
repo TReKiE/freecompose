@@ -88,14 +88,10 @@ void CMainFrame::_Reconfigure( void ) {
 
 	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
 
-	if ( m_pOptions->m_fSwapCapsLock ) {
-		FcEnableSwapCapsLock( );
-	} else {
-		FcDisableSwapCapsLock( );
-	}
+	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
+	FcSetCapsLockSwapMode( m_pOptions->m_CapsLockSwapMode );
 
 	FcSetComposeKey( m_pOptions->m_vkCompose );
-	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {

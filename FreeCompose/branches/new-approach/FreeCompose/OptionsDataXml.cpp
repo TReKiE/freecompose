@@ -35,6 +35,7 @@ static const _bstr_t mapCapsLockToggleModeToString[ ] = {
 
 static const _bstr_t mapCapsLockSwapModeToString[ ] = {
 	(LPCWSTR) NULL,
+	L"normal",
 	L"swap",
 	L"replace",
 };
@@ -64,19 +65,11 @@ static XElement ElementFromSequence( XDocument doc, COMPOSE_SEQUENCE& sequence )
 
 		XElement first = doc->createElement( L"First" );
 		mapping->appendChild( first );
-		// XXX
-		if ( ( sequence.chFirst & 0x80000000 ) != 0 ) {
-			first->setAttribute( L"Shifted", L"true" );
-		}
-		first->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( sequence.chFirst & 0xFF ) ) ) ) );
+		first->text = _bstr_t( _variant_t( (unsigned) sequence.chFirst ) );
 
 		XElement second = doc->createElement( L"Second" );
 		mapping->appendChild( second );
-		// XXX
-		if ( ( sequence.chSecond & 0x80000000 ) != 0 ) {
-			second->setAttribute( L"Shifted", L"true" );
-		}
-		second->appendChild( doc->createTextNode( _bstr_t( _variant_t( (unsigned char) ( sequence.chSecond & 0xFF ) ) ) ) );
+		second->text = _bstr_t( _variant_t( (unsigned) sequence.chSecond ) );
 
 		XElement composed = doc->createElement( L"Composed" );
 		mapping->appendChild( composed );
@@ -122,17 +115,6 @@ static COMPOSE_SEQUENCE SequenceFromElement( XElement Mapping ) {
 	sequence.chFirst = FromXElement<unsigned>( Mapping->selectSingleNode( L"First" ) );
 	sequence.chSecond = FromXElement<unsigned>( Mapping->selectSingleNode( L"Second" ) );
 	sequence.chComposed = FromXElement<unsigned>( Mapping->selectSingleNode( L"Composed" ) );
-
-	// XXX
-	XAttribute shifted;
-	shifted = Mapping->selectSingleNode( L"First/@Shifted" );
-	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
-		sequence.chFirst |= 0x80000000;
-	}
-	shifted = Mapping->selectSingleNode( L"Second/@Shifted" );
-	if ( shifted != NULL && BoolFromXNode( shifted ) ) {
-		sequence.chSecond |= 0x80000000;
-	}
 
 	return sequence;
 }
@@ -225,7 +207,6 @@ bool COptionsData::LoadFromXml( void ) {
 		m_fStartWithWindows = BoolFromXNode( Startup->selectSingleNode( L"StartWithWindows" ) );
 
 		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
-		m_fSwapCapsLock = BoolFromXNode( Keyboard->selectSingleNode( L"SwapCapsLock" ) );
 		m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
 		m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
 		m_vkCompose = FromXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
@@ -311,10 +292,6 @@ bool COptionsData::SaveToXml( void ) {
 
 				XElement Keyboard = doc->createElement( L"Keyboard" );
 				Options->appendChild( Keyboard );
-
-					XElement SwapCapsLock = doc->createElement( L"SwapCapsLock" );
-					Keyboard->appendChild( SwapCapsLock );
-					SwapCapsLock->text = StrFromBool( !!m_fSwapCapsLock );
 
 					XElement CapsLockToggleMode = doc->createElement( L"CapsLockToggleMode" );
 					Keyboard->appendChild( CapsLockToggleMode );
