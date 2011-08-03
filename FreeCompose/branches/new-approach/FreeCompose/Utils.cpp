@@ -3,6 +3,7 @@
 
 static DWORD ComCtl32Version = 0UL;
 
+// XXX
 CString VscToString( UINT vsc ) {
 	wchar_t buf[256];
 	int rc;
@@ -17,6 +18,7 @@ CString VscToString( UINT vsc ) {
 	return CString( buf );
 }
 
+// XXX
 CString VkToString( DWORD vk ) {
 	UINT vsc = MapVirtualKeyEx( vk & 0x7fffffffUL, MAPVK_VK_TO_VSC, GetKeyboardLayout( 0 ) );
 	if ( ! vsc ) {
@@ -33,14 +35,17 @@ CString VkToString( DWORD vk ) {
 	return CString( keyBuf );
 }
 
+// XXX
 CString VkToKeyLabel( DWORD vk ) {
 	CString str( VscToString( VkToVsc( vk ) ) );
+	// XXX htf do we get the AltGr label??
 	if ( 0 != ( vk & 0x80000000UL ) ) {
 		str.Insert( 0, VscToString( VkToVsc( VK_SHIFT ) ) + CString( L"+" ) );
 	}
 	return str;
 }
 
+// XXX
 UINT VkToVsc( DWORD vk ) {
 	UINT vsc = MapVirtualKeyEx( vk & 0x7fffffffUL, MAPVK_VK_TO_VSC, GetKeyboardLayout( 0 ) );
 	if ( 0 == vsc )
