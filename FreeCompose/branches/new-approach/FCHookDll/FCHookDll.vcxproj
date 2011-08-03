@@ -215,6 +215,8 @@
     <ClInclude Include="..\SharedInclude\FCHookDll.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="HookProc.h" />
+    <ClInclude Include="Key.h" />
+    <ClInclude Include="KeyEventHandler.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
