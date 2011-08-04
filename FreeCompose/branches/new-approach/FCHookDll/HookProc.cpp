@@ -11,10 +11,19 @@
 #include "Key.h"
 #include "KeyEventHandler.h"
 
+//==============================================================================
+// Constants
+//==============================================================================
 
 const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
+//==============================================================================
+// Variables
+//==============================================================================
+
+class CapsLockMutator;
+class CapsLockToggler;
 
 #pragma data_seg( push, ".shareddata" )
 
@@ -24,102 +33,26 @@ DWORD key2 = 0;
 
 zive::bitset< 256, DWORD > WantedKeys;
 
+CapsLockMutator* capsLockMutator = NULL;
+CapsLockToggler* capsLockToggler = NULL;
+
 #pragma data_seg( pop )
 
+//==============================================================================
+// Prototypes
+//==============================================================================
 
+static COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle );
+static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 );
 
-static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
-	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
-}
+static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
+static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
+static bool SendKey( COMPOSE_SEQUENCE* sequence );
 
-static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
-	COMPOSE_SEQUENCE* match = NULL;
-
-	LOCK( cs ) {
-		if ( ! cComposeSequences || cComposeSequences < 1 )
-			break;
-
-		COMPOSE_SEQUENCE needle = { ch1, ch2 };
-		match = FindKey( needle );
-		if ( ! match ) {
-			needle.chFirst  = ch2;
-			needle.chSecond = ch1;
-			match = FindKey( needle );
-		}
-	} UNLOCK( cs );
-
-	return match;
-}
-
-
-static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
-	input.type = INPUT_KEYBOARD;
-	input.ki.wScan = ch;
-	input.ki.dwFlags = KEYEVENTF_UNICODE;
-}
-
-static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
-	input.type = INPUT_KEYBOARD;
-	input.ki.wScan = ch;
-	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
-}
-
-static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
-	UINT numInputsToSend;
-	INPUT input[4] = { 0, };
-	wchar_t ch[3]  = { 0, };
-
-	if ( sequence->chComposed < 0x10000U ) {
-		numInputsToSend = 2;
-		ch[0] = static_cast<wchar_t>( sequence->chComposed );
-	} else {
-		numInputsToSend = 4;
-		ch[0] = MakeFirstSurrogate( sequence->chComposed );
-		ch[1] = MakeSecondSurrogate( sequence->chComposed );
-	}
-	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence->chComposed, ch, numInputsToSend );
-
-	MakeUnicodeKeyDown( input[0], ch[0] );
-	MakeUnicodeKeyUp( input[1], ch[0] );
-	if ( ch[1] ) {
-		MakeUnicodeKeyDown( input[2], ch[1] );
-		MakeUnicodeKeyUp( input[3], ch[1] );
-	}
-
-	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
-	if ( u < numInputsToSend ) {
-		debug( L"SendKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
-		return false;
-	}
-
-	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) sequence->chComposed );
-	return true;
-}
-
-
-static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
-	INPUT input = { 0, };
-
-	debug( L"RegenerateKey: vk=0x%08x flags=0x%08x\n", pkb->vkCode, pkb->flags );
-	input.type = INPUT_KEYBOARD;
-	input.ki.wVk = (WORD) pkb->vkCode;
-	input.ki.time = pkb->time;
-	input.ki.dwExtraInfo = pkb->dwExtraInfo;
-
-	if ( Key::isExtended( pkb ) ) input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
-	if ( Key::isKeyUpEvent( pkb ) ) input.ki.dwFlags |= KEYEVENTF_KEYUP;
-
-	UINT u = SendInput( 1, &input, sizeof(input) );
-	if ( u < 1 ) {
-		debug( L"RegenerateKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
-	}
-}
-
+static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 
 //==============================================================================
-//
-// Low-level keyboard handling
-//
+// Classes and functions
 //==============================================================================
 
 class CapsLockMutator: public KeyEventHandler {
@@ -233,9 +166,118 @@ public:
 	}
 };
 
+class CapsLockMutatorFactory {
+public:
+	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE clSwapMode ) {
+		switch ( clSwapMode ) {
+			case CLSM_SWAP:    return new CapsLockReplacer;
+			case CLSM_REPLACE: return new CapsLockSwapper;
+			default:           return NULL;
+		}
+	}
+};
 
-CapsLockMutator* capsLockMutator = NULL;
-CapsLockToggler* capsLockToggler = NULL;
+class CapsLockTogglerFactory {
+public:
+	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE clToggleMode ) {
+		switch ( clToggleMode ) {
+			case CLTM_PRESSTWICE: return new CapsLockPressTwiceToggler;
+			case CLTM_DISABLED:   return new CapsLockDisabledToggler;
+			default:              return NULL;
+		}	
+	}
+};
+
+static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
+	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
+}
+
+static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
+	COMPOSE_SEQUENCE* match = NULL;
+
+	LOCK( cs ) {
+		if ( ! cComposeSequences || cComposeSequences < 1 )
+			break;
+
+		COMPOSE_SEQUENCE needle = { ch1, ch2 };
+		match = FindKey( needle );
+		if ( ! match ) {
+			needle.chFirst  = ch2;
+			needle.chSecond = ch1;
+			match = FindKey( needle );
+		}
+	} UNLOCK( cs );
+
+	return match;
+}
+
+
+static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
+	input.type = INPUT_KEYBOARD;
+	input.ki.wScan = ch;
+	input.ki.dwFlags = KEYEVENTF_UNICODE;
+}
+
+static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
+	input.type = INPUT_KEYBOARD;
+	input.ki.wScan = ch;
+	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
+}
+
+static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
+	UINT numInputsToSend;
+	INPUT input[4] = { 0, };
+	wchar_t ch[3]  = { 0, };
+
+	if ( sequence->chComposed < 0x10000U ) {
+		numInputsToSend = 2;
+		ch[0] = static_cast<wchar_t>( sequence->chComposed );
+	} else {
+		numInputsToSend = 4;
+		ch[0] = MakeFirstSurrogate( sequence->chComposed );
+		ch[1] = MakeSecondSurrogate( sequence->chComposed );
+	}
+	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence->chComposed, ch, numInputsToSend );
+
+	MakeUnicodeKeyDown( input[0], ch[0] );
+	MakeUnicodeKeyUp( input[1], ch[0] );
+	if ( ch[1] ) {
+		MakeUnicodeKeyDown( input[2], ch[1] );
+		MakeUnicodeKeyUp( input[3], ch[1] );
+	}
+
+	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
+	if ( u < numInputsToSend ) {
+		debug( L"SendKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
+		return false;
+	}
+
+	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) sequence->chComposed );
+	return true;
+}
+
+
+static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
+	INPUT input = { 0, };
+
+	debug( L"RegenerateKey: vk=0x%08x flags=0x%08x\n", pkb->vkCode, pkb->flags );
+	input.type = INPUT_KEYBOARD;
+	input.ki.wVk = (WORD) pkb->vkCode;
+	input.ki.time = pkb->time;
+	input.ki.dwExtraInfo = pkb->dwExtraInfo;
+
+	if ( Key::isExtended( pkb ) ) input.ki.dwFlags |= KEYEVENTF_EXTENDEDKEY;
+	if ( Key::isKeyUpEvent( pkb ) ) input.ki.dwFlags |= KEYEVENTF_KEYUP;
+
+	UINT u = SendInput( 1, &input, sizeof(input) );
+	if ( u < 1 ) {
+		debug( L"RegenerateKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
+	}
+}
+
+//==============================================================================
+// External entry points
+//==============================================================================
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
 	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
@@ -447,42 +489,11 @@ void SetUpCapsLockHandling( void ) {
 		delete capsLockToggler;
 		capsLockToggler = NULL;
 	}
-
-	switch ( clToggleMode ) {
-		case CLTM_NORMAL:
-			capsLockToggler = NULL;
-			break;
-
-		case CLTM_PRESSTWICE:
-			capsLockToggler = new CapsLockPressTwiceToggler;
-			break;
-
-		case CLTM_DISABLED:
-			capsLockToggler = new CapsLockDisabledToggler;
-			break;
-	}	
-
+	capsLockToggler = CapsLockTogglerFactory::Create( clToggleMode );
 
 	if ( capsLockMutator ) {
 		delete capsLockMutator;
 		capsLockMutator = NULL;
 	}
-
-	if ( fSwapCapsLock ) {
-		switch ( clSwapMode ) {
-			case CLSM_NORMAL:
-				capsLockMutator = NULL;
-				break;
-
-			case CLSM_SWAP:
-				capsLockMutator = new CapsLockReplacer;
-				break;
-
-			case CLSM_REPLACE:
-				capsLockMutator = new CapsLockSwapper;
-				break;
-		}
-	} else {
-		capsLockMutator = NULL;
-	}
+	capsLockMutator = CapsLockMutatorFactory::Create( clSwapMode );
 }
