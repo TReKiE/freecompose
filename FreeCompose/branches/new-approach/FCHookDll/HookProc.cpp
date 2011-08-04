@@ -32,7 +32,9 @@ static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
 	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
 }
 
-static bool TranslateKey( unsigned ch1, unsigned ch2, OUT COMPOSE_SEQUENCE*& match ) {
+static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
+	COMPOSE_SEQUENCE* match = NULL;
+
 	LOCK( cs ) {
 		if ( ! cComposeSequences || cComposeSequences < 1 )
 			break;
@@ -46,7 +48,7 @@ static bool TranslateKey( unsigned ch1, unsigned ch2, OUT COMPOSE_SEQUENCE*& mat
 		}
 	} UNLOCK( cs );
 
-	return ( NULL != match );
+	return match;
 }
 
 
@@ -174,22 +176,59 @@ class CapsLockToggler: public KeyEventHandler {
 
 class CapsLockPressTwiceToggler: public CapsLockToggler {
 public:
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+	CapsLockPressTwiceToggler( ) {
+		downCount = 0;
+		upCount = 0;
+	}
+
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
+		if ( Key::isCapsLock( pkb ) ) {
+			downCount++;
+			switch ( downCount ) {
+				case 1:
+					return D_REJECT_KEY;
+
+				case 2:
+					downCount = 0;
+					return D_ACCEPT_KEY;
+			}
+		}
 		return D_NOT_HANDLED;
 	}
 
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+		if ( Key::isCapsLock( pkb ) ) {
+			upCount++;
+			switch ( upCount ) {
+				case 1:
+					return D_REJECT_KEY;
+
+				case 2:
+					upCount = 0;
+					return D_ACCEPT_KEY;
+			}
+		}
 		return D_NOT_HANDLED;
 	}
+
+private:
+	int downCount;
+	int upCount;
 };
 
 class CapsLockDisabledToggler: public CapsLockToggler {
 public:
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
+		if ( Key::isCapsLock( pkb ) ) {
+			return D_REJECT_KEY;
+		}
 		return D_NOT_HANDLED;
 	}
 
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+		if ( Key::isCapsLock( pkb ) ) {
+			return D_REJECT_KEY;
+		}
 		return D_NOT_HANDLED;
 	}
 };
@@ -235,23 +274,41 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		}
 	}
 
-	if ( D_REGENERATE_KEY == dMutator || D_REGENERATE_KEY == dToggler ) {
-		goto regenerateKey;
+	// Result of CapsLockToggler takes precedence over CapsLockMutator.
+	switch ( dToggler ) {
+		case D_NOT_HANDLED:
+			break;
+	
+		case D_ACCEPT_KEY:
+			goto acceptKey;
+	
+		case D_REJECT_KEY:
+			goto rejectKey;
+	
+		case D_REGENERATE_KEY:
+			debug( L"LLKP|CapsLockToggler returned D_REGENERATE_KEY??" );
+			DebugBreak( );
+			break;
 	}
 
-	//switch ( dMutator ) {
-	//	case D_NOT_HANDLED:
-	//		break;
-	//
-	//	case D_ACCEPT_KEY:
-	//		goto acceptKey;
-	//
-	//	case D_REJECT_KEY:
-	//		goto rejectKey;
-	//
-	//	case D_REGENERATE_KEY:
-	//		goto regenerateKey;
-	//}
+	switch ( dMutator ) {
+		case D_NOT_HANDLED:
+			break;
+	
+		case D_ACCEPT_KEY:
+			debug( L"LLKP|CapsLockMutator returned D_ACCEPT_KEY??" );
+			DebugBreak( );
+			break;
+	
+		case D_REJECT_KEY:
+			debug( L"LLKP|CapsLockMutator returned D_REJECT_KEY??" );
+			DebugBreak( );
+			break;
+	
+		case D_REGENERATE_KEY:
+			goto regenerateKey;
+	}
+
 
 	//
 	// If this is a key-up event for a key-down event we swallowed, then swallow it as well.
@@ -263,6 +320,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		return 1;
 	}
 
+#if 0
 	//
 	// Main state machine.
 	//
@@ -320,10 +378,10 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 					WantedKeys.Add( pkb->vkCode );
 					key2 = /*( (DWORD) shift << 31 ) | */pkb->vkCode;
 
-					COMPOSE_SEQUENCE* sequence = NULL;
 					WPARAM pip = PIP_FAIL;
 					debug(L"LLKP|2=>0 keys %08x %08x\n", key1, key2);
-					if ( ! TranslateKey( key1, key2, sequence ) ) {
+					COMPOSE_SEQUENCE* sequence = TranslateKey( key1, key2 );
+					if ( ! sequence ) {
 						debug(L"LLKP|2=>0 translate failed\n");
 					} else {
 						if ( ! SendKey( sequence ) ) {
@@ -368,6 +426,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 			goto acceptKey;
 	}
+#endif
 
 rejectKey:
 	debug(L"LLKP|rejectKey\n");
