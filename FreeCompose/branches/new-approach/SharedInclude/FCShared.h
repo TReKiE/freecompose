@@ -6,6 +6,12 @@
 #define FCSHARED_API __declspec(dllimport)
 #endif
 
+#if NDEBUG
+#define unreachable_return __assume( 0 ); return
+#else
+#define unreachable_return DebugBreak( ); return
+#endif
+
 //=============================================================================
 
 //
