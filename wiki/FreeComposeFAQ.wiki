@@ -1,0 +1,29 @@
+#summary Frequently Asked Questions about FreeCompose
+
+= Introduction =
+== What is Free​Compose? ==
+Free​Compose is a free program for Windows XP and above that implements the functionality of a Compose key.
+
+== How do I use it? ==
+By default, the Application key (to the left of Ctrl on the right side of the keyboard) is used to initiate a compose sequence. Pressing the key a second time will pass it through to the application. You can right-click the notification area icon to access configuration, or double-click it to toggle enabled vs disabled.
+
+== Where is configuration stored? ==
+In the registry, under:
+{{{
+HKEY_CURRENT_USER\Software\Zive Technology Research\FreeCompose
+}}}
+Manual editing of the configuration is *not* *encouraged* and *not* *supported*. For the moment, because there is no way to import or export compose sequences otherwise, using Reg​Edit etc. to import or export the Mappings subtree of the above key is okay. Again, modifying other parts of the registry configuration is *not* *supported*; please do not rely on it.
+
+= Problems =
+== Free​Compose doesn't work with some of my programs ==
+=== PuTTY ===
+For PuTTY, a patch to allow Unicode characters is available from the downloads page. (It has been submitted to the PuTTY team but is not yet included)
+
+=== Any GTK application ===
+This was reported as bug [https://bugzilla.gnome.org/show_bug.cgi?id=642772 #642772], which was quickly fixed in the [http://git.gnome.org/browse/gtk+/commit/?id=8e6932f46ef1e1369dff48ed9cccae2c8de6aa17 master] and [http://git.gnome.org/browse/gtk+/commit/?h=gtk-2-24&id=af9174693198d8263df8b20dc32a869a3b57d222 gtk-2-24] branches.
+
+=== Other ====
+Please report any other application that Free​Compose does not work correctly with. The issue with Vim not accepting Unicode characters is known.
+
+== The beeping sound is annoying ==
+A configuration option is planned in version 1.1. For now, on Windows Vista/7 you can mute "System Sounds" in the Volume Mixer, and on all versions of Windows you can "sc stop beep" (from an elevated command prompt on Vista/7). Note that the beep driver cannot be re-enabled without restarting your computer, and affects other applications that use the Beep() API.
