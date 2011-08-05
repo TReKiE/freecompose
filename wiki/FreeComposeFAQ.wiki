@@ -1,4 +1,5 @@
 #summary Frequently Asked Questions about FreeCompose
+#labels Featured
 
 = Introduction =
 == What is Free​Compose? ==
