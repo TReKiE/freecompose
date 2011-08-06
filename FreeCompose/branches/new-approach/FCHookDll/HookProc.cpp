@@ -116,31 +116,35 @@ public:
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 		if ( Key::isCapsLock( pkb ) ) {
-			downCount++;
 			switch ( downCount ) {
-				case 1:
+				case 0:
+					downCount++;
 					return D_REJECT_KEY;
 
-				case 2:
+				case 1:
 					downCount = 0;
 					return D_ACCEPT_KEY;
 			}
 		}
+
+		downCount = 0;
 		return D_NOT_HANDLED;
 	}
 
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
 		if ( Key::isCapsLock( pkb ) ) {
-			upCount++;
 			switch ( upCount ) {
-				case 1:
+				case 0:
+					upCount++;
 					return D_REJECT_KEY;
 
-				case 2:
+				case 1:
 					upCount = 0;
 					return D_ACCEPT_KEY;
 			}
 		}
+
+		upCount = 0;
 		return D_NOT_HANDLED;
 	}
 
@@ -352,6 +356,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 
+#if 0
 	//
 	// If this is a key-up event for a key-down event we swallowed, then swallow it as well.
 	//
@@ -362,7 +367,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		return 1;
 	}
 
-#if 0
 	//
 	// Main state machine.
 	//
