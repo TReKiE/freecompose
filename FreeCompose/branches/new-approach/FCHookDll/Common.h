@@ -17,4 +17,3 @@ __declspec(selectany) DWORD                 vkCapsLockSwap     = VK_CAPITAL;
 #pragma data_seg( pop )
 
 int CompareComposeSequences( const void*, const void* );
-void SetUpCapsLockHandling( void );
