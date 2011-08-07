@@ -25,6 +25,7 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 			hDllInst = hModule;
 			if ( 1 == InterlockedIncrement( &cClients ) ) {
 				InitializeCriticalSection( &cs );
+				InitializeKeyEventDispatcher( );
 			}
 			break;
 
@@ -113,7 +114,7 @@ FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
 
 FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode ) {
 	clToggleMode = mode;
-	SetUpCapsLockHandling( );
+	ConfigureCapsLockHandling( );
 	return TRUE;
 }
 
@@ -123,7 +124,7 @@ FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void ) {
 
 FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode ) {
 	clSwapMode = mode;
-	SetUpCapsLockHandling( );
+	ConfigureCapsLockHandling( );
 	return TRUE;
 }
 
@@ -132,6 +133,7 @@ FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void ) {
 }
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
+	ChangeComposeKey( _vkCompose );
 	vkCompose = _vkCompose;
 	return TRUE;
 }
