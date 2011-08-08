@@ -201,6 +201,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CapsLock.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="FCHookDll.cpp" />
     <ClCompile Include="HookProc.cpp" />
@@ -213,6 +214,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SharedInclude\FCHookDll.h" />
+    <ClInclude Include="CapsLock.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="Key.h" />
