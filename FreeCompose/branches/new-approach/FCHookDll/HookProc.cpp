@@ -10,6 +10,7 @@
 
 #include "Key.h"
 #include "KeyEventHandler.h"
+#include "CapsLock.h"
 
 //==============================================================================
 // Constants
@@ -22,19 +23,19 @@ const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 // Variables
 //==============================================================================
 
-class CapsLockMutator;
-class CapsLockToggler;
-
 #pragma data_seg( push, ".shareddata" )
 
 int ComposeState = 0;
 DWORD key1 = 0;
 DWORD key2 = 0;
 
+KeyEventHandler* keyEventHandler[256];
+
 zive::bitset< 256, DWORD > WantedKeys;
 
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
+class ComposeKeyHandler* composeKeyHandler = NULL;
 
 #pragma data_seg( pop )
 
@@ -55,142 +56,24 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 // Classes and functions
 //==============================================================================
 
-class CapsLockMutator: public KeyEventHandler {
-};
+//
+// Compose key handler.
+//
 
-class CapsLockSwapper: public CapsLockMutator {
+class ComposeKeyHandler: public KeyEventHandler {
 public:
+	ComposeKeyHandler( ) {
+	}
+
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			pkb->vkCode = vkCapsLockSwap;
-			return D_REGENERATE_KEY;
-		}
-		if ( Key::isCapsLockSwap( pkb ) ) {
-			pkb->vkCode = VK_CAPITAL;
-			return D_REGENERATE_KEY;
-		}
 		return D_NOT_HANDLED;
 	}
 
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			pkb->vkCode = vkCapsLockSwap;
-			return D_REGENERATE_KEY;
-		}
-		if ( Key::isCapsLockSwap( pkb ) ) {
-			pkb->vkCode = VK_CAPITAL;
-			return D_REGENERATE_KEY;
-		}
 		return D_NOT_HANDLED;
 	}
 };
 
-class CapsLockReplacer: public CapsLockMutator {
-public:
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			pkb->vkCode = vkCapsLockSwap;
-			return D_REGENERATE_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			pkb->vkCode = vkCapsLockSwap;
-			return D_REGENERATE_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-};
-
-class CapsLockToggler: public KeyEventHandler {
-};
-
-class CapsLockPressTwiceToggler: public CapsLockToggler {
-public:
-	CapsLockPressTwiceToggler( ) {
-		downCount = 0;
-		upCount = 0;
-	}
-
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			switch ( downCount ) {
-				case 0:
-					downCount++;
-					return D_REJECT_KEY;
-
-				case 1:
-					downCount = 0;
-					return D_ACCEPT_KEY;
-			}
-		}
-
-		downCount = 0;
-		return D_NOT_HANDLED;
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			switch ( upCount ) {
-				case 0:
-					upCount++;
-					return D_REJECT_KEY;
-
-				case 1:
-					upCount = 0;
-					return D_ACCEPT_KEY;
-			}
-		}
-
-		upCount = 0;
-		return D_NOT_HANDLED;
-	}
-
-private:
-	int downCount;
-	int upCount;
-};
-
-class CapsLockDisabledToggler: public CapsLockToggler {
-public:
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			return D_REJECT_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( Key::isCapsLock( pkb ) ) {
-			return D_REJECT_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-};
-
-class CapsLockMutatorFactory {
-public:
-	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE clSwapMode ) {
-		switch ( clSwapMode ) {
-			case CLSM_SWAP:    return new CapsLockReplacer;
-			case CLSM_REPLACE: return new CapsLockSwapper;
-			default:           return NULL;
-		}
-	}
-};
-
-class CapsLockTogglerFactory {
-public:
-	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE clToggleMode ) {
-		switch ( clToggleMode ) {
-			case CLTM_PRESSTWICE: return new CapsLockPressTwiceToggler;
-			case CLTM_DISABLED:   return new CapsLockDisabledToggler;
-			default:              return NULL;
-		}	
-	}
-};
 
 static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
 	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
@@ -475,7 +358,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 #endif
 
 rejectKey:
-	debug(L"LLKP|rejectKey\n");
+	debug( L"LLKP|rejectKey\n" );
 	ComposeState = 0;
 	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	return 1;
@@ -488,7 +371,19 @@ acceptKey:
 	return CallNextHookEx( hHook, nCode, wParam, lParam );
 }
 
-void SetUpCapsLockHandling( void ) {
+
+void InitializeKeyEventDispatcher( void ) {
+	memset( keyEventHandler, 0, sizeof( keyEventHandler ) );
+	composeKeyHandler = new ComposeKeyHandler;
+	keyEventHandler[ vkCompose ] = composeKeyHandler;
+}
+
+void ChangeComposeKey( DWORD const vkNew ) {
+	keyEventHandler[ vkCompose ] = NULL;
+	keyEventHandler[ vkNew ] = composeKeyHandler;
+}
+
+void ConfigureCapsLockHandling( void ) {
 	if ( capsLockToggler ) {
 		delete capsLockToggler;
 		capsLockToggler = NULL;
