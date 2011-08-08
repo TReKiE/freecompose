@@ -8,22 +8,6 @@
 #include "KeyEventHandler.h"
 #include "CapsLock.h"
 
-//==============================================================================
-// Constants
-//==============================================================================
-
-//==============================================================================
-// Variables
-//==============================================================================
-
-#pragma data_seg( push, ".shareddata" )
-
-#pragma data_seg( pop )
-
-//==============================================================================
-// Classes and functions
-//==============================================================================
-
 //
 // Caps Lock mutators.
 //
@@ -86,37 +70,33 @@ CapsLockPressTwiceToggler::CapsLockPressTwiceToggler( ) {
 }
 
 DISPOSITION CapsLockPressTwiceToggler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-	if ( Key::isCapsLock( pkb ) ) {
-		switch ( downCount ) {
-			case 0:
-				downCount++;
-				return D_REJECT_KEY;
-
-			case 1:
-				downCount = 0;
-				return D_ACCEPT_KEY;
-		}
+	if ( ! Key::isCapsLock( pkb ) ) {
+		downCount = 0;
+		return D_NOT_HANDLED;
 	}
 
-	downCount = 0;
-	return D_NOT_HANDLED;
+	if ( ! downCount ) {
+		downCount = 1;
+		return D_REJECT_KEY;
+	} else {
+		downCount = 0;
+		return D_ACCEPT_KEY;
+	}
 }
 
 DISPOSITION CapsLockPressTwiceToggler::KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-	if ( Key::isCapsLock( pkb ) ) {
-		switch ( upCount ) {
-			case 0:
-				upCount++;
-				return D_REJECT_KEY;
-
-			case 1:
-				upCount = 0;
-				return D_ACCEPT_KEY;
-		}
+	if ( ! Key::isCapsLock( pkb ) ) {
+		upCount = 0;
+		return D_NOT_HANDLED;
 	}
 
-	upCount = 0;
-	return D_NOT_HANDLED;
+	if ( ! upCount ) {
+		upCount = 1;
+		return D_REJECT_KEY;
+	} else {
+		upCount = 0;
+		return D_ACCEPT_KEY;
+	}
 }
 
 DISPOSITION CapsLockDisabledToggler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
