@@ -35,8 +35,10 @@ public:
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );
 
 private:
-	int downCount;
-	int upCount;
+	bool allowDown;
+	bool allowUp;
+
+	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb, bool& allow );
 };
 
 class CapsLockDisabledToggler: public CapsLockToggler {
