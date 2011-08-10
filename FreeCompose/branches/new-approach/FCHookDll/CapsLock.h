@@ -1,5 +1,7 @@
 #pragma once
 
+// Caps Lock mutators.
+
 class CapsLockMutator: public KeyEventHandler { };
 
 class CapsLockSwapper: public CapsLockMutator {
@@ -25,11 +27,13 @@ private:
 	CapsLockMutatorFactory& operator=( CapsLockMutatorFactory& );
 };
 
+// Caps lock togglers.
+
 class CapsLockToggler: public KeyEventHandler { };
 
 class CapsLockPressTwiceToggler: public CapsLockToggler {
 public:
-	CapsLockPressTwiceToggler( );
+	CapsLockPressTwiceToggler( ): allowDown ( false ), allowUp ( false ) { }
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );

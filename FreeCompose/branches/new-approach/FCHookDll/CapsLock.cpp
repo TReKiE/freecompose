@@ -52,11 +52,6 @@ CapsLockMutator* CapsLockMutatorFactory::Create( CAPS_LOCK_SWAP_MODE clSwapMode 
 // Caps lock togglers.
 //
 
-CapsLockPressTwiceToggler::CapsLockPressTwiceToggler( ) {
-	allowDown = false;
-	allowUp = false;
-}
-
 DISPOSITION CapsLockPressTwiceToggler::_Implementation( KBDLLHOOKSTRUCT* pkb, bool& allow ) {
 	if ( ! Key::isCapsLock( pkb ) ) {
 		allow = false;
