@@ -25,10 +25,6 @@ const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 #pragma data_seg( push, ".shareddata" )
 
-int ComposeState = 0;
-DWORD key1 = 0;
-DWORD key2 = 0;
-
 KeyEventHandler* keyEventHandler[256];
 
 zive::bitset< 256, DWORD > WantedKeys;
@@ -57,6 +53,61 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 //==============================================================================
 
 //
+// Key event sinks.
+//
+
+class KeyDownUpSink: public KeyEventHandler {
+public:
+	KeyDownUpSink( DWORD const vkCode_, KeyEventHandler* replacement_ ): vkCode( vkCode_ ), replacement( replacement_ ) { }
+
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
+		return _Implementation( pkb );
+	}
+
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+		DISPOSITION d = _Implementation( pkb );
+		if ( D_REJECT_KEY == d ) {
+			keyEventHandler[ vkCode ] = replacement;
+			delete this;
+		}
+		return d;
+	}
+
+private:
+	DWORD vkCode;
+	KeyEventHandler* replacement;
+
+	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb ) {
+		if ( vkCode == pkb->vkCode ) {
+			return D_REJECT_KEY;
+		}
+		return D_NOT_HANDLED;
+	}
+};
+
+class KeyUpSink: public KeyEventHandler {
+public:
+	KeyUpSink( DWORD const vkCode_, KeyEventHandler* replacement_ ): vkCode( vkCode_ ), replacement( replacement_ ) { }
+
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+		return D_NOT_HANDLED;
+	}
+
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+		if ( vkCode == pkb->vkCode ) {
+			keyEventHandler[ vkCode ] = replacement;
+			delete this;
+			return D_REJECT_KEY;
+		}
+		return D_NOT_HANDLED;
+	}
+
+private:
+	DWORD vkCode;
+	KeyEventHandler* replacement;
+};
+
+//
 // Compose key handler.
 //
 
@@ -66,10 +117,19 @@ public:
 	}
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		return D_NOT_HANDLED;
+		if ( ! Key::isCompose( pkb ) ) {
+			return D_NOT_HANDLED;
+		}
+
+		keyEventHandler[ vkCompose ] = new KeyUpSink( vkCompose, this );
+		return D_REJECT_KEY;
 	}
 
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+		if ( ! Key::isCompose( pkb ) ) {
+			return D_NOT_HANDLED;
+		}
+
 		return D_NOT_HANDLED;
 	}
 };
@@ -83,7 +143,7 @@ static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
 	COMPOSE_SEQUENCE* match = NULL;
 
 	LOCK( cs ) {
-		if ( ! cComposeSequences || cComposeSequences < 1 )
+		if ( cComposeSequences < 1 )
 			break;
 
 		COMPOSE_SEQUENCE needle = { ch1, ch2 };
@@ -171,8 +231,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 	//
 	// If nCode is negative, we are required to immediately pass control to the
-	// next handler. Otherwise, if somebody (including us!) synthesized this
-	// key event, ignore it and pass control to the next handler.
+	// next handler. Also, if somebody (including us!) synthesized this key
+	// event, ignore it and pass control to the next handler.
 	//
 
 	if ( nCode < 0 || Key::isInjected( pkb ) ) {
@@ -239,127 +299,55 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 
-#if 0
-	//
-	// If this is a key-up event for a key-down event we swallowed, then swallow it as well.
-	//
-
-	if ( Key::isKeyUpEvent( pkb ) && WantedKeys.Contains( pkb->vkCode ) ) {
-		debug( L"LLKP|eating wanted key %u\n", pkb->vkCode );
-		WantedKeys.Remove( pkb->vkCode );
-		return 1;
+	DISPOSITION dHandler = D_NOT_HANDLED;
+	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
+	if ( keh ) {
+		if ( Key::isKeyDownEvent( pkb ) ) {
+			dHandler = keh->KeyDown( pkb );
+		} else {
+			dHandler = keh->KeyUp( pkb );
+		}
 	}
 
-	//
-	// Main state machine.
-	//
-
-	switch ( ComposeState ) {
-		case 0:
-			if ( Key::isKeyDownEvent( pkb ) ) {
-				if ( Key::isCompose( pkb ) ) {
-					debug(L"LLKP|0=>1 Apps down\n");
-					ComposeState = 1;
-					WantedKeys.Add( vkCompose );
-					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_1, 0 );
-					return 1;
-//				} else if ( Key::isCapsLock( pkb ) && HandleCLToggleMode( ) ) {
-//					return 1;
-				}
-			}
-
-			goto acceptKey;
-
-		case 1:
-			if ( Key::isKeyDownEvent( pkb ) ) {
-				if ( Key::isXAlNum( pkb ) ) {
-					debug(L"LLKP|1=>2 Xalnum down\n");
-					ComposeState = 2;
-					WantedKeys.Add( pkb->vkCode );
-					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_OK_2, 0 );
-					key1 = /*( (DWORD) shift << 31 ) | */pkb->vkCode;
-					return 1;
-				} else if ( Key::isCompose( pkb ) && ! WantedKeys.Contains( vkCompose ) ) {
-					debug(L"LLKP|1=>0: Apps down abort\n");
-					ComposeState = 0;
-					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
-//					if ( Key::isCapsLock( pkb ) && HandleCLToggleMode( ) ) {
-//						return 1;
-//					}
-					goto acceptKey;
-				} else {
-					debug(L"LLKP|1=>0 rejecting\n");
-					WantedKeys.Add( pkb->vkCode );
-					goto rejectKey;
-				}
-			}
-
-			debug(L"LLKP|1=>0 what?\n");
-			ComposeState = 0;
-			::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
-			goto acceptKey;
-
-		case 2:
-			if ( Key::isKeyDownEvent( pkb ) ) {
-				if ( Key::isXAlNum( pkb ) ) {
-					debug(L"LLKP|2=>0 Xalnum down\n");
-					ComposeState = 0;
-					WantedKeys.Add( pkb->vkCode );
-					key2 = /*( (DWORD) shift << 31 ) | */pkb->vkCode;
-
-					WPARAM pip = PIP_FAIL;
-					debug(L"LLKP|2=>0 keys %08x %08x\n", key1, key2);
-					COMPOSE_SEQUENCE* sequence = TranslateKey( key1, key2 );
-					if ( ! sequence ) {
-						debug(L"LLKP|2=>0 translate failed\n");
-					} else {
-						if ( ! SendKey( sequence ) ) {
-							debug(L"LLKP|2=>0 send failed\n");
-						} else {
-							pip = PIP_OK_3;
-						}
-					}
-					::PostMessage( HWND_BROADCAST, FCM_PIP, pip, 0 );
-					return 1;
-				} else if ( Key::isCompose( pkb ) && ! WantedKeys.Contains( vkCompose ) ) {
-					debug(L"LLKP|2=>0: Apps down abort\n");
-					ComposeState = 0;
-					::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ABORT, 0 );
-					return 1;
-				} else {
-					debug(L"LLKP|2=>0 rejecting\n");
-					WantedKeys.Add( pkb->vkCode );
-					goto rejectKey;
-				}
-			}
-
-			debug(L"LLKP|2=>0 what?\n");
-			ComposeState = 0;
-			::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
-			goto acceptKey;
-
-		case 3:
-			if ( Key::isKeyDownEvent( pkb ) ) {
-				if ( VK_CAPITAL == pkb->vkCode ) {
-					// second press, allow
-					debug( L"LLKP|CapsLock: press-twice mode, second press\n" );
-				}
-			}
-
-			ComposeState = 0;
-			goto acceptKey;
-
-		default:
-			debug( L"LLKP|ComposeState=%d, wtf?\n", ComposeState );
-			ComposeState = 0;
-			::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
-			goto acceptKey;
+	switch ( dHandler ) {
+		case D_NOT_HANDLED:    break;
+		case D_ACCEPT_KEY:     goto acceptKey;
+		case D_REJECT_KEY:     goto rejectKey;
+		case D_REGENERATE_KEY: goto regenerateKey;
 	}
-#endif
+
+
+	BYTE keyState[256] = { 0, };
+	wchar_t buf[65] = { 0, };
+
+	if ( ! GetKeyboardState( keyState ) ) {
+		debug( L"LLKP|GetKeyboardState: error=%u", GetLastError( ) );
+	} else {
+		int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 64, 0, GetKeyboardLayout( 0 ) );
+		switch ( rc ) {
+			case -1:
+				debug( L"LLKP|ToUnicodeEx: -1 dead key" );
+				break;
+
+			case 0:
+				debug( L"LLKP|ToUnicodeEx: 0 no translation" );
+				break;
+
+			default:
+				debug( L"LLKP|ToUnicodeEx: %d bytes", rc );
+				for ( int n = 0; n < rc; n++ ) {
+					debug( L"LLKP|ToUnicodeEx: byte %d: %d\n", n, buf[n] );
+				}
+				break;
+		}
+	}
+
+	goto acceptKey;
+
 
 rejectKey:
 	debug( L"LLKP|rejectKey\n" );
-	ComposeState = 0;
+	//ComposeState = 0;
 	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	return 1;
 
