@@ -78,6 +78,13 @@ void CMainFrame::_Initialize( void ) {
 void CMainFrame::_Reconfigure( void ) {
 	FcSetComposeSequences( m_pOptions->m_ComposeSequences.GetData( ), m_pOptions->m_ComposeSequences.GetCount( ) );
 
+	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
+
+	FcSetCapsLockSwapMode( m_pOptions->m_CapsLockSwapMode );
+	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
+
+	FcSetComposeKey( m_pOptions->m_vkCompose );
+
 	if ( m_pOptions->m_fStartActive ) {
 		FcEnableHook( );
 		m_fActive = true;
@@ -85,13 +92,6 @@ void CMainFrame::_Reconfigure( void ) {
 		FcDisableHook( );
 		m_fActive = false;
 	}
-
-	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
-
-	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
-	FcSetCapsLockSwapMode( m_pOptions->m_CapsLockSwapMode );
-
-	FcSetComposeKey( m_pOptions->m_vkCompose );
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
