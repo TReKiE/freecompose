@@ -37,7 +37,6 @@ protected:
 private:
 	CTrayNotifyIcon* m_ptni;
 	COptionsData* m_pOptions;
-	bool m_fActive;
 	CString m_strEnabled;
 	CString m_strDisabled;
 	CString m_strTitle;
