@@ -47,7 +47,6 @@ CMainFrame::CMainFrame( ):
 #endif
 	m_ptni        ( NULL ),
 	m_pOptions    ( NULL ),
-	m_fActive     ( false ),
 	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
 	m_strEnabled  ( (LPCWSTR) IDS_MAINFRAME_ENABLED ),
 	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED ),
@@ -87,10 +86,8 @@ void CMainFrame::_Reconfigure( void ) {
 
 	if ( m_pOptions->m_fStartActive ) {
 		FcEnableHook( );
-		m_fActive = true;
 	} else {
 		FcDisableHook( );
-		m_fActive = false;
 	}
 }
 
@@ -99,7 +96,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 	m_ptni->Create(
 		this,
 		1,
-		m_fActive ? m_strEnabled : m_strDisabled,
+		FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled,
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
 		APP_NOTIFYICON,
 		IDM_TRAY_MENU
@@ -136,9 +133,8 @@ void CMainFrame::OnClose( ) {
 	KillTimer( m_uTimerId );
 #endif
 
-	if ( m_fActive ) {
+	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook( );
-		m_fActive = false;
 	}
 	
 	delete m_ptni;
@@ -201,13 +197,11 @@ void CMainFrame::OnAppAbout(void) {
 }
 
 void CMainFrame::OnAppToggle( void ) {
-	if ( m_fActive ) {
-		m_fActive = false;
+	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook();
 		m_ptni->SetTooltipText( m_strDisabled );
 		m_ptni->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
 	} else {
-		m_fActive = true;
 		FcEnableHook( );
 		m_ptni->SetTooltipText( m_strEnabled );
 		m_ptni->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
@@ -262,7 +256,7 @@ void CMainFrame::OnAppConfigure( ) {
 }
 
 void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
-	if ( m_fActive ) {
+	if ( FcIsHookEnabled( ) ) {
 		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_DISABLE ) );
 	} else {
 		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_ENABLE ) );
