@@ -87,6 +87,7 @@ void COptionsData::_FcLoadKeys( void ) {
 	COMPOSE_SEQUENCE sequence;
 	CString section;
 	m_ComposeSequences.SetSize( count );
+	m_ComposeSequences.Dump( afxDump );
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%d", n );
