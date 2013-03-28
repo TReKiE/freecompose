@@ -35,7 +35,7 @@ protected:
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
 
 private:
-	CTrayNotifyIcon* m_ptni;
+	CTrayNotifyIcon* m_pTrayIcon;
 	COptionsData* m_pOptions;
 	CString m_strEnabled;
 	CString m_strDisabled;

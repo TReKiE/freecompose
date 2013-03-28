@@ -8,11 +8,17 @@
 
 #include "Utils.h"
 
+//
+// Registered window messages
+//
 
 const UINT APP_NOTIFYICON = RegisterWindowMessage( L"FreeCompose.APP_NOTIFYICON" );
 const UINT FCM_PIP        = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY        = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
+//
+// Message map for CMainFrame
+//
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
@@ -35,17 +41,23 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
+//
+// Local functions
+//
 
-bool IsCapsLock( void ) {
+static bool IsCapsLock( void ) {
 	return ( GetKeyState( VK_CAPITAL ) & 1 ) != 0;
 }
 
+//
+// CMainFrame implementatin
+//
 
 CMainFrame::CMainFrame( ):
 #ifdef USE_TIMER
 	m_uTimerId    ( 0 ),
 #endif
-	m_ptni        ( NULL ),
+	m_pTrayIcon   ( NULL ),
 	m_pOptions    ( NULL ),
 	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
 	m_strEnabled  ( (LPCWSTR) IDS_MAINFRAME_ENABLED ),
@@ -92,8 +104,8 @@ void CMainFrame::_Reconfigure( void ) {
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
-	m_ptni = new CTrayNotifyIcon();
-	m_ptni->Create(
+	m_pTrayIcon = new CTrayNotifyIcon();
+	m_pTrayIcon->Create(
 		this,
 		1,
 		FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled,
@@ -137,13 +149,13 @@ void CMainFrame::OnClose( ) {
 		FcDisableHook( );
 	}
 	
-	delete m_ptni;
+	delete m_pTrayIcon;
 
 	CFrameWnd::OnClose( );
 }
 
 LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam) {
-	return m_ptni->OnTrayNotification( wParam, lParam );
+	return m_pTrayIcon->OnTrayNotification( wParam, lParam );
 }
 
 LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
@@ -199,12 +211,12 @@ void CMainFrame::OnAppAbout(void) {
 void CMainFrame::OnAppToggle( void ) {
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook();
-		m_ptni->SetTooltipText( m_strDisabled );
-		m_ptni->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+		m_pTrayIcon->SetTooltipText( m_strDisabled );
+		m_pTrayIcon->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
 	} else {
 		FcEnableHook( );
-		m_ptni->SetTooltipText( m_strEnabled );
-		m_ptni->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+		m_pTrayIcon->SetTooltipText( m_strEnabled );
+		m_pTrayIcon->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
 	}
 }
 
