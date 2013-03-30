@@ -19,6 +19,18 @@
 const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
+static wchar_t const* stringsFor_bool[2] = {
+	L"false",
+	L"TRUE"
+};
+
+static wchar_t const* stringsFor_enum_DISPOSITION[4] = {
+	L"not handled",
+	L"accept key",
+	L"reject key",
+	L"regenerate key",
+};
+
 //==============================================================================
 // Variables
 //==============================================================================
@@ -51,6 +63,26 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 //==============================================================================
 // Classes and functions
 //==============================================================================
+
+//
+// Stringy: convert assorted types to string constants.
+//
+
+class Stringy {
+public:
+
+	static wchar_t const* from_bool( bool const value ) {
+		return stringsFor_bool[static_cast<int>( value )];
+	}
+
+	static wchar_t const* from_DISPOSITION( DISPOSITION const value ) {
+		return stringsFor_enum_DISPOSITION[static_cast<int>( value )];
+	}
+
+private:
+
+};
+
 
 //
 // Key event sinks.
@@ -239,7 +271,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		goto acceptKey;
 	}
 
-	//debug( L"LLKP|ComposeState=%d nCode=%d wParam=%04x vk=%02x scan=%08x flags=%08x\n", ComposeState, nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags );
+	bool isKeyDown = Key::isKeyDownEvent( pkb );
+	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringy::from_bool( isKeyDown ) );
 
 	//
 	// Caps Lock processing.
@@ -247,21 +280,23 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 	DISPOSITION dMutator = D_NOT_HANDLED;
 	if ( capsLockMutator ) {
-		if ( Key::isKeyDownEvent( pkb ) ) {
+		if ( isKeyDown ) {
 			dMutator = capsLockMutator->KeyDown( pkb );
 		} else {
 			dMutator = capsLockMutator->KeyUp( pkb );
 		}
 	}
+	debug( L"LLKP|CapsLock|capsLockMutator=0x%p dMutator=%s\n", capsLockMutator, Stringy::from_DISPOSITION( dMutator ) );
 
 	DISPOSITION dToggler = D_NOT_HANDLED;
 	if ( capsLockToggler ) {
-		if ( Key::isKeyDownEvent( pkb ) ) {
+		if ( isKeyDown ) {
 			dToggler = capsLockToggler->KeyDown( pkb );
 		} else {
 			dToggler = capsLockToggler->KeyUp( pkb );
 		}
 	}
+	debug( L"LLKP|CapsLock|capsLockToggler=0x%p dMutator=%s\n", capsLockMutator, Stringy::from_DISPOSITION( dMutator ) );
 
 	// Result of CapsLockToggler takes precedence over CapsLockMutator.
 	switch ( dToggler ) {
@@ -275,7 +310,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			goto rejectKey;
 	
 		case D_REGENERATE_KEY:
-			debug( L"LLKP|CapsLockToggler returned D_REGENERATE_KEY??" );
+			debug( L"LLKP|CapsLockToggler returned D_REGENERATE_KEY??\n" );
 			DebugBreak( );
 			break;
 	}
@@ -285,12 +320,12 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			break;
 	
 		case D_ACCEPT_KEY:
-			debug( L"LLKP|CapsLockMutator returned D_ACCEPT_KEY??" );
+			debug( L"LLKP|CapsLockMutator returned D_ACCEPT_KEY??\n" );
 			DebugBreak( );
 			break;
 	
 		case D_REJECT_KEY:
-			debug( L"LLKP|CapsLockMutator returned D_REJECT_KEY??" );
+			debug( L"LLKP|CapsLockMutator returned D_REJECT_KEY??\n" );
 			DebugBreak( );
 			break;
 	
@@ -302,12 +337,13 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
 	if ( keh ) {
-		if ( Key::isKeyDownEvent( pkb ) ) {
+		if ( isKeyDown ) {
 			dHandler = keh->KeyDown( pkb );
 		} else {
 			dHandler = keh->KeyUp( pkb );
 		}
 	}
+	debug( L"LLKP|CapsLock|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringy::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
 		case D_NOT_HANDLED:    break;
@@ -317,29 +353,33 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 
-	BYTE keyState[256] = { 0, };
-	wchar_t buf[65] = { 0, };
-
-	if ( ! GetKeyboardState( keyState ) ) {
-		debug( L"LLKP|GetKeyboardState: error=%u", GetLastError( ) );
-	} else {
-		int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 64, 0, GetKeyboardLayout( 0 ) );
+	BYTE keyState[256];
+	memset( keyState, 0, sizeof( keyState ) );
+	if ( GetKeyboardState( keyState ) ) {
+		debug( L"LLKP|keyState entries:         SHIFT   0x%02X LSHIFT   0x%02X RSHIFT   0x%02X\n", keyState[VK_SHIFT], keyState[VK_LSHIFT], keyState[VK_SHIFT] );
+		debug( L"LLKP|GetKeyState results:      SHIFT 0x%04X LSHIFT 0x%04X RSHIFT 0x%04X\n", GetKeyState( VK_SHIFT ), GetKeyState( VK_LSHIFT ), GetKeyState( VK_SHIFT ) );
+		debug( L"LLKP|GetAsyncKeyState results: SHIFT 0x%04X LSHIFT 0x%04X RSHIFT 0x%04X\n", GetAsyncKeyState( VK_SHIFT ), GetAsyncKeyState( VK_LSHIFT ), GetAsyncKeyState( VK_SHIFT ) );
+		wchar_t buf[65]; // accept up to 64 characters, plus the terminating NUL
+		int rc = ToUnicode( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0 );
 		switch ( rc ) {
 			case -1:
-				debug( L"LLKP|ToUnicodeEx: -1 dead key" );
+				debug( L"LLKP|ToUnicode: -1 dead key\n" );
 				break;
 
 			case 0:
-				debug( L"LLKP|ToUnicodeEx: 0 no translation" );
+				debug( L"LLKP|ToUnicode: 0 no translation\n" );
 				break;
 
 			default:
-				debug( L"LLKP|ToUnicodeEx: %d bytes", rc );
+				debug( L"LLKP|ToUnicode: %d bytes: ", rc );
 				for ( int n = 0; n < rc; n++ ) {
-					debug( L"LLKP|ToUnicodeEx: byte %d: %d\n", n, buf[n] );
+					debug( L"0x%04X ", buf[n] );
 				}
+				debug( L"\n" );
 				break;
 		}
+	} else {
+		debug( L"LLKP|GetKeyboardState: error=%u\n", GetLastError( ) );
 	}
 
 	goto acceptKey;
@@ -347,7 +387,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 rejectKey:
 	debug( L"LLKP|rejectKey\n" );
-	//ComposeState = 0;
 	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	return 1;
 
