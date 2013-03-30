@@ -371,6 +371,13 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 				break;
 
 			default:
+				// really, this is testing if it's less than _-1_, but, well, we need at
+				// least 1 anyway, -1 and 0 have been handled, what difference does it make
+				if ( rc < 1 ) {
+					debug( L"LLKP|ToUnicode: %d?\n", rc );
+					break;
+				}
+
 				debug( L"LLKP|ToUnicode: %d bytes: ", rc );
 				for ( int n = 0; n < rc; n++ ) {
 					debug( L"0x%04X ", buf[n] );
