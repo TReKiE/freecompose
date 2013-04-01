@@ -353,12 +353,12 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 
+	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
+	// unknown reasons, the keyboard state array will not be up to date.
+	GetKeyState( VK_SHIFT );
+
 	BYTE keyState[256];
-	memset( keyState, 0, sizeof( keyState ) );
 	if ( GetKeyboardState( keyState ) ) {
-		debug( L"LLKP|keyState entries:         SHIFT   0x%02X LSHIFT   0x%02X RSHIFT   0x%02X\n", keyState[VK_SHIFT], keyState[VK_LSHIFT], keyState[VK_SHIFT] );
-		debug( L"LLKP|GetKeyState results:      SHIFT 0x%04X LSHIFT 0x%04X RSHIFT 0x%04X\n", GetKeyState( VK_SHIFT ), GetKeyState( VK_LSHIFT ), GetKeyState( VK_SHIFT ) );
-		debug( L"LLKP|GetAsyncKeyState results: SHIFT 0x%04X LSHIFT 0x%04X RSHIFT 0x%04X\n", GetAsyncKeyState( VK_SHIFT ), GetAsyncKeyState( VK_LSHIFT ), GetAsyncKeyState( VK_SHIFT ) );
 		wchar_t buf[65]; // accept up to 64 characters, plus the terminating NUL
 		int rc = ToUnicode( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0 );
 		switch ( rc ) {
@@ -371,7 +371,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 				break;
 
 			default:
-				// really, this is testing if it's less than _-1_, but, well, we need at
+				// really, this is testing if it's less than *-1*, but, well, we need at
 				// least 1 anyway, -1 and 0 have been handled, what difference does it make
 				if ( rc < 1 ) {
 					debug( L"LLKP|ToUnicode: %d?\n", rc );
@@ -382,7 +382,17 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 				for ( int n = 0; n < rc; n++ ) {
 					debug( L"0x%04X ", buf[n] );
 				}
-				debug( L"\n" );
+
+				wchar_t printbuf[65];
+				for ( int n = 0; n < _countof( printbuf ); n++ ) {
+					if ( 0 == buf[n] ) {
+						printbuf[n] = 0;
+						break;
+					}
+
+					printbuf[n] = iswprint( buf[n] ) ? buf[n] : '.';
+				}
+				debug( L" -- {%s}\n", printbuf );
 				break;
 		}
 	} else {
