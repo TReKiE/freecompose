@@ -11,6 +11,7 @@
 #include "Key.h"
 #include "KeyEventHandler.h"
 #include "CapsLock.h"
+#include "Stringify.h"
 
 //==============================================================================
 // Constants
@@ -18,18 +19,6 @@
 
 const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
-
-static wchar_t const* stringsFor_bool[2] = {
-	L"false",
-	L"TRUE"
-};
-
-static wchar_t const* stringsFor_enum_DISPOSITION[4] = {
-	L"not handled",
-	L"accept key",
-	L"reject key",
-	L"regenerate key",
-};
 
 //==============================================================================
 // Variables
@@ -63,24 +52,6 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 //==============================================================================
 // Classes and functions
 //==============================================================================
-
-//
-// Stringy: convert assorted types to string constants.
-//
-
-class Stringy {
-public:
-
-	static wchar_t const* from_bool( bool const value ) {
-		return stringsFor_bool[static_cast<int>( value )];
-	}
-
-	static wchar_t const* from_DISPOSITION( DISPOSITION const value ) {
-		return stringsFor_enum_DISPOSITION[static_cast<int>( value )];
-	}
-
-};
-
 
 //
 // Key event sinks.
@@ -269,7 +240,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringy::from_bool( isKeyDown ) );
+	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringify::from_bool( isKeyDown ) );
 
 	//
 	// Caps Lock processing.
@@ -283,7 +254,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dMutator = capsLockMutator->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|CapsLock|capsLockMutator=0x%p dMutator=%s\n", capsLockMutator, Stringy::from_DISPOSITION( dMutator ) );
+	debug( L"LLKP|CapsLock|capsLockMutator=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
 
 	DISPOSITION dToggler = D_NOT_HANDLED;
 	if ( capsLockToggler ) {
@@ -293,7 +264,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dToggler = capsLockToggler->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|CapsLock|capsLockToggler=0x%p dMutator=%s\n", capsLockMutator, Stringy::from_DISPOSITION( dMutator ) );
+	debug( L"LLKP|CapsLock|capsLockToggler=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
 
 	// Result of CapsLockToggler takes precedence over CapsLockMutator.
 	switch ( dToggler ) {
@@ -340,7 +311,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dHandler = keh->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|CapsLock|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringy::from_DISPOSITION( dHandler ) );
+	debug( L"LLKP|CapsLock|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
 		case D_NOT_HANDLED:    break;
