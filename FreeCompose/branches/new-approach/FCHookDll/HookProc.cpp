@@ -79,8 +79,6 @@ public:
 		return stringsFor_enum_DISPOSITION[static_cast<int>( value )];
 	}
 
-private:
-
 };
 
 
@@ -145,11 +143,10 @@ private:
 
 class ComposeKeyHandler: public KeyEventHandler {
 public:
-	ComposeKeyHandler( ) {
-	}
+	ComposeKeyHandler( ) { }
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( ! Key::isCompose( pkb ) ) {
+		if ( !Key::isCompose( pkb ) ) {
 			return D_NOT_HANDLED;
 		}
 
@@ -158,7 +155,7 @@ public:
 	}
 
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( ! Key::isCompose( pkb ) ) {
+		if ( !Key::isCompose( pkb ) ) {
 			return D_NOT_HANDLED;
 		}
 
@@ -180,7 +177,7 @@ static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
 
 		COMPOSE_SEQUENCE needle = { ch1, ch2 };
 		match = FindKey( needle );
-		if ( ! match ) {
+		if ( !match ) {
 			needle.chFirst  = ch2;
 			needle.chSecond = ch1;
 			match = FindKey( needle );
