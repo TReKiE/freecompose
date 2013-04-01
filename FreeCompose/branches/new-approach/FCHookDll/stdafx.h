@@ -10,6 +10,8 @@
 #define _WIN32_WINNT   _WIN32_WINNT_WIN2K
 #define _WIN32_IE      _WIN32_IE_IE50
 
+#include <cctype>
+
 #include <windows.h>
 
 #include "FCShared.h"
