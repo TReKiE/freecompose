@@ -216,9 +216,12 @@
     <ClInclude Include="..\SharedInclude\FCHookDll.h" />
     <ClInclude Include="CapsLock.h" />
     <ClInclude Include="Common.h" />
+    <ClInclude Include="ComposeKeyHandler.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="KeyEventHandler.h" />
+    <ClInclude Include="KeyDownUpSink.h" />
+    <ClInclude Include="KeyUpSink.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Stringify.h" />

@@ -5,13 +5,16 @@
 #include <Unicode.h>
 
 #include "FCHookDll.h"
-#include "HookProc.h"
 #include "Common.h"
-
 #include "Key.h"
 #include "KeyEventHandler.h"
-#include "CapsLock.h"
 #include "Stringify.h"
+
+#include "HookProc.h"
+#include "KeyUpSink.h"
+#include "CapsLock.h"
+#include "ComposeKeyHandler.h"
+#include "KeyDownUpSink.h"
 
 //==============================================================================
 // Constants
@@ -50,90 +53,8 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence );
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 
 //==============================================================================
-// Classes and functions
+// Functions
 //==============================================================================
-
-//
-// Key event sinks.
-//
-
-class KeyDownUpSink: public KeyEventHandler {
-public:
-	KeyDownUpSink( DWORD const vkCode_, KeyEventHandler* replacement_ ): vkCode( vkCode_ ), replacement( replacement_ ) { }
-
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		return _Implementation( pkb );
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		DISPOSITION d = _Implementation( pkb );
-		if ( D_REJECT_KEY == d ) {
-			keyEventHandler[ vkCode ] = replacement;
-			delete this;
-		}
-		return d;
-	}
-
-private:
-	DWORD vkCode;
-	KeyEventHandler* replacement;
-
-	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb ) {
-		if ( vkCode == pkb->vkCode ) {
-			return D_REJECT_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-};
-
-class KeyUpSink: public KeyEventHandler {
-public:
-	KeyUpSink( DWORD const vkCode_, KeyEventHandler* replacement_ ): vkCode( vkCode_ ), replacement( replacement_ ) { }
-
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
-		return D_NOT_HANDLED;
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( vkCode == pkb->vkCode ) {
-			keyEventHandler[ vkCode ] = replacement;
-			delete this;
-			return D_REJECT_KEY;
-		}
-		return D_NOT_HANDLED;
-	}
-
-private:
-	DWORD vkCode;
-	KeyEventHandler* replacement;
-};
-
-//
-// Compose key handler.
-//
-
-class ComposeKeyHandler: public KeyEventHandler {
-public:
-	ComposeKeyHandler( ) { }
-
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( !Key::isCompose( pkb ) ) {
-			return D_NOT_HANDLED;
-		}
-
-		keyEventHandler[ vkCompose ] = new KeyUpSink( vkCompose, this );
-		return D_REJECT_KEY;
-	}
-
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( !Key::isCompose( pkb ) ) {
-			return D_NOT_HANDLED;
-		}
-
-		return D_NOT_HANDLED;
-	}
-};
-
 
 static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
 	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
