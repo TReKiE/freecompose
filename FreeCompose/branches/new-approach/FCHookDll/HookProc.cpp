@@ -8,9 +8,9 @@
 #include "Common.h"
 #include "Key.h"
 #include "KeyEventHandler.h"
-#include "Stringify.h"
 
 #include "HookProc.h"
+#include "Stringify.h"
 #include "KeyUpSink.h"
 #include "CapsLock.h"
 #include "ComposeKeyHandler.h"
@@ -36,6 +36,8 @@ zive::bitset< 256, DWORD > WantedKeys;
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
 
+COMPOSE_STATE ComposeState = csNORMAL;
+
 #pragma data_seg( pop )
 
 //==============================================================================
@@ -52,7 +54,7 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence );
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 
 //==============================================================================
-// Functions
+// Static functions
 //==============================================================================
 
 static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
@@ -141,9 +143,8 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-
 //==============================================================================
-// External entry points
+// Global functions
 //==============================================================================
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
@@ -160,11 +161,16 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringify::from_bool( isKeyDown ) );
+	debug( L"LLKP|nCode=%d wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", nCode, wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	//
 	// Key processing.
 	//
+
+	if ( !isKeyDown && WantedKeys.Contains( pkb->vkCode ) ) {
+		debug( L"LLKP|vkCode is in WantedKeys, rejecting\n" );
+		goto rejectKey;
+	}
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
@@ -187,6 +193,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	//
 	// Key translation.
 	//
+
+
 
 	if ( !isKeyDown ) {
 		goto acceptKey;
@@ -253,7 +261,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 rejectKey:
 	debug( L"LLKP|rejectKey\n" );
-	::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
+	//::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	return 1;
 
 regenerateKey:
@@ -265,7 +273,6 @@ acceptKey:
 	debug( L"LLKP|acceptKey\n" );
 	return CallNextHookEx( hHook, nCode, wParam, lParam );
 }
-
 
 void InitializeKeyEventDispatcher( void ) {
 	memset( keyEventHandler, 0, sizeof( keyEventHandler ) );
@@ -298,4 +305,18 @@ void ConfigureCapsLockHandling( void ) {
 		capsLockMutator = NULL;
 	}
 	capsLockMutator = CapsLockMutatorFactory::Create( clSwapMode );
+
+	if ( capsLockToggler || capsLockMutator ) {
+		if ( !keyEventHandler[ VK_CAPITAL ] ) {
+			keyEventHandler[ VK_CAPITAL ] = new CapsLockKeyHandler;
+		}
+	} else {
+		if ( keyEventHandler[ VK_CAPITAL ] ) {
+			KeyEventHandler* temp = keyEventHandler[ VK_CAPITAL ];
+			keyEventHandler[ VK_CAPITAL ] = NULL;
+			if ( temp ) {
+				delete temp;
+			}
+		}
+	}
 }
