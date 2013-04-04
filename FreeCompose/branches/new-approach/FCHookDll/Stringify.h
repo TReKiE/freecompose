@@ -4,8 +4,9 @@
 // Constants
 //==============================================================================
 
-extern wchar_t const* stringsFor_bool[2];
-extern wchar_t const* stringsFor_enum_DISPOSITION[4];
+extern wchar_t const* stringsFor_bool[];
+extern wchar_t const* stringsFor_enum_DISPOSITION[];
+extern wchar_t const* stringsFor_enum_COMPOSE_STATE[];
 
 //==============================================================================
 // Classes and functions
@@ -20,6 +21,10 @@ public:
 
 	static wchar_t const* from_DISPOSITION( DISPOSITION const value ) {
 		return stringsFor_enum_DISPOSITION[static_cast<int>( value )];
+	}
+
+	static wchar_t const* from_COMPOSE_STATE( COMPOSE_STATE const value ) {
+		return stringsFor_enum_COMPOSE_STATE[static_cast<int>( value )];
 	}
 
 };
