@@ -1,6 +1,8 @@
 #pragma once
 
+//
 // Caps Lock mutators.
+//
 
 class CapsLockMutator: public KeyEventHandler { };
 
@@ -27,7 +29,9 @@ private:
 	CapsLockMutatorFactory& operator=( CapsLockMutatorFactory& );
 };
 
+//
 // Caps lock togglers.
+//
 
 class CapsLockToggler: public KeyEventHandler { };
 
@@ -60,4 +64,18 @@ private:
 	CapsLockTogglerFactory( CapsLockTogglerFactory& );
 	~CapsLockTogglerFactory( );
 	CapsLockTogglerFactory& operator=( CapsLockTogglerFactory& );
+};
+
+//
+// Top-level caps lock handler.
+//
+
+class CapsLockKeyHandler: public KeyEventHandler {
+public:
+
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );
+
+private:
+	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb );
 };
