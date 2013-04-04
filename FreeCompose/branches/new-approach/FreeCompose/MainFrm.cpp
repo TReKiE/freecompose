@@ -80,7 +80,7 @@ void CMainFrame::_Initialize( void ) {
 	debug( L"CMainFrame::_Initialize: new timer ID is %u\n", m_uTimerId );
 #endif
 
-	m_pOptions = new COptionsData( );
+	m_pOptions = new COptionsData;
 	_Reconfigure( );
 
 	_SetupTrayIcon( );
@@ -104,7 +104,7 @@ void CMainFrame::_Reconfigure( void ) {
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
-	m_pTrayIcon = new CTrayNotifyIcon();
+	m_pTrayIcon = new CTrayNotifyIcon;
 	m_pTrayIcon->Create(
 		this,
 		1,
