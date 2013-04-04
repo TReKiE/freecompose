@@ -1,23 +1,19 @@
 #pragma once
 
+#include <Bitset.h>
+
 class ComposeKeyHandler: public KeyEventHandler {
 public:
+
 	ComposeKeyHandler( ) { }
 
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-		if ( !Key::isCompose( pkb ) ) {
-			return D_NOT_HANDLED;
-		}
-
-		keyEventHandler[ vkCompose ] = new KeyUpSink( vkCompose, this );
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
+		WantedKeys.Add( vkCompose );
 		return D_REJECT_KEY;
 	}
 
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-		if ( !Key::isCompose( pkb ) ) {
-			return D_NOT_HANDLED;
-		}
-
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* /*pkb*/ ) {
 		return D_NOT_HANDLED;
 	}
+
 };
