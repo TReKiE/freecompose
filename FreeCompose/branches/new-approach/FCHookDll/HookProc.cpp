@@ -35,7 +35,6 @@ zive::bitset< 256, DWORD > WantedKeys;
 
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
-class ComposeKeyHandler* composeKeyHandler = NULL;
 
 #pragma data_seg( pop )
 
@@ -143,29 +142,8 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-//==============================================================================
-// External entry points
-//==============================================================================
-
-LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
-	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
-
-	//
-	// If nCode is negative, we are required to immediately pass control to the
-	// next handler. Also, if somebody (including us!) synthesized this key
-	// event, ignore it and pass control to the next handler.
-	//
-
-	if ( nCode < 0 || Key::isInjected( pkb ) ) {
-		goto acceptKey;
-	}
-
+DISPOSITION ProcessCapsLock( KBDLLHOOKSTRUCT* pkb ) {
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringify::from_bool( isKeyDown ) );
-
-	//
-	// Caps Lock processing.
-	//
 
 	DISPOSITION dMutator = D_NOT_HANDLED;
 	if ( capsLockMutator ) {
@@ -193,10 +171,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			break;
 	
 		case D_ACCEPT_KEY:
-			goto acceptKey;
-	
 		case D_REJECT_KEY:
-			goto rejectKey;
+			return dToggler;
 	
 		case D_REGENERATE_KEY:
 			debug( L"LLKP|CapsLockToggler returned D_REGENERATE_KEY??\n" );
@@ -219,9 +195,47 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			break;
 	
 		case D_REGENERATE_KEY:
-			goto regenerateKey;
+			return dMutator;
 	}
 
+	return D_NOT_HANDLED;
+}
+
+//==============================================================================
+// External entry points
+//==============================================================================
+
+LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
+	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
+
+	//
+	// If nCode is negative, we are required to immediately pass control to the
+	// next handler. Also, if somebody (including us!) synthesized this key
+	// event, ignore it and pass control to the next handler.
+	//
+
+	if ( nCode < 0 || Key::isInjected( pkb ) ) {
+		goto acceptKey;
+	}
+
+	bool isKeyDown = Key::isKeyDownEvent( pkb );
+	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringify::from_bool( isKeyDown ) );
+
+	//
+	// Caps Lock processing.
+	//
+
+	DISPOSITION dCapsLock = ProcessCapsLock( pkb );
+	switch ( dCapsLock ) {
+		case D_ACCEPT_KEY:     goto acceptKey;
+		case D_REJECT_KEY:     goto rejectKey;
+		case D_REGENERATE_KEY: goto regenerateKey;
+		default:               break;
+	}
+
+	//
+	// Key processing.
+	//
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
@@ -232,7 +246,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dHandler = keh->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|CapsLock|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
+	debug( L"LLKP|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
 		case D_NOT_HANDLED:    break;
@@ -242,32 +256,46 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 
+	if ( !isKeyDown ) {
+		goto acceptKey;
+	}
+
 	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
-	// unknown reasons, the keyboard state array will not be up to date.
+	// unknown reasons, the keyboard state array will not be up-to-date.
 	GetKeyState( VK_SHIFT );
 
 	BYTE keyState[256];
 	if ( GetKeyboardState( keyState ) ) {
+		HWND hwndForeground = NULL;
+		DWORD pid = 0;
+		DWORD tid = 0;
+		HKL hkl = NULL;
+
+		hwndForeground = GetForegroundWindow( );
+		tid = GetWindowThreadProcessId( hwndForeground, &pid );
+		hkl = GetKeyboardLayout( tid );
+		debug( L"LLKP|hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
+
 		wchar_t buf[65]; // accept up to 64 characters, plus the terminating NUL
-		int rc = ToUnicode( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0 );
+		int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0, hkl );
 		switch ( rc ) {
 			case -1:
-				debug( L"LLKP|ToUnicode: -1 dead key\n" );
+				debug( L"LLKP|ToUnicodeEx: -1 dead key\n" );
 				break;
 
 			case 0:
-				debug( L"LLKP|ToUnicode: 0 no translation\n" );
+				debug( L"LLKP|ToUnicodeEx: 0 no translation\n" );
 				break;
 
 			default:
 				// really, this is testing if it's less than *-1*, but, well, we need at
 				// least 1 anyway, -1 and 0 have been handled, what difference does it make
 				if ( rc < 1 ) {
-					debug( L"LLKP|ToUnicode: %d?\n", rc );
+					debug( L"LLKP|ToUnicodeEx: returned %d?\n", rc );
 					break;
 				}
 
-				debug( L"LLKP|ToUnicode: %d bytes: ", rc );
+				debug( L"LLKP|ToUnicodeEx: %d bytes: ", rc );
 				for ( int n = 0; n < rc; n++ ) {
 					debug( L"0x%04X ", buf[n] );
 				}
@@ -297,23 +325,33 @@ rejectKey:
 	return 1;
 
 regenerateKey:
+	debug( L"LLKP|regenerateKey\n" );
 	RegenerateKey( pkb );
 	return 1;
 
 acceptKey:
+	debug( L"LLKP|acceptKey\n" );
 	return CallNextHookEx( hHook, nCode, wParam, lParam );
 }
 
 
 void InitializeKeyEventDispatcher( void ) {
 	memset( keyEventHandler, 0, sizeof( keyEventHandler ) );
-	composeKeyHandler = new ComposeKeyHandler;
-	keyEventHandler[ vkCompose ] = composeKeyHandler;
+	keyEventHandler[ vkCompose ] = new ComposeKeyHandler;
 }
 
 void ChangeComposeKey( DWORD const vkNew ) {
+	KeyEventHandler* keh = keyEventHandler[ vkCompose ];
 	keyEventHandler[ vkCompose ] = NULL;
-	keyEventHandler[ vkNew ] = composeKeyHandler;
+	keyEventHandler[ vkNew ] = keh;
+	vkCompose = vkNew;
+}
+
+void ChangeCapsLockSwapKey( DWORD const vkNew ) {
+	KeyEventHandler* keh = keyEventHandler[ vkCapsLockSwap ];
+	keyEventHandler[ vkCapsLockSwap ] = NULL;
+	keyEventHandler[ vkNew ] = keh;
+	vkCapsLockSwap = vkNew;
 }
 
 void ConfigureCapsLockHandling( void ) {
