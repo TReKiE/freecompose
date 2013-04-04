@@ -24,7 +24,7 @@ const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 //==============================================================================
-// Variables
+// Global variables
 //==============================================================================
 
 #pragma data_seg( push, ".shareddata" )
@@ -123,7 +123,6 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 	return true;
 }
 
-
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	INPUT input = { 0, };
 
@@ -142,64 +141,6 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-DISPOSITION ProcessCapsLock( KBDLLHOOKSTRUCT* pkb ) {
-	bool isKeyDown = Key::isKeyDownEvent( pkb );
-
-	DISPOSITION dMutator = D_NOT_HANDLED;
-	if ( capsLockMutator ) {
-		if ( isKeyDown ) {
-			dMutator = capsLockMutator->KeyDown( pkb );
-		} else {
-			dMutator = capsLockMutator->KeyUp( pkb );
-		}
-	}
-	debug( L"LLKP|CapsLock|capsLockMutator=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
-
-	DISPOSITION dToggler = D_NOT_HANDLED;
-	if ( capsLockToggler ) {
-		if ( isKeyDown ) {
-			dToggler = capsLockToggler->KeyDown( pkb );
-		} else {
-			dToggler = capsLockToggler->KeyUp( pkb );
-		}
-	}
-	debug( L"LLKP|CapsLock|capsLockToggler=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
-
-	// Result of CapsLockToggler takes precedence over CapsLockMutator.
-	switch ( dToggler ) {
-		case D_NOT_HANDLED:
-			break;
-	
-		case D_ACCEPT_KEY:
-		case D_REJECT_KEY:
-			return dToggler;
-	
-		case D_REGENERATE_KEY:
-			debug( L"LLKP|CapsLockToggler returned D_REGENERATE_KEY??\n" );
-			DebugBreak( );
-			break;
-	}
-
-	switch ( dMutator ) {
-		case D_NOT_HANDLED:
-			break;
-	
-		case D_ACCEPT_KEY:
-			debug( L"LLKP|CapsLockMutator returned D_ACCEPT_KEY??\n" );
-			DebugBreak( );
-			break;
-	
-		case D_REJECT_KEY:
-			debug( L"LLKP|CapsLockMutator returned D_REJECT_KEY??\n" );
-			DebugBreak( );
-			break;
-	
-		case D_REGENERATE_KEY:
-			return dMutator;
-	}
-
-	return D_NOT_HANDLED;
-}
 
 //==============================================================================
 // External entry points
@@ -220,18 +161,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
 	debug( L"LLKP|nCode=%d wParam=0x%04x pkb: vk=0x%02x scan=0x%08x flags=0x%08x isKeyDown=%s\n", nCode, wParam, pkb->vkCode, pkb->scanCode, pkb->flags, Stringify::from_bool( isKeyDown ) );
-
-	//
-	// Caps Lock processing.
-	//
-
-	DISPOSITION dCapsLock = ProcessCapsLock( pkb );
-	switch ( dCapsLock ) {
-		case D_ACCEPT_KEY:     goto acceptKey;
-		case D_REJECT_KEY:     goto rejectKey;
-		case D_REGENERATE_KEY: goto regenerateKey;
-		default:               break;
-	}
 
 	//
 	// Key processing.
@@ -255,6 +184,9 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		case D_REGENERATE_KEY: goto regenerateKey;
 	}
 
+	//
+	// Key translation.
+	//
 
 	if ( !isKeyDown ) {
 		goto acceptKey;
