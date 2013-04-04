@@ -5,8 +5,6 @@
 
 #include "Utils.h"
 
-#include <initguid.h>
-
 extern void InitializeDebug( void );
 extern void TerminateDebug( void );
 
@@ -24,9 +22,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
-	INITCOMMONCONTROLSEX InitCtrls;
-	InitCtrls.dwSize = sizeof(InitCtrls);
-	InitCtrls.dwICC = ICC_WIN95_CLASSES;
+	INITCOMMONCONTROLSEX InitCtrls = { sizeof(InitCtrls), ICC_WIN95_CLASSES };
 	InitCommonControlsEx( &InitCtrls );
 
 	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %d, DLL %d\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
