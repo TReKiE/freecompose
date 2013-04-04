@@ -8,8 +8,8 @@ UINT VkToVsc( DWORD vk );
 DWORD GetComCtl32Version( void );
 
 template<typename T> inline T compare_keys( void* /*context*/, const void* _elem1, const void* _elem2 ) {
-	T elem1 = *( (T*) _elem1 );
-	T elem2 = *( (T*) _elem2 );
+	T& elem1 = *( static_cast<T*>( _elem1 ) );
+	T& elem2 = *( static_cast<T*>( _elem2 ) );
 
 	if ( elem1 < elem2 )
 		return -1;
@@ -20,8 +20,8 @@ template<typename T> inline T compare_keys( void* /*context*/, const void* _elem
 }
 
 template<typename T> inline T compare_keys_reverse( void* /*context*/, const void* _elem1, const void* _elem2 ) {
-	T elem1 = *( (T*) _elem1 );
-	T elem2 = *( (T*) _elem2 );
+	T& elem1 = *( (T*) _elem1 );
+	T& elem2 = *( (T*) _elem2 );
 
 	if ( elem1 > elem2 )
 		return -1;
