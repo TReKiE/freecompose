@@ -3,10 +3,26 @@
 #include "FCHookDll.h"
 #include "HookProc.h"
 #include "Common.h"
+#include "Stringify.h"
 
 #include "Key.h"
 #include "KeyEventHandler.h"
 #include "CapsLock.h"
+
+//==============================================================================
+// Global variables
+//==============================================================================
+
+#pragma data_seg( push, ".shareddata" )
+
+extern CapsLockMutator* capsLockMutator;
+extern CapsLockToggler* capsLockToggler;
+
+#pragma data_seg( pop )
+
+//==============================================================================
+// Functions
+//==============================================================================
 
 //
 // Caps Lock mutators.
@@ -85,4 +101,75 @@ CapsLockToggler* CapsLockTogglerFactory::Create( CAPS_LOCK_TOGGLE_MODE clToggleM
 		case CLTM_DISABLED:   return new CapsLockDisabledToggler;
 		default:              return NULL;
 	}	
+}
+
+//
+// Top-level caps lock handling.
+//
+
+DISPOSITION CapsLockKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
+	return _Implementation( pkb );
+}
+
+DISPOSITION CapsLockKeyHandler::KeyUp( KBDLLHOOKSTRUCT* pkb ) {
+	return _Implementation( pkb );
+}
+
+DISPOSITION CapsLockKeyHandler::_Implementation( KBDLLHOOKSTRUCT* pkb ) {
+	bool isKeyDown = Key::isKeyDownEvent( pkb );
+
+	DISPOSITION dMutator = D_NOT_HANDLED;
+	if ( capsLockMutator ) {
+		if ( isKeyDown ) {
+			dMutator = capsLockMutator->KeyDown( pkb );
+		} else {
+			dMutator = capsLockMutator->KeyUp( pkb );
+		}
+	}
+	debug( L"CapsLockKeyHandler::KeyDown: CapsLock|capsLockMutator=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
+
+	DISPOSITION dToggler = D_NOT_HANDLED;
+	if ( capsLockToggler ) {
+		if ( isKeyDown ) {
+			dToggler = capsLockToggler->KeyDown( pkb );
+		} else {
+			dToggler = capsLockToggler->KeyUp( pkb );
+		}
+	}
+	debug( L"CapsLockKeyHandler::KeyDown: CapsLock|capsLockToggler=0x%p dMutator=%s\n", capsLockMutator, Stringify::from_DISPOSITION( dMutator ) );
+
+	// Result of CapsLockToggler takes precedence over CapsLockMutator.
+	switch ( dToggler ) {
+		case D_NOT_HANDLED:
+			break;
+	
+		case D_ACCEPT_KEY:
+		case D_REJECT_KEY:
+			return dToggler;
+	
+		case D_REGENERATE_KEY:
+			debug( L"CapsLockKeyHandler::KeyDown: CapsLockToggler returned D_REGENERATE_KEY??\n" );
+			DebugBreak( );
+			break;
+	}
+
+	switch ( dMutator ) {
+		case D_NOT_HANDLED:
+			break;
+	
+		case D_ACCEPT_KEY:
+			debug( L"CapsLockKeyHandler::KeyDown: CapsLockMutator returned D_ACCEPT_KEY??\n" );
+			DebugBreak( );
+			break;
+	
+		case D_REJECT_KEY:
+			debug( L"CapsLockKeyHandler::KeyDown: CapsLockMutator returned D_REJECT_KEY??\n" );
+			DebugBreak( );
+			break;
+	
+		case D_REGENERATE_KEY:
+			return dMutator;
+	}
+
+	return D_NOT_HANDLED;
 }
