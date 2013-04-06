@@ -5,10 +5,9 @@
 class ComposeKeyHandler: public KeyEventHandler {
 public:
 
-	ComposeKeyHandler( ) { }
-
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ ) {
 		WantedKeys.Add( vkCompose );
+		ComposeState = csCOMPOSE_FIRST;
 		return D_REJECT_KEY;
 	}
 
