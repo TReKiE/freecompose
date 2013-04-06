@@ -44,36 +44,30 @@ COMPOSE_STATE ComposeState = csNORMAL;
 // Prototypes
 //==============================================================================
 
-static COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle );
-static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 );
+static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 );
 
 static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
 static bool SendKey( COMPOSE_SEQUENCE* sequence );
-
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
+static void TranslateKey( KBDLLHOOKSTRUCT* pkb );
 
 //==============================================================================
 // Static functions
 //==============================================================================
 
-static inline COMPOSE_SEQUENCE* FindKey( COMPOSE_SEQUENCE const& needle ) {
-	return reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
-}
-
-static COMPOSE_SEQUENCE* TranslateKey( unsigned ch1, unsigned ch2 ) {
+static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
+	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
+	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
 	COMPOSE_SEQUENCE* match = NULL;
 
 	LOCK( cs ) {
 		if ( cComposeSequences < 1 )
 			break;
 
-		COMPOSE_SEQUENCE needle = { ch1, ch2 };
-		match = FindKey( needle );
+		match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
 		if ( !match ) {
-			needle.chFirst  = ch2;
-			needle.chSecond = ch1;
-			match = FindKey( needle );
+			match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
 		}
 	} UNLOCK( cs );
 
@@ -143,63 +137,7 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-//==============================================================================
-// Global functions
-//==============================================================================
-
-LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
-	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
-
-	//
-	// If nCode is negative, we are required to immediately pass control to the
-	// next handler. Also, if somebody (including us!) synthesized this key
-	// event, ignore it and pass control to the next handler.
-	//
-
-	if ( nCode < 0 || Key::isInjected( pkb ) ) {
-		goto acceptKey;
-	}
-
-	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|nCode=%d wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", nCode, wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
-
-	//
-	// Key processing.
-	//
-
-	if ( !isKeyDown && WantedKeys.Contains( pkb->vkCode ) ) {
-		debug( L"LLKP|vkCode is in WantedKeys, rejecting\n" );
-		goto rejectKey;
-	}
-
-	DISPOSITION dHandler = D_NOT_HANDLED;
-	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
-	if ( keh ) {
-		if ( isKeyDown ) {
-			dHandler = keh->KeyDown( pkb );
-		} else {
-			dHandler = keh->KeyUp( pkb );
-		}
-	}
-	debug( L"LLKP|keyEventHandler[%ld]=0x%p dHandler=%s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
-
-	switch ( dHandler ) {
-		case D_NOT_HANDLED:    break;
-		case D_ACCEPT_KEY:     goto acceptKey;
-		case D_REJECT_KEY:     goto rejectKey;
-		case D_REGENERATE_KEY: goto regenerateKey;
-	}
-
-	//
-	// Key translation.
-	//
-
-
-
-	if ( !isKeyDown ) {
-		goto acceptKey;
-	}
-
+static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
 	// unknown reasons, the keyboard state array will not be up-to-date.
 	GetKeyState( VK_SHIFT );
@@ -255,13 +193,55 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	} else {
 		debug( L"LLKP|GetKeyboardState: error=%u\n", GetLastError( ) );
 	}
+}
 
-	goto acceptKey;
+//==============================================================================
+// Global functions
+//==============================================================================
 
+LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
+	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
+
+	//
+	// If nCode is negative, we are required to immediately pass control to the
+	// next handler. Also, if somebody (including us!) synthesized this key
+	// event, ignore it and pass control to the next handler.
+	//
+
+	if ( nCode < 0 || Key::isInjected( pkb ) ) {
+		goto acceptKey;
+	}
+
+	bool isKeyDown = Key::isKeyDownEvent( pkb );
+	debug( L"LLKP|nCode=%d wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", nCode, wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
+
+	if ( !isKeyDown && WantedKeys.Contains( pkb->vkCode ) ) {
+		debug( L"LLKP|vkCode is in WantedKeys, rejecting\n" );
+		goto rejectKey;
+	}
+
+	DISPOSITION dHandler = D_NOT_HANDLED;
+	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
+	debug( L"LLKP|keyEventHandler[%ld]=0x%p\n", pkb->vkCode, keh );
+	if ( keh ) {
+		if ( isKeyDown ) {
+			dHandler = keh->KeyDown( pkb );
+		} else {
+			dHandler = keh->KeyUp( pkb );
+		}
+	}
+	debug( L"LLKP|disposition is %s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
+
+	switch ( dHandler ) {
+		case D_REJECT_KEY:     goto rejectKey;
+		case D_REGENERATE_KEY: goto regenerateKey;
+		default:               goto acceptKey;
+	}
+
+	__assume( 0 ); // not reached
 
 rejectKey:
 	debug( L"LLKP|rejectKey\n" );
-	//::PostMessage( HWND_BROADCAST, FCM_PIP, PIP_ERROR, 0 );
 	return 1;
 
 regenerateKey:
