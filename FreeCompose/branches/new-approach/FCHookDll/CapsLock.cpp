@@ -107,14 +107,6 @@ CapsLockToggler* CapsLockTogglerFactory::Create( CAPS_LOCK_TOGGLE_MODE clToggleM
 // Top-level caps lock handling.
 //
 
-DISPOSITION CapsLockKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
-	return _Implementation( pkb );
-}
-
-DISPOSITION CapsLockKeyHandler::KeyUp( KBDLLHOOKSTRUCT* pkb ) {
-	return _Implementation( pkb );
-}
-
 DISPOSITION CapsLockKeyHandler::_Implementation( KBDLLHOOKSTRUCT* pkb ) {
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
 
