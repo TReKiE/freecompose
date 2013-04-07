@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <Bitset.h>
 #include <KeyIsXAlnum.h>
 #include <Unicode.h>
 
