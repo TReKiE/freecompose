@@ -29,14 +29,8 @@ const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 #pragma data_seg( push, ".shareddata" )
 
-KeyEventHandler* keyEventHandler[256];
-
-zive::bitset< 256, DWORD > WantedKeys;
-
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
-
-COMPOSE_STATE ComposeState = csNORMAL;
 
 #pragma data_seg( pop )
 
@@ -221,8 +215,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
-	KeyEventHandler* keh = keyEventHandler[ pkb->vkCode ];
-	debug( L"LLKP|keyEventHandler[%ld]=0x%p\n", pkb->vkCode, keh );
+	KeyEventHandler* keh = KeyEventHandlers[ pkb->vkCode ];
+	debug( L"LLKP|KeyEventHandlers[%ld]=0x%p\n", pkb->vkCode, keh );
 	if ( keh ) {
 		if ( isKeyDown ) {
 			dHandler = keh->KeyDown( pkb );
@@ -252,21 +246,21 @@ acceptKey:
 }
 
 void InitializeKeyEventDispatcher( void ) {
-	memset( keyEventHandler, 0, sizeof( keyEventHandler ) );
-	keyEventHandler[ vkCompose ] = new ComposeKeyHandler;
+	memset( KeyEventHandlers, 0, sizeof( KeyEventHandlers ) );
+	KeyEventHandlers[ vkCompose ] = new ComposeKeyHandler;
 }
 
 void ChangeComposeKey( DWORD const vkNew ) {
-	KeyEventHandler* keh = keyEventHandler[ vkCompose ];
-	keyEventHandler[ vkCompose ] = NULL;
-	keyEventHandler[ vkNew ] = keh;
+	KeyEventHandler* keh = KeyEventHandlers[ vkCompose ];
+	KeyEventHandlers[ vkCompose ] = NULL;
+	KeyEventHandlers[ vkNew ] = keh;
 	vkCompose = vkNew;
 }
 
 void ChangeCapsLockSwapKey( DWORD const vkNew ) {
-	KeyEventHandler* keh = keyEventHandler[ vkCapsLockSwap ];
-	keyEventHandler[ vkCapsLockSwap ] = NULL;
-	keyEventHandler[ vkNew ] = keh;
+	KeyEventHandler* keh = KeyEventHandlers[ vkCapsLockSwap ];
+	KeyEventHandlers[ vkCapsLockSwap ] = NULL;
+	KeyEventHandlers[ vkNew ] = keh;
 	vkCapsLockSwap = vkNew;
 }
 
@@ -284,13 +278,13 @@ void ConfigureCapsLockHandling( void ) {
 	capsLockMutator = CapsLockMutatorFactory::Create( clSwapMode );
 
 	if ( capsLockToggler || capsLockMutator ) {
-		if ( !keyEventHandler[ VK_CAPITAL ] ) {
-			keyEventHandler[ VK_CAPITAL ] = new CapsLockKeyHandler;
+		if ( !KeyEventHandlers[ VK_CAPITAL ] ) {
+			KeyEventHandlers[ VK_CAPITAL ] = new CapsLockKeyHandler;
 		}
 	} else {
-		if ( keyEventHandler[ VK_CAPITAL ] ) {
-			KeyEventHandler* temp = keyEventHandler[ VK_CAPITAL ];
-			keyEventHandler[ VK_CAPITAL ] = NULL;
+		if ( KeyEventHandlers[ VK_CAPITAL ] ) {
+			KeyEventHandler* temp = KeyEventHandlers[ VK_CAPITAL ];
+			KeyEventHandlers[ VK_CAPITAL ] = NULL;
 			if ( temp ) {
 				delete temp;
 			}
