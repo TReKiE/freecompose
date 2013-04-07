@@ -1,7 +1,5 @@
 #pragma once
 
-#include <Bitset.h>
-
 class ComposeKeyHandler: public KeyEventHandler {
 public:
 

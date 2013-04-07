@@ -1,19 +1,6 @@
 #pragma once
 
-#include <Bitset.h>
-
 #include "KeyEventHandler.h"
-
-//==============================================================================
-// Types
-//==============================================================================
-
-enum COMPOSE_STATE {
-	csNORMAL,
-	csCOMPOSE_FIRST,
-	csCOMPOSE_SECOND,
-	csCAPS_LOCK_FIRST,
-};
 
 //==============================================================================
 // Function prototypes

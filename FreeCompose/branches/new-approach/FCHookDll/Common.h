@@ -1,5 +1,14 @@
 #pragma once
 
+enum COMPOSE_STATE {
+	csNORMAL,
+	csCOMPOSE_FIRST,
+	csCOMPOSE_SECOND,
+	csCAPS_LOCK_FIRST,
+};
+
+class KeyEventHandler;
+
 extern CRITICAL_SECTION           cs;
 extern HHOOK                      hHook;
 

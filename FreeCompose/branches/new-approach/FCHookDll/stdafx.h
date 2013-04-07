@@ -10,8 +10,11 @@
 #define _WIN32_WINNT   _WIN32_WINNT_WIN2K
 #define _WIN32_IE      _WIN32_IE_IE50
 
+#pragma warning( disable: 4127 )
+
 #include <cctype>
 
 #include <windows.h>
 
 #include "FCShared.h"
+#include "Bitset.h"
