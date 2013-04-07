@@ -10,7 +10,7 @@ public:
 
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
 		if ( vkCode == pkb->vkCode ) {
-			keyEventHandler[ vkCode ] = replacement;
+			KeyEventHandlers[ vkCode ] = replacement;
 			delete this;
 			return D_REJECT_KEY;
 		}
