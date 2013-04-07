@@ -4,10 +4,8 @@
 #include "Common.h"
 
 #pragma data_seg( push, ".shareddata" )
-volatile LONG cClients = 0;
+volatile static LONG cClients = 0;
 #pragma data_seg( pop )
-
-HINSTANCE hDllInst = NULL;
 
 static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
