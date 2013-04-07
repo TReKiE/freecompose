@@ -213,7 +213,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|nCode=%d wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", nCode, wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
+	debug( L"LLKP|ComposeState=%s wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	if ( !isKeyDown && WantedKeys.Contains( pkb->vkCode ) ) {
 		debug( L"LLKP|vkCode is in WantedKeys, rejecting\n" );
@@ -230,7 +230,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dHandler = keh->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|disposition is %s\n", pkb->vkCode, keh, Stringify::from_DISPOSITION( dHandler ) );
+	debug( L"LLKP|disposition is %s\n", Stringify::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
 		case D_REJECT_KEY:     goto rejectKey;
@@ -241,16 +241,13 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	__assume( 0 ); // not reached
 
 rejectKey:
-	debug( L"LLKP|rejectKey\n" );
 	return 1;
 
 regenerateKey:
-	debug( L"LLKP|regenerateKey\n" );
 	RegenerateKey( pkb );
 	return 1;
 
 acceptKey:
-	debug( L"LLKP|acceptKey\n" );
 	return CallNextHookEx( hHook, nCode, wParam, lParam );
 }
 
