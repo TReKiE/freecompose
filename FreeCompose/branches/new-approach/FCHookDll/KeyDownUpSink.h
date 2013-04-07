@@ -11,7 +11,7 @@ public:
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) {
 		DISPOSITION d = _Implementation( pkb );
 		if ( D_REJECT_KEY == d ) {
-			keyEventHandler[ vkCode ] = replacement;
+			KeyEventHandlers[ vkCode ] = replacement;
 			delete this;
 		}
 		return d;
