@@ -1,19 +1,22 @@
 #pragma once
-#pragma warning( disable: 4127 )
 
-#pragma data_seg( push, ".shareddata" )
-__declspec(selectany) CRITICAL_SECTION      cs;
-__declspec(selectany) HHOOK                 hHook              = NULL;
+extern CRITICAL_SECTION           cs;
+extern HHOOK                      hHook;
 
-__declspec(selectany) COMPOSE_SEQUENCE*     ComposeSequences   = NULL;
-__declspec(selectany) INT_PTR               cComposeSequences  = 0;
+extern COMPOSE_SEQUENCE*          ComposeSequences;
+extern INT_PTR                    cComposeSequences;
 
-__declspec(selectany) CAPS_LOCK_TOGGLE_MODE clToggleMode       = CLTM_NORMAL;
-__declspec(selectany) CAPS_LOCK_SWAP_MODE   clSwapMode         = CLSM_SWAP;
-__declspec(selectany) bool                  fSwapCapsLock      = false;
+extern CAPS_LOCK_TOGGLE_MODE      clToggleMode;
+extern CAPS_LOCK_SWAP_MODE        clSwapMode;
+extern bool                       fSwapCapsLock;
 
-__declspec(selectany) DWORD                 vkCompose          = VK_APPS;
-__declspec(selectany) DWORD                 vkCapsLockSwap     = VK_CAPITAL;
-#pragma data_seg( pop )
+extern DWORD                      vkCompose;
+extern DWORD                      vkCapsLockSwap;
+
+extern KeyEventHandler*           KeyEventHandlers[256];
+extern COMPOSE_STATE              ComposeState;
+extern zive::bitset< 256, DWORD > WantedKeys;
+
+extern HINSTANCE                  hDllInst;
 
 int CompareComposeSequences( const void*, const void* );

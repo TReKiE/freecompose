@@ -1,5 +1,10 @@
 #include "stdafx.h"
 
+#include "FCHookDll.h"
+#include "KeyEventHandler.h"
+#include "HookProc.h"
+#include "Common.h"
+
 //==============================================================================
 // Constants
 //==============================================================================
@@ -22,3 +27,26 @@ wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
 	L"csCOMPOSE_SECOND",
 	L"csCAPS_LOCK_FIRST",
 };
+
+//==============================================================================
+// Globals
+//==============================================================================
+
+#pragma data_seg( push, ".shareddata" )
+
+CRITICAL_SECTION      cs;
+HHOOK                 hHook              = NULL;
+
+COMPOSE_SEQUENCE*     ComposeSequences   = NULL;
+INT_PTR               cComposeSequences  = 0;
+
+CAPS_LOCK_TOGGLE_MODE clToggleMode       = CLTM_NORMAL;
+CAPS_LOCK_SWAP_MODE   clSwapMode         = CLSM_SWAP;
+bool                  fSwapCapsLock      = false;
+
+DWORD                 vkCompose          = VK_APPS;
+DWORD                 vkCapsLockSwap     = VK_CAPITAL;
+
+HINSTANCE             hDllInst           = NULL;
+
+#pragma data_seg( pop )
