@@ -1,7 +1,6 @@
 #include "stdafx.h"
+
 #include "FCHookDll.h"
-#include "HookProc.h"
-#include "Common.h"
 
 int CompareComposeSequences( const void* pv1, const void* pv2 ) {
 	COMPOSE_SEQUENCE* pcs1 = (COMPOSE_SEQUENCE*) pv1;
