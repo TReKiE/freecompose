@@ -82,6 +82,7 @@ void CMainFrame::_Initialize( void ) {
 
 	m_pOptions = new COptionsData;
 	_Reconfigure( );
+	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
 
 	_SetupTrayIcon( );
 }
@@ -148,6 +149,7 @@ void CMainFrame::OnClose( ) {
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook( );
 	}
+	FcSetNotifyWindowHandle( NULL );
 	
 	delete m_pTrayIcon;
 
