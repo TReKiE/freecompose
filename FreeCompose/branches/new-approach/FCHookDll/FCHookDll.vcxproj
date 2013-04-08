@@ -204,6 +204,7 @@
     <ClCompile Include="CapsLock.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="ComposeKeyHandler.cpp" />
+    <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="FCHookDll.cpp" />
     <ClCompile Include="HookProc.cpp" />
     <ClCompile Include="stdafx.cpp">
