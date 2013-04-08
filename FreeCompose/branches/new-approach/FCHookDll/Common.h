@@ -1,5 +1,9 @@
 #pragma once
 
+//==============================================================================
+// Types
+//==============================================================================
+
 enum COMPOSE_STATE {
 	csNORMAL,
 	csCOMPOSE_FIRST,
@@ -8,6 +12,17 @@ enum COMPOSE_STATE {
 };
 
 class KeyEventHandler;
+
+//==============================================================================
+// Constants
+//==============================================================================
+
+extern UINT const FCM_PIP;
+extern UINT const FCM_KEY;
+
+//==============================================================================
+// Global variables
+//==============================================================================
 
 extern CRITICAL_SECTION           cs;
 extern HHOOK                      hHook;
@@ -28,4 +43,11 @@ extern zive::bitset< 256, DWORD > WantedKeys;
 
 extern HINSTANCE                  hDllInst;
 
+extern HWND                       hwndNotifyWindow;
+
+//==============================================================================
+// Prototypes
+//==============================================================================
+
 int CompareComposeSequences( const void*, const void* );
+void ReleaseComposeSequences( void );
