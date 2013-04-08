@@ -3,10 +3,6 @@
 #include "HookProc.h"
 #include "Common.h"
 
-#pragma data_seg( push, ".shareddata" )
-volatile static LONG cClients = 0;
-#pragma data_seg( pop )
-
 static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
 		if ( NULL != ComposeSequences ) {
@@ -17,25 +13,8 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 	} UNLOCK( cs );
 }
 
-BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpReserved*/ ) {
-	switch ( ulReasonForCall ) {
-		case DLL_PROCESS_ATTACH:
-			hDllInst = hModule;
-			if ( 1 == InterlockedIncrement( &cClients ) ) {
-				InitializeCriticalSection( &cs );
-				InitializeKeyEventDispatcher( );
-			}
-			break;
-
-		case DLL_PROCESS_DETACH:
-			if ( 0 == InterlockedDecrement( &cClients ) ) {
-				_SetComposeSequencesImpl( NULL, 0 );
-				DeleteCriticalSection( &cs );
-			}
-			break;
-	}
-
-    return TRUE;
+void ReleaseComposeSequences( void ) {
+	_SetComposeSequencesImpl( NULL, 0 );
 }
 
 //
@@ -46,7 +25,7 @@ FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 	return FCHOOKDLL_API_VERSION;
 }
 
-FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, INT_PTR cInSequences ) {
+FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD cInSequences ) {
 	COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];
 	memcpy( pSequences, pInSequences, sizeof( COMPOSE_SEQUENCE ) * cInSequences );
 	qsort( pSequences, cInSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
@@ -108,6 +87,18 @@ FCHOOKDLL_API BOOL FcDisableHook( void ) {
 
 FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
 	return ( NULL != hHook );
+}
+
+FCHOOKDLL_API BOOL FcSetNotifyWindowHandle( HWND hwndNotifyWindow_ ) {
+	if ( hwndNotifyWindow ) {
+		return FALSE;
+	}
+	hwndNotifyWindow = hwndNotifyWindow_;
+	return TRUE;
+}
+
+FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void ) {
+	return hwndNotifyWindow;
 }
 
 
