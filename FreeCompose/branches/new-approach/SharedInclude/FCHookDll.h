@@ -10,7 +10,11 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x002A
+#define FCHOOKDLL_API_VERSION 0x002B
+
+//==============================================================================
+// Types
+//==============================================================================
 
 struct COMPOSE_SEQUENCE {
 	unsigned chFirst;
@@ -30,32 +34,59 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_REPLACE,
 };
 
+//==============================================================================
+// Constants
+//==============================================================================
+
+WPARAM const PIP_OK_1  = 1;
+WPARAM const PIP_OK_2  = 2;
+WPARAM const PIP_OK_3  = 3;
+WPARAM const PIP_ABORT = 4;
+WPARAM const PIP_ERROR = 5;
+WPARAM const PIP_FAIL  = 6;
+
+//==============================================================================
+// Function prototypes
+//==============================================================================
+
+//
+// Suite 0: API version
+//
+
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
-FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
+//
+// Suite 1: Hook control
+//
 
 FCHOOKDLL_API BOOL FcEnableHook( void );
 FCHOOKDLL_API BOOL FcDisableHook( void );
 FCHOOKDLL_API BOOL FcIsHookEnabled( void );
+
+FCHOOKDLL_API BOOL FcSetNotifyWindowHandle( HWND hwndNotifyWindow );
+FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void );
+
+//
+// Suite 2: Compose key and sequences
+//
+
+FCHOOKDLL_API BOOL FcSetComposeKey( DWORD vkCompose );
+FCHOOKDLL_API DWORD FcGetComposeKey( void );
+
+FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pSequences, DWORD cSequences );
+
+//
+// Suite 3: Caps Lock
+//
+
+FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD vkCapsLockSwap );
+FCHOOKDLL_API DWORD FcGetSwapCapsLockKey( void );
 
 FCHOOKDLL_API BOOL FcSetCapsLockToggleMode( CAPS_LOCK_TOGGLE_MODE mode );
 FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void );
 
 FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode );
 FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void );
-
-FCHOOKDLL_API BOOL FcSetComposeKey( DWORD vkCompose );
-FCHOOKDLL_API DWORD FcGetComposeKey( void );
-
-FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD vkCapsLockSwap );
-FCHOOKDLL_API DWORD FcGetSwapCapsLockKey( void );
-
-const WPARAM PIP_OK_1  = 1;
-const WPARAM PIP_OK_2  = 2;
-const WPARAM PIP_OK_3  = 3;
-const WPARAM PIP_ABORT = 4;
-const WPARAM PIP_ERROR = 5;
-const WPARAM PIP_FAIL  = 6;
 
 #ifdef __cplusplus
 };
