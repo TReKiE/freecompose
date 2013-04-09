@@ -64,14 +64,12 @@ CMainFrame::CMainFrame( ):
 	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED ),
 	m_pPropSheet  ( NULL )
 {
-	InitializeCriticalSection( &m_csPropSheet );
 }
 
 CMainFrame::~CMainFrame( ) {
 	if ( m_pOptions ) {
 		delete m_pOptions;
 	}
-	DeleteCriticalSection( &m_csPropSheet );
 }
 
 void CMainFrame::_Initialize( void ) {

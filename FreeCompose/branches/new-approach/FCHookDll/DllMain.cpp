@@ -15,7 +15,6 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 		case DLL_PROCESS_ATTACH:
 			hDllInst = hModule;
 			if ( 1 == InterlockedIncrement( &cClients ) ) {
-				InitializeCriticalSection( &cs );
 				InitializeKeyEventDispatcher( );
 			}
 			break;
@@ -23,7 +22,6 @@ BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpRese
 		case DLL_PROCESS_DETACH:
 			if ( 0 == InterlockedDecrement( &cClients ) ) {
 				ReleaseComposeSequences( );
-				DeleteCriticalSection( &cs );
 			}
 			break;
 	}

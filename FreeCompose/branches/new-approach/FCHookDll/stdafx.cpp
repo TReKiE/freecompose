@@ -37,7 +37,7 @@ UINT const FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 #pragma data_seg( push, ".shareddata" )
 
-CRITICAL_SECTION           cs;
+AutoCriticalSection        cs;
 HHOOK                      hHook                 = NULL;
 
 COMPOSE_SEQUENCE*          ComposeSequences      = NULL;

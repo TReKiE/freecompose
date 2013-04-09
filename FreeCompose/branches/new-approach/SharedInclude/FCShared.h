@@ -31,8 +31,8 @@
 // "break" to exit a locked region!
 //
 
-#define LOCK(x) EnterCriticalSection(&(x)); do
-#define UNLOCK(x) while ( false ); LeaveCriticalSection(&(x))
+#define LOCK(x) (x).Enter( ); do
+#define UNLOCK(x) while ( false ); (x).Leave( );
 
 //=============================================================================
 

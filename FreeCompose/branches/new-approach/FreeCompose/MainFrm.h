@@ -4,6 +4,7 @@
 
 #include "OptionsPropSheet.h"
 #include "OptionsData.h"
+#include "AutoCriticalSection.h"
 
 #undef USE_TIMER
 
@@ -41,7 +42,7 @@ private:
 	CString m_strDisabled;
 	CString m_strTitle;
 	COptionsPropSheet* m_pPropSheet;
-	CRITICAL_SECTION m_csPropSheet;
+	AutoCriticalSection m_csPropSheet;
 
 	void _Initialize( void );
 	void _Reconfigure( void );

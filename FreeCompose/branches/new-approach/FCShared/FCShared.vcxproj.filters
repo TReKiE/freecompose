@@ -45,6 +45,12 @@
     <ClInclude Include="..\SharedInclude\FreeListAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\SharedInclude\CriticalSection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedInclude\AutoCriticalSection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

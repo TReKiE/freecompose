@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AutoCriticalSection.h"
+
 //==============================================================================
 // Types
 //==============================================================================
@@ -24,7 +26,7 @@ extern UINT const FCM_KEY;
 // Global variables
 //==============================================================================
 
-extern CRITICAL_SECTION           cs;
+extern AutoCriticalSection        cs;
 extern HHOOK                      hHook;
 
 extern COMPOSE_SEQUENCE*          ComposeSequences;
