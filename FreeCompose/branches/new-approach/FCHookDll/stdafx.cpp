@@ -15,10 +15,10 @@ wchar_t const* stringsFor_bool[] = {
 };
 
 wchar_t const* stringsFor_enum_DISPOSITION[] = {
-	L"dNOT_HANDLED",
-	L"dACCEPT_KEY",
-	L"dREJECT_KEY",
-	L"dREGENERATE_KEY",
+	L"D_NOT_HANDLED",
+	L"D_ACCEPT_KEY",
+	L"D_REJECT_KEY",
+	L"D_REGENERATE_KEY",
 };
 
 wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
@@ -27,6 +27,9 @@ wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
 	L"csCOMPOSE_SECOND",
 	L"csCAPS_LOCK_FIRST",
 };
+
+UINT const FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
+UINT const FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 //==============================================================================
 // Globals
@@ -54,5 +57,7 @@ zive::bitset< 256, DWORD > WantedKeys;
 COMPOSE_STATE              ComposeState          = csNORMAL;
 
 HINSTANCE                  hDllInst              = NULL;
+
+HWND                       hwndNotifyWindow      = NULL;
 
 #pragma data_seg( pop )
