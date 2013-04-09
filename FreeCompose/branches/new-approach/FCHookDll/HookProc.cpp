@@ -16,13 +16,6 @@
 #include "KeyDownUpSink.h"
 
 //==============================================================================
-// Constants
-//==============================================================================
-
-const UINT FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
-const UINT FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
-
-//==============================================================================
 // Global variables
 //==============================================================================
 
@@ -67,7 +60,6 @@ static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 	return match;
 }
 
-
 static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
 	input.type = INPUT_KEYBOARD;
 	input.ki.wScan = ch;
@@ -108,7 +100,7 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 		return false;
 	}
 
-	::PostMessage( HWND_BROADCAST, FCM_KEY, 0, (LPARAM) sequence->chComposed );
+	::PostMessage( hwndNotifyWindow, FCM_KEY, 0, (LPARAM) sequence->chComposed );
 	return true;
 }
 
