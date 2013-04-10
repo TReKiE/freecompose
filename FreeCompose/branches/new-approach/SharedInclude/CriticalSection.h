@@ -6,25 +6,7 @@ public:
 	inline CriticalSection( ) {
 	}
 
-	inline CriticalSection( CriticalSection const& right ) {
-		*this = right;
-	}
-
-	inline CriticalSection( CRITICAL_SECTION const& right ) {
-		*this = right;
-	}
-
 	virtual inline ~CriticalSection( ) {
-	}
-
-	virtual inline CriticalSection const& operator=( CriticalSection const& right ) {
-		cs = right.cs;
-		return *this;
-	}
-
-	virtual inline CriticalSection const& operator=( CRITICAL_SECTION const& right ) {
-		cs = right;
-		return *this;
 	}
 
 	virtual inline operator CRITICAL_SECTION const&( ) const {
@@ -43,12 +25,12 @@ public:
 		InitializeCriticalSection( &cs );
 	}
 
-	virtual inline bool InitializeWithSpinCount( DWORD const cSpin ) {
-		return !!InitializeCriticalSectionAndSpinCount( &cs, cSpin );
+	virtual inline void InitializeWithSpinCount( DWORD const cSpin ) {
+		InitializeCriticalSectionAndSpinCount( &cs, cSpin );
 	}
 
 	virtual inline bool InitializeEx( DWORD const cSpin, DWORD const flags ) {
-		return !!InitializeCriticalSectionEx( &cs, cSpin, flags );
+		return InitializeCriticalSectionEx( &cs, cSpin, flags ) ? true : false;
 	}
 
 	virtual inline void Leave( ) {
@@ -60,10 +42,15 @@ public:
 	}
 
 	virtual inline bool TryEnter( ) {
-		return !!TryEnterCriticalSection( &cs );
+		return TryEnterCriticalSection( &cs ) ? true : false;
 	}
 
 private:
+
+	inline CriticalSection( CriticalSection const& right );
+	inline CriticalSection const& operator=( CriticalSection const& right );
+
+protected:
 
 	CRITICAL_SECTION cs;
 

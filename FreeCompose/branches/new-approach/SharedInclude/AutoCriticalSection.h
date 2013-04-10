@@ -17,33 +17,14 @@ public:
 		InitializeEx( cSpin, flags );
 	}
 
-	inline AutoCriticalSection( AutoCriticalSection const& right ) {
-		*this = right;
-	}
-
 	virtual inline ~AutoCriticalSection( ) {
 		Delete( );
 	}
 
-	virtual inline AutoCriticalSection const& operator=( AutoCriticalSection const& right ) {
-		cs = right.cs;
-		return *this;
-	}
-
 private:
 
-	inline AutoCriticalSection( CRITICAL_SECTION const& right ) {
-		*this = right;
-	}
-
-	virtual inline AutoCriticalSection const& operator=( CRITICAL_SECTION const& right ) {
-		cs = right;
-		return *this;
-	}
-
-	virtual inline operator CRITICAL_SECTION const&( ) const {
-		return cs;
-	}
+	inline AutoCriticalSection( AutoCriticalSection const& right );
+	inline AutoCriticalSection const& operator=( AutoCriticalSection const& right );
 
 	virtual inline void Delete( ) {
 		DeleteCriticalSection( &cs );
@@ -53,14 +34,12 @@ private:
 		InitializeCriticalSection( &cs );
 	}
 
-	virtual inline bool InitializeWithSpinCount( DWORD const cSpin ) {
-		return !!InitializeCriticalSectionAndSpinCount( &cs, cSpin );
+	virtual inline void InitializeWithSpinCount( DWORD const cSpin ) {
+		InitializeCriticalSectionAndSpinCount( &cs, cSpin ) ? true : false;
 	}
 
 	virtual inline bool InitializeEx( DWORD const cSpin, DWORD const flags ) {
-		return !!InitializeCriticalSectionEx( &cs, cSpin, flags );
+		return InitializeCriticalSectionEx( &cs, cSpin, flags ) ? true : false;
 	}
-
-	CRITICAL_SECTION cs;
 
 };
