@@ -147,7 +147,6 @@
   <ItemGroup>
     <ClInclude Include="..\SharedInclude\AutoCriticalSection.h" />
     <ClInclude Include="..\SharedInclude\Bitset.h" />
-    <ClInclude Include="..\SharedInclude\CriticalSection.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\FreeListAllocator.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />

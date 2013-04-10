@@ -1,45 +1,45 @@
 #pragma once
 
-#include "CriticalSection.h"
-
-class AutoCriticalSection: public CriticalSection {
+class AutoCriticalSection {
 public:
 
 	inline AutoCriticalSection( ) {
-		Initialize( );
+		InitializeCriticalSection( &cs );
 	}
 
 	inline AutoCriticalSection( DWORD const cSpin ) {
-		InitializeWithSpinCount( cSpin );
+		InitializeCriticalSectionAndSpinCount( &cs, cSpin );
 	}
 
 	inline AutoCriticalSection( DWORD const cSpin, DWORD const flags ) {
-		InitializeEx( cSpin, flags );
+		InitializeCriticalSectionEx( &cs, cSpin, flags );
 	}
 
-	virtual inline ~AutoCriticalSection( ) {
-		Delete( );
+	inline ~AutoCriticalSection( ) {
+		DeleteCriticalSection( &cs );
+	}
+
+	inline void Enter( ) {
+		EnterCriticalSection( &cs );
+	}
+
+	inline void Leave( ) {
+		LeaveCriticalSection( &cs );
+	}
+
+	inline DWORD SetSpinCount( DWORD const cSpin ) {
+		return SetCriticalSectionSpinCount( &cs, cSpin );
+	}
+
+	inline bool TryEnter( ) {
+		return TryEnterCriticalSection( &cs ) ? true : false;
 	}
 
 private:
 
-	inline AutoCriticalSection( AutoCriticalSection const& right );
-	inline AutoCriticalSection const& operator=( AutoCriticalSection const& right );
+	AutoCriticalSection( AutoCriticalSection const& right );
+	AutoCriticalSection const& operator=( AutoCriticalSection const& right );
 
-	virtual inline void Delete( ) {
-		DeleteCriticalSection( &cs );
-	}
-
-	virtual inline void Initialize( ) {
-		InitializeCriticalSection( &cs );
-	}
-
-	virtual inline void InitializeWithSpinCount( DWORD const cSpin ) {
-		InitializeCriticalSectionAndSpinCount( &cs, cSpin ) ? true : false;
-	}
-
-	virtual inline bool InitializeEx( DWORD const cSpin, DWORD const flags ) {
-		return InitializeCriticalSectionEx( &cs, cSpin, flags ) ? true : false;
-	}
+	CRITICAL_SECTION cs;
 
 };
