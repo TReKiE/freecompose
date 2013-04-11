@@ -30,18 +30,25 @@ CapsLockToggler* capsLockToggler = NULL;
 // Prototypes
 //==============================================================================
 
+#if 0
 static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 );
+#endif
 
 static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
+#if 0
 static bool SendKey( COMPOSE_SEQUENCE* sequence );
+#endif
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
+#if 0
 static void TranslateKey( KBDLLHOOKSTRUCT* pkb );
+#endif
 
 //==============================================================================
 // Static functions
 //==============================================================================
 
+#if 0
 static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
 	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
@@ -59,6 +66,7 @@ static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 
 	return match;
 }
+#endif
 
 static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
 	input.type = INPUT_KEYBOARD;
@@ -72,6 +80,7 @@ static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 }
 
+#if 0
 static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 	UINT numInputsToSend;
 	INPUT input[4] = { 0, };
@@ -103,6 +112,7 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 	::PostMessage( hwndNotifyWindow, FCM_KEY, 0, (LPARAM) sequence->chComposed );
 	return true;
 }
+#endif
 
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	INPUT input = { 0, };
@@ -122,6 +132,7 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
+#if 0
 static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
 	// unknown reasons, the keyboard state array will not be up-to-date.
@@ -137,28 +148,28 @@ static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 		hwndForeground = GetForegroundWindow( );
 		tid = GetWindowThreadProcessId( hwndForeground, &pid );
 		hkl = GetKeyboardLayout( tid );
-		debug( L"LLKP|hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
+		debug( L"TranslateKey: hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
 
 		wchar_t buf[65]; // accept up to 64 characters, plus the terminating NUL
 		int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0, hkl );
 		switch ( rc ) {
 			case -1:
-				debug( L"LLKP|ToUnicodeEx: -1 dead key\n" );
+				debug( L"TranslateKey: ToUnicodeEx: -1 dead key\n" );
 				break;
 
 			case 0:
-				debug( L"LLKP|ToUnicodeEx: 0 no translation\n" );
+				debug( L"TranslateKey: ToUnicodeEx: 0 no translation\n" );
 				break;
 
 			default:
 				// really, this is testing if it's less than *-1*, but, well, we need at
-				// least 1 anyway, -1 and 0 have been handled, what difference does it make
+				// least 1 anyway, -1 and 0 have been handled, so what difference does it make?
 				if ( rc < 1 ) {
-					debug( L"LLKP|ToUnicodeEx: returned %d?\n", rc );
+					debug( L"TranslateKey: ToUnicodeEx: returned %d?\n", rc );
 					break;
 				}
 
-				debug( L"LLKP|ToUnicodeEx: %d bytes: ", rc );
+				debug( L"TranslateKey: ToUnicodeEx: %d bytes: ", rc );
 				for ( int n = 0; n < rc; n++ ) {
 					debug( L"0x%04X ", buf[n] );
 				}
@@ -176,9 +187,10 @@ static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 				break;
 		}
 	} else {
-		debug( L"LLKP|GetKeyboardState: error=%u\n", GetLastError( ) );
+		debug( L"TranslateKey: GetKeyboardState: error=%u\n", GetLastError( ) );
 	}
 }
+#endif
 
 //==============================================================================
 // Global functions
