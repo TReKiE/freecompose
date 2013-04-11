@@ -34,6 +34,9 @@ FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD 
 }
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
+#if UI_DEBUGGING_ONLY
+	return FALSE;
+#else
 	DWORD dwError = 0;
 	BOOL ret = FALSE;
 
@@ -57,6 +60,7 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 		}
 	}
 	return ret;
+#endif
 }
 
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
