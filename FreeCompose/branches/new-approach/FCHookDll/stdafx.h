@@ -8,6 +8,7 @@
 
 // C++ standard library
 #include <cctype>
+#include <unordered_map>
 
 // Windows SDK
 #include <windows.h>

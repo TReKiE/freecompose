@@ -26,6 +26,8 @@
 #include <afxtempl.h>
 #include <atlwin.h>
 
+#include <unordered_map>
+
 #include <FCHookDll.h>
 #include <FCShared.h>
 
