@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "HookProc.h"
+#include "ComposeSequenceTree.h"
 
 using namespace std::tr1;
 
@@ -22,6 +23,8 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 		ComposeSequences = pSequences;
 		cComposeSequences = cSequences;
 	} UNLOCK( cs );
+
+	ComposeSequenceTree = COMPOSE_SEQUENCE_TREE( pSequences, cSequences );
 }
 
 //==============================================================================
