@@ -40,7 +40,6 @@ extern DWORD                      vkCapsLockSwap;
 
 extern KeyEventHandler*           KeyEventHandlers[256];
 extern COMPOSE_STATE              ComposeState;
-extern zive::bitset< 256, DWORD > WantedKeys;
 
 extern HINSTANCE                  hDllInst;
 

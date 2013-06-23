@@ -51,8 +51,6 @@ DWORD                      vkCapsLockSwap        = VK_CAPITAL;
 
 KeyEventHandler*           KeyEventHandlers[256] = { NULL, };
 
-zive::bitset< 256, DWORD > WantedKeys;
-
 COMPOSE_STATE              ComposeState          = csNORMAL;
 
 HINSTANCE                  hDllInst              = NULL;
