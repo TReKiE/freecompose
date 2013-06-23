@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "FCHookDll.h"
-#include "Common.h"
 #include "HookProc.h"
 
 #pragma data_seg( push, ".shareddata" )

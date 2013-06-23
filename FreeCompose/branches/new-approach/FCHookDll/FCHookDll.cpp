@@ -1,7 +1,6 @@
 #include "stdafx.h"
-#include "FCHookDll.h"
+
 #include "HookProc.h"
-#include "Common.h"
 
 static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {

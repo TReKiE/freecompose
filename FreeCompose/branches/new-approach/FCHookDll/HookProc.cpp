@@ -1,12 +1,10 @@
 #include "stdafx.h"
 
-#include <KeyIsXAlnum.h>
+#include <string>
+
 #include <Unicode.h>
 
-#include "FCHookDll.h"
-#include "Common.h"
 #include "Key.h"
-#include "KeyEventHandler.h"
 
 #include "HookProc.h"
 #include "Stringify.h"

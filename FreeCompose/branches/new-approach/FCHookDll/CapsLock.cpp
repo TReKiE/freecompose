@@ -1,12 +1,9 @@
 #include "stdafx.h"
 
-#include "FCHookDll.h"
 #include "HookProc.h"
-#include "Common.h"
 #include "Stringify.h"
 
 #include "Key.h"
-#include "KeyEventHandler.h"
 #include "CapsLock.h"
 
 //==============================================================================

@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-#include "FCHookDll.h"
-#include "Common.h"
-#include "KeyEventHandler.h"
 #include "KeyUpSink.h"
 #include "ComposeKeyHandler.h"
 
