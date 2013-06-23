@@ -9,6 +9,8 @@ enum DISPOSITION {
 
 class KeyEventHandler {
 public:
-	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) = 0;
-	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb ) = 0;
+
+	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ );
+	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* /*pkb*/ );
+
 };
