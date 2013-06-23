@@ -12,3 +12,6 @@
 
 #include "FCShared.h"
 #include "Bitset.h"
+#include "AutoCriticalSection.h"
+
+#include "KeyEventHandler.h"
