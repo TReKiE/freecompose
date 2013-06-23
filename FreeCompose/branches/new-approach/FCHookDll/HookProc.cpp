@@ -10,10 +10,8 @@
 
 #include "HookProc.h"
 #include "Stringify.h"
-#include "KeyUpSink.h"
 #include "CapsLock.h"
 #include "ComposeKeyHandler.h"
-#include "KeyDownUpSink.h"
 
 //==============================================================================
 // Global variables
@@ -212,11 +210,6 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
 	debug( L"LLKP|ComposeState=%s wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
 
-	if ( !isKeyDown && WantedKeys.Contains( pkb->vkCode ) ) {
-		debug( L"LLKP|vkCode is in WantedKeys, rejecting\n" );
-		goto rejectKey;
-	}
-
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = KeyEventHandlers[ pkb->vkCode ];
 	debug( L"LLKP|KeyEventHandlers[%ld]=0x%p\n", pkb->vkCode, keh );
@@ -230,10 +223,22 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	debug( L"LLKP|disposition is %s\n", Stringify::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
+		case D_ACCEPT_KEY:     goto acceptKey;
 		case D_REJECT_KEY:     goto rejectKey;
 		case D_REGENERATE_KEY: goto regenerateKey;
-		default:               goto acceptKey;
+		case D_NOT_HANDLED:    break; // "fall through" into next section of code, rather than next case label.
+
+#if _DEBUG
+		default:
+			debug( L"LLKP|Unknown DISPOSITION value %d!!\n", dHandler );
+			DebugBreak( );
+			break;
+#endif
 	}
+
+	//
+	// Code needs to go in here to translate the keystroke's key code into characters, and then use _that_ to drive the composition lookup
+	//
 
 	__assume( 0 ); // not reached
 
