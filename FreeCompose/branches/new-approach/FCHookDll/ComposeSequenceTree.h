@@ -1,7 +1,15 @@
 #pragma once
 
+#define DEBUG_NODES_LEAVES 0
+
 class COMPOSE_TREE_NODE {
 public:
+#if DEBUG_NODES_LEAVES
+	COMPOSE_TREE_NODE( ) {
+		_cNodes++;
+	}
+#endif
+
 	~COMPOSE_TREE_NODE( );
 
 	inline COMPOSE_TREE_NODE* GetChild( int character ) {
@@ -18,6 +26,9 @@ public:
 
 	inline void AddLeaf( int character, int result ) {
 		leaves.insert( Tleaves::value_type( character, result ) );
+#if DEBUG_NODES_LEAVES
+		_cLeaves++;
+#endif
 	}
 
 private:
@@ -26,19 +37,36 @@ private:
 
 	Tchildren children;
 	Tleaves leaves;
+
+#if DEBUG_NODES_LEAVES
+private: /*static*/
+	static int _cNodes;
+	static int _cLeaves;
+#endif
 };
 
 class COMPOSE_SEQUENCE_TREE {
 public:
-	inline COMPOSE_SEQUENCE_TREE( ) {
+	inline COMPOSE_SEQUENCE_TREE( ): root ( NULL ) {
 	}
 
-	inline COMPOSE_SEQUENCE_TREE( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
+	inline COMPOSE_SEQUENCE_TREE( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ): root ( NULL ) {
 		BuildTree( pSequences, cSequences );
 	}
 
-private:
-	COMPOSE_TREE_NODE root;
+	inline ~COMPOSE_SEQUENCE_TREE( ) {
+		ReleaseTree( );
+	}
 
+	inline void ReleaseTree( void ) {
+		if ( NULL != root ) {
+			delete root;
+			root = NULL;
+		}
+	}
+
+private:
 	void BuildTree( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
+
+	COMPOSE_TREE_NODE* root;
 };

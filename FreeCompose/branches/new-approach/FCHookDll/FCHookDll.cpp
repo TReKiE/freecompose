@@ -33,6 +33,8 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 
 void ReleaseComposeSequences( void ) {
 	_SetComposeSequencesImpl( NULL, 0 );
+
+	ComposeSequenceTree.ReleaseTree( );
 }
 
 //==============================================================================
