@@ -24,7 +24,6 @@ wchar_t const* stringsFor_enum_DISPOSITION[] = {
 wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
 	L"csNORMAL",
 	L"csCOMPOSE_FIRST",
-	L"csCOMPOSE_SECOND",
 	L"csCAPS_LOCK_FIRST",
 };
 
