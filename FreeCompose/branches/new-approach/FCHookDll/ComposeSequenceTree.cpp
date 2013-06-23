@@ -5,7 +5,7 @@
 using namespace std;
 
 COMPOSE_TREE_NODE::~COMPOSE_TREE_NODE( ) {
-	for_each( children.begin( ), children.end( ), [ ]( std::pair<int, COMPOSE_TREE_NODE*> item ) { delete item.second; } );
+	for_each( children.begin( ), children.end( ), [ ]( Tchildren::value_type item ) { delete item.second; } );
 }
 
 void COMPOSE_SEQUENCE_TREE::BuildTree( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
