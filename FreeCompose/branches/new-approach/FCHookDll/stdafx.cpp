@@ -1,9 +1,6 @@
 #include "stdafx.h"
 
-#include "FCHookDll.h"
-#include "KeyEventHandler.h"
 #include "HookProc.h"
-#include "Common.h"
 
 //==============================================================================
 // Constants

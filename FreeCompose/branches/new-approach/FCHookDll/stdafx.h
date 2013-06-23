@@ -6,12 +6,18 @@
 
 #pragma warning( disable: 4127 )
 
+// C++ standard library
 #include <cctype>
 
+// Windows SDK
 #include <windows.h>
 
+// FCShared
 #include "FCShared.h"
 #include "Bitset.h"
 #include "AutoCriticalSection.h"
 
+// FCHookDll
+#include "FCHookDll.h"
+#include "Common.h"
 #include "KeyEventHandler.h"
