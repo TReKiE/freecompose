@@ -6,9 +6,13 @@
 
 #pragma warning( disable: 4127 )
 
-// C++ standard library
+// C standard library
 #include <cctype>
+
+// C++ standard library
+#include <algorithm>
 #include <unordered_map>
+#include <utility>
 
 // Windows SDK
 #include <windows.h>
@@ -20,5 +24,6 @@
 
 // FCHookDll
 #include "FCHookDll.h"
+#include "ComposeSequenceTree.h"
 #include "Common.h"
 #include "KeyEventHandler.h"

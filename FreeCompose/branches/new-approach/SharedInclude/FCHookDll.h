@@ -22,11 +22,6 @@ struct COMPOSE_SEQUENCE {
 	unsigned chComposed;
 };
 
-struct COMPOSE_TREE_NODE {
-	std::tr1::unordered_map<int, COMPOSE_TREE_NODE*> childNodes;
-	std::tr1::unordered_map<int, int> leaves;
-};
-
 enum CAPS_LOCK_TOGGLE_MODE {
 	CLTM_NORMAL     = 1,
 	CLTM_PRESSTWICE,

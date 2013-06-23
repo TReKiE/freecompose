@@ -39,6 +39,8 @@ HHOOK                      hHook                 = NULL;
 COMPOSE_SEQUENCE*          ComposeSequences      = NULL;
 INT_PTR                    cComposeSequences     = 0;
 
+COMPOSE_SEQUENCE_TREE      ComposeSequenceTree;
+
 CAPS_LOCK_TOGGLE_MODE      clToggleMode          = CLTM_NORMAL;
 CAPS_LOCK_SWAP_MODE        clSwapMode            = CLSM_SWAP;
 bool                       fSwapCapsLock         = false;
