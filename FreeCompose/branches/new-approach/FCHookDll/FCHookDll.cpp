@@ -2,6 +2,16 @@
 
 #include "HookProc.h"
 
+//==============================================================================
+// Function prototypes
+//==============================================================================
+
+static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
+
+//==============================================================================
+// Private functions
+//==============================================================================
+
 static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
 		if ( NULL != ComposeSequences ) {
@@ -12,25 +22,29 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 	} UNLOCK( cs );
 }
 
+//==============================================================================
+// Library-internal functions
+//==============================================================================
+
 void ReleaseComposeSequences( void ) {
 	_SetComposeSequencesImpl( NULL, 0 );
 }
 
-//
-// FC API
-//
+//==============================================================================
+// FCHookDll API
+//==============================================================================
+
+//==============================================================================
+// Suite 0: API version
+//==============================================================================
 
 FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 	return FCHOOKDLL_API_VERSION;
 }
 
-FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD cInSequences ) {
-	COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];
-	memcpy( pSequences, pInSequences, sizeof( COMPOSE_SEQUENCE ) * cInSequences );
-	qsort( pSequences, cInSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
-	_SetComposeSequencesImpl( pSequences, cInSequences );
-	return TRUE;
-}
+//==============================================================================
+// Suite 1: Hook control
+//==============================================================================
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
 #if UI_DEBUGGING_ONLY
@@ -92,6 +106,7 @@ FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
 	return ( NULL != hHook );
 }
 
+
 FCHOOKDLL_API BOOL FcSetNotifyWindowHandle( HWND hwndNotifyWindow_ ) {
 	if ( hwndNotifyWindow ) {
 		return FALSE;
@@ -102,6 +117,45 @@ FCHOOKDLL_API BOOL FcSetNotifyWindowHandle( HWND hwndNotifyWindow_ ) {
 
 FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void ) {
 	return hwndNotifyWindow;
+}
+
+//==============================================================================
+// Suite 2: Compose key and sequences
+//==============================================================================
+
+FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
+	ChangeComposeKey( _vkCompose );
+	return TRUE;
+}
+
+FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
+	return vkCompose;
+}
+
+
+FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD cInSequences ) {
+	if ( NULL == pInSequences || 0 == cInSequences ) {
+		ReleaseComposeSequences( );
+	} else {
+		COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];
+		memcpy( pSequences, pInSequences, sizeof( COMPOSE_SEQUENCE ) * cInSequences );
+		qsort( pSequences, cInSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
+		_SetComposeSequencesImpl( pSequences, cInSequences );
+	}
+	return TRUE;
+}
+
+//==============================================================================
+// Suite 3: Caps Lock
+//==============================================================================
+
+FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD _vkCapsLockSwap ) {
+	ChangeCapsLockSwapKey( _vkCapsLockSwap );
+	return TRUE;
+}
+
+FCHOOKDLL_API DWORD FcGetSwapCapsLockKey( void ) {
+	return vkCapsLockSwap;
 }
 
 
@@ -124,24 +178,4 @@ FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode ) {
 
 FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void ) {
 	return clSwapMode;
-}
-
-
-FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD _vkCapsLockSwap ) {
-	ChangeCapsLockSwapKey( _vkCapsLockSwap );
-	return TRUE;
-}
-
-FCHOOKDLL_API DWORD FcGetSwapCapsLockKey( void ) {
-	return vkCapsLockSwap;
-}
-
-
-FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
-	ChangeComposeKey( _vkCompose );
-	return TRUE;
-}
-
-FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
-	return vkCompose;
 }
