@@ -26,26 +26,19 @@ CapsLockToggler* capsLockToggler = NULL;
 // Prototypes
 //==============================================================================
 
-#if 0
-static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 );
-#endif
+static int FindComposeSequence( unsigned ch1, unsigned ch2 );
 
 static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
-#if 0
 static bool SendKey( COMPOSE_SEQUENCE* sequence );
-#endif
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
-#if 0
-static void TranslateKey( KBDLLHOOKSTRUCT* pkb );
-#endif
+static bool TranslateKey( KBDLLHOOKSTRUCT* pkb );
 
 //==============================================================================
 // Static functions
 //==============================================================================
 
-#if 0
-static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
+static int FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
 	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
 	COMPOSE_SEQUENCE* match = NULL;
@@ -60,9 +53,8 @@ static COMPOSE_SEQUENCE* FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 		}
 	} UNLOCK( cs );
 
-	return match;
+	return match ? match->chComposed : -1;
 }
-#endif
 
 static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
 	input.type = INPUT_KEYBOARD;
@@ -76,7 +68,6 @@ static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 }
 
-#if 0
 static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 	UINT numInputsToSend;
 	INPUT input[4] = { 0, };
@@ -108,7 +99,6 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 	::PostMessage( hwndNotifyWindow, FCM_KEY, 0, (LPARAM) sequence->chComposed );
 	return true;
 }
-#endif
 
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	INPUT input = { 0, };
@@ -128,8 +118,7 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-#if 0
-static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
+static bool TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
 	// unknown reasons, the keyboard state array will not be up-to-date.
 	GetKeyState( VK_SHIFT );
@@ -151,11 +140,11 @@ static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 		switch ( rc ) {
 			case -1:
 				debug( L"TranslateKey: ToUnicodeEx: -1 dead key\n" );
-				break;
+				return false;
 
 			case 0:
 				debug( L"TranslateKey: ToUnicodeEx: 0 no translation\n" );
-				break;
+				return false;
 
 			default:
 				// really, this is testing if it's less than *-1*, but, well, we need at
@@ -186,7 +175,6 @@ static void TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
 		debug( L"TranslateKey: GetKeyboardState: error=%u\n", GetLastError( ) );
 	}
 }
-#endif
 
 //==============================================================================
 // Global functions
@@ -237,6 +225,8 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	//
 	// Code needs to go in here to translate the keystroke's key code into characters, and then use _that_ to drive the composition lookup
 	//
+
+
 
 	__assume( 0 ); // not reached
 
