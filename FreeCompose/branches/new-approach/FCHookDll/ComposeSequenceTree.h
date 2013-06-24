@@ -20,6 +20,14 @@ public:
 		return (*iter).second;
 	}
 
+	inline int GetLeaf( int character ) {
+		auto iter = leaves.find( character );
+		if ( iter == leaves.end( ) ) {
+			return -1;
+		}
+		return (*iter).second;
+	}
+
 	inline void AddChild( int character, COMPOSE_TREE_NODE* child ) {
 		children.insert( Tchildren::value_type( character, child ) );
 	}
@@ -64,6 +72,8 @@ public:
 			root = NULL;
 		}
 	}
+
+	int LookUp( int length, int characters[] );
 
 private:
 	void BuildTree( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
