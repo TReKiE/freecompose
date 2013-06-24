@@ -6,8 +6,8 @@
 
 enum COMPOSE_STATE {
 	csNORMAL,
-	csCOMPOSE_FIRST,
-	csCAPS_LOCK_FIRST,
+	csCOMPOSE,
+	csCAPS_LOCK,
 };
 
 class KeyEventHandler;

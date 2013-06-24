@@ -6,14 +6,14 @@
 DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 	switch ( ComposeState ) {
 		case csNORMAL:
-			ComposeState = csCOMPOSE_FIRST;
+			ComposeState = csCOMPOSE;
 			KeyEventHandlers[ vkCompose ] = new KeyUpSink( pkb->vkCode, this );
 			if ( hwndNotifyWindow ) {
 				::PostMessage( hwndNotifyWindow, FCM_PIP, PIP_OK_1, 0 );
 			}
 			return D_REJECT_KEY;
 
-		case csCOMPOSE_FIRST:
+		case csCOMPOSE:
 			ComposeState = csNORMAL;
 			KeyEventHandlers[ vkCompose ] = new KeyUpSink( pkb->vkCode, this );
 			if ( hwndNotifyWindow ) {

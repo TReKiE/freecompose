@@ -20,8 +20,8 @@ wchar_t const* stringsFor_enum_DISPOSITION[] = {
 
 wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
 	L"csNORMAL",
-	L"csCOMPOSE_FIRST",
-	L"csCAPS_LOCK_FIRST",
+	L"csCOMPOSE",
+	L"csCAPS_LOCK",
 };
 
 UINT const FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
