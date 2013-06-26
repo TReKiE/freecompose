@@ -11,6 +11,8 @@
 #include "CapsLock.h"
 #include "ComposeKeyHandler.h"
 
+using namespace std;
+
 //==============================================================================
 // Global variables
 //==============================================================================
@@ -32,7 +34,7 @@ static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
 static bool SendKey( COMPOSE_SEQUENCE* sequence );
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
-static bool TranslateKey( KBDLLHOOKSTRUCT* pkb );
+static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 
 //==============================================================================
 // Static functions
@@ -118,62 +120,65 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	}
 }
 
-static bool TranslateKey( KBDLLHOOKSTRUCT* pkb ) {
+static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
+	translation.clear( );
+
 	// We need to call GetKeyState() before we call GetKeyboardState(), or, for
 	// unknown reasons, the keyboard state array will not be up-to-date.
 	GetKeyState( VK_SHIFT );
 
 	BYTE keyState[256];
-	if ( GetKeyboardState( keyState ) ) {
-		HWND hwndForeground = NULL;
-		DWORD pid = 0;
-		DWORD tid = 0;
-		HKL hkl = NULL;
-
-		hwndForeground = GetForegroundWindow( );
-		tid = GetWindowThreadProcessId( hwndForeground, &pid );
-		hkl = GetKeyboardLayout( tid );
-		debug( L"TranslateKey: hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
-
-		wchar_t buf[65]; // accept up to 64 characters, plus the terminating NUL
-		int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 65, 0, hkl );
-		switch ( rc ) {
-			case -1:
-				debug( L"TranslateKey: ToUnicodeEx: -1 dead key\n" );
-				return false;
-
-			case 0:
-				debug( L"TranslateKey: ToUnicodeEx: 0 no translation\n" );
-				return false;
-
-			default:
-				// really, this is testing if it's less than *-1*, but, well, we need at
-				// least 1 anyway, -1 and 0 have been handled, so what difference does it make?
-				if ( rc < 1 ) {
-					debug( L"TranslateKey: ToUnicodeEx: returned %d?\n", rc );
-					break;
-				}
-
-				debug( L"TranslateKey: ToUnicodeEx: %d bytes: ", rc );
-				for ( int n = 0; n < rc; n++ ) {
-					debug( L"0x%04X ", buf[n] );
-				}
-
-				wchar_t printbuf[65];
-				for ( int n = 0; n < _countof( printbuf ); n++ ) {
-					if ( 0 == buf[n] ) {
-						printbuf[n] = 0;
-						break;
-					}
-
-					printbuf[n] = iswprint( buf[n] ) ? buf[n] : '.';
-				}
-				debug( L" -- {%s}\n", printbuf );
-				break;
-		}
-	} else {
+	if ( !GetKeyboardState( keyState ) ) {
 		debug( L"TranslateKey: GetKeyboardState: error=%u\n", GetLastError( ) );
+		return false;
 	}
+
+	HWND hwndForeground = GetForegroundWindow( );
+	DWORD pid, tid = GetWindowThreadProcessId( hwndForeground, &pid );
+	HKL hkl = GetKeyboardLayout( tid );
+	debug( L"TranslateKey: hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
+
+	wchar_t buf[65] = { 0, }; // accept up to 64 characters, plus the terminating NUL
+	int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 64, 0, hkl );
+	if ( 0 == rc ) {
+		debug( L"TranslateKey: ToUnicodeEx: 0 no translation\n" );
+		return false;
+	}
+
+	if ( -1 == rc ) {
+		debug( L"TranslateKey: ToUnicodeEx: -1 dead key\n" );
+		return true;
+	}
+
+	if ( rc < -1 ) {
+		debug( L"TranslateKey: ToUnicodeEx: returned %d?\n", rc );
+		return false;
+	}
+
+	debug( L"TranslateKey: ToUnicodeEx: %d bytes\n", rc );
+
+#if _DEBUG
+	{
+		debug( L"-- data: " );
+		for ( int n = 0; n < rc; n++ ) {
+			debug( L"0x%04X ", buf[n] );
+		}
+
+		wchar_t printbuf[ _countof( buf ) ];
+		for ( int n = 0; n < _countof( printbuf ); n++ ) {
+			if ( 0 == buf[n] ) {
+				printbuf[n] = 0;
+				break;
+			}
+
+			printbuf[n] = iswprint( buf[n] ) ? buf[n] : '.';
+		}
+		debug( L" -- {%s}\n", printbuf );
+	}
+#endif
+
+	translation = buf;
+	return true;
 }
 
 //==============================================================================
