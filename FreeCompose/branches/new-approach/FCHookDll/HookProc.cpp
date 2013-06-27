@@ -21,6 +21,7 @@ using namespace std;
 
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
+wstring          translationBuffer;
 
 #pragma data_seg( pop )
 
@@ -187,6 +188,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
 	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
+	wstring translated;
 
 	//
 	// If nCode is negative, we are required to immediately pass control to the
@@ -231,7 +233,21 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	// Code needs to go in here to translate the keystroke's key code into characters, and then use _that_ to drive the composition lookup
 	//
 
+	if ( csCOMPOSE != ComposeState ) {
+		goto acceptKey;
+	}
 
+	debug( L"LLKP|Calling TranslateKey. translationBuffer is currently {%s}.\n", translationBuffer.c_str( ) );
+	if ( !TranslateKey( pkb, translated ) ) {
+		debug( L"LLKP|Call to TranslateKey failed. clearing translationBuffer, exiting COMPOSE state.\n" );
+		translationBuffer.clear( );
+		ComposeState = csNORMAL;
+		goto acceptKey;
+	}
+
+	debug( L"LLKP|TranslateKey returned {%s}. Appending to translationBuffer.\n", translated.c_str( ) );
+	translationBuffer += translated;
+	goto rejectKey;
 
 	__assume( 0 ); // not reached
 
