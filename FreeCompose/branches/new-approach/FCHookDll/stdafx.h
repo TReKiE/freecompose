@@ -1,6 +1,7 @@
 #pragma once
 
-#define UI_DEBUGGING_ONLY 1
+//#define UI_DEBUGGING_ONLY 1
+#undef UI_DEBUGGING_ONLY
 
 #include "targetver.h"
 
