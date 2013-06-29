@@ -51,3 +51,17 @@ extern HWND                       hwndNotifyWindow;
 
 int CompareComposeSequences( const void*, const void* );
 void ReleaseComposeSequences( void );
+
+//==============================================================================
+// Functions
+//==============================================================================
+
+namespace Stringify {
+
+	extern wchar_t const* stringsFor_enum_COMPOSE_STATE[];
+
+	static inline wchar_t const* from_COMPOSE_STATE( COMPOSE_STATE const value ) {
+		return stringsFor_enum_COMPOSE_STATE[static_cast<int>( value )];
+	}
+
+};

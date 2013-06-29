@@ -6,22 +6,26 @@
 // Constants
 //==============================================================================
 
-wchar_t const* stringsFor_bool[] = {
-	L"false",
-	L"TRUE"
-};
+namespace Stringify {
 
-wchar_t const* stringsFor_enum_DISPOSITION[] = {
-	L"D_NOT_HANDLED",
-	L"D_ACCEPT_KEY",
-	L"D_REJECT_KEY",
-	L"D_REGENERATE_KEY",
-};
+	wchar_t const* stringsFor_bool[] = {
+		L"false",
+		L"TRUE"
+	};
 
-wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
-	L"csNORMAL",
-	L"csCOMPOSE",
-	L"csCAPS_LOCK",
+	wchar_t const* stringsFor_enum_DISPOSITION[] = {
+		L"D_NOT_HANDLED",
+		L"D_ACCEPT_KEY",
+		L"D_REJECT_KEY",
+		L"D_REGENERATE_KEY",
+	};
+
+	wchar_t const* stringsFor_enum_COMPOSE_STATE[] = {
+		L"csNORMAL",
+		L"csCOMPOSE",
+		L"csCAPS_LOCK",
+	};
+
 };
 
 UINT const FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );

@@ -1,30 +1,19 @@
 #pragma once
 
 //==============================================================================
-// Constants
+// Functions
 //==============================================================================
 
-extern wchar_t const* stringsFor_bool[];
-extern wchar_t const* stringsFor_enum_DISPOSITION[];
-extern wchar_t const* stringsFor_enum_COMPOSE_STATE[];
+namespace Stringify {
 
-//==============================================================================
-// Classes and functions
-//==============================================================================
+	//==============================================================================
+	// Constants
+	//==============================================================================
 
-class Stringify {
-public:
+	extern wchar_t const* stringsFor_bool[];
 
-	static wchar_t const* from_bool( bool const value ) {
+	static inline wchar_t const* from_bool( bool const value ) {
 		return stringsFor_bool[static_cast<int>( value )];
-	}
-
-	static wchar_t const* from_DISPOSITION( DISPOSITION const value ) {
-		return stringsFor_enum_DISPOSITION[static_cast<int>( value )];
-	}
-
-	static wchar_t const* from_COMPOSE_STATE( COMPOSE_STATE const value ) {
-		return stringsFor_enum_COMPOSE_STATE[static_cast<int>( value )];
 	}
 
 };
