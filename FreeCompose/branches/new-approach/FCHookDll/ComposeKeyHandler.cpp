@@ -1,9 +1,16 @@
 #include "stdafx.h"
 
+#include "Stringify.h"
 #include "KeyUpSink.h"
 #include "ComposeKeyHandler.h"
 
 DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
+	debug( L"ComposeKeyHandler@0x%p::KeyDown: pkb=0x%p, ComposeState=%s(%d), KeyEventHandlers[vkCompose(%lu)]=0x%p\n", this, pkb, Stringify::from_COMPOSE_STATE( ComposeState ), ComposeState, vkCompose, KeyEventHandlers[ vkCompose ] );
+
+	KeyEventHandler* keh = KeyEventHandlers[ vkCompose ];
+	COMPOSE_STATE oldComposeState = ComposeState;
+	
+	DISPOSITION result = D_NOT_HANDLED;
 	switch ( ComposeState ) {
 		case csNORMAL:
 			ComposeState = csCOMPOSE;
@@ -11,7 +18,8 @@ DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 			if ( hwndNotifyWindow ) {
 				::PostMessage( hwndNotifyWindow, FCM_PIP, PIP_OK_1, 0 );
 			}
-			return D_REJECT_KEY;
+			result = D_REJECT_KEY;
+			break;
 
 		case csCOMPOSE:
 			ComposeState = csNORMAL;
@@ -19,8 +27,16 @@ DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 			if ( hwndNotifyWindow ) {
 				::PostMessage( hwndNotifyWindow, FCM_PIP, PIP_ABORT, 0 );
 			}
-			return D_ACCEPT_KEY;
+			result = D_ACCEPT_KEY;
+			break;
 	}
 
-	return D_NOT_HANDLED;
+	if ( KeyEventHandlers[ vkCompose ] != keh ) {
+		debug( L"ComposeKeyHandler@0x%p::KeyDown: Setting KeyEventHandlers slot to new KeyUpSink@0x%p\n", this, KeyEventHandlers[ vkCompose ] );
+	}
+	if ( ComposeState != oldComposeState ) {
+		debug( L"ComposeKeyHandler@0x%p::KeyDown: Changing ComposeState from %s(%d) to %s(%d)", this, Stringify::from_COMPOSE_STATE( oldComposeState ), oldComposeState, Stringify::from_COMPOSE_STATE( ComposeState ), ComposeState );
+	}
+
+	return result;
 }

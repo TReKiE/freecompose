@@ -95,7 +95,7 @@ static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
 
 	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
 	if ( u < numInputsToSend ) {
-		debug( L"SendKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
+		debug( L"SendKey: SendInput failed? sent=%u err=%lu\n", u, GetLastError( ) );
 		return false;
 	}
 
@@ -117,7 +117,7 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 
 	UINT u = SendInput( 1, &input, sizeof(input) );
 	if ( u < 1 ) {
-		debug( L"RegenerateKey: SendInput failed? sent=%u err=%u\n", u, GetLastError( ) );
+		debug( L"RegenerateKey: SendInput failed? sent=%u err=%lu\n", u, GetLastError( ) );
 	}
 }
 
@@ -130,7 +130,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
 
 	BYTE keyState[256];
 	if ( !GetKeyboardState( keyState ) ) {
-		debug( L"TranslateKey: GetKeyboardState: error=%u\n", GetLastError( ) );
+		debug( L"TranslateKey: GetKeyboardState: error=%lu\n", GetLastError( ) );
 		return false;
 	}
 
@@ -205,7 +205,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = KeyEventHandlers[ pkb->vkCode ];
-	debug( L"LLKP|KeyEventHandlers[%ld]=0x%p\n", pkb->vkCode, keh );
+	debug( L"LLKP|Calling KeyEventHandlers[%ld](0x%p)->Key%s(pkb=0x%p)\n", pkb->vkCode, keh, isKeyDown ? L"Down" : L"Up", pkb );
 	if ( keh ) {
 		if ( isKeyDown ) {
 			dHandler = keh->KeyDown( pkb );
@@ -213,7 +213,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 			dHandler = keh->KeyUp( pkb );
 		}
 	}
-	debug( L"LLKP|disposition is %s\n", Stringify::from_DISPOSITION( dHandler ) );
+	debug( L"LLKP|Call result: disposition is %s\n", Stringify::from_DISPOSITION( dHandler ) );
 
 	switch ( dHandler ) {
 		case D_ACCEPT_KEY:     goto acceptKey;
