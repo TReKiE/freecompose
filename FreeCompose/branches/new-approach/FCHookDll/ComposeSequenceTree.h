@@ -40,8 +40,8 @@ public:
 	}
 
 private:
-	typedef std::tr1::unordered_map<int const, COMPOSE_TREE_NODE*> Tchildren;
-	typedef std::tr1::unordered_map<int const, int const> Tleaves;
+	typedef std::map<int const, COMPOSE_TREE_NODE*> Tchildren;
+	typedef std::map<int const, int const> Tleaves;
 
 	Tchildren children;
 	Tleaves leaves;

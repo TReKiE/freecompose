@@ -11,10 +11,6 @@ public:
 		InitializeCriticalSectionAndSpinCount( &cs, cSpin );
 	}
 
-	inline AutoCriticalSection( DWORD const cSpin, DWORD const flags ) {
-		InitializeCriticalSectionEx( &cs, cSpin, flags );
-	}
-
 	inline ~AutoCriticalSection( ) {
 		DeleteCriticalSection( &cs );
 	}
