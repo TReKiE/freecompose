@@ -86,7 +86,7 @@ void CMainFrame::_Initialize( void ) {
 }
 
 void CMainFrame::_Reconfigure( void ) {
-	FcSetComposeSequences( m_pOptions->m_ComposeSequences.GetData( ), m_pOptions->m_ComposeSequences.GetCount( ) );
+	FcSetComposeSequences( m_pOptions->m_ComposeSequences.GetData( ), static_cast<DWORD>( m_pOptions->m_ComposeSequences.GetCount( ) ) );
 
 	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
 

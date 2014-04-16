@@ -26,7 +26,8 @@
 #include <afxtempl.h>
 #include <atlwin.h>
 
-#include <unordered_map>
+#include <algorithm>
+#include <map>
 
 #include <FCHookDll.h>
 #include <FCShared.h>
@@ -47,3 +48,5 @@
 
 #undef _T
 #undef _TEXT
+#undef min
+#undef max
