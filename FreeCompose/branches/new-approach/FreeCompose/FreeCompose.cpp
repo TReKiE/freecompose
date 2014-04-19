@@ -15,7 +15,25 @@ END_MESSAGE_MAP( )
 
 CFreeComposeApp theApp;
 
+bool CFreeComposeApp::IsAlreadyRunning( ) {
+	SetLastError( 0 );
+	m_hInstanceMutex = CreateMutex( nullptr, TRUE, L"ca.zive.FreeCompose.instanceMutex" );
+	DWORD dwError = GetLastError( );
+	if ( ERROR_ALREADY_EXISTS == dwError ) {
+		debug( L"CFreeComposeApp::InitInstance: CreateMutex(\"ca.zive.FreeCompose.instanceMutex\") returned ERROR_ALREADY_EXISTS, exiting\n" );
+		return true;
+	} else if ( ERROR_ACCESS_DENIED == dwError ) {
+		debug( L"CFreeComposeApp::InitInstance: CreateMutex(\"ca.zive.FreeCompose.instanceMutex\") returned ERROR_ACCESS_DENIED, exiting\n" );
+		return true;
+	}
+	return false;
+}
+
 BOOL CFreeComposeApp::InitInstance( ) {
+	if ( IsAlreadyRunning( ) ) {
+		return FALSE;
+	}
+
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
@@ -53,5 +71,6 @@ BOOL CFreeComposeApp::InitInstance( ) {
 
 int CFreeComposeApp::ExitInstance( ) {
 	TerminateDebugLogFile( );
+	CloseHandle( m_hInstanceMutex );
 	return CWinApp::ExitInstance( );
 }
