@@ -17,7 +17,7 @@ CFreeComposeApp theApp;
 
 bool CFreeComposeApp::IsAlreadyRunning( ) {
 	SetLastError( 0 );
-	m_hInstanceMutex = CreateMutex( nullptr, TRUE, L"ca.zive.FreeCompose.instanceMutex" );
+	m_hInstanceMutex = CreateMutex( nullptr, TRUE, MakeInstanceExclusionName( CString( L"ca.zive.FreeCompose.instanceMutex" ), UNIQUE_TO_SESSION ) );
 	DWORD dwError = GetLastError( );
 	if ( ERROR_ALREADY_EXISTS == dwError ) {
 		debug( L"CFreeComposeApp::InitInstance: CreateMutex(\"ca.zive.FreeCompose.instanceMutex\") returned ERROR_ALREADY_EXISTS, exiting\n" );
@@ -37,7 +37,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
 	// visual styles.  Otherwise, any window creation will fail.
-	INITCOMMONCONTROLSEX InitCtrls = { sizeof(InitCtrls), ICC_WIN95_CLASSES };
+	INITCOMMONCONTROLSEX InitCtrls = { sizeof( InitCtrls ), ICC_WIN95_CLASSES };
 	InitCommonControlsEx( &InitCtrls );
 
 	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %d, DLL %d\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
@@ -58,7 +58,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	InitializeDebugLogFile( );
 
 	CMainFrame* pFrame = new CMainFrame;
-	if ( ! pFrame ) {
+	if ( !pFrame ) {
 		return FALSE;
 	}
 	m_pMainWnd = pFrame;

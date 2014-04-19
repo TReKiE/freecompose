@@ -88,3 +88,76 @@ out2:
 out1:
 	return ComCtl32Version;
 }
+
+//
+// The following method is adapted from code by Joseph M. Newcomer in a CodeProject article
+// titled 'Avoiding Multiple Instances of an Application', originally published on 2000-05-16
+// at http://www.codeproject.com/Articles/538/Avoiding-Multiple-Instances-of-an-Application .
+//
+CString MakeInstanceExclusionName( CString const& input, EXCLUSION_KIND const kind ) {
+	switch ( kind ) {
+		case UNIQUE_TO_SYSTEM:
+			return CString( input );
+
+		case UNIQUE_TO_DESKTOP: {
+			CString s = input;
+			DWORD len;
+			HDESK desktop = GetThreadDesktop( GetCurrentThreadId( ) );
+			BOOL result = GetUserObjectInformation( desktop, UOI_NAME, NULL, 0, &len );
+			DWORD err = ::GetLastError( );
+			if ( !result && err == ERROR_INSUFFICIENT_BUFFER ) {
+				LPBYTE data = new BYTE[len];
+				result = GetUserObjectInformation( desktop, UOI_NAME, data, len, &len );
+				s += L"-";
+				s += (wchar_t*) data;
+				delete[] data;
+			} else {
+				s += L"-Win9x";
+			}
+			return s;
+		}
+
+		case UNIQUE_TO_SESSION: {
+			CString s = input;
+			HANDLE token;
+			DWORD len;
+			BOOL result = OpenProcessToken( GetCurrentProcess( ), TOKEN_QUERY, &token );
+			if ( result ) {
+				GetTokenInformation( token, TokenStatistics, NULL, 0, &len );
+				LPBYTE data = new BYTE[len];
+				GetTokenInformation( token, TokenStatistics, data, len, &len );
+				LUID uid = ( (PTOKEN_STATISTICS) data )->AuthenticationId;
+				delete[] data;
+				CString t;
+				t.Format( L"-%08x%08x", uid.HighPart, uid.LowPart );
+				s += t;
+			}
+			return s;
+		}
+
+		case UNIQUE_TO_TRUSTEE: {
+			CString s = input;
+
+			const size_t NAMELENGTH = 64;
+			TCHAR userName[NAMELENGTH];
+			DWORD userNameLength = NAMELENGTH;
+			TCHAR domainName[NAMELENGTH];
+			DWORD domainNameLength = NAMELENGTH;
+
+			if ( GetUserName( userName, &userNameLength ) ) {
+				// The NetApi calls are very time consuming
+				// This technique gets the domain name via an
+				// environment variable
+				domainNameLength = ExpandEnvironmentStrings( L"%USERDOMAIN%", domainName, NAMELENGTH );
+				CString t;
+				t.Format( L"-%s-%s", domainName, userName );
+				s += t;
+			}
+			return s;
+		}
+
+		default:
+			debug( L"CreateExclusionName: invalid value for EXCLUSION_KIND kind: %d\n", kind );
+			return CString( input );
+	}
+}
