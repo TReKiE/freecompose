@@ -23,6 +23,7 @@ protected:
 	virtual BOOL PreTranslateMessage( MSG* pMsg );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpCreateStruct );
+	afx_msg LRESULT OnActivate( WPARAM, LPARAM );
 	afx_msg LRESULT OnNotifyIcon( WPARAM, LPARAM );
 	afx_msg LRESULT OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet );
 	afx_msg LRESULT OnFcmPip( WPARAM wPip, LPARAM );
