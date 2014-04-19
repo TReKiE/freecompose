@@ -9,18 +9,11 @@
 #include "Utils.h"
 
 //
-// Registered window messages
-//
-
-const UINT APP_NOTIFYICON = RegisterWindowMessage( L"FreeCompose.APP_NOTIFYICON" );
-const UINT FCM_PIP        = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
-const UINT FCM_KEY        = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
-
-//
 // Message map for CMainFrame
 //
 
 IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
+
 BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP( CMainFrame )
 	ON_WM_CREATE()
@@ -28,6 +21,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 #ifdef USE_TIMER
 	ON_WM_TIMER()
 #endif
+	ON_REGISTERED_MESSAGE (APP_ACTIVATE,     &CMainFrame::OnActivate)
 	ON_REGISTERED_MESSAGE (APP_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
 	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
 	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
@@ -152,6 +146,10 @@ void CMainFrame::OnClose( ) {
 	delete m_pTrayIcon;
 
 	CFrameWnd::OnClose( );
+}
+
+LRESULT CMainFrame::OnActivate( WPARAM, LPARAM ) {
+	return 0;
 }
 
 LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam) {
