@@ -3,12 +3,16 @@
 typedef CArray< COMPOSE_SEQUENCE > CComposeSequenceArray;
 
 class CFreeComposeApp: public CWinApp {
+	DECLARE_MESSAGE_MAP( )
+
 public:
 	virtual BOOL InitInstance( );
 	virtual int ExitInstance( );
 
 protected:
-	DECLARE_MESSAGE_MAP()
+	HANDLE m_hInstanceMutex;
+
+	bool IsAlreadyRunning( );
 };
 
 extern CFreeComposeApp theApp;
