@@ -1,22 +1,19 @@
-// FreeComposeDlg.h : header file
-
 #pragma once
 
 class CAboutDlg: public CDialog {
-public:
-	CAboutDlg( );
+	DECLARE_MESSAGE_MAP( )
 
-// Dialog Data
+public:
 	enum { IDD = IDD_ABOUTBOX };
+
+	CAboutDlg( );
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
 
-// Implementation
+	// Implementation
 protected:
 	CString m_strVersion;
 	CString m_strCopyright;
-
-	DECLARE_MESSAGE_MAP( )
 };
