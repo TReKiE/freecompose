@@ -85,7 +85,7 @@ void CComposeSequenceEditor::DDX_Char( CDataExchange* pDX, int nIDC, unsigned& c
 		if ( 0 == ch ) {
 			m_editResult.SetWindowText( L"" );
 		} else {
-			str.Format( L"U+%06X %s", ch, Utf32ToUtf16( ch ) );
+			str.Format( L"U+%06X %s", ch, static_cast<wchar_t const*>( Utf32ToUtf16( ch ) ) );
 			m_editResult.SetWindowText( str );
 		}
 	}

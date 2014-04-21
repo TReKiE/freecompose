@@ -17,14 +17,14 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 
 static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
-		if ( NULL != ComposeSequences ) {
+		if ( ComposeSequences ) {
 			delete[] ComposeSequences;
 		}
 		ComposeSequences = pSequences;
 		cComposeSequences = cSequences;
-	} UNLOCK( cs );
 
-	ComposeSequenceTree = COMPOSE_SEQUENCE_TREE( pSequences, cSequences );
+		ComposeSequenceTree = COMPOSE_SEQUENCE_TREE( ComposeSequences, cComposeSequences );
+	} UNLOCK( cs );
 }
 
 //==============================================================================
@@ -32,8 +32,7 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 //==============================================================================
 
 void ReleaseComposeSequences( void ) {
-	_SetComposeSequencesImpl( NULL, 0 );
-
+	_SetComposeSequencesImpl( nullptr, 0 );
 	ComposeSequenceTree.ReleaseTree( );
 }
 
@@ -57,26 +56,25 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 #if UI_DEBUGGING_ONLY
 	return FALSE;
 #else
-	DWORD dwError = 0;
+	DWORD dwError = ERROR_SUCCESS;
 	BOOL ret = FALSE;
 
 	LOCK( cs ) {
-		SetLastError( 0 );
-
 		if ( hHook ) {
 			break;
 		}
 
+		SetLastError( ERROR_SUCCESS );
 		hHook = SetWindowsHookEx( WH_KEYBOARD_LL, LowLevelKeyboardProc, hDllInst, 0 );
-		ret = ( NULL != hHook );
 		dwError = GetLastError( );
+		ret = ( nullptr != hHook );
 	} UNLOCK( cs );
 
-	if ( ! ret ) {
-		if ( ! dwError ) {
+	if ( !ret ) {
+		if ( !dwError ) {
 			debug( L"FcEnableHook: hook was already set\n" );
 		} else {
-			debug( L"FcEnableHook: SetWindowsHookEx failed, error %u\n", dwError );
+			debug( L"FcEnableHook: SetWindowsHookEx failed, error %lu\n", dwError );
 		}
 	}
 	return ret;
@@ -84,33 +82,32 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 }
 
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
-	DWORD dwError = 0;
+	DWORD dwError = ERROR_SUCCESS;
 	BOOL ret = FALSE;
 
 	LOCK( cs ) {
-		SetLastError( 0 );
-
-		if ( NULL == hHook ) {
+		if ( !hHook ) {
 			break;
 		}
 
+		SetLastError( ERROR_SUCCESS );
 		ret = UnhookWindowsHookEx( hHook );
 		dwError = GetLastError( );
-		hHook = NULL;
+		hHook = nullptr;
 	} UNLOCK( cs );
 
-	if ( ! ret ) {
-		if ( ! dwError ) {
+	if ( !ret ) {
+		if ( !dwError ) {
 			debug( L"FcDisableHook: hook was not set\n" );
 		} else {
-			debug( L"FcDisableHook: UnhookWindowsHookEx failed, error %u\n", dwError );
+			debug( L"FcDisableHook: UnhookWindowsHookEx failed, error %lu\n", dwError );
 		}
 	}
 	return ret;
 }
 
 FCHOOKDLL_API BOOL FcIsHookEnabled( void ) {
-	return ( NULL != hHook );
+	return ( nullptr != hHook );
 }
 
 
@@ -141,7 +138,7 @@ FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
 
 
 FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD cInSequences ) {
-	if ( NULL == pInSequences || 0 == cInSequences ) {
+	if ( !pInSequences || !cInSequences ) {
 		ReleaseComposeSequences( );
 	} else {
 		COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];

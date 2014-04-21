@@ -49,7 +49,7 @@ FCSHARED_API void InitializeDebugLogFile( void ) {
 	time_t timenow = time( NULL );
 	tm tmnow;
 	if ( 0 == localtime_s( &tmnow, &timenow ) ) {
-		wcsftime( wcstr, 1024, L"========  Log opened at %Y-%m-%d %H:%M:%S  ========\n", &tmnow );
+		wcsftime( wcstr, _countof( wcstr ), L"========  Log opened at %Y-%m-%d %H:%M:%S  ========\n", &tmnow );
 		fputws( wcstr, debugFile );
 	}
 }
