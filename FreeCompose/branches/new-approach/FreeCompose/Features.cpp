@@ -62,7 +62,12 @@ BOOL CFeatures::OnInitDialog( ) {
 	CString keyName;
 	int index;
 	for ( int n = 0; n < _countof( SpecialKeys ); n++ ) {
-		keyName.LoadString( IDS_VK_NAMES_BASE + n );
+		SetLastError( ERROR_SUCCESS );
+		if ( !keyName.LoadString( IDS_VK_NAMES_BASE + n ) ) {
+			DWORD dwError = GetLastError( );
+			debug( L"CFeatures::OnInitDialog: LoadString(%lu) failed, error=%lu\n", IDS_VK_NAMES_BASE + n, dwError );
+			continue;
+		}
 
 		index = m_cbComposeKey.AddString( keyName );
 		if ( index >= 0 ) {
