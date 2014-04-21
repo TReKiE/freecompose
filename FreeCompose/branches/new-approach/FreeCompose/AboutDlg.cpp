@@ -23,7 +23,7 @@ void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
 BOOL CAboutDlg::OnInitDialog( ) {
 	CString strExeName;
 	strExeName.Format( L"%s.exe", theApp.m_pszExeName );
-	
+
 	SetLastError( ERROR_SUCCESS );
 	DWORD dwBytes = GetFileVersionInfoSize( strExeName, nullptr/*&dwDummy*/ );
 	if ( 0 == dwBytes ) {
