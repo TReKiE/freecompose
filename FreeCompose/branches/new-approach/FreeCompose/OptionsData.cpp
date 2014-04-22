@@ -11,7 +11,6 @@
 #include "Utils.h"
 
 COptionsData::COptionsData( ) {
-	Load( );
 }
 
 COptionsData::COptionsData( const COptionsData& options ) {

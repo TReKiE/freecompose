@@ -72,7 +72,8 @@ void CMainFrame::_Initialize( void ) {
 	debug( L"CMainFrame::_Initialize: new timer ID is %u\n", m_uTimerId );
 #endif
 
-	m_pOptions = new COptionsData;
+	m_pOptions = new COptionsData( );
+	m_pOptions->Load( );
 	_Reconfigure( );
 	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
 
