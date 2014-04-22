@@ -6,6 +6,8 @@ class CFreeComposeApp: public CWinApp {
 	DECLARE_MESSAGE_MAP( )
 
 public:
+	CFreeComposeApp( );
+
 	virtual BOOL InitInstance( );
 	virtual int ExitInstance( );
 
