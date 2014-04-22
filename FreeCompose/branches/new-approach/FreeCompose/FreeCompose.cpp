@@ -15,22 +15,43 @@ END_MESSAGE_MAP( )
 
 CFreeComposeApp theApp;
 
+CFreeComposeApp::CFreeComposeApp( ):
+	m_hInstanceMutex( nullptr )
+{
+
+}
+
 bool CFreeComposeApp::IsAlreadyRunning( ) {
-	SetLastError( 0 );
-	m_hInstanceMutex = CreateMutex( nullptr, TRUE, MakeInstanceExclusionName( CString( L"ca.zive.FreeCompose.instanceMutex" ), UNIQUE_TO_SESSION ) );
+	CString exclusionName( MakeInstanceExclusionName( CString( L"ca.zive.FreeCompose.instanceMutex" ), UNIQUE_TO_SESSION ) );
+	debug( L"CFreeComposeApp::IsAlreadyRunning: exclusionName=\"%s\"\n", exclusionName );
+
+	SetLastError( ERROR_SUCCESS );
+	m_hInstanceMutex = CreateMutex( nullptr, TRUE, exclusionName );
 	DWORD dwError = GetLastError( );
-	if ( ERROR_ALREADY_EXISTS == dwError ) {
-		debug( L"CFreeComposeApp::InitInstance: CreateMutex(\"ca.zive.FreeCompose.instanceMutex\") returned ERROR_ALREADY_EXISTS, exiting\n" );
-		return true;
-	} else if ( ERROR_ACCESS_DENIED == dwError ) {
-		debug( L"CFreeComposeApp::InitInstance: CreateMutex(\"ca.zive.FreeCompose.instanceMutex\") returned ERROR_ACCESS_DENIED, exiting\n" );
-		return true;
+	debug( L"CFreeComposeApp::IsAlreadyRunning: after CreateMutex: m_hInstanceMutex=0x%p dwError=%lu\n", m_hInstanceMutex, dwError );
+	if ( m_hInstanceMutex ) {
+		if ( ERROR_SUCCESS == dwError ) {
+			debug( L"Created locked mutex, so not running!\n" );
+			return false;
+		}
+		if ( ERROR_ALREADY_EXISTS == dwError ) {
+			debug( L"Mutex already exists, so already running =(\n" );
+			return true;
+		}
+		debug( L"Uh oh. m_hInstanceMutex is set, but we didn't catch dwError?\n" );
+	} else {
+		if ( ERROR_ACCESS_DENIED == dwError ) {
+			debug( L"CFreeComposeApp::InitInstance: CreateMutex returned ERROR_ACCESS_DENIED, so already running\n" );
+			return true;
+		}
+		debug( L"CFreeComposeApp::InitInstance: Uh oh. m_hInstanceMutex is not set, but we didn't catch dwError?\n" );
 	}
-	return false;
+	return true;
 }
 
 BOOL CFreeComposeApp::InitInstance( ) {
 	if ( IsAlreadyRunning( ) ) {
+		::PostMessage( HWND_BROADCAST, APP_ACTIVATE, 0, 0 );
 		return FALSE;
 	}
 
@@ -40,7 +61,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	INITCOMMONCONTROLSEX InitCtrls = { sizeof( InitCtrls ), ICC_WIN95_CLASSES };
 	InitCommonControlsEx( &InitCtrls );
 
-	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %d, DLL %d\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
+	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %lu, DLL %lu\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
 		str.Format( CString( (LPCWSTR) IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
@@ -49,7 +70,11 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 
-	CoInitializeEx( NULL, COINIT_MULTITHREADED );
+	HRESULT hr = CoInitializeEx( NULL, COINIT_MULTITHREADED );
+	if ( FAILED( hr ) ) {
+		debug( L"CFreeComposeApp::InitInstance: CoInitializeEx failed, hr=0x%lX\n", hr );
+		return FALSE;
+	}
 	CString str( (LPCWSTR) AFX_IDS_COMPANY_NAME );
 	str.Append( L" DEBUG" );
 	SetRegistryKey( str );
