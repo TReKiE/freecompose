@@ -75,8 +75,8 @@ void CMainFrame::_Initialize( void ) {
 	m_pOptions = new COptionsData( );
 	m_pOptions->Load( );
 	_Reconfigure( );
-	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
 
+	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
 	_SetupTrayIcon( );
 }
 
@@ -124,7 +124,6 @@ void CMainFrame::_UpdateTooltip( void ) {
 void CMainFrame::OnAppExit( ) {
 	bool fPropSheetOpen;
 	LOCK( m_csPropSheet ) {
-		MemoryBarrier( );
 		fPropSheetOpen = ( NULL != m_pPropSheet );
 	} UNLOCK( m_csPropSheet );
 	if ( fPropSheetOpen ) {
@@ -250,7 +249,6 @@ void CMainFrame::OnAppConfigure( ) {
 	bool reused = false;
 
 	LOCK( m_csPropSheet ) {
-		MemoryBarrier( );
 		if ( NULL != m_pPropSheet ) {
 			debug( L"CMainFrame::OnAppConfigure: reusing existing prop sheet\n" );
 			m_pPropSheet->ShowWindow( SW_SHOW );
@@ -261,9 +259,9 @@ void CMainFrame::OnAppConfigure( ) {
 		return;
 
 	COptionsPropSheet options( *m_pOptions, this );
-	LOCK( m_csPropSheet ) { m_pPropSheet = &options; MemoryBarrier( ); } UNLOCK( m_csPropSheet );
+	LOCK( m_csPropSheet ) { m_pPropSheet = &options; } UNLOCK( m_csPropSheet );
 	INT_PTR rc = options.DoModal( );
-	LOCK( m_csPropSheet ) { m_pPropSheet = NULL;     MemoryBarrier( ); } UNLOCK( m_csPropSheet );
+	LOCK( m_csPropSheet ) { m_pPropSheet = NULL;     } UNLOCK( m_csPropSheet );
 
 	if ( IDOK != rc ) {
 		return;
