@@ -1,17 +1,4 @@
-// stdafx.h : include file for standard system include files,
-// or project specific include files that are used frequently,
-// but are changed infrequently
-
 #pragma once
-
-// Target Windows XP or later.
-// (We still support Windows 2000, but we need to target XP in order to make some #defines available.)
-#define NTDDI_VERSION  NTDDI_WINXP
-#define WINVER         _WIN32_WINNT_WINXP
-#define _WIN32_WINNT   _WIN32_WINNT_WINXP
-#define _WIN32_IE      _WIN32_IE_IE501
-
-#include <sdkddkver.h>
 
 #define VC_EXTRALEAN
 #define WIN32_LEAN_AND_MEAN
@@ -20,14 +7,18 @@
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
 #define _SECURE_ATL 1
 
+#include "targetver.h"
+
+#include <cerrno>
+
+#include <algorithm>
+#include <map>
+
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxtempl.h>
 #include <atlwin.h>
-
-#include <algorithm>
-#include <map>
 
 #include <FCHookDll.h>
 #include <FCShared.h>
