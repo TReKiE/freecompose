@@ -108,6 +108,16 @@ void CMainFrame::_SetupTrayIcon( void ) {
 	);
 }
 
+void CMainFrame::_UpdateTooltip( void ) {
+	if ( FcIsHookEnabled( ) ) {
+		m_pTrayIcon->SetTooltipText( m_strEnabled );
+		m_pTrayIcon->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+	} else {
+		m_pTrayIcon->SetTooltipText( m_strDisabled );
+		m_pTrayIcon->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
+	}
+}
+
 // CMainFrame message handlers
 
 void CMainFrame::OnAppExit( ) {
@@ -149,6 +159,8 @@ void CMainFrame::OnClose( ) {
 }
 
 LRESULT CMainFrame::OnActivate( WPARAM, LPARAM ) {
+	_UpdateTooltip( );
+
 	return 0;
 }
 
@@ -209,13 +221,10 @@ void CMainFrame::OnAppAbout(void) {
 void CMainFrame::OnAppToggle( void ) {
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook();
-		m_pTrayIcon->SetTooltipText( m_strDisabled );
-		m_pTrayIcon->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
 	} else {
 		FcEnableHook( );
-		m_pTrayIcon->SetTooltipText( m_strEnabled );
-		m_pTrayIcon->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
 	}
+	_UpdateTooltip( );
 }
 
 void CMainFrame::OnAppCapsLock( void ) {
