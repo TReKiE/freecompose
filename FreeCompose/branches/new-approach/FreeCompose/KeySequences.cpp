@@ -51,7 +51,7 @@ void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
 	int width;
 	BOOL ret;
 
-	col0.Format( L"U+%06X %s", sequence.chComposed, Utf32ToUtf16( sequence.chComposed ) );
+	col0.Format( L"U+%06X %s", sequence.chComposed, static_cast<wchar_t const*>( Utf32ToUtf16( sequence.chComposed ) ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
@@ -79,7 +79,7 @@ void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
 	CString col0, col1, col2;
 	int width;
 
-	col0.Format( L"U+%06X %s", sequence.chComposed, Utf32ToUtf16( sequence.chComposed ) );
+	col0.Format( L"U+%06X %s", sequence.chComposed, static_cast<wchar_t const*>( Utf32ToUtf16( sequence.chComposed ) ) );
 	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
 	if ( width > m_nColumnWidths[0] )
 		m_nColumnWidths[0] = width;
@@ -217,16 +217,17 @@ void CKeySequences::OnBnClickedRemove( ) {
 
 	POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
 	int* items = new int[count];
-	int n = 0;
+	unsigned n = 0;
 
 	int i = m_KeyComboList.GetNextSelectedItem( pos );
-	while ( -1 != i ) {
+	while ( ( -1 != i ) && ( n < count ) ) {
 		items[n++] = i;
 		i = m_KeyComboList.GetNextSelectedItem( pos );
 	}
+	count = n;
 	qsort_s( items, count, sizeof( int ), compare_keys_reverse, NULL );
 
-	for ( UINT n = 0; n < count; n++ ) {
+	for ( n = 0; n < count; n++ ) {
 		m_KeyComboList.DeleteItem( items[n] );
 		m_Options.m_ComposeSequences.RemoveAt( items[n] );
 	}
