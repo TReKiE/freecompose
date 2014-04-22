@@ -31,7 +31,7 @@ CString VkToString( DWORD vk ) {
 	if ( 0 != ( vk & 0x80000000 ) ) {
 		keyState[VK_SHIFT] = 0x80;
 	}
-	ToUnicodeEx( vk, vsc, keyState, keyBuf, 256, 0, GetKeyboardLayout( 0 ) );
+	ToUnicodeEx( vk, vsc, keyState, keyBuf, _countof( keyBuf ), 0, GetKeyboardLayout( 0 ) );
 	return CString( keyBuf );
 }
 
