@@ -13,9 +13,6 @@ public:
 	void Load( void );
 	void Save( void );
 
-	bool LoadFromXml( void );
-	bool SaveToXml( void );
-
 	CComposeSequenceArray m_ComposeSequences;
  
 	BOOL m_fStartActive;
@@ -27,7 +24,10 @@ public:
 
 private:
 	bool _FcValidateSequence( COMPOSE_SEQUENCE const& sequence );
+	void _FcLoadFromRegistry( void );
 	void _FcLoadKeys( void );
-	void _FcSaveKeys( void );
 	void _UpdateRunKey( void );
+
+	bool _LoadFromXml( void );
+	bool _SaveToXml( void );
 };

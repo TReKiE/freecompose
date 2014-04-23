@@ -149,9 +149,9 @@ static CString _GetFreeComposeFolder( void ) {
 // COptionsData implementation
 //==============================================================================
 
-bool COptionsData::LoadFromXml( void ) {
+bool COptionsData::_LoadFromXml( void ) {
 	if ( ! EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::LoadFromXml: Can't ensure app data folder exists\n" );
+		debug( L"COptionsData::_LoadFromXml: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -160,7 +160,7 @@ bool COptionsData::LoadFromXml( void ) {
 
 	XDocument doc = CreateDOMDocument( );
 	if ( ! doc ) {
-		debug( L"COptionsData::LoadFromXml: Can't create instance of DOMDocument\n" );
+		debug( L"COptionsData::_LoadFromXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -174,7 +174,7 @@ bool COptionsData::LoadFromXml( void ) {
 		doc->preserveWhiteSpace = VARIANT_FALSE;
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 
@@ -189,14 +189,14 @@ bool COptionsData::LoadFromXml( void ) {
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 
 	try {
 		XElement FreeCompose = doc->documentElement;
 		if ( ! CompareNodeName( FreeCompose, L"FreeCompose" ) ) {
-			debug( L"COptionsData::LoadFromXml: document element is not <FreeCompose>, aborting load\n" );
+			debug( L"COptionsData::_LoadFromXml: document element is not <FreeCompose>, aborting load\n" );
 			return false;
 		}
 
@@ -222,20 +222,20 @@ bool COptionsData::LoadFromXml( void ) {
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 	catch ( ... ) {
-		debug( L"COptionsData::LoadFromXml: something bad happened??\n" );
+		debug( L"COptionsData::_LoadFromXml: something bad happened??\n" );
 		return false;
 	}
 
 	return true;
 }
 
-bool COptionsData::SaveToXml( void ) {
+bool COptionsData::_SaveToXml( void ) {
 	if ( ! EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::SaveToXml: Can't ensure app data folder exists\n" );
+		debug( L"COptionsData::_SaveToXml: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -244,7 +244,7 @@ bool COptionsData::SaveToXml( void ) {
 
 	XDocument doc = CreateDOMDocument( );
 	if ( ! doc ) {
-		debug( L"COptionsData::SaveToXml: Can't create instance of DOMDocument\n" );
+		debug( L"COptionsData::_SaveToXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -258,7 +258,7 @@ bool COptionsData::SaveToXml( void ) {
 		doc->preserveWhiteSpace = VARIANT_FALSE;
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::SaveToXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 
@@ -326,7 +326,7 @@ bool COptionsData::SaveToXml( void ) {
 				}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::SaveToXml: Caught exception creating elements, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception creating elements, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 
@@ -337,7 +337,7 @@ bool COptionsData::SaveToXml( void ) {
 		doc->save( (LPCWSTR) str );
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::SaveToXml: Caught exception saving configuration, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception saving configuration, hr=0x%08x\n", e.Error( ) );
 		return false;
 	}
 
