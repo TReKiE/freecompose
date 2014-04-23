@@ -377,6 +377,8 @@ END
 STRINGTABLE
 BEGIN
     IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
+    IDS_MAINFRAME_CLOSEOPTIONSFIRST 
+                            "Please close the options dialog before exiting FreeCompose."
 END
 
 STRINGTABLE
