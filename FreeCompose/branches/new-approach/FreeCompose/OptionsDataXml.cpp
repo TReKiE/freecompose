@@ -10,12 +10,13 @@
 // Types and type aliases
 //==============================================================================
 
-typedef MSXML2::IXMLDOMAttributePtr XAttribute;
-typedef MSXML2::IXMLDOMDocumentPtr XDocument;
-typedef MSXML2::IXMLDOMElementPtr XElement;
-typedef MSXML2::IXMLDOMNodePtr XNode;
-typedef MSXML2::IXMLDOMNodeListPtr XNodeList;
-typedef MSXML2::IXMLDOMProcessingInstructionPtr XProcessingInstruction;
+using XAttribute             = MSXML2::IXMLDOMAttributePtr;
+using XDocument              = MSXML2::IXMLDOMDocumentPtr;
+using XElement               = MSXML2::IXMLDOMElementPtr;
+using XNode                  = MSXML2::IXMLDOMNodePtr;
+using XNodeList              = MSXML2::IXMLDOMNodeListPtr;
+using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
+using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
 
 //==============================================================================
 // Constants for XML type mapping
@@ -124,11 +125,10 @@ static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
 }
 
 static inline XDocument CreateDOMDocument( void ) {
-	XDocument doc;
-	HRESULT hr = doc.CreateInstance( __uuidof( MSXML2::DOMDocument60 ), NULL, CLSCTX_INPROC_SERVER );
+	XDocument doc = nullptr;
+	HRESULT hr = doc.CreateInstance( L"Msxml2.DOMDocument.6.0" );
 	if ( FAILED( hr ) ) {
-		debug( L"CreateDOMDocument: failed, hr 0x%08x\n", hr );
-		return NULL;
+		debug( L"CreateDOMDocument: failed, hr=0x%08lX\n", hr );
 	}
 	return doc;
 }
@@ -138,7 +138,7 @@ static inline XDocument CreateDOMDocument( void ) {
 //==============================================================================
 
 bool COptionsData::_LoadFromXml( void ) {
-	if ( ! EnsureFreeComposeFolderExists( ) ) {
+	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"COptionsData::_LoadFromXml: Can't ensure app data folder exists\n" );
 		return false;
 	}
@@ -146,7 +146,7 @@ bool COptionsData::_LoadFromXml( void ) {
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
 
 	XDocument doc = CreateDOMDocument( );
-	if ( ! doc ) {
+	if ( !doc ) {
 		debug( L"COptionsData::_LoadFromXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
@@ -161,7 +161,7 @@ bool COptionsData::_LoadFromXml( void ) {
 		doc->preserveWhiteSpace = VARIANT_FALSE;
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -169,20 +169,20 @@ bool COptionsData::_LoadFromXml( void ) {
 	// Load XML from disk
 	//
 	try {
-		_variant_t result = doc->load( (LPCWSTR) str );
-		if ( ! (bool) result ) {
-			debug( L"COptionsData::LoadFromXML: doc->load failed: line %d column %d: %s\n", doc->parseError->line, doc->parseError->linepos, doc->parseError->reason );
+		_variant_t result = doc->load( _variant_t( str ) );
+		if ( !static_cast<VARIANT_BOOL>( result ) ) {
+			debug( L"COptionsData::LoadFromXML: doc->load failed: line %ld column %ld: hr=0x%08lX %s\n", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
 	try {
 		XElement FreeCompose = doc->documentElement;
-		if ( ! CompareNodeName( FreeCompose, L"FreeCompose" ) ) {
+		if ( !CompareNodeName( FreeCompose, L"FreeCompose" ) ) {
 			debug( L"COptionsData::_LoadFromXml: document element is not <FreeCompose>, aborting load\n" );
 			return false;
 		}
@@ -209,7 +209,7 @@ bool COptionsData::_LoadFromXml( void ) {
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception parsing configuration, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_LoadFromXml: Caught exception parsing configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 	catch ( ... ) {
@@ -221,16 +221,15 @@ bool COptionsData::_LoadFromXml( void ) {
 }
 
 bool COptionsData::_SaveToXml( void ) {
-	if ( ! EnsureFreeComposeFolderExists( ) ) {
+	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"COptionsData::_SaveToXml: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
-	CString str( GetFreeComposeFolderAsCString( ) );
-	str.Append( L"\\FreeCompose.xml" );
+	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
 
 	XDocument doc = CreateDOMDocument( );
-	if ( ! doc ) {
+	if ( !doc ) {
 		debug( L"COptionsData::_SaveToXml: Can't create instance of DOMDocument\n" );
 		return false;
 	}
@@ -245,7 +244,7 @@ bool COptionsData::_SaveToXml( void ) {
 		doc->preserveWhiteSpace = VARIANT_FALSE;
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception setting up DOMDocument, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -313,7 +312,7 @@ bool COptionsData::_SaveToXml( void ) {
 				}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception creating elements, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -321,10 +320,14 @@ bool COptionsData::_SaveToXml( void ) {
 	// Save XML to disk
 	//
 	try {
-		doc->save( (LPCWSTR) str );
+		HRESULT hr = doc->save( _variant_t( str ) );
+		if ( FAILED( hr ) ) {
+			debug( L"COptionsData::_SaveToXml: doc->save failed, hr=0x%08lX\n", hr );
+			return false;
+		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception saving configuration, hr=0x%08x\n", e.Error( ) );
+		debug( L"COptionsData::_SaveToXml: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
