@@ -24,6 +24,8 @@ DWORD GetComCtl32Version( void );
 
 CString MakeInstanceExclusionName( const CString& input, const EXCLUSION_KIND kind );
 
+CString GetFreeComposeFolderAsCString( void );
+
 //
 // Inline functions
 //
