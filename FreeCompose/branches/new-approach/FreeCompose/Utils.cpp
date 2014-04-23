@@ -165,9 +165,7 @@ CString MakeInstanceExclusionName( CString const& input, EXCLUSION_KIND const ki
 CString GetFreeComposeFolderAsCString( void ) {
 	CString str;
 	LPWSTR lpsz;
-	if ( ! GetFreeComposeFolder( lpsz ) ) {
-		debug( L"GetFreeComposeFolderAsCString: Can't get our app data folder name\n" );
-	} else {
+	if ( GetFreeComposeFolder( lpsz ) ) {
 		str = lpsz;
 		CoTaskMemFree( lpsz );
 	}
