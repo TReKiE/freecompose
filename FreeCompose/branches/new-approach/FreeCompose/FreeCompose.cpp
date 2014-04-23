@@ -76,7 +76,6 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 	CString str( (LPCWSTR) AFX_IDS_COMPANY_NAME );
-	str.Append( L" DEBUG" );
 	SetRegistryKey( str );
 	CWinApp::InitInstance( );
 
