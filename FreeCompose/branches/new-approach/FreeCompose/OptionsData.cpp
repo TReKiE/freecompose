@@ -136,7 +136,7 @@ void COptionsData::_UpdateRunKey( void ) {
 	if ( m_fStartWithWindows ) {
 		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
 		if ( rc > 0 ) {
-#ifdef NDEBUG
+#ifndef _DEBUG
 			rc = RegSetValueEx( hk, L"FreeCompose", 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
 				debug( L"COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n", rc );
@@ -146,7 +146,7 @@ void COptionsData::_UpdateRunKey( void ) {
 			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n", GetLastError( ) );
 		}
 	} else {
-#ifdef NDEBUG
+#ifndef _DEBUG
 		rc = RegDeleteValue( hk, L"FreeCompose" );
 		if ( ERROR_SUCCESS != rc ) {
 			debug( L"COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n", rc );

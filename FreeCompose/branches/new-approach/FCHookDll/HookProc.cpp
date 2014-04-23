@@ -158,7 +158,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
 
 	debug( L"TranslateKey: ToUnicodeEx: %d bytes\n", rc );
 
-#if _DEBUG
+#ifdef _DEBUG
 	{
 		debug( L"-- data: " );
 		for ( int n = 0; n < rc; n++ ) {
@@ -221,7 +221,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 		case D_REGENERATE_KEY: goto regenerateKey;
 		case D_NOT_HANDLED:    break; // "fall through" into next section of code, rather than next case label.
 
-#if _DEBUG
+#ifdef _DEBUG
 		default:
 			debug( L"LLKP|Unknown DISPOSITION value %d!!\n", dHandler );
 			DebugBreak( );
