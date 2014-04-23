@@ -29,12 +29,15 @@ protected:
 	afx_msg LRESULT OnFcmPip( WPARAM wPip, LPARAM );
 	afx_msg void OnClose( );
 	afx_msg void OnAppAbout( );
-	afx_msg void OnAppToggle( );
 	afx_msg void OnAppCapsLock( );
 	afx_msg void OnAppConfigure( );
 	afx_msg void OnAppExit( );
-	afx_msg void OnUpdateAppToggle( CCmdUI* );
+	afx_msg void OnAppToggle( );
+#ifdef _DEBUG
+	afx_msg void OnAppZapConf( );
+#endif
 	afx_msg void OnUpdateAppCapsLock( CCmdUI* );
+	afx_msg void OnUpdateAppToggle( CCmdUI* );
 
 private:
 	CMenu* m_pTrayMenu;
