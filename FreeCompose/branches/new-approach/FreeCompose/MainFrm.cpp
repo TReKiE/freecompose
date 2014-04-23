@@ -281,7 +281,7 @@ void CMainFrame::OnAppZapConf( void ) {
 	}
 
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
-	if ( !DeleteFile( str.GetString( ) ) ) {
+	if ( !DeleteFile( str ) ) {
 		MessageBox( L"Configuration file deleted.", appTitle, MB_OK|MB_ICONINFORMATION );
 	} else {
 		DWORD dwError = GetLastError( );
