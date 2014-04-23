@@ -66,6 +66,29 @@ bool COptionsData::_FcValidateSequence( COMPOSE_SEQUENCE const& sequence ) {
 	return true;
 }
 
+void COptionsData::_FcLoadFromRegistry( void ) {
+	BOOL fSwapCapsLock;
+	int nCapsLockSwapMode;
+
+	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
+	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
+
+	fSwapCapsLock        = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
+
+	m_CapsLockToggleMode =
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
+		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) );
+	// 0 will map to CLSM_NORMAL if fSwapCapsLock == TRUE
+	nCapsLockSwapMode    =         theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   0 ) + 1;
+
+	m_vkCompose          = (DWORD) theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS );
+	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL );
+	
+	m_CapsLockSwapMode   = fSwapCapsLock ? (CAPS_LOCK_SWAP_MODE) nCapsLockSwapMode : CLSM_NORMAL;
+
+	_FcLoadKeys( );
+}
+
 void COptionsData::_FcLoadKeys( void ) {
 	m_ComposeSequences.RemoveAll( );
 
@@ -99,25 +122,8 @@ void COptionsData::_FcLoadKeys( void ) {
 	}
 }
 
-void COptionsData::_FcSaveKeys( void ) {
-	theApp.DelRegTree( theApp.GetAppRegistryKey( ), CString( L"Mapping" ) );
-
-	CString section;
-	int count = 0;
-	for ( int n = 0; n < (int) m_ComposeSequences.GetSize( ); n++ ) {
-		if ( !m_ComposeSequences[n].chFirst && !m_ComposeSequences[n].chSecond && !m_ComposeSequences[n].chComposed ) {
-			continue;
-		}
-		section.Format( L"Mapping\\%d", count++ );
-		theApp.WriteProfileInt( section, L"First",    (int) m_ComposeSequences[n].chFirst    );
-		theApp.WriteProfileInt( section, L"Second",   (int) m_ComposeSequences[n].chSecond   );
-		theApp.WriteProfileInt( section, L"Composed", (int) m_ComposeSequences[n].chComposed );
-	}
-
-	theApp.WriteProfileInt( L"Mapping", L"Count", count );
-}
-
 void COptionsData::_UpdateRunKey( void ) {
+	wchar_t lpszImageFilename[1024];
 	LSTATUS rc;
 	HKEY hk;
 	
@@ -128,8 +134,8 @@ void COptionsData::_UpdateRunKey( void ) {
 	}
 
 	if ( m_fStartWithWindows ) {
-		wchar_t lpszImageFilename[1024];
-		if ( GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) ) > 0 ) {
+		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
+		if ( rc > 0 ) {
 #ifdef NDEBUG
 			rc = RegSetValueEx( hk, L"FreeCompose", 0, REG_SZ, (LPBYTE) lpszImageFilename, (DWORD) ( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
 			if ( ERROR_SUCCESS != rc ) {
@@ -140,44 +146,24 @@ void COptionsData::_UpdateRunKey( void ) {
 			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n", GetLastError( ) );
 		}
 	} else {
+#ifdef NDEBUG
 		rc = RegDeleteValue( hk, L"FreeCompose" );
 		if ( ERROR_SUCCESS != rc ) {
 			debug( L"COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n", rc );
 		}
+#endif
 	}
-
 	RegCloseKey( hk );
 }
 
 void COptionsData::Load( void ) {
-#ifdef NDEBUG
-	if ( LoadFromXml( ) ) {
-		return;
+	if ( !_LoadFromXml( ) ) {
+		_FcLoadFromRegistry( );
+		_SaveToXml( );
 	}
-#endif
-	BOOL fSwapCapsLock;
-	int nCapsLockSwapMode;
-
-	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
-	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
-
-	fSwapCapsLock        = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
-
-	m_CapsLockToggleMode =
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) );
-	// 0 will map to CLSM_NORMAL if fSwapCapsLock == TRUE
-	nCapsLockSwapMode    =         theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   0 ) + 1;
-
-	m_vkCompose          = (DWORD) theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS );
-	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL );
-	
-	m_CapsLockSwapMode   = fSwapCapsLock ? (CAPS_LOCK_SWAP_MODE) nCapsLockSwapMode : CLSM_NORMAL;
-
-	_FcLoadKeys( );
 }
 
 void COptionsData::Save( void ) {
-	SaveToXml( );
+	_SaveToXml( );
 	_UpdateRunKey( );
 }
