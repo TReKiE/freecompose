@@ -6,7 +6,7 @@
 #define FCSHARED_API __declspec(dllimport)
 #endif
 
-#if NDEBUG
+#ifndef _DEBUG
 #define unreachable_return __assume( 0 ); return
 #else
 #define unreachable_return DebugBreak( ); return
@@ -36,8 +36,8 @@
 
 //=============================================================================
 
-#ifdef NDEBUG
-static inline void debug( LPCWSTR /*format*/, ... ) { }
+#ifndef _DEBUG
+extern inline void debug( LPCWSTR /*format*/, ... ) { }
 #else
 FCSHARED_API void debug( LPCWSTR format, ... );
 #endif

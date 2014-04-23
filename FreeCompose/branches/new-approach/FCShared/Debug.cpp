@@ -10,7 +10,7 @@
 
 #include <share.h>
 
-#ifdef NDEBUG
+#ifndef _DEBUG
 FCSHARED_API void InitializeDebugLogFile( void ) {
 	// do nothing
 }
