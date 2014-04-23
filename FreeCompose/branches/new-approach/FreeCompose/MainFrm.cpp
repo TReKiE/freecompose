@@ -44,7 +44,7 @@ static bool IsCapsLock( void ) {
 }
 
 //
-// CMainFrame implementatin
+// CMainFrame implementation
 //
 
 CMainFrame::CMainFrame( ):
@@ -98,15 +98,22 @@ void CMainFrame::_Reconfigure( void ) {
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
-	m_pTrayIcon = new CTrayNotifyIcon;
+	m_pTrayMenu = new CMenu( );
+	m_pTrayMenu->LoadMenu( IDM_TRAY_MENU );
+
+#ifdef _DEBUG
+	m_pTrayMenu->InsertMenu( ID_APP_CAPSLOCK, MF_BYCOMMAND | MF_STRING, ID_POPUP_ZAPCONF, L"&Zap configuration file" );
+#endif
+
+	m_pTrayIcon = new CTrayNotifyIcon( );
 	m_pTrayIcon->Create(
 		this,
 		1,
 		FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled,
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
-		APP_NOTIFYICON,
-		IDM_TRAY_MENU
+		APP_NOTIFYICON
 	);
+	m_pTrayIcon->SetMenu( *m_pTrayMenu );
 }
 
 void CMainFrame::_UpdateTooltip( void ) {
