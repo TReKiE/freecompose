@@ -3,12 +3,12 @@
 class COptionsData {
 public:
 	COptionsData( );
-	COptionsData( const COptionsData& );
+	COptionsData( COptionsData const& );
 	virtual ~COptionsData( );
 
-	COptionsData& operator=( const COptionsData& );
-	bool operator==( const COptionsData& );
-	bool operator!=( const COptionsData& );
+	COptionsData& operator=( COptionsData const& );
+	bool operator==( COptionsData const& );
+	bool operator!=( COptionsData const& );
 
 	void Load( void );
 	void Save( void );
@@ -26,7 +26,7 @@ public:
 	DWORD m_vkSwapCapsLock;
 
 private:
-	bool _FcValidateSequence( const COMPOSE_SEQUENCE& sequence );
+	bool _FcValidateSequence( COMPOSE_SEQUENCE const& sequence );
 	void _FcLoadKeys( void );
 	void _FcSaveKeys( void );
 	void _UpdateRunKey( void );

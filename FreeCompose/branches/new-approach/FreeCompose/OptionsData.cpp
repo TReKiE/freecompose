@@ -13,7 +13,7 @@
 COptionsData::COptionsData( ) {
 }
 
-COptionsData::COptionsData( const COptionsData& options ) {
+COptionsData::COptionsData( COptionsData const& options ) {
 	operator=( options );
 }
 
@@ -21,13 +21,11 @@ COptionsData::~COptionsData( ) {
 	m_ComposeSequences.RemoveAll( );
 }
 
-COptionsData& COptionsData::operator=( const COptionsData& options ) {
+COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	m_fStartActive       = options.m_fStartActive;
 	m_fStartWithWindows  = options.m_fStartWithWindows;
-
 	m_CapsLockToggleMode = options.m_CapsLockToggleMode;
 	m_CapsLockSwapMode   = options.m_CapsLockSwapMode;
-
 	m_vkCompose          = options.m_vkCompose;
 	m_vkSwapCapsLock     = options.m_vkSwapCapsLock;
 
@@ -37,36 +35,34 @@ COptionsData& COptionsData::operator=( const COptionsData& options ) {
 	return *this;
 }
 
-bool COptionsData::operator==( const COptionsData& options ) {
-	if ( m_fStartActive       != options.m_fStartActive       ) return false;
-	if ( m_fStartWithWindows  != options.m_fStartWithWindows  ) return false;
-	if ( m_CapsLockToggleMode != options.m_CapsLockToggleMode ) return false;
-	if ( m_CapsLockSwapMode   != options.m_CapsLockSwapMode   ) return false;
-	if ( m_vkCompose          != options.m_vkCompose          ) return false;
-	if ( m_vkSwapCapsLock     != options.m_vkSwapCapsLock     ) return false;
+bool COptionsData::operator==( COptionsData const& options ) {
+	if ( m_fStartActive       != options.m_fStartActive       ) { return false; }
+	if ( m_fStartWithWindows  != options.m_fStartWithWindows  ) { return false; }
+	if ( m_CapsLockToggleMode != options.m_CapsLockToggleMode ) { return false; }
+	if ( m_CapsLockSwapMode   != options.m_CapsLockSwapMode   ) { return false; }
+	if ( m_vkCompose          != options.m_vkCompose          ) { return false; }
+	if ( m_vkSwapCapsLock     != options.m_vkSwapCapsLock     ) { return false; }
 
-	if ( m_ComposeSequences.GetCount( ) != options.m_ComposeSequences.GetCount( ) )
+	if ( m_ComposeSequences.GetCount( ) != options.m_ComposeSequences.GetCount( ) ) {
 		return false;
+	}
 	for ( int n = 0; n < m_ComposeSequences.GetCount( ); n++ ) {
-		if ( m_ComposeSequences[n] != options.m_ComposeSequences[n] )
+		if ( m_ComposeSequences[n] != options.m_ComposeSequences[n] ) {
 			return false;
+		}
 	}
 
 	return true;
 }
 
-bool COptionsData::operator!=( const COptionsData& options ) {
+bool COptionsData::operator!=( COptionsData const& options ) {
 	return ! operator==( options );
 }
 
-bool COptionsData::_FcValidateSequence( const COMPOSE_SEQUENCE& sequence ) {
-	if ( ! sequence.chFirst    || IsSurrogate( sequence.chFirst ) )
-		return false;
-	if ( ! sequence.chSecond   || IsSurrogate( sequence.chSecond ) )
-		return false;
-	if ( ! sequence.chComposed || IsSurrogate( sequence.chComposed ) )
-		return false;
-
+bool COptionsData::_FcValidateSequence( COMPOSE_SEQUENCE const& sequence ) {
+	if ( ! sequence.chFirst    || IsSurrogate( sequence.chFirst    ) ) { return false; }
+	if ( ! sequence.chSecond   || IsSurrogate( sequence.chSecond   ) ) { return false; }
+	if ( ! sequence.chComposed || IsSurrogate( sequence.chComposed ) ) { return false; }
 	return true;
 }
 
