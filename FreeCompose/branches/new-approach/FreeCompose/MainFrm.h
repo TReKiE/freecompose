@@ -6,8 +6,6 @@
 #include "OptionsData.h"
 #include "AutoCriticalSection.h"
 
-#undef USE_TIMER
-
 // forward declaration
 class CTrayNotifyIcon;
 
@@ -53,12 +51,4 @@ private:
 	void _Reconfigure( void );
 	void _SetupTrayIcon( void );
 	void _UpdateTooltip( void );
-
-#ifdef USE_TIMER
-protected:
-	afx_msg void OnTimer( UINT_PTR nId );
-
-private:
-	UINT_PTR m_uTimerId;
-#endif
 };

@@ -18,9 +18,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	//{{AFX_MSG_MAP( CMainFrame )
 	ON_WM_CREATE()
 	ON_WM_CLOSE()
-#ifdef USE_TIMER
-	ON_WM_TIMER()
-#endif
 	ON_REGISTERED_MESSAGE (APP_ACTIVATE,     &CMainFrame::OnActivate)
 	ON_REGISTERED_MESSAGE (APP_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
 	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
@@ -51,9 +48,6 @@ static bool IsCapsLockOn( void ) {
 //
 
 CMainFrame::CMainFrame( ):
-#ifdef USE_TIMER
-	m_uTimerId    ( 0 ),
-#endif
 	m_pTrayIcon   ( NULL ),
 	m_pOptions    ( NULL ),
 	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
@@ -70,11 +64,6 @@ CMainFrame::~CMainFrame( ) {
 }
 
 void CMainFrame::_Initialize( void ) {
-#ifdef USE_TIMER
-	m_uTimerId = SetTimer( 1, 1000, NULL );
-	debug( L"CMainFrame::_Initialize: new timer ID is %u\n", m_uTimerId );
-#endif
-
 	m_pOptions = new COptionsData( );
 	m_pOptions->Load( );
 	_Reconfigure( );
@@ -140,10 +129,6 @@ int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 }
 
 void CMainFrame::OnClose( ) {
-#ifdef USE_TIMER
-	KillTimer( m_uTimerId );
-#endif
-
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook( );
 	}
@@ -326,11 +311,3 @@ BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
 	
 	return CFrameWnd::PreTranslateMessage( pMsg );
 }
-
-#ifdef USE_TIMER
-void CMainFrame::OnTimer( UINT_PTR uId ) {
-	// put code here
-
-	CFrameWnd::OnTimer( uId );
-}
-#endif
