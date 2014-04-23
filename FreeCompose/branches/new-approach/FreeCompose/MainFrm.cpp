@@ -42,7 +42,7 @@ END_MESSAGE_MAP()
 // Local functions
 //
 
-static bool IsCapsLock( void ) {
+static bool IsCapsLockOn( void ) {
 	return ( GetKeyState( VK_CAPITAL ) & 1 ) != 0;
 }
 
@@ -308,7 +308,7 @@ void CMainFrame::OnAppZapConf( void ) {
 #endif
 
 void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
-	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
+	pui->SetCheck( IsCapsLockOn( ) ? 1 : 0 );
 }
 
 void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
