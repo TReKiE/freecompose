@@ -26,12 +26,15 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
 	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
 	ON_COMMAND            (ID_APP_ABOUT,     &CMainFrame::OnAppAbout)
-	ON_COMMAND            (ID_APP_TOGGLE,    &CMainFrame::OnAppToggle)
 	ON_COMMAND            (ID_APP_CAPSLOCK,  &CMainFrame::OnAppCapsLock)
 	ON_COMMAND            (ID_APP_CONFIGURE, &CMainFrame::OnAppConfigure)
 	ON_COMMAND            (ID_APP_EXIT,      &CMainFrame::OnAppExit)
-	ON_UPDATE_COMMAND_UI  (ID_APP_TOGGLE,    &CMainFrame::OnUpdateAppToggle)
+	ON_COMMAND            (ID_APP_TOGGLE,    &CMainFrame::OnAppToggle)
+#ifdef _DEBUG
+	ON_COMMAND            (ID_APP_ZAPCONF,   &CMainFrame::OnAppZapConf)
+#endif
 	ON_UPDATE_COMMAND_UI  (ID_APP_CAPSLOCK,  &CMainFrame::OnUpdateAppCapsLock)
+	ON_UPDATE_COMMAND_UI  (ID_APP_TOGGLE,    &CMainFrame::OnUpdateAppToggle)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -102,7 +105,7 @@ void CMainFrame::_SetupTrayIcon( void ) {
 	m_pTrayMenu->LoadMenu( IDM_TRAY_MENU );
 
 #ifdef _DEBUG
-	m_pTrayMenu->InsertMenu( ID_APP_CAPSLOCK, MF_BYCOMMAND | MF_STRING, ID_POPUP_ZAPCONF, L"&Zap configuration file" );
+	m_pTrayMenu->InsertMenu( ID_APP_CAPSLOCK, MF_BYCOMMAND|MF_STRING, ID_APP_ZAPCONF, L"&Zap configuration file" );
 #endif
 
 	m_pTrayIcon = new CTrayNotifyIcon( );
@@ -117,28 +120,14 @@ void CMainFrame::_SetupTrayIcon( void ) {
 }
 
 void CMainFrame::_UpdateTooltip( void ) {
-	if ( FcIsHookEnabled( ) ) {
-		m_pTrayIcon->SetTooltipText( m_strEnabled );
-		m_pTrayIcon->SetBalloonDetails( m_strEnabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
-	} else {
-		m_pTrayIcon->SetTooltipText( m_strDisabled );
-		m_pTrayIcon->SetBalloonDetails( m_strDisabled, m_strTitle, CTrayNotifyIcon::Info, 10 );
-	}
+	CString& str = FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled;
+	m_pTrayIcon->SetTooltipText( str );
+	m_pTrayIcon->SetBalloonDetails( str, m_strTitle, CTrayNotifyIcon::Info, 10 );
 }
 
-// CMainFrame message handlers
-
-void CMainFrame::OnAppExit( ) {
-	bool fPropSheetOpen;
-	LOCK( m_csPropSheet ) {
-		fPropSheetOpen = ( NULL != m_pPropSheet );
-	} UNLOCK( m_csPropSheet );
-	if ( fPropSheetOpen ) {
-		MessageBox( L"Please close the FreeCompose options dialog before exiting FreeCompose.", L"FreeCompose", MB_ICONWARNING|MB_OK );
-	} else {
-		OnClose( );
-	}
-}
+//
+// CMainFrame event handlers
+//
 
 int CMainFrame::OnCreate( LPCREATESTRUCT lpCreateStruct ) {
 	if ( -1 == CFrameWnd::OnCreate( lpCreateStruct ) ) {
@@ -225,13 +214,16 @@ void CMainFrame::OnAppAbout(void) {
 	aboutDlg.DoModal( );
 }
 
-void CMainFrame::OnAppToggle( void ) {
-	if ( FcIsHookEnabled( ) ) {
-		FcDisableHook();
+void CMainFrame::OnAppExit( ) {
+	bool fPropSheetOpen;
+	LOCK( m_csPropSheet ) {
+		fPropSheetOpen = ( NULL != m_pPropSheet );
+	} UNLOCK( m_csPropSheet );
+	if ( fPropSheetOpen ) {
+		MessageBox( CString( (LPCWSTR) IDS_MAINFRAME_CLOSEOPTIONSFIRST ), CString( (LPCWSTR) AFX_IDS_APP_TITLE ), MB_ICONWARNING|MB_OK );
 	} else {
-		FcEnableHook( );
+		OnClose( );
 	}
-	_UpdateTooltip( );
 }
 
 void CMainFrame::OnAppCapsLock( void ) {
@@ -280,16 +272,51 @@ void CMainFrame::OnAppConfigure( ) {
 	}
 }
 
+void CMainFrame::OnAppToggle( void ) {
+	if ( FcIsHookEnabled( ) ) {
+		FcDisableHook();
+	} else {
+		FcEnableHook( );
+	}
+	_UpdateTooltip( );
+}
+
+#ifdef _DEBUG
+void CMainFrame::OnAppZapConf( void ) {
+	CString appTitle( (LPCWSTR) AFX_IDS_APP_TITLE );
+
+	int nResult = MessageBox( L"Did you really mean to click the 'Zap configuration file' menu item??", appTitle, MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 );
+	if ( IDNO == nResult ) {
+		return;
+	}
+	if ( IDYES != nResult ) {
+		debug( L"CMainFrame::OnAppZapConf: got unexpected value %d from MessageBox()\n", nResult );
+		MessageBox( L"Something went wrong: configuration not zapped.", appTitle, MB_OK|MB_ICONWARNING );
+		return;
+	}
+
+	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
+	if ( !DeleteFile( str.GetString( ) ) ) {
+		MessageBox( L"Configuration file deleted.", appTitle, MB_OK|MB_ICONINFORMATION );
+	} else {
+		DWORD dwError = GetLastError( );
+		wchar_t pwzMessage[1024];
+		swprintf_s( pwzMessage, 1024, L"Error %d occurred while trying to zap the configuration.", dwError );
+		MessageBox( pwzMessage, appTitle, MB_OK|MB_ICONERROR );
+	}
+}
+#endif
+
+void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
+	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
+}
+
 void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 	if ( FcIsHookEnabled( ) ) {
 		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_DISABLE ) );
 	} else {
 		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_ENABLE ) );
 	}
-}
-
-void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
-	pui->SetCheck( IsCapsLock( ) ? 1 : 0 );
 }
 
 BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
