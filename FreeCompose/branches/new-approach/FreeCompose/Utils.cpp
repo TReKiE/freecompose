@@ -127,10 +127,10 @@ CString MakeInstanceExclusionName( CString const& input, EXCLUSION_KIND const ki
 				LPBYTE data = new BYTE[len];
 				GetTokenInformation( token, TokenStatistics, data, len, &len );
 				LUID uid = ( (PTOKEN_STATISTICS) data )->AuthenticationId;
-				delete[] data;
 				CString t;
 				t.Format( L"-%08x%08x", uid.HighPart, uid.LowPart );
 				s += t;
+				delete[] data;
 			}
 			return s;
 		}
