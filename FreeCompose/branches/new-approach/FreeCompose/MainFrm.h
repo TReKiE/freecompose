@@ -38,7 +38,6 @@ protected:
 	afx_msg void OnUpdateAppToggle( CCmdUI* );
 
 private:
-	CMenu* m_pTrayMenu;
 	CTrayNotifyIcon* m_pTrayIcon;
 	COptionsData* m_pOptions;
 	CString m_strEnabled;
