@@ -1,65 +1,11 @@
 #pragma once
 
-#define DEBUG_NODES_LEAVES 0
-
-class COMPOSE_TREE_NODE {
-public:
-#if DEBUG_NODES_LEAVES
-	COMPOSE_TREE_NODE( ) {
-		_cNodes++;
-	}
-#endif
-
-	~COMPOSE_TREE_NODE( );
-
-	inline COMPOSE_TREE_NODE* GetChild( int character ) {
-		auto iter = children.find( character );
-		if ( iter == children.end( ) ) {
-			return NULL;
-		}
-		return (*iter).second;
-	}
-
-	inline int GetLeaf( int character ) {
-		auto iter = leaves.find( character );
-		if ( iter == leaves.end( ) ) {
-			return -1;
-		}
-		return (*iter).second;
-	}
-
-	inline void AddChild( int character, COMPOSE_TREE_NODE* child ) {
-		children.insert( Tchildren::value_type( character, child ) );
-	}
-
-	inline void AddLeaf( int character, int result ) {
-		leaves.insert( Tleaves::value_type( character, result ) );
-#if DEBUG_NODES_LEAVES
-		_cLeaves++;
-#endif
-	}
-
-private:
-	typedef std::map<int const, COMPOSE_TREE_NODE*> Tchildren;
-	typedef std::map<int const, int const> Tleaves;
-
-	Tchildren children;
-	Tleaves leaves;
-
-#if DEBUG_NODES_LEAVES
-private: /*static*/
-	static int _cNodes;
-	static int _cLeaves;
-#endif
-};
+#include "ComposeTreeNode.h"
 
 class COMPOSE_SEQUENCE_TREE {
 public:
-	inline COMPOSE_SEQUENCE_TREE( ): root ( NULL ) {
-	}
+	inline COMPOSE_SEQUENCE_TREE( ): root( nullptr ) {
 
-	inline COMPOSE_SEQUENCE_TREE( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ): root ( NULL ) {
-		BuildTree( pSequences, cSequences );
 	}
 
 	inline ~COMPOSE_SEQUENCE_TREE( ) {
@@ -67,16 +13,55 @@ public:
 	}
 
 	inline void ReleaseTree( void ) {
-		if ( NULL != root ) {
+		if ( root ) {
 			delete root;
-			root = NULL;
+			root = nullptr;
 		}
 	}
 
-	int LookUp( int length, int characters[] );
+	void BuildTree( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
+		ReleaseTree( );
+
+		root = new COMPOSE_TREE_NODE;
+		for ( INT_PTR n = 0; n < cSequences; n++ ) {
+			COMPOSE_TREE_NODE* node = root->GetChild( pSequences[n].chFirst );
+			if ( !node ) {
+				node = new COMPOSE_TREE_NODE;
+				root->AddChild( pSequences[n].chFirst, node );
+			}
+			node->AddLeaf( pSequences[n].chSecond, pSequences[n].chComposed );
+		}
+	}
+
+	int LookUp( int length, int characters[] ) {
+		debug( L"COMPOSE_SEQUENCE_TREE::Lookup: length=%d characters={%.*s}\n", length, length, characters );
+		if ( 2 != length ) {
+			debug( L"COMPOSE_SEQUENCE_TREE::Lookup: length is bad\n" );
+			return -1;
+		}
+
+		COMPOSE_TREE_NODE* node;
+		debug( L"COMPOSE_SEQUENCE_TREE::Lookup: trying forward lookup of { %d, %d }\n", characters[0], characters[1] );
+		node = root->GetChild( characters[0] );
+		if ( node ) {
+			int result = node->GetLeaf( characters[1] );
+			debug( L"COMPOSE_SEQUENCE_TREE::Lookup: success, found %d '%c'\n", result, result );
+			return result;
+		}
+
+		debug( L"COMPOSE_SEQUENCE_TREE::Lookup: trying reverse lookup of { %d, %d }\n", characters[1], characters[0] );
+		node = root->GetChild( characters[1] );
+		if ( node ) {
+			int result = node->GetLeaf( characters[0] );
+			debug( L"COMPOSE_SEQUENCE_TREE::Lookup: success, found %d '%c'\n", result, result );
+			return result;
+		}
+
+		debug( L"COMPOSE_SEQUENCE_TREE::Lookup: failed\n" );
+		return -1;
+	}
 
 private:
-	void BuildTree( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
 
 	COMPOSE_TREE_NODE* root;
 };
