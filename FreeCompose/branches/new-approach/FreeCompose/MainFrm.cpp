@@ -66,10 +66,13 @@ CMainFrame::~CMainFrame( ) {
 void CMainFrame::_Initialize( void ) {
 	m_pOptions = new COptionsData( );
 	m_pOptions->Load( );
+	// HACK HACK HACK HACK HACK
+	m_pOptions->m_fStartActive = FALSE;
+	// HACK ENDS HACK ENDS HACK ENDS
 	_Reconfigure( );
 
 	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
-	_SetupTrayIcon( );
+	_SetUpTrayIcon( );
 }
 
 void CMainFrame::_Reconfigure( void ) {
@@ -89,9 +92,9 @@ void CMainFrame::_Reconfigure( void ) {
 	}
 }
 
-void CMainFrame::_SetupTrayIcon( void ) {
+void CMainFrame::_SetUpTrayIcon( void ) {
 	m_pTrayIcon = new CTrayNotifyIcon( );
-	m_pTrayIcon->Create(
+	if ( !m_pTrayIcon->Create(
 		this,
 		IDM_TRAY_MENU,
 		FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled,
@@ -99,7 +102,9 @@ void CMainFrame::_SetupTrayIcon( void ) {
 		APP_NOTIFYICON,
 		IDM_TRAY_MENU,
 		TRUE
-	);
+	) ) {
+		debug( L"CMainFrame::_SetUpTrayIcon: CTrayNotifyIcon::Create failed\n" );
+	}
 
 #ifdef _DEBUG
 	CMenu& trayMenu = m_pTrayIcon->GetMenu( );
