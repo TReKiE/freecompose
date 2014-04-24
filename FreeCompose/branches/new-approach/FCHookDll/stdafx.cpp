@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "ComposeSequenceTree.h"
 #include "HookProc.h"
 
 //==============================================================================
@@ -32,10 +33,17 @@ UINT const FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
 UINT const FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
 
 //==============================================================================
-// Globals
+// Static class members
 //==============================================================================
 
-#pragma data_seg( push, ".shareddata" )
+#if DEBUG_NODES_LEAVES
+size_t COMPOSE_TREE_NODE::_cNodes = 0;
+size_t COMPOSE_TREE_NODE::_cLeaves = 0;
+#endif
+
+//==============================================================================
+// Globals
+//==============================================================================
 
 AutoCriticalSection        cs;
 HHOOK                      hHook                 = NULL;
@@ -59,5 +67,3 @@ COMPOSE_STATE              ComposeState          = csNORMAL;
 HINSTANCE                  hDllInst              = NULL;
 
 HWND                       hwndNotifyWindow      = NULL;
-
-#pragma data_seg( pop )
