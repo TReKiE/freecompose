@@ -206,7 +206,6 @@
     <ClCompile Include="CapsLock.cpp" />
     <ClCompile Include="Common.cpp" />
     <ClCompile Include="ComposeKeyHandler.cpp" />
-    <ClCompile Include="ComposeSequenceTree.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="FCHookDll.cpp" />
     <ClCompile Include="HookProc.cpp" />
@@ -224,6 +223,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="ComposeKeyHandler.h" />
     <ClInclude Include="ComposeSequenceTree.h" />
+    <ClInclude Include="ComposeTreeNode.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="KeyEventHandler.h" />
