@@ -1,7 +1,5 @@
 #pragma once
 
-typedef CArray< COMPOSE_SEQUENCE > CComposeSequenceArray;
-
 class CFreeComposeApp: public CWinApp {
 	DECLARE_MESSAGE_MAP( )
 
