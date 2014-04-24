@@ -10,12 +10,8 @@
 // Global variables
 //==============================================================================
 
-#pragma data_seg( push, ".shareddata" )
-
 extern CapsLockMutator* capsLockMutator;
 extern CapsLockToggler* capsLockToggler;
-
-#pragma data_seg( pop )
 
 //==============================================================================
 // Functions
