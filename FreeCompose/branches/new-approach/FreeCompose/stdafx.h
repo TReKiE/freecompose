@@ -1,15 +1,19 @@
 #pragma once
 
-#define VC_EXTRALEAN
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
 #define _ATL_APARTMENT_THREADED 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
+#define _CRTDBG_MAP_ALLOC
 #define _SECURE_ATL 1
+#define  NOMINMAX
+#define  VC_EXTRALEAN
+#define  WIN32_LEAN_AND_MEAN
 
 #include "targetver.h"
 
 #include <cerrno>
+#include <cstdlib>
+#include <crtdbg.h>
+#include <malloc.h>
 
 #include <algorithm>
 #include <map>
