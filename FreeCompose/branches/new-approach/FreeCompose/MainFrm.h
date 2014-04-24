@@ -48,6 +48,6 @@ private:
 
 	void _Initialize( void );
 	void _Reconfigure( void );
-	void _SetupTrayIcon( void );
+	void _SetUpTrayIcon( void );
 	void _UpdateTooltip( void );
 };
