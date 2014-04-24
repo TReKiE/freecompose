@@ -90,22 +90,21 @@ void CMainFrame::_Reconfigure( void ) {
 }
 
 void CMainFrame::_SetupTrayIcon( void ) {
-	m_pTrayMenu = new CMenu( );
-	m_pTrayMenu->LoadMenu( IDM_TRAY_MENU );
-
-#ifdef _DEBUG
-	m_pTrayMenu->InsertMenu( ID_APP_CAPSLOCK, MF_BYCOMMAND|MF_STRING, ID_APP_ZAPCONF, L"&Zap configuration file" );
-#endif
-
 	m_pTrayIcon = new CTrayNotifyIcon( );
 	m_pTrayIcon->Create(
 		this,
-		1,
+		IDM_TRAY_MENU,
 		FcIsHookEnabled( ) ? m_strEnabled : m_strDisabled,
 		AfxGetApp( )->LoadIcon( IDR_MAINFRAME ),
-		APP_NOTIFYICON
+		APP_NOTIFYICON,
+		IDM_TRAY_MENU,
+		TRUE
 	);
-	m_pTrayIcon->SetMenu( *m_pTrayMenu );
+
+#ifdef _DEBUG
+	CMenu& trayMenu = m_pTrayIcon->GetMenu( );
+	trayMenu.InsertMenu( ID_APP_CAPSLOCK, MF_BYCOMMAND|MF_STRING, ID_APP_ZAPCONF, L"&Zap configuration file" );
+#endif
 }
 
 void CMainFrame::_UpdateTooltip( void ) {
