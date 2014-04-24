@@ -13,7 +13,7 @@ public:
 	void Load( void );
 	void Save( void );
 
-	CComposeSequenceArray m_ComposeSequences;
+	CArray<COMPOSE_SEQUENCE> m_ComposeSequences;
  
 	BOOL m_fStartActive;
 	BOOL m_fStartWithWindows;
