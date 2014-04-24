@@ -17,23 +17,19 @@ using namespace std;
 // Global variables
 //==============================================================================
 
-#pragma data_seg( push, ".shareddata" )
-
 CapsLockMutator* capsLockMutator = NULL;
 CapsLockToggler* capsLockToggler = NULL;
 wstring          translationBuffer;
-
-#pragma data_seg( pop )
 
 //==============================================================================
 // Prototypes
 //==============================================================================
 
-static int FindComposeSequence( unsigned ch1, unsigned ch2 );
+//static int FindComposeSequence( unsigned ch1, unsigned ch2 );
 
 static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
-static bool SendKey( COMPOSE_SEQUENCE* sequence );
+//static bool SendKey( COMPOSE_SEQUENCE* sequence );
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 
@@ -41,23 +37,23 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 // Static functions
 //==============================================================================
 
-static int FindComposeSequence( unsigned ch1, unsigned ch2 ) {
-	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
-	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
-	COMPOSE_SEQUENCE* match = NULL;
-
-	LOCK( cs ) {
-		if ( cComposeSequences < 1 )
-			break;
-
-		match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
-		if ( !match ) {
-			match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
-		}
-	} UNLOCK( cs );
-
-	return match ? match->chComposed : -1;
-}
+//static int FindComposeSequence( unsigned ch1, unsigned ch2 ) {
+//	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
+//	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
+//	COMPOSE_SEQUENCE* match = NULL;
+//
+//	LOCK( cs ) {
+//		if ( cComposeSequences < 1 )
+//			break;
+//
+//		match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
+//		if ( !match ) {
+//			match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
+//		}
+//	} UNLOCK( cs );
+//
+//	return match ? match->chComposed : -1;
+//}
 
 static inline void MakeUnicodeKeyDown( INPUT& input, wchar_t ch ) {
 	input.type = INPUT_KEYBOARD;
@@ -71,37 +67,37 @@ static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 }
 
-static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
-	UINT numInputsToSend;
-	INPUT input[4] = { 0, };
-	wchar_t ch[3]  = { 0, };
-
-	if ( sequence->chComposed < 0x10000U ) {
-		numInputsToSend = 2;
-		ch[0] = static_cast<wchar_t>( sequence->chComposed );
-	} else {
-		numInputsToSend = 4;
-		ch[0] = MakeFirstSurrogate( sequence->chComposed );
-		ch[1] = MakeSecondSurrogate( sequence->chComposed );
-	}
-	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence->chComposed, ch, numInputsToSend );
-
-	MakeUnicodeKeyDown( input[0], ch[0] );
-	MakeUnicodeKeyUp( input[1], ch[0] );
-	if ( ch[1] ) {
-		MakeUnicodeKeyDown( input[2], ch[1] );
-		MakeUnicodeKeyUp( input[3], ch[1] );
-	}
-
-	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
-	if ( u < numInputsToSend ) {
-		debug( L"SendKey: SendInput failed? sent=%u err=%lu\n", u, GetLastError( ) );
-		return false;
-	}
-
-	::PostMessage( hwndNotifyWindow, FCM_KEY, 0, (LPARAM) sequence->chComposed );
-	return true;
-}
+//static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
+//	UINT numInputsToSend;
+//	INPUT input[4] = { 0, };
+//	wchar_t ch[3]  = { 0, };
+//
+//	if ( sequence->chComposed < 0x10000U ) {
+//		numInputsToSend = 2;
+//		ch[0] = static_cast<wchar_t>( sequence->chComposed );
+//	} else {
+//		numInputsToSend = 4;
+//		ch[0] = MakeFirstSurrogate( sequence->chComposed );
+//		ch[1] = MakeSecondSurrogate( sequence->chComposed );
+//	}
+//	debug( L"SendKey: chComposed=U+%06x '%s' numInputsToSend=%u\n", sequence->chComposed, ch, numInputsToSend );
+//
+//	MakeUnicodeKeyDown( input[0], ch[0] );
+//	MakeUnicodeKeyUp( input[1], ch[0] );
+//	if ( ch[1] ) {
+//		MakeUnicodeKeyDown( input[2], ch[1] );
+//		MakeUnicodeKeyUp( input[3], ch[1] );
+//	}
+//
+//	UINT u = SendInput( numInputsToSend, input, sizeof( INPUT ) );
+//	if ( u < numInputsToSend ) {
+//		debug( L"SendKey: SendInput failed? sent=%u err=%lu\n", u, GetLastError( ) );
+//		return false;
+//	}
+//
+//	::PostMessage( hwndNotifyWindow, FCM_KEY, 0, (LPARAM) sequence->chComposed );
+//	return true;
+//}
 
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 	INPUT input = { 0, };

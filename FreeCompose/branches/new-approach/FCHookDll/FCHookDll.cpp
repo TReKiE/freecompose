@@ -6,6 +6,12 @@
 using namespace std::tr1;
 
 //==============================================================================
+// Local variables
+//==============================================================================
+
+static volatile LONG cClients = 0;
+
+//==============================================================================
 // Function prototypes
 //==============================================================================
 
@@ -23,7 +29,7 @@ static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSeq
 		ComposeSequences = pSequences;
 		cComposeSequences = cSequences;
 
-		ComposeSequenceTree = COMPOSE_SEQUENCE_TREE( ComposeSequences, cComposeSequences );
+		ComposeSequenceTree.BuildTree( ComposeSequences, cComposeSequences );
 	} UNLOCK( cs );
 }
 
@@ -49,7 +55,27 @@ FCHOOKDLL_API DWORD FcGetApiVersion( void ) {
 }
 
 //==============================================================================
-// Suite 1: Hook control
+// Suite 1: Lifetime management
+//==============================================================================
+
+FCHOOKDLL_API BOOL FcInitialize( void ) {
+	if ( 1 == InterlockedIncrement( &cClients ) ) {
+		InitializeKeyEventDispatcher( );
+	}
+
+	return TRUE;
+}
+
+FCHOOKDLL_API BOOL FcUninitialize( void ) {
+	if ( 0 == InterlockedDecrement( &cClients ) ) {
+		ReleaseComposeSequences( );
+	}
+
+	return TRUE;
+}
+
+//==============================================================================
+// Suite 2: Hook control
 //==============================================================================
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
@@ -124,7 +150,7 @@ FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void ) {
 }
 
 //==============================================================================
-// Suite 2: Compose key and sequences
+// Suite 3: Compose key and sequences
 //==============================================================================
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD _vkCompose ) {
@@ -150,7 +176,7 @@ FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD 
 }
 
 //==============================================================================
-// Suite 3: Caps Lock
+// Suite 4: Caps Lock
 //==============================================================================
 
 FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD _vkCapsLockSwap ) {

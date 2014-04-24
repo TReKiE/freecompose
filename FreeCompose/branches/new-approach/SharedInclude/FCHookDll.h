@@ -10,7 +10,7 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x002B
+#define FCHOOKDLL_API_VERSION 0x0030
 
 //==============================================================================
 // Types
@@ -56,7 +56,14 @@ WPARAM const PIP_FAIL  = 6;
 FCHOOKDLL_API DWORD FcGetApiVersion( void );
 
 //
-// Suite 1: Hook control
+// Suite 1: Lifetime management
+//
+
+FCHOOKDLL_API BOOL FcInitialize( void );
+FCHOOKDLL_API BOOL FcUninitialize( void );
+
+//
+// Suite 2: Hook control
 //
 
 FCHOOKDLL_API BOOL FcEnableHook( void );
@@ -67,7 +74,7 @@ FCHOOKDLL_API BOOL FcSetNotifyWindowHandle( HWND hwndNotifyWindow );
 FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void );
 
 //
-// Suite 2: Compose key and sequences
+// Suite 3: Compose key and sequences
 //
 
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD vkCompose );
@@ -76,7 +83,7 @@ FCHOOKDLL_API DWORD FcGetComposeKey( void );
 FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pSequences, DWORD cSequences );
 
 //
-// Suite 3: Caps Lock
+// Suite 4: Caps Lock
 //
 
 FCHOOKDLL_API BOOL FcSetSwapCapsLockKey( DWORD vkCapsLockSwap );
