@@ -274,8 +274,10 @@ void CMainFrame::OnAppToggle( void ) {
 void CMainFrame::OnAppZapConf( void ) {
 	CString appTitle( (LPCWSTR) AFX_IDS_APP_TITLE );
 
+	debug( L"CMainFrame::OnAppZapConf: Prompting to confirm deletion\n" );
 	int nResult = MessageBox( L"Did you really mean to click the 'Zap configuration file' menu item??", appTitle, MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 );
 	if ( IDNO == nResult ) {
+		debug( L"CMainFrame::OnAppZapConf: Reponse is NO\n" );
 		return;
 	}
 	if ( IDYES != nResult ) {
@@ -283,16 +285,24 @@ void CMainFrame::OnAppZapConf( void ) {
 		MessageBox( L"Something went wrong: configuration not zapped.", appTitle, MB_OK|MB_ICONWARNING );
 		return;
 	}
+	debug( L"CMainFrame::OnAppZapConf: Response was YES\n" );
 
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
+	debug( L"CMainFrame::OnAppZapConf: Deleting configuration file '%s'\n", static_cast<wchar_t const*>( str ) );
+
+	SetLastError( 0 );
 	if ( !DeleteFile( str ) ) {
-		MessageBox( L"Configuration file deleted.", appTitle, MB_OK|MB_ICONINFORMATION );
-	} else {
 		DWORD dwError = GetLastError( );
+		debug( L"CMainFrame::OnAppZapConf: Error %d while trying to delete file.", dwError );
+
 		wchar_t pwzMessage[1024];
 		swprintf_s( pwzMessage, 1024, L"Error %d occurred while trying to zap the configuration.", dwError );
 		MessageBox( pwzMessage, appTitle, MB_OK|MB_ICONERROR );
+		return;
 	}
+	
+	debug( L"CMainFrame::OnAppZapConf: Configuration file deleted successfully.\n" );
+	MessageBox( L"Configuration file deleted.", appTitle, MB_OK|MB_ICONINFORMATION );
 }
 #endif
 
