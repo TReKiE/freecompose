@@ -38,7 +38,7 @@ namespace zive {
 	template< const int elements, typename value_type >
 	class _bitsetlowlevel_impl_long: public _bitsetlowlevel< elements, value_type, long, 5U > {
 	private:
-		typedef _bitsetlowlevel< elements, value_type, long, 5U > _base;
+		using _base = _bitsetlowlevel< elements, value_type, long, 5U >;
 
 	protected:
 		inline unsigned char test( const value_type value ) const {
@@ -64,7 +64,7 @@ namespace zive {
 	template< const int elements, typename value_type >
 	class _bitsetlowlevel_impl_longlong: public _bitsetlowlevel< elements, value_type, long long, 6U > {
 	private:
-		typedef _bitsetlowlevel< elements, value_type, long long, 6U > _base;
+		using _base = _bitsetlowlevel< elements, value_type, long long, 6U >;
 
 	protected:
 		inline unsigned char test( const value_type value ) const {
