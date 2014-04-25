@@ -60,6 +60,7 @@ public:
 		T ret = static_cast<T>( 0 );
 		for ( INT_PTR n = 0; n < _strings.GetCount( ); n++ ) {
 			if ( 0 == wcsicmp( _strings[n], value ) ) {
+#pragma warning(suppress: 4800)
 				ret = static_cast<T>( n );
 			}
 		}
