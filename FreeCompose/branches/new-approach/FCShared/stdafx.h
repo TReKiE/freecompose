@@ -10,7 +10,7 @@
 #endif
 
 #include <Windows.h>
-#include <ObjBase.h>
+#include <objbase.h>
 
 #ifdef FCSHARED_EXPORTS
 #define FCSHARED_API __declspec(dllexport)
