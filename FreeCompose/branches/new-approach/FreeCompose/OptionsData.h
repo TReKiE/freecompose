@@ -24,7 +24,8 @@ public:
 
 private:
 	bool _FcValidateSequence( COMPOSE_SEQUENCE const& sequence );
-	void _FcLoadFromRegistry( void );
+	void _FcLoadDefaultConfiguration( void );
+	bool _FcLoadFromRegistry( void );
 	void _FcLoadKeys( void );
 	void _UpdateRunKey( void );
 
