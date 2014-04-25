@@ -1,8 +1,10 @@
 #pragma once
 
-#define NTDDI_VERSION  NTDDI_WIN2K
-#define WINVER         _WIN32_WINNT_WIN2K
-#define _WIN32_WINNT   _WIN32_WINNT_WIN2K
-#define _WIN32_IE      _WIN32_IE_IE501
+#include <winsdkver.h>
+
+#define _WIN32_WINNT _WIN32_WINNT_WINXP
+#define NTDDI_VERSION NTDDI_WINXP
+#define WINVER        _WIN32_WINNT_WINXP
+#define _WIN32_IE     _WIN32_IE_WINXP
 
 #include <SDKDDKVer.h>
