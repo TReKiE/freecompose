@@ -155,9 +155,9 @@
     <ClInclude Include="..\SharedInclude\Bitset.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\FreeListAllocator.h" />
+    <ClInclude Include="..\SharedInclude\GetMessageForError.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />
     <ClInclude Include="..\SharedInclude\Unicode.h" />
-    <ClInclude Include="GetMessageForError.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
