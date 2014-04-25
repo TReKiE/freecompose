@@ -157,6 +157,7 @@
     <ClInclude Include="..\SharedInclude\FreeListAllocator.h" />
     <ClInclude Include="..\SharedInclude\KeyIsXAlnum.h" />
     <ClInclude Include="..\SharedInclude\Unicode.h" />
+    <ClInclude Include="GetMessageForError.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -166,6 +167,7 @@
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />
     <ClCompile Include="FCShared.cpp" />
+    <ClCompile Include="GetMessageForError.cpp" />
     <ClCompile Include="FreeComposeFolder.cpp" />
     <ClCompile Include="GetAppDataFolder.cpp" />
     <ClCompile Include="GetAppDataFolder_Kfm.cpp">
