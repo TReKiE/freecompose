@@ -66,9 +66,34 @@ bool COptionsData::_FcValidateSequence( COMPOSE_SEQUENCE const& sequence ) {
 	return true;
 }
 
-void COptionsData::_FcLoadFromRegistry( void ) {
+void COptionsData::_FcLoadDefaultConfiguration( void ) {
+	m_fStartActive = TRUE;
+	m_fStartWithWindows = FALSE;
+	m_CapsLockToggleMode = CLTM_NORMAL;
+	m_CapsLockSwapMode = CLSM_NORMAL;
+	m_vkCompose = VK_APPS;
+	m_vkSwapCapsLock = VK_LCONTROL;
+
+	size_t count = _countof( DefaultComposeKeyEntries );
+	m_ComposeSequences.SetSize( count );
+	for ( size_t n = 0; n < count; n++ ) {
+		m_ComposeSequences[n] = DefaultComposeKeyEntries[n];
+	}
+}
+
+bool COptionsData::_FcLoadFromRegistry( void ) {
 	BOOL fSwapCapsLock;
 	int nCapsLockSwapMode;
+
+	{
+		HKEY hkey;
+		LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, (LPCWSTR) ( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName ), 0, KEY_READ, &hkey );
+		if ( ERROR_SUCCESS != rc ) {
+			debug( L"COptionsData::_FcLoadFromRegistry: can't open key HKCU\\Software\\%s\\%s: error %d\n", theApp.m_pszRegistryKey, theApp.m_pszProfileName );
+			return false;
+		}
+		RegCloseKey( hkey );
+	}
 
 	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
 	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
@@ -87,6 +112,8 @@ void COptionsData::_FcLoadFromRegistry( void ) {
 	m_CapsLockSwapMode   = fSwapCapsLock ? (CAPS_LOCK_SWAP_MODE) nCapsLockSwapMode : CLSM_NORMAL;
 
 	_FcLoadKeys( );
+
+	return true;
 }
 
 void COptionsData::_FcLoadKeys( void ) {
@@ -94,20 +121,13 @@ void COptionsData::_FcLoadKeys( void ) {
 
 	int count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
 	if ( count < 1 ) {
-		count = _countof( DefaultComposeKeyEntries );
-		m_ComposeSequences.SetSize( count );
-		for ( int n = 0; n < count; n++ ) {
-			m_ComposeSequences[n] = DefaultComposeKeyEntries[n];
-		}
 		return;
 	}
 
 	COMPOSE_SEQUENCE sequence;
 	CString section;
 	m_ComposeSequences.SetSize( count );
-#if _DEBUG
-	m_ComposeSequences.Dump( afxDump );
-#endif
+
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%d", n );
@@ -157,10 +177,23 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
-	if ( !_LoadFromXml( ) ) {
-		_FcLoadFromRegistry( );
-		_SaveToXml( );
+	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
+	if ( _LoadFromXml( ) ) {
+		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
+		return;
 	}
+
+	debug( L"COptionsData::Load: Couldn't load XML, trying the registry\n" );
+	if ( _FcLoadFromRegistry( ) ) {
+		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
+		if ( !_SaveToXml( ) ) {
+			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
+			return;
+		}
+	}
+
+	debug( L"COptionsData::Load: Loading default configuration\n" );
+	_FcLoadDefaultConfiguration( );
 }
 
 void COptionsData::Save( void ) {
