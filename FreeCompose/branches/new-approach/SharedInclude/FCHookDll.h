@@ -17,6 +17,18 @@ extern "C" {
 //==============================================================================
 
 struct COMPOSE_SEQUENCE {
+	COMPOSE_SEQUENCE( ) {
+
+	}
+
+	COMPOSE_SEQUENCE( unsigned first, unsigned second, unsigned composed ):
+		chFirst( first ),
+		chSecond( second ),
+		chComposed( composed )
+	{
+
+	}
+
 	unsigned chFirst;
 	unsigned chSecond;
 	unsigned chComposed;
