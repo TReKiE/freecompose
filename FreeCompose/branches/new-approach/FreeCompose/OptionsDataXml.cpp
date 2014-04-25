@@ -171,7 +171,7 @@ bool COptionsData::_LoadFromXml( void ) {
 	try {
 		_variant_t result = doc->load( _variant_t( str ) );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"COptionsData::LoadFromXML: doc->load failed: line %ld column %ld: hr=0x%08lX %s\n", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			debug( L"COptionsData::_LoadFromXml: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
 			return false;
 		}
 	}
