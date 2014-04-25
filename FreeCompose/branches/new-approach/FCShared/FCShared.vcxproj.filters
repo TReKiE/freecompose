@@ -48,7 +48,7 @@
     <ClInclude Include="..\SharedInclude\AutoCriticalSection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GetMessageForError.h">
+    <ClInclude Include="..\SharedInclude\GetMessageForError.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
