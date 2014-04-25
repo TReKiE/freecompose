@@ -128,18 +128,21 @@ void COptionsData::_FcLoadKeys( void ) {
 	CString section;
 	m_ComposeSequences.SetSize( count );
 
+	debug( L"COptionsData::_FcLoadKeys: Loading %d mappings from registry:\n", count );
 	int index = 0;
 	for ( int n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%d", n );
 		sequence.chFirst    = (unsigned) theApp.GetProfileInt( section, L"First",    0 );
 		sequence.chSecond   = (unsigned) theApp.GetProfileInt( section, L"Second",   0 );
 		sequence.chComposed = (unsigned) theApp.GetProfileInt( section, L"Composed", 0 );
+		debug( L"+ Mapping %3d: 0x%08X 0x%08X => 0x%08X\n", n, sequence.chFirst, sequence.chSecond, sequence.chComposed );
 		if ( _FcValidateSequence( sequence ) ) {
 			m_ComposeSequences[index++] = sequence;
 		} else {
-			debug( L"Bad mapping #%d\n", n );
+			debug( L"+ Bad mapping #%d\n", n );
 		}
 	}
+	debug( L"COptionsData::_FcLoadKeys: Mapping load completed, %d mappings validated and loaded.\n", index );
 }
 
 void COptionsData::_UpdateRunKey( void ) {
