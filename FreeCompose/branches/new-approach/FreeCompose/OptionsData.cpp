@@ -197,6 +197,9 @@ void COptionsData::Load( void ) {
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
 	_FcLoadDefaultConfiguration( );
+	if ( !_SaveToXml( ) ) {
+		debug( L"COptionsData::Load: Couldn't save default configuration to XML\n" );
+	}
 }
 
 void COptionsData::Save( void ) {
