@@ -16,6 +16,7 @@
 #include <malloc.h>
 
 #include <algorithm>
+#include <initializer_list>
 #include <map>
 
 #include <afxwin.h>
