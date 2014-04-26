@@ -10,7 +10,7 @@
 #include "ComposeDefaults.h"
 #include "Utils.h"
 
-#define FORCE_DEFAULT_CONFIG
+#undef FORCE_DEFAULT_CONFIG
 
 COptionsData::COptionsData( ) {
 }
