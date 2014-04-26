@@ -10,6 +10,8 @@
 #include "ComposeDefaults.h"
 #include "Utils.h"
 
+#define FORCE_DEFAULT_CONFIG
+
 COptionsData::COptionsData( ) {
 }
 
@@ -180,6 +182,7 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
+#ifndef FORCE_DEFAULT_CONFIG
 	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
 	if ( _LoadFromXml( ) ) {
 		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
@@ -194,6 +197,7 @@ void COptionsData::Load( void ) {
 			return;
 		}
 	}
+#endif
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
 	_FcLoadDefaultConfiguration( );
