@@ -4,6 +4,7 @@
 
 #include "FreeCompose.h"
 #include "OptionsData.h"
+#include "StringMapper.h"
 #include "Utils.h"
 
 //==============================================================================
@@ -15,27 +16,33 @@ using XDocument              = MSXML2::IXMLDOMDocumentPtr;
 using XElement               = MSXML2::IXMLDOMElementPtr;
 using XNode                  = MSXML2::IXMLDOMNodePtr;
 using XNodeList              = MSXML2::IXMLDOMNodeListPtr;
-using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
 using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
+using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
 
 //==============================================================================
-// Constants for XML type mapping
+// Constants
 //==============================================================================
 
-static const _bstr_t mapBoolToString[ ] = {
+int const CONFIGURATION_SCHEMA_VERSION = 2;
+
+//==============================================================================
+// Local objects
+//==============================================================================
+
+static const StringMapper<bool> BoolStringMapper {
 	L"false",
 	L"true",
 };
 
-static const _bstr_t mapCapsLockToggleModeToString[ ] = {
-	(LPCWSTR) NULL,
+static const StringMapper<CAPS_LOCK_TOGGLE_MODE> CltmStringMapper {
+	static_cast<LPCWSTR>( nullptr ),
 	L"normal",
 	L"pressTwice",
 	L"disabled",
 };
 
-static const _bstr_t mapCapsLockSwapModeToString[ ] = {
-	(LPCWSTR) NULL,
+static const StringMapper<CAPS_LOCK_SWAP_MODE> ClsmStringMapper {
+	static_cast<LPCWSTR>( nullptr ),
 	L"normal",
 	L"swap",
 	L"replace",
@@ -45,90 +52,67 @@ static const _bstr_t mapCapsLockSwapModeToString[ ] = {
 // Local functions
 //==============================================================================
 
-static inline _bstr_t StrFromBool( const bool _ ) {
-	return mapBoolToString[_];
+// 'Coerce' functions
+
+template<typename Tin, typename Tout>
+static inline Tout Coerce( Tin const& in ) {
+	return static_cast<Tout>( _variant_t( in ) );
 }
 
-static inline _bstr_t StrFromCapsLockToggleMode( const CAPS_LOCK_TOGGLE_MODE _ ) {
-	return mapCapsLockToggleModeToString[_];
+template<typename Tout>
+static inline Tout CoerceXElement( XElement const& value ) {
+	return Coerce<_bstr_t, Tout>( value->text );
 }
 
-static inline _bstr_t StrFromCapsLockSwapMode( const CAPS_LOCK_SWAP_MODE _ ) {
-	return _bstr_t( mapCapsLockSwapModeToString[_] );
+// 'FromXElement' functions
+
+static inline COMPOSE_SEQUENCE ComposeSequenceFromXElement( XElement const& value ) {
+	return COMPOSE_SEQUENCE(
+		CoerceXElement<unsigned>( value->selectSingleNode( L"First" ) ),
+		CoerceXElement<unsigned>( value->selectSingleNode( L"Second" ) ),
+		CoerceXElement<unsigned>( value->selectSingleNode( L"Composed" ) )
+	);
 }
 
-static inline _bstr_t StrFromInt( const int _ ) {
-	return _bstr_t( _variant_t( _ ) );
+// CreateXElement functions
+
+template<typename Tparent>
+static inline XElement CreateAndAppendXElement( XDocument& doc, _bstr_t const& tagName, Tparent& parent ) {
+	XElement element = doc->createElement( tagName );
+	parent->appendChild( element );
+	return element;
 }
 
-static XElement ElementFromSequence( XDocument doc, COMPOSE_SEQUENCE& sequence ) {
-	XElement mapping = doc->createElement( L"Mapping" );
-
-		XElement first = doc->createElement( L"First" );
-		mapping->appendChild( first );
-		first->text = _bstr_t( _variant_t( (unsigned) sequence.chFirst ) );
-
-		XElement second = doc->createElement( L"Second" );
-		mapping->appendChild( second );
-		second->text = _bstr_t( _variant_t( (unsigned) sequence.chSecond ) );
-
-		XElement composed = doc->createElement( L"Composed" );
-		mapping->appendChild( composed );
-		composed->text = _bstr_t( _variant_t( (unsigned) sequence.chComposed ) );
-
-	return mapping;
+template<typename Tparent, typename Tvalue>
+static inline XElement CreateAndAppendXElement( XDocument& doc, _bstr_t const& tagName, Tparent& parent, Tvalue const& value ) {
+	XElement element = doc->createElement( tagName );
+	element->text = Coerce<Tvalue, _bstr_t>( value );
+	parent->appendChild( element );
+	return element;
 }
 
-static inline bool BoolFromXNode( const XNode& _ ) {
-	for ( int n = 0; n < _countof( mapBoolToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapBoolToString[n] ) ) {
-			return !!n;
-		}
-	}
-	return false;
-}
-
-static inline CAPS_LOCK_TOGGLE_MODE CapsLockToggleModeFromXElement( const XElement& _ ) {
-	for ( int n = 1; n < _countof( mapCapsLockToggleModeToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapCapsLockToggleModeToString[n] ) ) {
-			return (CAPS_LOCK_TOGGLE_MODE) n;
-		}
-	}
-	return (CAPS_LOCK_TOGGLE_MODE) 0;
-}
-
-static inline CAPS_LOCK_SWAP_MODE CapsLockSwapModeFromXElement( const XElement& _ ) {
-	for ( int n = 1; n < _countof( mapCapsLockSwapModeToString ); n++ ) {
-		if ( 0 == wcscmp( _->text, mapCapsLockSwapModeToString[n] ) ) {
-			return (CAPS_LOCK_SWAP_MODE) n;
-		}
-	}
-	return (CAPS_LOCK_SWAP_MODE) 0;
-}
-
-template<typename T> static inline T FromXElement( const XElement& _ ) {
-	return (T) _variant_t( _->text );
-}
-
-static COMPOSE_SEQUENCE SequenceFromElement( XElement Mapping ) {
-	COMPOSE_SEQUENCE sequence;
-	memset( &sequence, 0, sizeof( sequence ) );
-	sequence.chFirst = FromXElement<unsigned>( Mapping->selectSingleNode( L"First" ) );
-	sequence.chSecond = FromXElement<unsigned>( Mapping->selectSingleNode( L"Second" ) );
-	sequence.chComposed = FromXElement<unsigned>( Mapping->selectSingleNode( L"Composed" ) );
-
-	return sequence;
-}
+// Other functions
 
 static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
-	return 0 == ( (CString) (LPCWSTR) elt->nodeName ).Compare( name );
+	return 0 == CString( (LPCWSTR) elt->nodeName ).Compare( name );
 }
 
 static inline XDocument CreateDOMDocument( void ) {
-	XDocument doc = nullptr;
+	XDocument doc;
 	HRESULT hr = doc.CreateInstance( L"Msxml2.DOMDocument.6.0" );
 	if ( FAILED( hr ) ) {
 		debug( L"CreateDOMDocument: failed, hr=0x%08lX\n", hr );
+	}
+
+	try {
+		doc->async = VARIANT_FALSE;
+		doc->validateOnParse = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+		doc->preserveWhiteSpace = VARIANT_FALSE;
+	}
+	catch ( _com_error e ) {
+		debug( L"CreateDOMDocument: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
+		doc.Release( );
 	}
 	return doc;
 }
@@ -148,20 +132,6 @@ bool COptionsData::_LoadFromXml( void ) {
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
 		debug( L"COptionsData::_LoadFromXml: Can't create instance of DOMDocument\n" );
-		return false;
-	}
-
-	//
-	// Configure DOMDocument object
-	//
-	try {
-		doc->async = VARIANT_FALSE;
-		doc->validateOnParse = VARIANT_FALSE;
-		doc->resolveExternals = VARIANT_FALSE;
-		doc->preserveWhiteSpace = VARIANT_FALSE;
-	}
-	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -187,24 +157,33 @@ bool COptionsData::_LoadFromXml( void ) {
 			return false;
 		}
 
+		XElement SchemaVersion = FreeCompose->selectSingleNode( L"SchemaVersion" );
+		int nSchemaVersion = CoerceXElement<unsigned>( SchemaVersion );
+		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
+			debug( L"COptionsData::_LoadFromXml: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
+			return false;
+		}
+
 		XElement Options = FreeCompose->selectSingleNode( L"Options" );
 
 		XElement Startup = Options->selectSingleNode( L"Startup" );
-		m_fStartActive = BoolFromXNode( Startup->selectSingleNode( L"StartActive" ) );
-		m_fStartWithWindows = BoolFromXNode( Startup->selectSingleNode( L"StartWithWindows" ) );
+		m_fStartActive = BoolStringMapper[ Startup->selectSingleNode( L"StartActive" )->text ];
+		m_fStartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
 
 		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
-		m_CapsLockToggleMode = CapsLockToggleModeFromXElement( Keyboard->selectSingleNode( L"CapsLockToggleMode" ) );
-		m_CapsLockSwapMode = CapsLockSwapModeFromXElement( Keyboard->selectSingleNode( L"CapsLockSwapMode" ) );
-		m_vkCompose = FromXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		m_vkSwapCapsLock = FromXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+		m_CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
+		m_CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
+		m_vkCompose = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		m_vkSwapCapsLock = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 
 		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
 		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
-		for ( XElement group = groupNodes->nextNode( ); NULL != group; group = groupNodes->nextNode( ) ) {
+		XElement group;
+		while ( group = groupNodes->nextNode( ) ) {
 			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
-			for ( XElement mapping = mappingNodes->nextNode( ); NULL != mapping; mapping = mappingNodes->nextNode( ) ) {
-				m_ComposeSequences.Add( SequenceFromElement( mapping ) );
+			XElement mapping;
+			while ( mapping = mappingNodes->nextNode( ) ) {
+				m_ComposeSequences.Add( ComposeSequenceFromXElement( mapping ) );
 			}
 		}
 	}
@@ -235,80 +214,42 @@ bool COptionsData::_SaveToXml( void ) {
 	}
 
 	//
-	// Configure DOMDocument object
-	//
-	try {
-		doc->async = VARIANT_FALSE;
-		doc->validateOnParse = VARIANT_FALSE;
-		doc->resolveExternals = VARIANT_FALSE;
-		doc->preserveWhiteSpace = VARIANT_FALSE;
-	}
-	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
-		return false;
-	}
-
-	//
 	// Create elements
 	//
 	try {
-		XProcessingInstruction pi = doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-8'" );
-        doc->appendChild( pi );
+        doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-8'" ) );
+		XElement FreeCompose = CreateAndAppendXElement( doc, L"FreeCompose", doc );
 
-		XElement FreeCompose = doc->createElement( L"FreeCompose" );
-		doc->appendChild( FreeCompose );
+			XElement SchemaVersion = CreateAndAppendXElement( doc, L"SchemaVersion", FreeCompose, CONFIGURATION_SCHEMA_VERSION );
 
-			XElement SyntaxVersion = doc->createElement( L"SyntaxVersion" );
-			SyntaxVersion->text = L"2";
-			FreeCompose->appendChild( SyntaxVersion );
+			XElement Options = CreateAndAppendXElement( doc, L"Options", FreeCompose );
 
-			XElement Options = doc->createElement( L"Options" );
-			FreeCompose->appendChild( Options );
+				XElement Startup = CreateAndAppendXElement( doc, L"Startup", Options );
 
-				XElement Startup = doc->createElement( L"Startup" );
-				Options->appendChild( Startup );
+					XElement StartActive      = CreateAndAppendXElement( doc, L"StartActive",      Startup, BoolStringMapper[ !!m_fStartActive ] );
+					XElement StartWithWindows = CreateAndAppendXElement( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!m_fStartWithWindows ] );
 
-					XElement StartActive = doc->createElement( L"StartActive" );
-					Startup->appendChild( StartActive );
-					StartActive->text = StrFromBool( !!m_fStartActive );
+				XElement Keyboard = CreateAndAppendXElement( doc, L"Keyboard", Options );
 
-					XElement StartWithWindows = doc->createElement( L"StartWithWindows" );
-					Startup->appendChild( StartWithWindows );
-					StartWithWindows->text = StrFromBool( !!m_fStartWithWindows );
+					XElement CapsLockToggleMode = CreateAndAppendXElement( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ m_CapsLockToggleMode ] );
+					XElement CapsLockSwapMode   = CreateAndAppendXElement( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ m_CapsLockSwapMode ] );
+					XElement ComposeKey         = CreateAndAppendXElement( doc, L"ComposeKey",         Keyboard, m_vkCompose );
+					XElement SwapCapsLockKey    = CreateAndAppendXElement( doc, L"SwapCapsLockKey",    Keyboard, m_vkSwapCapsLock );
 
-				XElement Keyboard = doc->createElement( L"Keyboard" );
-				Options->appendChild( Keyboard );
+			XElement Mappings = CreateAndAppendXElement( doc, L"Mappings", FreeCompose );
 
-					XElement CapsLockToggleMode = doc->createElement( L"CapsLockToggleMode" );
-					Keyboard->appendChild( CapsLockToggleMode );
-					CapsLockToggleMode->text = StrFromCapsLockToggleMode( m_CapsLockToggleMode );
+				XElement Group = CreateAndAppendXElement( doc, L"Group", Mappings );
+				Group->setAttribute( L"Name", L"default" );
 
-					XElement CapsLockSwapMode = doc->createElement( L"CapsLockSwapMode" );
-					Keyboard->appendChild( CapsLockSwapMode );
-					CapsLockSwapMode->text = StrFromCapsLockSwapMode( m_CapsLockSwapMode );
-
-					XElement ComposeKey = doc->createElement( L"ComposeKey" );
-					Keyboard->appendChild( ComposeKey );
-					ComposeKey->text = StrFromInt( m_vkCompose );
-
-					XElement SwapCapsLockKey = doc->createElement( L"SwapCapsLockKey" );
-					Keyboard->appendChild( SwapCapsLockKey );
-					SwapCapsLockKey->text = StrFromInt( m_vkSwapCapsLock );
-
-			XElement Mappings = doc->createElement( L"Mappings" );
-			FreeCompose->appendChild( Mappings );
-
-				XElement Group = doc->createElement( L"Group" );
-				Mappings->appendChild( Group );
-				Group->setAttribute( L"Name", L"" );
-
-				unsigned count = 0;
-				for ( int n = 0; n < (int) m_ComposeSequences.GetSize( ); n++ ) {
-					if ( ! m_ComposeSequences[n].chComposed ) {
+				for ( INT_PTR n = 0; n < m_ComposeSequences.GetSize( ); n++ ) {
+					if ( !m_ComposeSequences[n].chComposed ) {
 						continue;
 					}
-					Group->appendChild( ElementFromSequence( doc, m_ComposeSequences[n] ) );
-					count++;
+
+					XElement mapping = CreateAndAppendXElement( doc, L"Mapping", Group );
+						XElement first    = CreateAndAppendXElement( doc, L"First",    mapping, m_ComposeSequences[n].chFirst );
+						XElement second   = CreateAndAppendXElement( doc, L"Second",   mapping, m_ComposeSequences[n].chSecond );
+						XElement composed = CreateAndAppendXElement( doc, L"Composed", mapping, m_ComposeSequences[n].chComposed );
 				}
 	}
 	catch ( _com_error e ) {
