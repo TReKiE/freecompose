@@ -34,8 +34,8 @@ CFeatures::~CFeatures( ) {
 void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 	CPropertyPage::DoDataExchange( pDX );
 
-	DDX_Check( pDX, IDC_ENABLEONSTARTUP,  m_Options.m_fStartActive );
-	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.m_fStartWithWindows );
+	DDX_Check( pDX, IDC_ENABLEONSTARTUP,  m_Options.StartActive );
+	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.StartWithWindows );
 	// XXX //DDX_Check( pDX, IDC_SWAPCAPSLOCK,     m_Options.m_fSwapCapsLock );
 
 	DDX_Control( pDX, IDC_COMPOSE_KEY,                   m_cbComposeKey );
@@ -51,12 +51,12 @@ BOOL CFeatures::OnInitDialog( ) {
 		return FALSE;
 
 	debug( L"CFeatures::OnInitDialog: SA:%c SWW:%c CLM:%d CLS:%d VC:0x%02x VSCL:0x%02x\n",
-		m_Options.m_fStartActive      ? L'T' : L'f',
-		m_Options.m_fStartWithWindows ? L'T' : L'f',
-		m_Options.m_CapsLockToggleMode,
-		m_Options.m_CapsLockSwapMode,
-		m_Options.m_vkCompose,
-		m_Options.m_vkSwapCapsLock
+		m_Options.StartActive      ? L'T' : L'f',
+		m_Options.StartWithWindows ? L'T' : L'f',
+		m_Options.CapsLockToggleMode,
+		m_Options.CapsLockSwapMode,
+		m_Options.ComposeVk,
+		m_Options.SwapCapsLockVk
 	);
 
 	CString keyName;
@@ -72,7 +72,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		index = m_cbComposeKey.AddString( keyName );
 		if ( index >= 0 ) {
 			m_cbComposeKey.SetItemData( index, SpecialKeys[n] );
-			if ( m_Options.m_vkCompose == SpecialKeys[n] ) {
+			if ( m_Options.ComposeVk == SpecialKeys[n] ) {
 				m_cbComposeKey.SetCurSel( index );
 			}
 		}
@@ -84,7 +84,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		index = m_cbSwapCapsLockKey.AddString( keyName );
 		if ( index >= 0 ) {
 			m_cbSwapCapsLockKey.SetItemData( index, SpecialKeys[n] );
-			if ( m_Options.m_vkSwapCapsLock == SpecialKeys[n] ) {
+			if ( m_Options.SwapCapsLockVk == SpecialKeys[n] ) {
 				m_cbSwapCapsLockKey.SetCurSel( index );
 			}
 		}
@@ -92,7 +92,7 @@ BOOL CFeatures::OnInitDialog( ) {
 
 	// XXX //m_cbSwapCapsLockKey.EnableWindow( m_Options.m_fSwapCapsLock ? TRUE : FALSE );
 
-	switch ( m_Options.m_CapsLockToggleMode ) {
+	switch ( m_Options.CapsLockToggleMode ) {
 		case CLTM_NORMAL:     m_btnCltmNormal    .SetCheck( BST_CHECKED ); break;
 		case CLTM_PRESSTWICE: m_btnCltmPressTwice.SetCheck( BST_CHECKED ); break;
 		case CLTM_DISABLED:   m_btnCltmDisabled  .SetCheck( BST_CHECKED ); break;
@@ -123,7 +123,7 @@ void CFeatures::OnComposeKeyChanged( ) {
 	if ( CB_ERR == dw )
 		return;
 
-	m_Options.m_vkCompose = (DWORD) dw;
+	m_Options.ComposeVk = (DWORD) dw;
 	SetModified( );
 }
 
@@ -145,7 +145,7 @@ void CFeatures::OnSwapCapsLockKeyChanged( ) {
 	if ( CB_ERR == dw )
 		return;
 
-	m_Options.m_vkSwapCapsLock = (DWORD) dw;
+	m_Options.SwapCapsLockVk = (DWORD) dw;
 	SetModified( );
 }
 
@@ -155,15 +155,15 @@ void CFeatures::OnCapsLockModeChanged( UINT uID ) {
 	SetModified( );
 	switch ( uID ) {
 		case IDC_CAPSLOCKTOGGLEMODE_NORMAL:
-			m_Options.m_CapsLockToggleMode = CLTM_NORMAL;
+			m_Options.CapsLockToggleMode = CLTM_NORMAL;
 			break;
 
 		case IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE:
-			m_Options.m_CapsLockToggleMode = CLTM_PRESSTWICE;
+			m_Options.CapsLockToggleMode = CLTM_PRESSTWICE;
 			break;
 
 		case IDC_CAPSLOCKTOGGLEMODE_DISABLED:
-			m_Options.m_CapsLockToggleMode = CLTM_DISABLED;
+			m_Options.CapsLockToggleMode = CLTM_DISABLED;
 			break;
 	}
 }

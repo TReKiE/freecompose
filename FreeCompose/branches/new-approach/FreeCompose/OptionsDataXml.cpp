@@ -8,7 +8,7 @@
 #include "Utils.h"
 
 //==============================================================================
-// Types and type aliases
+// Type aliases
 //==============================================================================
 
 using XAttribute             = MSXML2::IXMLDOMAttributePtr;
@@ -66,12 +66,10 @@ static inline Tout CoerceXElement( XElement const& value ) {
 
 // 'FromXElement' functions
 
-static inline COMPOSE_SEQUENCE ComposeSequenceFromXElement( XElement const& value ) {
-	return COMPOSE_SEQUENCE(
-		CoerceXElement<unsigned>( value->selectSingleNode( L"First" ) ),
-		CoerceXElement<unsigned>( value->selectSingleNode( L"Second" ) ),
-		CoerceXElement<unsigned>( value->selectSingleNode( L"Composed" ) )
-	);
+static inline ComposeSequence ComposeSequenceFromXElement( XElement const& value ) {
+	CString Sequence( (LPCWSTR) value->selectSingleNode( L"Sequence" )->text );
+	CString Result( (LPCWSTR) value->selectSingleNode( L"Result" )->text );
+	return ComposeSequence( Sequence, Result );
 }
 
 // CreateXElement functions
@@ -94,7 +92,7 @@ static inline XElement CreateAndAppendXElement( XDocument& doc, _bstr_t const& t
 // Other functions
 
 static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
-	return 0 == CString( (LPCWSTR) elt->nodeName ).Compare( name );
+	return 0 == CString( static_cast<LPCWSTR>( elt->nodeName ) ).Compare( name );
 }
 
 static inline XDocument CreateDOMDocument( void ) {
@@ -121,17 +119,96 @@ static inline XDocument CreateDOMDocument( void ) {
 // COptionsData implementation
 //==============================================================================
 
-bool COptionsData::_LoadFromXml( void ) {
-	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::_LoadFromXml: Can't ensure app data folder exists\n" );
+bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
+	XDocument doc = static_cast<IXMLDOMDocument*>( pvDoc );
+
+	try {
+		XElement FcConfiguration = doc->documentElement;
+		if ( !CompareNodeName( FcConfiguration, L"FcConfiguration" ) ) {
+			debug( L"COptionsData::_InterpretConfiguration: document element is not <FcConfiguration>, aborting load\n" );
+			return false;
+		}
+
+		XElement SchemaVersion = FcConfiguration->selectSingleNode( L"SchemaVersion" );
+		int nSchemaVersion = CoerceXElement<unsigned>( SchemaVersion );
+		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
+			debug( L"COptionsData::_InterpretConfiguration: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
+			return false;
+		}
+
+		XElement Options = FcConfiguration->selectSingleNode( L"Options" );
+
+		XElement Startup = Options->selectSingleNode( L"Startup" );
+		StartActive = BoolStringMapper[ Startup->selectSingleNode( L"StartActive" )->text ];
+		StartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
+
+		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
+		CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
+		CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
+		ComposeVk = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		SwapCapsLockVk = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+
+		XElement Mappings = FcConfiguration->selectSingleNode( L"Mappings" );
+		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
+		XElement group;
+		while ( group = groupNodes->nextNode( ) ) {
+			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
+			XElement mapping;
+			while ( mapping = mappingNodes->nextNode( ) ) {
+				ComposeSequences.Add( ComposeSequenceFromXElement( mapping ) );
+			}
+		}
+	}
+	catch ( _com_error e ) {
+		debug( L"COptionsData::_InterpretConfiguration: Caught exception parsing configuration, hr=0x%08lX\n", e.Error( ) );
+		return false;
+	}
+	catch ( ... ) {
+		debug( L"COptionsData::_InterpretConfiguration: caught some other kind of exception??\n" );
 		return false;
 	}
 
-	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
+	return true;
+}
+
+bool COptionsData::_LoadDefaultConfiguration( void ) {
+	CString strConfiguration( LoadFromStringTable( IDX_DEFAULT_CONFIGURATION ) );
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"COptionsData::_LoadFromXml: Can't create instance of DOMDocument\n" );
+		debug( L"COptionsData::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
+		return false;
+	}
+
+	//
+	// Load XML from memory
+	//
+	try {
+		_variant_t result = doc->loadXML( static_cast<LPCWSTR>( strConfiguration ) );
+		if ( !static_cast<VARIANT_BOOL>( result ) ) {
+			debug( L"COptionsData::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			return false;
+		}
+	}
+	catch ( _com_error e ) {
+		debug( L"COptionsData::_LoadDefaultConfiguration: Caught exception loading default configuration, hr=0x%08lX\n", e.Error( ) );
+		return false;
+	}
+
+	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
+}
+
+bool COptionsData::_LoadXmlFile( void ) {
+	if ( !EnsureFreeComposeFolderExists( ) ) {
+		debug( L"COptionsData::_LoadXmlFile: Can't ensure app data folder exists\n" );
+		return false;
+	}
+
+	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
+
+	XDocument doc = CreateDOMDocument( );
+	if ( !doc ) {
+		debug( L"COptionsData::_LoadXmlFile: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -141,75 +218,29 @@ bool COptionsData::_LoadFromXml( void ) {
 	try {
 		_variant_t result = doc->load( _variant_t( str ) );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"COptionsData::_LoadFromXml: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			debug( L"COptionsData::_LoadXmlFile: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
+		debug( L"COptionsData::_LoadXmlFile: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
-	try {
-		XElement FreeCompose = doc->documentElement;
-		if ( !CompareNodeName( FreeCompose, L"FreeCompose" ) ) {
-			debug( L"COptionsData::_LoadFromXml: document element is not <FreeCompose>, aborting load\n" );
-			return false;
-		}
-
-		XElement SchemaVersion = FreeCompose->selectSingleNode( L"SchemaVersion" );
-		int nSchemaVersion = CoerceXElement<unsigned>( SchemaVersion );
-		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
-			debug( L"COptionsData::_LoadFromXml: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
-			return false;
-		}
-
-		XElement Options = FreeCompose->selectSingleNode( L"Options" );
-
-		XElement Startup = Options->selectSingleNode( L"Startup" );
-		m_fStartActive = BoolStringMapper[ Startup->selectSingleNode( L"StartActive" )->text ];
-		m_fStartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
-
-		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
-		m_CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
-		m_CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
-		m_vkCompose = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		m_vkSwapCapsLock = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
-
-		XElement Mappings = FreeCompose->selectSingleNode( L"Mappings" );
-		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
-		XElement group;
-		while ( group = groupNodes->nextNode( ) ) {
-			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
-			XElement mapping;
-			while ( mapping = mappingNodes->nextNode( ) ) {
-				m_ComposeSequences.Add( ComposeSequenceFromXElement( mapping ) );
-			}
-		}
-	}
-	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadFromXml: Caught exception parsing configuration, hr=0x%08lX\n", e.Error( ) );
-		return false;
-	}
-	catch ( ... ) {
-		debug( L"COptionsData::_LoadFromXml: something bad happened??\n" );
-		return false;
-	}
-
-	return true;
+	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
 }
 
-bool COptionsData::_SaveToXml( void ) {
+bool COptionsData::_SaveXmlFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::_SaveToXml: Can't ensure app data folder exists\n" );
+		debug( L"COptionsData::_SaveXmlFile: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
-	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
+	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"COptionsData::_SaveToXml: Can't create instance of DOMDocument\n" );
+		debug( L"COptionsData::_SaveXmlFile: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -218,42 +249,42 @@ bool COptionsData::_SaveToXml( void ) {
 	//
 	try {
         doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-8'" ) );
-		XElement FreeCompose = CreateAndAppendXElement( doc, L"FreeCompose", doc );
+		XElement FcConfiguration = CreateAndAppendXElement( doc, L"FcConfiguration", doc );
+		FcConfiguration->setAttribute( L"xmlns", "http://www.zive.ca/xmlns/FreeCompose/configuration/2" );
 
-			XElement SchemaVersion = CreateAndAppendXElement( doc, L"SchemaVersion", FreeCompose, CONFIGURATION_SCHEMA_VERSION );
+			XElement SchemaVersion = CreateAndAppendXElement( doc, L"SchemaVersion", FcConfiguration, CONFIGURATION_SCHEMA_VERSION );
 
-			XElement Options = CreateAndAppendXElement( doc, L"Options", FreeCompose );
+			XElement Options = CreateAndAppendXElement( doc, L"Options", FcConfiguration );
 
 				XElement Startup = CreateAndAppendXElement( doc, L"Startup", Options );
 
-					XElement StartActive      = CreateAndAppendXElement( doc, L"StartActive",      Startup, BoolStringMapper[ !!m_fStartActive ] );
-					XElement StartWithWindows = CreateAndAppendXElement( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!m_fStartWithWindows ] );
+					XElement StartActive      = CreateAndAppendXElement( doc, L"StartActive",      Startup, BoolStringMapper[ !!this->StartActive ] );
+					XElement StartWithWindows = CreateAndAppendXElement( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!this->StartWithWindows ] );
 
 				XElement Keyboard = CreateAndAppendXElement( doc, L"Keyboard", Options );
 
-					XElement CapsLockToggleMode = CreateAndAppendXElement( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ m_CapsLockToggleMode ] );
-					XElement CapsLockSwapMode   = CreateAndAppendXElement( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ m_CapsLockSwapMode ] );
-					XElement ComposeKey         = CreateAndAppendXElement( doc, L"ComposeKey",         Keyboard, m_vkCompose );
-					XElement SwapCapsLockKey    = CreateAndAppendXElement( doc, L"SwapCapsLockKey",    Keyboard, m_vkSwapCapsLock );
+					XElement CapsLockToggleMode = CreateAndAppendXElement( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ this->CapsLockToggleMode ] );
+					XElement CapsLockSwapMode   = CreateAndAppendXElement( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ this->CapsLockSwapMode ] );
+					XElement ComposeKey         = CreateAndAppendXElement( doc, L"ComposeKey",         Keyboard, this->ComposeVk );
+					XElement SwapCapsLockKey    = CreateAndAppendXElement( doc, L"SwapCapsLockKey",    Keyboard, this->SwapCapsLockVk );
 
-			XElement Mappings = CreateAndAppendXElement( doc, L"Mappings", FreeCompose );
+			XElement Mappings = CreateAndAppendXElement( doc, L"Mappings", FcConfiguration );
 
 				XElement Group = CreateAndAppendXElement( doc, L"Group", Mappings );
 				Group->setAttribute( L"Name", L"default" );
 
-				for ( INT_PTR n = 0; n < m_ComposeSequences.GetSize( ); n++ ) {
-					if ( !m_ComposeSequences[n].chComposed ) {
+				for ( INT_PTR n = 0; n < ComposeSequences.GetSize( ); n++ ) {
+					if ( ComposeSequences[n].Sequence.GetLength( ) == 0 || ComposeSequences[n].Result.GetLength( ) == 0 ) {
 						continue;
 					}
 
 					XElement mapping = CreateAndAppendXElement( doc, L"Mapping", Group );
-						XElement first    = CreateAndAppendXElement( doc, L"First",    mapping, m_ComposeSequences[n].chFirst );
-						XElement second   = CreateAndAppendXElement( doc, L"Second",   mapping, m_ComposeSequences[n].chSecond );
-						XElement composed = CreateAndAppendXElement( doc, L"Composed", mapping, m_ComposeSequences[n].chComposed );
+						XElement sequence = CreateAndAppendXElement( doc, L"Sequence", mapping, static_cast<LPCWSTR>( ComposeSequences[n].Sequence ) );
+						XElement result   = CreateAndAppendXElement( doc, L"Result",   mapping, static_cast<LPCWSTR>( ComposeSequences[n].Result ) );
 				}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
+		debug( L"COptionsData::_SaveXmlFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -263,12 +294,12 @@ bool COptionsData::_SaveToXml( void ) {
 	try {
 		HRESULT hr = doc->save( _variant_t( str ) );
 		if ( FAILED( hr ) ) {
-			debug( L"COptionsData::_SaveToXml: doc->save failed, hr=0x%08lX\n", hr );
+			debug( L"COptionsData::_SaveXmlFile: doc->save failed, hr=0x%08lX\n", hr );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveToXml: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"COptionsData::_SaveXmlFile: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 

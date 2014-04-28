@@ -1,6 +1,9 @@
 #pragma once
 
 class COMPOSE_TREE_NODE {
+	using Tchildren = std::map<int, COMPOSE_TREE_NODE*>;
+	using Tleaves = std::map<int, CString&>;
+
 public:
 #if DEBUG_NODES_LEAVES
 	inline COMPOSE_TREE_NODE( ) {
@@ -23,15 +26,15 @@ public:
 	inline COMPOSE_TREE_NODE* GetChild( int character ) {
 		auto iter = children.find( character );
 		if ( iter == children.end( ) ) {
-			return NULL;
+			return nullptr;
 		}
 		return (*iter).second;
 	}
 
-	inline int GetLeaf( int character ) {
+	inline CString GetLeaf( int character ) {
 		auto iter = leaves.find( character );
 		if ( iter == leaves.end( ) ) {
-			return -1;
+			return CString( );
 		}
 		return (*iter).second;
 	}
@@ -40,7 +43,7 @@ public:
 		children.insert( Tchildren::value_type( character, child ) );
 	}
 
-	inline void AddLeaf( int character, int result ) {
+	inline void AddLeaf( int character, CString& result ) {
 		leaves.insert( Tleaves::value_type( character, result ) );
 #if DEBUG_NODES_LEAVES
 		_cLeaves++;
@@ -48,9 +51,6 @@ public:
 	}
 
 private:
-	using Tchildren = std::map<int const, COMPOSE_TREE_NODE*>;
-	using Tleaves = std::map<int const, int const>;
-
 	Tchildren children;
 	Tleaves leaves;
 

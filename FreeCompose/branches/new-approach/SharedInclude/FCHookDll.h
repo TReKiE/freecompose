@@ -16,22 +16,12 @@ extern "C" {
 // Types
 //==============================================================================
 
-struct COMPOSE_SEQUENCE {
-	COMPOSE_SEQUENCE( ) {
+struct ComposeSequence {
+	ComposeSequence( ) { }
+	ComposeSequence( CString& sequence, CString& result ): Sequence( sequence ), Result( result ) { }
 
-	}
-
-	COMPOSE_SEQUENCE( unsigned first, unsigned second, unsigned composed ):
-		chFirst( first ),
-		chSecond( second ),
-		chComposed( composed )
-	{
-
-	}
-
-	unsigned chFirst;
-	unsigned chSecond;
-	unsigned chComposed;
+	CString Sequence;
+	CString Result;
 };
 
 enum CAPS_LOCK_TOGGLE_MODE {
@@ -92,7 +82,7 @@ FCHOOKDLL_API HWND FcGetNotifyWindowHandle( void );
 FCHOOKDLL_API BOOL FcSetComposeKey( DWORD vkCompose );
 FCHOOKDLL_API DWORD FcGetComposeKey( void );
 
-FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pSequences, DWORD cSequences );
+FCHOOKDLL_API BOOL FcSetComposeSequences( ComposeSequence* pSequences, DWORD cSequences );
 
 //
 // Suite 4: Caps Lock

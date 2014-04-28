@@ -46,9 +46,9 @@ size_t COMPOSE_TREE_NODE::_cLeaves = 0;
 //==============================================================================
 
 AutoCriticalSection        cs;
-HHOOK                      hHook                 = NULL;
+HHOOK                      hHook                 = nullptr;
 
-COMPOSE_SEQUENCE*          ComposeSequences      = NULL;
+ComposeSequence*           ComposeSequences      = nullptr;
 INT_PTR                    cComposeSequences     = 0;
 
 COMPOSE_SEQUENCE_TREE      ComposeSequenceTree;
@@ -60,10 +60,10 @@ bool                       fSwapCapsLock         = false;
 DWORD                      vkCompose             = VK_APPS;
 DWORD                      vkCapsLockSwap        = VK_CAPITAL;
 
-KeyEventHandler*           KeyEventHandlers[256] = { NULL, };
+KeyEventHandler*           KeyEventHandlers[256] = { nullptr, };
 
 COMPOSE_STATE              ComposeState          = csNORMAL;
 
-HINSTANCE                  hDllInst              = NULL;
+HINSTANCE                  hDllInst              = nullptr;
 
-HWND                       hwndNotifyWindow      = NULL;
+HWND                       hwndNotifyWindow      = nullptr;

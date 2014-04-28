@@ -25,6 +25,10 @@
 #include <afxtempl.h>
 #include <atlwin.h>
 
+#include <comdef.h>
+#include <comip.h>
+#include <comutil.h>
+
 #include <FCHookDll.h>
 #include <FCShared.h>
 

@@ -2,9 +2,17 @@
 
 class COptionsData {
 public:
-	COptionsData( );
-	COptionsData( COptionsData const& );
-	virtual ~COptionsData( );
+	inline COptionsData( ) {
+
+	}
+
+	inline COptionsData( COptionsData const& options ) {
+		operator=( options );
+	}
+
+	inline ~COptionsData( ) {
+		ComposeSequences.RemoveAll( );
+	}
 
 	COptionsData& operator=( COptionsData const& );
 	bool operator==( COptionsData const& );
@@ -13,22 +21,22 @@ public:
 	void Load( void );
 	void Save( void );
 
-	CArray<COMPOSE_SEQUENCE> m_ComposeSequences;
+	CArray<ComposeSequence> ComposeSequences;
  
-	BOOL m_fStartActive;
-	BOOL m_fStartWithWindows;
-	CAPS_LOCK_TOGGLE_MODE m_CapsLockToggleMode;
-	CAPS_LOCK_SWAP_MODE m_CapsLockSwapMode;
-	DWORD m_vkCompose;
-	DWORD m_vkSwapCapsLock;
+	BOOL StartActive;
+	BOOL StartWithWindows;
+	CAPS_LOCK_TOGGLE_MODE CapsLockToggleMode;
+	CAPS_LOCK_SWAP_MODE CapsLockSwapMode;
+	DWORD ComposeVk;
+	DWORD SwapCapsLockVk;
 
 private:
-	bool _FcValidateSequence( COMPOSE_SEQUENCE const& sequence );
-	void _FcLoadDefaultConfiguration( void );
-	bool _FcLoadFromRegistry( void );
-	void _FcLoadKeys( void );
+	bool _LoadFromRegistry( void );
+	void _LoadKeys( void );
 	void _UpdateRunKey( void );
 
-	bool _LoadFromXml( void );
-	bool _SaveToXml( void );
+	bool _InterpretConfiguration( void* pvDoc );
+	bool _LoadDefaultConfiguration( void );
+	bool _LoadXmlFile( void );
+	bool _SaveXmlFile( void );
 };

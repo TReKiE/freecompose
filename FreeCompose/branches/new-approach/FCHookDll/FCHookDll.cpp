@@ -15,13 +15,13 @@ static volatile LONG cClients = 0;
 // Function prototypes
 //==============================================================================
 
-static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences );
+static void _SetComposeSequencesImpl( ComposeSequence* pSequences, INT_PTR cSequences );
 
 //==============================================================================
 // Private functions
 //==============================================================================
 
-static void _SetComposeSequencesImpl( COMPOSE_SEQUENCE* pSequences, INT_PTR cSequences ) {
+static void _SetComposeSequencesImpl( ComposeSequence* pSequences, INT_PTR cSequences ) {
 	LOCK( cs ) {
 		if ( ComposeSequences ) {
 			delete[] ComposeSequences;
@@ -163,13 +163,13 @@ FCHOOKDLL_API DWORD FcGetComposeKey( void ) {
 }
 
 
-FCHOOKDLL_API BOOL FcSetComposeSequences( COMPOSE_SEQUENCE* pInSequences, DWORD cInSequences ) {
+FCHOOKDLL_API BOOL FcSetComposeSequences( ComposeSequence* pInSequences, DWORD cInSequences ) {
 	if ( !pInSequences || !cInSequences ) {
 		ReleaseComposeSequences( );
 	} else {
-		COMPOSE_SEQUENCE* pSequences = new COMPOSE_SEQUENCE[cInSequences];
-		memcpy( pSequences, pInSequences, sizeof( COMPOSE_SEQUENCE ) * cInSequences );
-		qsort( pSequences, cInSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences );
+		ComposeSequence* pSequences = new ComposeSequence[cInSequences];
+		memcpy( pSequences, pInSequences, sizeof( ComposeSequence ) * cInSequences );
+		qsort( pSequences, cInSequences, sizeof( ComposeSequence ), CompareComposeSequences );
 		_SetComposeSequencesImpl( pSequences, cInSequences );
 	}
 	return TRUE;

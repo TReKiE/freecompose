@@ -42,9 +42,9 @@ template<typename T> extern inline T compare_keys( void* /*context*/, const void
 		return 0;
 }
 
-template<typename T> extern inline T compare_keys_reverse( void* /*context*/, const void* _elem1, const void* _elem2 ) {
-	T& elem1 = *( (T*) _elem1 );
-	T& elem2 = *( (T*) _elem2 );
+template<typename T> extern inline T compare_keys_reverse( void* /*context*/, void const* _elem1, void const* _elem2 ) {
+	T const elem1 = *static_cast<T const*>( _elem1 );
+	T const elem2 = *static_cast<T const*>( _elem2 );
 
 	if ( elem1 > elem2 )
 		return -1;
@@ -54,18 +54,19 @@ template<typename T> extern inline T compare_keys_reverse( void* /*context*/, co
 		return 0;
 }
 
-extern inline bool operator==( const COMPOSE_SEQUENCE& a, const COMPOSE_SEQUENCE& b ) {
-	if ( a.chFirst    != b.chFirst    ) return false;
-	if ( a.chSecond   != b.chSecond   ) return false;
-	if ( a.chComposed != b.chComposed ) return false;
-	return true;
+extern inline bool operator==( ComposeSequence const& a, ComposeSequence const& b ) {
+	return ( ( 0 == a.Sequence.Compare( b.Sequence ) ) && ( 0 == a.Result.Compare( b.Result ) ) );
 }
 
-extern inline bool operator!=( const COMPOSE_SEQUENCE& a, const COMPOSE_SEQUENCE& b ) {
-	return ! operator==( a, b );
+extern inline bool operator!=( ComposeSequence const& a, ComposeSequence const& b ) {
+	return ( ( 0 != a.Sequence.Compare( b.Sequence ) ) || ( 0 != a.Result.Compare( b.Result ) ) );
 }
 
 extern inline bool IsKeyDown( const DWORD vk ) {
-	unsigned u = (unsigned short) GetKeyState( vk );
+	unsigned u = static_cast<unsigned short>( GetKeyState( vk ) );
 	return ( u & 0x8000U ) == 0x8000U;
+}
+
+extern inline CString LoadFromStringTable( unsigned nResourceId ) {
+	return CString( reinterpret_cast<LPCWSTR>( nResourceId ) );
 }

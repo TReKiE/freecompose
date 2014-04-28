@@ -13,11 +13,18 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (Canada) resources
+// English (United States) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// XMLFILE
+//
+
+IDX_DEFAULT_CONFIGURATION XMLFILE                 "C:\\IceKarma\\Projects\\FreeCompose\\FreeCompose\\DefaultConfiguration.xml"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -43,8 +50,8 @@ BEGIN
     "#define _AFX_NO_TRACKER_RESOURCES\r\n"
     "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
     "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)\r\n"
-    "LANGUAGE 9, 4\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
     "#pragma code_page(1252)\r\n"
     "#include ""res\\FreeCompose.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""     // Standard components\r\n"
@@ -115,19 +122,17 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON | BS_FLAT,14,174,75,10
 END
 
-IDD_EDITKEYSEQUENCE DIALOGEX 0, 0, 188, 95
+IDD_EDITKEYSEQUENCE DIALOGEX 0, 0, 189, 75
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
 CAPTION "Edit key sequence"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_FIRSTKEY,77,7,105,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_SECONDKEY,77,28,105,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_RESULT,77,49,105,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,77,77,50,14,BS_FLAT
-    PUSHBUTTON      "Cancel",IDCANCEL,131,77,50,14,BS_FLAT
-    LTEXT           "First key:",IDC_STATIC,7,9,31,8
-    LTEXT           "Second key:",IDC_STATIC,7,30,40,8
-    LTEXT           "Result:",IDC_STATIC,7,51,24,8
+    EDITTEXT        IDC_SEQUENCE,77,7,105,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_RESULT,77,28,105,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,79,54,50,14,BS_FLAT
+    PUSHBUTTON      "Cancel",IDCANCEL,133,54,50,14,BS_FLAT
+    LTEXT           "Sequence:",IDC_STATIC,7,9,35,8
+    LTEXT           "Result:",IDC_STATIC,7,30,24,8
 END
 
 IDD_SOUNDS DIALOGEX 0, 0, 252, 196
@@ -212,9 +217,9 @@ BEGIN
     IDD_EDITKEYSEQUENCE, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 181
+        RIGHTMARGIN, 182
         TOPMARGIN, 7
-        BOTTOMMARGIN, 88
+        BOTTOMMARGIN, 68
     END
 
     IDD_SOUNDS, DIALOG
@@ -360,9 +365,8 @@ BEGIN
     IDS_EDITKEYSEQUENCE_TITLE_EDIT "Edit key sequence"
     IDS_EDITKEYSEQUENCE_TITLE_ADD "Add key sequence"
     IDS_EDITKEYSEQUENCE_CANTBEBLANK "Key may not be left blank."
-    IDS_KEYSEQUENCES_CHARACTER "Character"
-    IDS_KEYSEQUENCES_KEY1   "Key 1"
-    IDS_KEYSEQUENCES_KEY2   "Key 2"
+    IDS_KEYSEQUENCES_SEQUENCE "Sequence"
+    IDS_KEYSEQUENCES_RESULT "Result"
     IDS_KEYSEQUENCES_CONFIRM_TITLE "Remove key sequences"
     IDS_KEYSEQUENCES_CONFIRM_PROMPT "Are you sure?"
     IDS_MAINFRAME_ENABLED   "FreeCompose is enabled."
@@ -400,7 +404,7 @@ BEGIN
     IDS_VK_BACK             "Backspace"
 END
 
-#endif    // English (Canada) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -415,8 +419,8 @@ END
 #define _AFX_NO_TRACKER_RESOURCES
 #define _AFX_NO_PROPERTY_RESOURCES
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
-LANGUAGE 9, 4
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
 #pragma code_page(1252)
 #include "res\FreeCompose.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"     // Standard components

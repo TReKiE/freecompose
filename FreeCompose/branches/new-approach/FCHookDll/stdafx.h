@@ -27,6 +27,7 @@
 #include <utility>
 
 // Windows SDK
+#include <afx.h>
 #include <windows.h>
 
 // FCShared

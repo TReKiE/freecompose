@@ -26,7 +26,7 @@ extern UINT const FCM_KEY;
 extern AutoCriticalSection        cs;
 extern HHOOK                      hHook;
 
-extern COMPOSE_SEQUENCE*          ComposeSequences;
+extern ComposeSequence*           ComposeSequences;
 extern INT_PTR                    cComposeSequences;
 
 extern COMPOSE_SEQUENCE_TREE      ComposeSequenceTree;
