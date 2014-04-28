@@ -9,9 +9,10 @@ enum SEQUENCE_EDITOR_MODE {
 
 class CComposeSequenceEditor: public CDialog {
 	DECLARE_DYNAMIC( CComposeSequenceEditor )
+	DECLARE_MESSAGE_MAP( )
 
 public:
-	CComposeSequenceEditor( COMPOSE_SEQUENCE& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent = NULL );
+	CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent = nullptr );
 	virtual ~CComposeSequenceEditor( );
 
 	// Dialog Data
@@ -19,20 +20,15 @@ public:
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
-	virtual void DDX_Char( CDataExchange* pDX, int nIDC, unsigned& ch );
-	virtual void DDX_Key( CDataExchange* pDX, int nIDC, unsigned& ch );
-	virtual void DDV_Key( CDataExchange* pDX, unsigned& dwVk );
-
-	DECLARE_MESSAGE_MAP( )
+	virtual void DDX_Result( CDataExchange* pDX, int nIDC, CString& result );
 
 private:
-	COMPOSE_SEQUENCE& m_sequence;
+	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strTitle;
 
 	virtual BOOL OnInitDialog( );
 
-	CKeyEdit m_editFirstKey;
-	CKeyEdit m_editSecondKey;
+	CEdit m_editSequence;
 	CEdit m_editResult;
 };

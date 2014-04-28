@@ -31,8 +31,9 @@ private:
 	CButton m_btnEdit;
 	CButton m_btnRemove;
 
-	void _DoAddOneKeySequence( const INT_PTR n );
-	void _DoUpdateOneKeySequence( const INT_PTR n );
+	CString _FormatResultString( ComposeSequence const& sequence );
+	void _AddOneKeySequence( const INT_PTR n );
+	void _UpdateOneKeySequence( const INT_PTR n );
 	void _AdjustColumns( void );
 	void _FillKeyComboList( void );
 	void _AddNewKeySequence( const INT_PTR n );

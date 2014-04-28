@@ -67,7 +67,7 @@ void CMainFrame::_Initialize( void ) {
 	m_pOptions = new COptionsData( );
 	m_pOptions->Load( );
 	// HACK HACK HACK HACK HACK
-	m_pOptions->m_fStartActive = FALSE;
+	m_pOptions->StartActive = FALSE;
 	// HACK ENDS HACK ENDS HACK ENDS
 	_Reconfigure( );
 
@@ -76,16 +76,16 @@ void CMainFrame::_Initialize( void ) {
 }
 
 void CMainFrame::_Reconfigure( void ) {
-	FcSetComposeSequences( m_pOptions->m_ComposeSequences.GetData( ), static_cast<DWORD>( m_pOptions->m_ComposeSequences.GetCount( ) ) );
+	FcSetComposeSequences( m_pOptions->ComposeSequences.GetData( ), static_cast<DWORD>( m_pOptions->ComposeSequences.GetCount( ) ) );
 
-	FcSetCapsLockToggleMode( m_pOptions->m_CapsLockToggleMode );
+	FcSetCapsLockToggleMode( m_pOptions->CapsLockToggleMode );
 
-	FcSetCapsLockSwapMode( m_pOptions->m_CapsLockSwapMode );
-	FcSetSwapCapsLockKey( m_pOptions->m_vkSwapCapsLock );
+	FcSetCapsLockSwapMode( m_pOptions->CapsLockSwapMode );
+	FcSetSwapCapsLockKey( m_pOptions->SwapCapsLockVk );
 
-	FcSetComposeKey( m_pOptions->m_vkCompose );
+	FcSetComposeKey( m_pOptions->ComposeVk );
 
-	if ( m_pOptions->m_fStartActive ) {
+	if ( m_pOptions->StartActive ) {
 		FcEnableHook( );
 	} else {
 		FcDisableHook( );
@@ -302,7 +302,7 @@ void CMainFrame::OnAppZapConf( void ) {
 	}
 	
 	debug( L"CMainFrame::OnAppZapConf: Configuration file deleted successfully.\n" );
-	MessageBox( L"Configuration file deleted.", appTitle, MB_OK|MB_ICONINFORMATION );
+	MessageBox( L"Configuration file zapped.", appTitle, MB_OK|MB_ICONINFORMATION );
 }
 #endif
 

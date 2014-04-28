@@ -29,7 +29,7 @@ wstring          translationBuffer;
 
 static void MakeUnicodeKeyDown( INPUT& input, wchar_t ch );
 static void MakeUnicodeKeyUp( INPUT& input, wchar_t ch );
-//static bool SendKey( COMPOSE_SEQUENCE* sequence );
+//static bool SendKey( ComposeSequence* sequence );
 static void RegenerateKey( KBDLLHOOKSTRUCT* pkb );
 static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 
@@ -38,17 +38,17 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 //==============================================================================
 
 //static int FindComposeSequence( unsigned ch1, unsigned ch2 ) {
-//	COMPOSE_SEQUENCE needle1 = { ch1, ch2 };
-//	COMPOSE_SEQUENCE needle2 = { ch2, ch1 };
-//	COMPOSE_SEQUENCE* match = NULL;
+//	ComposeSequence needle1 = { ch1, ch2 };
+//	ComposeSequence needle2 = { ch2, ch1 };
+//	ComposeSequence* match = NULL;
 //
 //	LOCK( cs ) {
 //		if ( cComposeSequences < 1 )
 //			break;
 //
-//		match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
+//		match = reinterpret_cast< ComposeSequence* >( bsearch( &needle1, ComposeSequences, cComposeSequences, sizeof( ComposeSequence ), CompareComposeSequences ) );
 //		if ( !match ) {
-//			match = reinterpret_cast< COMPOSE_SEQUENCE* >( bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( COMPOSE_SEQUENCE ), CompareComposeSequences ) );
+//			match = reinterpret_cast< ComposeSequence* >( bsearch( &needle2, ComposeSequences, cComposeSequences, sizeof( ComposeSequence ), CompareComposeSequences ) );
 //		}
 //	} UNLOCK( cs );
 //
@@ -67,7 +67,7 @@ static inline void MakeUnicodeKeyUp( INPUT& input, wchar_t ch ) {
 	input.ki.dwFlags = KEYEVENTF_UNICODE | KEYEVENTF_KEYUP;
 }
 
-//static bool SendKey( COMPOSE_SEQUENCE* sequence ) {
+//static bool SendKey( ComposeSequence* sequence ) {
 //	UINT numInputsToSend;
 //	INPUT input[4] = { 0, };
 //	wchar_t ch[3]  = { 0, };

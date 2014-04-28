@@ -18,21 +18,23 @@ const int HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
 IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
 
 BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
-	ON_NOTIFY(LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListItemChanged)
-	ON_NOTIFY(NM_DBLCLK, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListDoubleClick)
-	ON_BN_CLICKED(IDADD, &CKeySequences::OnBnClickedAdd)
-	ON_BN_CLICKED(IDEDIT, &CKeySequences::OnBnClickedEdit)
-	ON_BN_CLICKED(IDREMOVE, &CKeySequences::OnBnClickedRemove)
+	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListItemChanged )
+	ON_NOTIFY( NM_DBLCLK,       IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListDoubleClick )
+
+	ON_BN_CLICKED( IDADD,    &CKeySequences::OnBnClickedAdd    )
+	ON_BN_CLICKED( IDEDIT,   &CKeySequences::OnBnClickedEdit   )
+	ON_BN_CLICKED( IDREMOVE, &CKeySequences::OnBnClickedRemove )
 END_MESSAGE_MAP( )
 
 CKeySequences::CKeySequences( COptionsData& Options ):
-	CPropertyPage ( CKeySequences::IDD ),
+	CPropertyPage ( IDD ),
 	m_Options     ( Options )
 {
-	memset( m_nColumnWidths, 0, sizeof( m_nColumnWidths ) );
+	m_nColumnWidths[0] = m_nColumnWidths[1] = 0;
 }
 
 CKeySequences::~CKeySequences( ) {
+
 }
 
 void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
@@ -44,108 +46,80 @@ void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 }
 
 // TODO error handling
-void CKeySequences::_DoAddOneKeySequence( const INT_PTR n ) {
-	const COMPOSE_SEQUENCE& sequence = m_Options.m_ComposeSequences[ n ];
-	CString col0, col1, col2;
-	int item;
-	int width;
-	BOOL ret;
-
-	col0.Format( L"U+%06X %s", sequence.chComposed, static_cast<wchar_t const*>( Utf32ToUtf16( sequence.chComposed ) ) );
-	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[0] )
-		m_nColumnWidths[0] = width;
-	item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, (int) n, col0, 0, (UINT) -1, -1, n );
-	ASSERT( n == item );
-
-	col1 = Utf32ToUtf16( sequence.chFirst );
-	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[1] )
-		m_nColumnWidths[1] = width;
-	ret = m_KeyComboList.SetItem( item, 1, LVIF_STATE | LVIF_TEXT, col1, -1, 0, (UINT) -1, 0 );
-	ASSERT( TRUE == ret );
-
-	col2 = Utf32ToUtf16( sequence.chSecond );
-	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[1] )
-		m_nColumnWidths[1] = width;
-	ret = m_KeyComboList.SetItem( item, 2, LVIF_STATE | LVIF_TEXT, col2, -1, 0, (UINT) -1, 0 );
-	ASSERT( TRUE == ret );
+inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequence ) {
+	CString strResult;
+	unsigned chResult;
+	Utf16ToUtf32( sequence.Result, chResult );
+	strResult.Format( L"U+%06X %s", chResult, sequence.Result );
+	return strResult;
 }
 
 // TODO error handling
-void CKeySequences::_DoUpdateOneKeySequence( const INT_PTR n ) {
-	const COMPOSE_SEQUENCE& sequence = m_Options.m_ComposeSequences[ n ];
-	CString col0, col1, col2;
-	int width;
+void CKeySequences::_AddOneKeySequence( const INT_PTR n ) {
+	ComposeSequence const& sequence = m_Options.ComposeSequences[n];
+	CString strResult( _FormatResultString( sequence ) );
 
-	col0.Format( L"U+%06X %s", sequence.chComposed, static_cast<wchar_t const*>( Utf32ToUtf16( sequence.chComposed ) ) );
-	width = m_KeyComboList.GetStringWidth( col0 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[0] )
-		m_nColumnWidths[0] = width;
-	m_KeyComboList.SetItem( (int) n, 0, LVIF_TEXT, col0, -1, 0, 0, 0 );
+	m_nColumnWidths[0] = std::max( m_KeyComboList.GetStringWidth( strResult ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[0] );
+	int item = m_KeyComboList.InsertItem( LVIF_PARAM | LVIF_STATE | LVIF_TEXT, static_cast<int>( n ), strResult, 0, static_cast<UINT>( -1 ), -1, n );
 
-	col1 = Utf32ToUtf16( sequence.chFirst );
-	width = m_KeyComboList.GetStringWidth( col1 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[1] )
-		m_nColumnWidths[1] = width;
-	m_KeyComboList.SetItem( (int) n, 1, LVIF_TEXT, col1, -1, 0, 0, 0 );
+	m_nColumnWidths[1] = std::max( m_KeyComboList.GetStringWidth( sequence.Sequence ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[1] );
+	m_KeyComboList.SetItem( item, 1, LVIF_STATE | LVIF_TEXT, sequence.Sequence, -1, 0, static_cast<UINT>( -1 ), 0 );
+}
 
-	col2 = Utf32ToUtf16( sequence.chSecond );
-	width = m_KeyComboList.GetStringWidth( col2 ) + ITEM_FUDGE_FACTOR;
-	if ( width > m_nColumnWidths[1] )
-		m_nColumnWidths[1] = width;
-	m_KeyComboList.SetItem( (int) n, 2, LVIF_TEXT, col2, -1, 0, 0, 0 );
+// TODO error handling
+void CKeySequences::_UpdateOneKeySequence( const INT_PTR n ) {
+	const ComposeSequence& sequence = m_Options.ComposeSequences[n];
+	CString strResult( _FormatResultString( sequence ) );
+
+	m_nColumnWidths[0] = std::max( m_KeyComboList.GetStringWidth( strResult ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[0] );
+	m_KeyComboList.SetItem( static_cast<int>( n ), 0, LVIF_TEXT, strResult, -1, 0, 0, 0 );
+
+	m_nColumnWidths[1] = std::max( m_KeyComboList.GetStringWidth( sequence.Sequence ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[1] );
+	m_KeyComboList.SetItem( static_cast<int>( n ), 1, LVIF_TEXT, sequence.Sequence, -1, 0, 0, 0 );
 }
 
 void CKeySequences::_AdjustColumns( void ) {
 	m_KeyComboList.SetColumnWidth( 0, m_nColumnWidths[0] );
 	m_KeyComboList.SetColumnWidth( 1, m_nColumnWidths[1] );
-	m_KeyComboList.SetColumnWidth( 2, m_nColumnWidths[1] );
 }
 
 void CKeySequences::_FillKeyComboList( void ) {
 	m_KeyComboList.DeleteAllItems( );
-	for ( int n = 0; n < m_Options.m_ComposeSequences.GetCount( ); n++ ) {
-		_DoAddOneKeySequence( n );
+	INT_PTR limit = m_Options.ComposeSequences.GetCount( );
+	for ( INT_PTR n = 0; n < limit; n++ ) {
+		_AddOneKeySequence( n );
 	}
 	_AdjustColumns( );
 }
 
 void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
-	_DoAddOneKeySequence( n );
+	_AddOneKeySequence( n );
 	_AdjustColumns( );
 }
 
 BOOL CKeySequences::OnInitDialog( ) {
-	if ( ! CPropertyPage::OnInitDialog( ) )
+	if ( !CPropertyPage::OnInitDialog( ) ) {
 		return FALSE;
+	}
 
-	DWORD dwExtendedStyles =
-		  LVS_EX_FLATSB
-		| LVS_EX_FULLROWSELECT
-		| LVS_EX_GRIDLINES
-		| LVS_EX_HEADERDRAGDROP
-		| LVS_EX_LABELTIP
-		| LVS_EX_TWOCLICKACTIVATE;
+	DWORD dwExtendedStyles = LVS_EX_FLATSB | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP | LVS_EX_LABELTIP | LVS_EX_TWOCLICKACTIVATE;
 	if ( GetComCtl32Version( ) >= 0x00060000 ) {
 		dwExtendedStyles |= LVS_EX_DOUBLEBUFFER;
 	}
 	m_KeyComboList.SetExtendedStyle( m_KeyComboList.GetExtendedStyle( ) | dwExtendedStyles );
 
-	CString strLabels[3] = {
-		CString( (LPCWSTR) IDS_KEYSEQUENCES_CHARACTER ),
-		CString( (LPCWSTR) IDS_KEYSEQUENCES_KEY1 ),
-		CString( (LPCWSTR) IDS_KEYSEQUENCES_KEY2 ),
+	CString strLabels[] = {
+		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT ),
+		LoadFromStringTable( IDS_KEYSEQUENCES_SEQUENCE ),
 	};
 
-	int widths[3];
-	for ( int n = 0; n < 3; n++ ) {
+	int widths[2];
+	for ( int n = 0; n < 2; n++ ) {
 		widths[n] = m_KeyComboList.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
 		m_KeyComboList.InsertColumn( n, strLabels[n], LVCFMT_LEFT, widths[n] );
 	}
 	m_nColumnWidths[0] = widths[0];
-	m_nColumnWidths[1] = std::max( widths[0], widths[1] );
+	m_nColumnWidths[1] = widths[1];
 
 	_FillKeyComboList( );
 	
@@ -153,53 +127,52 @@ BOOL CKeySequences::OnInitDialog( ) {
 }
 
 void CKeySequences::OnKeyComboListItemChanged( NMHDR* /*pNMHDR*/, LRESULT* pResult ) {
-	//LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
-
 	UINT nsel = m_KeyComboList.GetSelectedCount( );
-	if ( 0 == nsel ) {
-		m_btnEdit.EnableWindow( FALSE );
-		m_btnRemove.EnableWindow( FALSE );
-	} else {
+	if ( nsel ) {
 		m_btnEdit.EnableWindow( ( 1 == nsel ) );
 		m_btnRemove.EnableWindow( TRUE );
+	} else {
+		m_btnEdit.EnableWindow( FALSE );
+		m_btnRemove.EnableWindow( FALSE );
 	}
 
 	*pResult = 0;
 }
 
 void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResult ) {
-	//LPNMLISTVIEW pNMLV = reinterpret_cast<LPNMLISTVIEW>( pNMHDR );
-
 	OnBnClickedEdit( );
 
 	*pResult = 0;
 }
 
 void CKeySequences::OnBnClickedAdd( ) {
-	COMPOSE_SEQUENCE sequence = { 0, 0, 0, };
+	ComposeSequence sequence;
 	CComposeSequenceEditor edit( sequence, semAdd, this );
+
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		_AddNewKeySequence( m_Options.m_ComposeSequences.Add( sequence ) );
+		_AddNewKeySequence( m_Options.ComposeSequences.Add( sequence ) );
 		SetModified( );
 	}
 }
 
 void CKeySequences::OnBnClickedEdit( ) {
-	if ( m_KeyComboList.GetSelectedCount( ) < 1 )
+	if ( m_KeyComboList.GetSelectedCount( ) < 1 ) {
 		return;
+	}
 
 	POSITION pos = m_KeyComboList.GetFirstSelectedItemPosition( );
-	if ( NULL == pos )
+	if ( !pos ) {
 		return;
+	}
 
 	int k = m_KeyComboList.GetNextSelectedItem( pos );
-	COMPOSE_SEQUENCE sequence = m_Options.m_ComposeSequences[ k ];
+	ComposeSequence sequence = m_Options.ComposeSequences[k];
 	CComposeSequenceEditor edit( sequence, semEdit, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		m_Options.m_ComposeSequences[ k ] = sequence;
-		_DoUpdateOneKeySequence( k );
+		m_Options.ComposeSequences[k] = sequence;
+		_UpdateOneKeySequence( k );
 		_AdjustColumns( );
 		SetModified( );
 	}
@@ -207,10 +180,11 @@ void CKeySequences::OnBnClickedEdit( ) {
 
 void CKeySequences::OnBnClickedRemove( ) {
 	UINT count = m_KeyComboList.GetSelectedCount( );
-	if ( count < 1 )
+	if ( count < 1 ) {
 		return;
+	}
 
-	int ret = MessageBox( CString( (LPCWSTR) IDS_KEYSEQUENCES_CONFIRM_PROMPT ), CString( (LPCWSTR) IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
+	int ret = MessageBox( LoadFromStringTable( IDS_KEYSEQUENCES_CONFIRM_PROMPT ), LoadFromStringTable( IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
 	if ( IDYES != ret ) {
 		return;
 	}
@@ -225,12 +199,15 @@ void CKeySequences::OnBnClickedRemove( ) {
 		i = m_KeyComboList.GetNextSelectedItem( pos );
 	}
 	count = n;
-	qsort_s( items, count, sizeof( int ), compare_keys_reverse, NULL );
+	qsort_s( items, count, sizeof( int ), compare_keys_reverse, nullptr );
 
-	for ( n = 0; n < count; n++ ) {
+	// TODO TEST
+	n = count;
+	do {
+		n--;
 		m_KeyComboList.DeleteItem( items[n] );
-		m_Options.m_ComposeSequences.RemoveAt( items[n] );
-	}
+		m_Options.ComposeSequences.RemoveAt( items[n] );
+	} while ( n > 0 );
 
 	delete[] items;
 

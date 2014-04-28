@@ -7,49 +7,38 @@
 #include "FreeCompose.h"
 #include "OptionsData.h"
 
-#include "ComposeDefaults.h"
 #include "Utils.h"
 
-#undef FORCE_DEFAULT_CONFIG
-
-COptionsData::COptionsData( ) {
-}
-
-COptionsData::COptionsData( COptionsData const& options ) {
-	operator=( options );
-}
-
-COptionsData::~COptionsData( ) {
-	m_ComposeSequences.RemoveAll( );
-}
+#undef  FORCE_DEFAULT_CONFIG
+#define FORCE_REGISTRY_CONFIG
 
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
-	m_fStartActive       = options.m_fStartActive;
-	m_fStartWithWindows  = options.m_fStartWithWindows;
-	m_CapsLockToggleMode = options.m_CapsLockToggleMode;
-	m_CapsLockSwapMode   = options.m_CapsLockSwapMode;
-	m_vkCompose          = options.m_vkCompose;
-	m_vkSwapCapsLock     = options.m_vkSwapCapsLock;
+	StartActive        = options.StartActive;
+	StartWithWindows   = options.StartWithWindows;
+	CapsLockToggleMode = options.CapsLockToggleMode;
+	CapsLockSwapMode   = options.CapsLockSwapMode;
+	ComposeVk          = options.ComposeVk;
+	SwapCapsLockVk     = options.SwapCapsLockVk;
 
-	m_ComposeSequences.RemoveAll( );
-	m_ComposeSequences.Copy( options.m_ComposeSequences );
+	ComposeSequences.RemoveAll( );
+	ComposeSequences.Copy( options.ComposeSequences );
 
 	return *this;
 }
 
 bool COptionsData::operator==( COptionsData const& options ) {
-	if ( m_fStartActive       != options.m_fStartActive       ) { return false; }
-	if ( m_fStartWithWindows  != options.m_fStartWithWindows  ) { return false; }
-	if ( m_CapsLockToggleMode != options.m_CapsLockToggleMode ) { return false; }
-	if ( m_CapsLockSwapMode   != options.m_CapsLockSwapMode   ) { return false; }
-	if ( m_vkCompose          != options.m_vkCompose          ) { return false; }
-	if ( m_vkSwapCapsLock     != options.m_vkSwapCapsLock     ) { return false; }
+	if ( StartActive        != options.StartActive        ) { return false; }
+	if ( StartWithWindows   != options.StartWithWindows   ) { return false; }
+	if ( CapsLockToggleMode != options.CapsLockToggleMode ) { return false; }
+	if ( CapsLockSwapMode   != options.CapsLockSwapMode   ) { return false; }
+	if ( ComposeVk          != options.ComposeVk          ) { return false; }
+	if ( SwapCapsLockVk     != options.SwapCapsLockVk     ) { return false; }
 
-	if ( m_ComposeSequences.GetCount( ) != options.m_ComposeSequences.GetCount( ) ) {
+	if ( ComposeSequences.GetCount( ) != options.ComposeSequences.GetCount( ) ) {
 		return false;
 	}
-	for ( int n = 0; n < m_ComposeSequences.GetCount( ); n++ ) {
-		if ( m_ComposeSequences[n] != options.m_ComposeSequences[n] ) {
+	for ( int n = 0; n < ComposeSequences.GetCount( ); n++ ) {
+		if ( ComposeSequences[n] != options.ComposeSequences[n] ) {
 			return false;
 		}
 	}
@@ -61,29 +50,7 @@ bool COptionsData::operator!=( COptionsData const& options ) {
 	return ! operator==( options );
 }
 
-bool COptionsData::_FcValidateSequence( COMPOSE_SEQUENCE const& sequence ) {
-	if ( ! sequence.chFirst    || IsSurrogate( sequence.chFirst    ) ) { return false; }
-	if ( ! sequence.chSecond   || IsSurrogate( sequence.chSecond   ) ) { return false; }
-	if ( ! sequence.chComposed || IsSurrogate( sequence.chComposed ) ) { return false; }
-	return true;
-}
-
-void COptionsData::_FcLoadDefaultConfiguration( void ) {
-	m_fStartActive = TRUE;
-	m_fStartWithWindows = FALSE;
-	m_CapsLockToggleMode = CLTM_NORMAL;
-	m_CapsLockSwapMode = CLSM_NORMAL;
-	m_vkCompose = VK_APPS;
-	m_vkSwapCapsLock = VK_LCONTROL;
-
-	size_t count = _countof( DefaultComposeKeyEntries );
-	m_ComposeSequences.SetSize( count );
-	for ( size_t n = 0; n < count; n++ ) {
-		m_ComposeSequences[n] = DefaultComposeKeyEntries[n];
-	}
-}
-
-bool COptionsData::_FcLoadFromRegistry( void ) {
+bool COptionsData::_LoadFromRegistry( void ) {
 	BOOL fSwapCapsLock;
 	int nCapsLockSwapMode;
 
@@ -91,60 +58,57 @@ bool COptionsData::_FcLoadFromRegistry( void ) {
 		HKEY hkey;
 		LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, (LPCWSTR) ( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName ), 0, KEY_READ, &hkey );
 		if ( ERROR_SUCCESS != rc ) {
-			debug( L"COptionsData::_FcLoadFromRegistry: can't open key HKCU\\Software\\%s\\%s: error %d\n", theApp.m_pszRegistryKey, theApp.m_pszProfileName );
+			debug( L"COptionsData::_LoadFromRegistry: can't open key HKCU\\Software\\%s\\%s: error %d\n", theApp.m_pszRegistryKey, theApp.m_pszProfileName );
 			return false;
 		}
 		RegCloseKey( hkey );
 	}
 
-	m_fStartActive       = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE );
-	m_fStartWithWindows  = (BOOL)  theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE );
+	StartActive        =  static_cast<BOOL>( theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE ) );
+	StartWithWindows   =  static_cast<BOOL>( theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE ) );
 
-	fSwapCapsLock        = (BOOL)  theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE );
+	fSwapCapsLock      =  static_cast<BOOL>( theApp.GetProfileInt( L"Keyboard", L"SwapCapsLock",       FALSE ) );
 
-	m_CapsLockToggleMode =
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
-		   (CAPS_LOCK_TOGGLE_MODE) theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) );
+	CapsLockToggleMode =
+		 static_cast<CAPS_LOCK_TOGGLE_MODE>( theApp.GetProfileInt( L"Keyboard", L"CapsLockToggleMode", 
+		 static_cast<CAPS_LOCK_TOGGLE_MODE>( theApp.GetProfileInt( L"Keyboard", L"CapsLockMode",       CLTM_NORMAL ) ) ) );
 	// 0 will map to CLSM_NORMAL if fSwapCapsLock == TRUE
-	nCapsLockSwapMode    =         theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   0 ) + 1;
+	nCapsLockSwapMode  =                     theApp.GetProfileInt( L"Keyboard", L"CapsLockSwapMode",   0 ) + 1;
 
-	m_vkCompose          = (DWORD) theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS );
-	m_vkSwapCapsLock     = (DWORD) theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL );
+	ComposeVk          = static_cast<DWORD>( theApp.GetProfileInt( L"Keyboard", L"ComposeKey",         VK_APPS ) );
+	SwapCapsLockVk     = static_cast<DWORD>( theApp.GetProfileInt( L"Keyboard", L"SwapCapsLockKey",    VK_LCONTROL ) );
 	
-	m_CapsLockSwapMode   = fSwapCapsLock ? (CAPS_LOCK_SWAP_MODE) nCapsLockSwapMode : CLSM_NORMAL;
+	CapsLockSwapMode   = fSwapCapsLock ? static_cast<CAPS_LOCK_SWAP_MODE>( nCapsLockSwapMode ) : CLSM_NORMAL;
 
-	_FcLoadKeys( );
+	_LoadKeys( );
 
 	return true;
 }
 
-void COptionsData::_FcLoadKeys( void ) {
-	m_ComposeSequences.RemoveAll( );
+void COptionsData::_LoadKeys( void ) {
+	ComposeSequences.RemoveAll( );
 
-	int count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
+	unsigned count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
 	if ( count < 1 ) {
 		return;
 	}
 
-	COMPOSE_SEQUENCE sequence;
+	ComposeSequence sequence;
 	CString section;
-	m_ComposeSequences.SetSize( count );
+	ComposeSequences.SetSize( count );
 
-	debug( L"COptionsData::_FcLoadKeys: Loading %d mappings from registry:\n", count );
-	int index = 0;
-	for ( int n = 0; n < count; n++ ) {
+	debug( L"COptionsData::_LoadKeys: Loading %d mappings from registry:\n", count );
+	for ( unsigned n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%d", n );
-		sequence.chFirst    = (unsigned) theApp.GetProfileInt( section, L"First",    0 );
-		sequence.chSecond   = (unsigned) theApp.GetProfileInt( section, L"Second",   0 );
-		sequence.chComposed = (unsigned) theApp.GetProfileInt( section, L"Composed", 0 );
-		debug( L"+ Mapping %3d: 0x%08X 0x%08X => 0x%08X\n", n, sequence.chFirst, sequence.chSecond, sequence.chComposed );
-		if ( _FcValidateSequence( sequence ) ) {
-			m_ComposeSequences[index++] = sequence;
-		} else {
-			debug( L"+ Bad mapping #%d\n", n );
-		}
+		CString first    ( VkToString  ( theApp.GetProfileInt( section, L"First",    0 ) ) );
+		CString second   ( VkToString  ( theApp.GetProfileInt( section, L"Second",   0 ) ) );
+		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );
+		sequence.Sequence = first + second;
+		sequence.Result = composed;
+		debug( L"+ Mapping %3d: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
+		ComposeSequences[n] = sequence;
 	}
-	debug( L"COptionsData::_FcLoadKeys: Mapping load completed, %d mappings validated and loaded.\n", index );
+	debug( L"COptionsData::_LoadKeys: Mapping load completed.\n" );
 }
 
 void COptionsData::_UpdateRunKey( void ) {
@@ -158,7 +122,7 @@ void COptionsData::_UpdateRunKey( void ) {
 		return;
 	}
 
-	if ( m_fStartWithWindows ) {
+	if ( StartWithWindows ) {
 		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
 		if ( rc > 0 ) {
 #ifndef _DEBUG
@@ -183,16 +147,18 @@ void COptionsData::_UpdateRunKey( void ) {
 
 void COptionsData::Load( void ) {
 #ifndef FORCE_DEFAULT_CONFIG
+#ifndef FORCE_REGISTRY_CONFIG
 	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
-	if ( _LoadFromXml( ) ) {
+	if ( _LoadXmlFile( ) ) {
 		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
 		return;
 	}
 
 	debug( L"COptionsData::Load: Couldn't load XML, trying the registry\n" );
-	if ( _FcLoadFromRegistry( ) ) {
+#endif
+	if ( _LoadFromRegistry( ) ) {
 		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
-		if ( !_SaveToXml( ) ) {
+		if ( !_SaveXmlFile( ) ) {
 			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
 			return;
 		}
@@ -200,13 +166,13 @@ void COptionsData::Load( void ) {
 #endif
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
-	_FcLoadDefaultConfiguration( );
-	if ( !_SaveToXml( ) ) {
+	_LoadDefaultConfiguration( );
+	if ( !_SaveXmlFile( ) ) {
 		debug( L"COptionsData::Load: Couldn't save default configuration to XML\n" );
 	}
 }
 
 void COptionsData::Save( void ) {
-	_SaveToXml( );
+	_SaveXmlFile( );
 	_UpdateRunKey( );
 }
