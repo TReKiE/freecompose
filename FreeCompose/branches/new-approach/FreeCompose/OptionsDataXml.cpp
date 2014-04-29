@@ -20,6 +20,7 @@ using XNode                  = MSXML2::IXMLDOMNodePtr;
 using XNodeList              = MSXML2::IXMLDOMNodeListPtr;
 using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
 using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
+using XText                  = MSXML2::IXMLDOMTextPtr;
 
 //==============================================================================
 // Constants
@@ -80,8 +81,6 @@ static inline ComposeSequence ComposeSequenceFromXNode( XNode const& value ) {
 	XNode nodeResult = value->selectSingleNode( L"Result" );
 
 	if ( nodeFirst && nodeSecond && nodeComposed ) {
-		debug( L"ComposeSequenceFromXNode: old format\n" );
-
 		CString First, Second, Composed;
 		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text ) ) );
 		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text ) ) );
@@ -348,17 +347,9 @@ bool COptionsData::_SaveXmlFile( void ) {
 						continue;
 					}
 
-					CString strEncodedResult;
-					wchar_t fmtbuf[22];
-					INT_PTR limit = strResult.GetLength( );
-					for ( int index = 0; index < limit; index++ ) {
-						wsprintf( fmtbuf, L"&%u;", static_cast<unsigned>( strResult[index] ) );
-						strEncodedResult.Append( fmtbuf );
-					}
-
 					XNode mapping = CreateAndAppendXNode( doc, L"Mapping", Group );
 						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", mapping, static_cast<LPCWSTR>( strSequence ) );
-						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( strEncodedResult ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( strResult ) );
 				}
 	}
 	catch ( _com_error e ) {
