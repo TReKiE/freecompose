@@ -9,8 +9,10 @@
 
 #include "Utils.h"
 
-#define FORCE_DEFAULT_CONFIG 0
+#define FORCE_DEFAULT_CONFIG 1
+#if !FORCE_DEFAULT_CONFIG
 #define FORCE_REGISTRY_CONFIG 0
+#endif
 
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	StartActive        = options.StartActive;
