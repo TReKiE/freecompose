@@ -7,6 +7,8 @@
 #include "StringMapper.h"
 #include "Utils.h"
 
+#include <Unicode.h>
+
 //==============================================================================
 // Type aliases
 //==============================================================================
@@ -24,6 +26,7 @@ using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
 //==============================================================================
 
 int const CONFIGURATION_SCHEMA_VERSION = 2;
+wchar_t const XML_NAMESPACE[] = L"http://www.zive.ca/xmlns/FreeCompose/configuration/2";
 
 //==============================================================================
 // Local objects
@@ -60,38 +63,65 @@ static inline Tout Coerce( Tin const& in ) {
 }
 
 template<typename Tout>
-static inline Tout CoerceXElement( XElement const& value ) {
+static inline Tout CoerceXNode( XNode const& value ) {
 	return Coerce<_bstr_t, Tout>( value->text );
 }
 
-// 'FromXElement' functions
+// 'FromXNode' functions
 
-static inline ComposeSequence ComposeSequenceFromXElement( XElement const& value ) {
-	CString Sequence( (LPCWSTR) value->selectSingleNode( L"Sequence" )->text );
-	CString Result( (LPCWSTR) value->selectSingleNode( L"Result" )->text );
+static inline ComposeSequence ComposeSequenceFromXNode( XNode const& value ) {
+	CString Sequence, Result;
+
+	XNode nodeFirst = value->selectSingleNode( L"First" );
+	XNode nodeSecond = value->selectSingleNode( L"Second" );
+	XNode nodeComposed = value->selectSingleNode( L"Composed" );
+
+	XNode nodeSequence = value->selectSingleNode( L"Sequence" );
+	XNode nodeResult = value->selectSingleNode( L"Result" );
+
+	if ( nodeFirst && nodeSecond && nodeComposed ) {
+		debug( L"ComposeSequenceFromXNode: old format\n" );
+
+		CString First, Second, Composed;
+		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text ) ) );
+		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text ) ) );
+		Composed = Utf32ToUtf16( static_cast<unsigned>( static_cast<_variant_t>( nodeComposed->text ) ) );
+
+		Sequence = First + Second;
+		Result   = Composed;
+	} else if ( nodeSequence && nodeResult ) {
+		debug( L"ComposeSequenceFromNode: new format\n" );
+
+		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
+		Result   = static_cast<LPCWSTR>( nodeResult->text );
+	} else {
+		debug( L"ComposeSequenceFromNode: unknown format???\n" );
+	}
+
 	return ComposeSequence( Sequence, Result );
 }
 
-// CreateXElement functions
+// CreateXNode functions
 
 template<typename Tparent>
-static inline XElement CreateAndAppendXElement( XDocument& doc, _bstr_t const& tagName, Tparent& parent ) {
-	XElement element = doc->createElement( tagName );
-	parent->appendChild( element );
-	return element;
+static inline XNode CreateAndAppendXNode( XDocument& doc, _bstr_t const& tagName, Tparent& parent ) {
+	XNode node = doc->createNode( _variant_t( NODE_ELEMENT ), tagName, XML_NAMESPACE );
+	parent->appendChild( node );
+	return node;
 }
 
 template<typename Tparent, typename Tvalue>
-static inline XElement CreateAndAppendXElement( XDocument& doc, _bstr_t const& tagName, Tparent& parent, Tvalue const& value ) {
-	XElement element = doc->createElement( tagName );
-	element->text = Coerce<Tvalue, _bstr_t>( value );
-	parent->appendChild( element );
-	return element;
+static inline XNode CreateAndAppendXNode( XDocument& doc, _bstr_t const& tagName, Tparent& parent, Tvalue const& value ) {
+	XNode node = CreateAndAppendXNode( doc, tagName, parent );
+	if ( node ) {
+		node->text = Coerce<Tvalue, _bstr_t>( value );
+	}
+	return node;
 }
 
 // Other functions
 
-static inline bool CompareNodeName( XElement elt, LPCWSTR name ) {
+static inline bool CompareNodeName( XNode elt, LPCWSTR name ) {
 	return 0 == CString( static_cast<LPCWSTR>( elt->nodeName ) ).Compare( name );
 }
 
@@ -119,48 +149,52 @@ static inline XDocument CreateDOMDocument( void ) {
 // COptionsData implementation
 //==============================================================================
 
+//==============================================================================
+// COptionsData::_InterpretConfiguration
+//
+
 bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 	XDocument doc = static_cast<IXMLDOMDocument*>( pvDoc );
 
 	try {
-		XElement FcConfiguration = doc->documentElement;
+		XNode FcConfiguration = doc->documentElement;
 		if ( !CompareNodeName( FcConfiguration, L"FcConfiguration" ) ) {
 			debug( L"COptionsData::_InterpretConfiguration: document element is not <FcConfiguration>, aborting load\n" );
 			return false;
 		}
 
-		XElement SchemaVersion = FcConfiguration->selectSingleNode( L"SchemaVersion" );
-		int nSchemaVersion = CoerceXElement<unsigned>( SchemaVersion );
+		XNode SchemaVersion = FcConfiguration->selectSingleNode( L"SchemaVersion" );
+		int nSchemaVersion = CoerceXNode<unsigned>( SchemaVersion );
 		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
 			debug( L"COptionsData::_InterpretConfiguration: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
 			return false;
 		}
 
-		XElement Options = FcConfiguration->selectSingleNode( L"Options" );
+		XNode Options = FcConfiguration->selectSingleNode( L"Options" );
 
-		XElement Startup = Options->selectSingleNode( L"Startup" );
+		XNode Startup = Options->selectSingleNode( L"Startup" );
 		StartActive = BoolStringMapper[ Startup->selectSingleNode( L"StartActive" )->text ];
 		StartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
 
-		XElement Keyboard = Options->selectSingleNode( L"Keyboard" );
+		XNode Keyboard = Options->selectSingleNode( L"Keyboard" );
 		CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
 		CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
-		ComposeVk = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		SwapCapsLockVk = CoerceXElement<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+		ComposeVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		SwapCapsLockVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 
-		XElement Mappings = FcConfiguration->selectSingleNode( L"Mappings" );
+		XNode Mappings = FcConfiguration->selectSingleNode( L"Mappings" );
 		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
-		XElement group;
+		XNode group;
 		while ( group = groupNodes->nextNode( ) ) {
 			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
-			XElement mapping;
+			XNode mapping;
 			while ( mapping = mappingNodes->nextNode( ) ) {
-				ComposeSequences.Add( ComposeSequenceFromXElement( mapping ) );
+				ComposeSequences.Add( ComposeSequenceFromXNode( mapping ) );
 			}
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_InterpretConfiguration: Caught exception parsing configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"COptionsData::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 	catch ( ... ) {
@@ -171,8 +205,34 @@ bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 	return true;
 }
 
+//==============================================================================
+// COptionsData::_LoadDefaultConfiguration
+//
+
 bool COptionsData::_LoadDefaultConfiguration( void ) {
-	CString strConfiguration( LoadFromStringTable( IDX_DEFAULT_CONFIGURATION ) );
+	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( IDX_DEFAULT_CONFIGURATION ), L"XMLFILE" );
+	if ( !hrsrc ) {
+		debug( L"COptionsData::_LoadDefaultConfiguration: FindResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	HGLOBAL hglob = LoadResource( nullptr, hrsrc );
+	if ( !hglob ) {
+		debug( L"COptionsData::_LoadDefaultConfiguration: LoadResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	DWORD dwSize = SizeofResource( nullptr, hrsrc );
+	if ( !dwSize ) {
+		debug( L"COptionsData::_LoadDefaultConfiguration: SizeofResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	void* pvConf = static_cast<LPSTR>( LockResource( hglob ) );
+	if ( !pvConf ) {
+		debug( L"COptionsData::_LoadDefaultConfiguration: LockResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
@@ -184,9 +244,9 @@ bool COptionsData::_LoadDefaultConfiguration( void ) {
 	// Load XML from memory
 	//
 	try {
-		_variant_t result = doc->loadXML( static_cast<LPCWSTR>( strConfiguration ) );
+		_variant_t result = doc->loadXML( static_cast<LPCWSTR>( CString( static_cast<LPCSTR>( pvConf ), dwSize ) ) );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"COptionsData::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			debug( L"COptionsData::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
 			return false;
 		}
 	}
@@ -197,6 +257,10 @@ bool COptionsData::_LoadDefaultConfiguration( void ) {
 
 	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
 }
+
+//==============================================================================
+// COptionsData::_LoadXmlFile
+//
 
 bool COptionsData::_LoadXmlFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
@@ -230,6 +294,10 @@ bool COptionsData::_LoadXmlFile( void ) {
 	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
 }
 
+//==============================================================================
+// COptionsData::_SaveXmlFile
+//
+
 bool COptionsData::_SaveXmlFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"COptionsData::_SaveXmlFile: Can't ensure app data folder exists\n" );
@@ -248,39 +316,49 @@ bool COptionsData::_SaveXmlFile( void ) {
 	// Create elements
 	//
 	try {
-        doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-8'" ) );
-		XElement FcConfiguration = CreateAndAppendXElement( doc, L"FcConfiguration", doc );
-		FcConfiguration->setAttribute( L"xmlns", "http://www.zive.ca/xmlns/FreeCompose/configuration/2" );
+        doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-16le'" ) );
+		XNode FcConfiguration = CreateAndAppendXNode( doc, L"FcConfiguration", doc );
 
-			XElement SchemaVersion = CreateAndAppendXElement( doc, L"SchemaVersion", FcConfiguration, CONFIGURATION_SCHEMA_VERSION );
+			XNode SchemaVersion = CreateAndAppendXNode( doc, L"SchemaVersion", FcConfiguration, CONFIGURATION_SCHEMA_VERSION );
 
-			XElement Options = CreateAndAppendXElement( doc, L"Options", FcConfiguration );
+			XNode Options = CreateAndAppendXNode( doc, L"Options", FcConfiguration );
 
-				XElement Startup = CreateAndAppendXElement( doc, L"Startup", Options );
+				XNode Startup = CreateAndAppendXNode( doc, L"Startup", Options );
 
-					XElement StartActive      = CreateAndAppendXElement( doc, L"StartActive",      Startup, BoolStringMapper[ !!this->StartActive ] );
-					XElement StartWithWindows = CreateAndAppendXElement( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!this->StartWithWindows ] );
+					XNode StartActive      = CreateAndAppendXNode( doc, L"StartActive",      Startup, BoolStringMapper[ !!this->StartActive ] );
+					XNode StartWithWindows = CreateAndAppendXNode( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!this->StartWithWindows ] );
 
-				XElement Keyboard = CreateAndAppendXElement( doc, L"Keyboard", Options );
+				XNode Keyboard = CreateAndAppendXNode( doc, L"Keyboard", Options );
 
-					XElement CapsLockToggleMode = CreateAndAppendXElement( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ this->CapsLockToggleMode ] );
-					XElement CapsLockSwapMode   = CreateAndAppendXElement( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ this->CapsLockSwapMode ] );
-					XElement ComposeKey         = CreateAndAppendXElement( doc, L"ComposeKey",         Keyboard, this->ComposeVk );
-					XElement SwapCapsLockKey    = CreateAndAppendXElement( doc, L"SwapCapsLockKey",    Keyboard, this->SwapCapsLockVk );
+					XNode CapsLockToggleMode = CreateAndAppendXNode( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ this->CapsLockToggleMode ] );
+					XNode CapsLockSwapMode   = CreateAndAppendXNode( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ this->CapsLockSwapMode ] );
+					XNode ComposeKey         = CreateAndAppendXNode( doc, L"ComposeKey",         Keyboard, this->ComposeVk );
+					XNode SwapCapsLockKey    = CreateAndAppendXNode( doc, L"SwapCapsLockKey",    Keyboard, this->SwapCapsLockVk );
 
-			XElement Mappings = CreateAndAppendXElement( doc, L"Mappings", FcConfiguration );
+			XNode Mappings = CreateAndAppendXNode( doc, L"Mappings", FcConfiguration );
 
-				XElement Group = CreateAndAppendXElement( doc, L"Group", Mappings );
-				Group->setAttribute( L"Name", L"default" );
+				XNode Group = CreateAndAppendXNode( doc, L"Group", Mappings );
+				XElement( Group )->setAttribute( L"Name", L"default" );
 
 				for ( INT_PTR n = 0; n < ComposeSequences.GetSize( ); n++ ) {
-					if ( ComposeSequences[n].Sequence.GetLength( ) == 0 || ComposeSequences[n].Result.GetLength( ) == 0 ) {
+					CString& strSequence = ComposeSequences[n].Sequence;
+					CString& strResult   = ComposeSequences[n].Result;
+
+					if ( strSequence.GetLength( ) == 0 || strResult.GetLength( ) == 0 ) {
 						continue;
 					}
 
-					XElement mapping = CreateAndAppendXElement( doc, L"Mapping", Group );
-						XElement sequence = CreateAndAppendXElement( doc, L"Sequence", mapping, static_cast<LPCWSTR>( ComposeSequences[n].Sequence ) );
-						XElement result   = CreateAndAppendXElement( doc, L"Result",   mapping, static_cast<LPCWSTR>( ComposeSequences[n].Result ) );
+					CString strEncodedResult;
+					wchar_t fmtbuf[22];
+					INT_PTR limit = strResult.GetLength( );
+					for ( int index = 0; index < limit; index++ ) {
+						wsprintf( fmtbuf, L"&%u;", static_cast<unsigned>( strResult[index] ) );
+						strEncodedResult.Append( fmtbuf );
+					}
+
+					XNode mapping = CreateAndAppendXNode( doc, L"Mapping", Group );
+						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", mapping, static_cast<LPCWSTR>( strSequence ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( strEncodedResult ) );
 				}
 	}
 	catch ( _com_error e ) {
