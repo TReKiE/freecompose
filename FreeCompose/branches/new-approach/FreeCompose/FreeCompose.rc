@@ -24,7 +24,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // XMLFILE
 //
 
-IDX_DEFAULT_CONFIGURATION XMLFILE                 "C:\\IceKarma\\Projects\\FreeCompose\\FreeCompose\\DefaultConfiguration.xml"
+IDX_DEFAULT_CONFIGURATION XMLFILE                 "C:\\IceKarma\\Projects\\FreeCompose\\FreeCompose\\res\\DefaultConfiguration.xml"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

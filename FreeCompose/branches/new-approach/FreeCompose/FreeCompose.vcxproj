@@ -309,7 +309,7 @@
     <ResourceCompile Include="FreeCompose.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="DefaultConfiguration.xml" />
+    <Xml Include="res\DefaultConfiguration.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -125,7 +125,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="DefaultConfiguration.xml">
+    <Xml Include="res\DefaultConfiguration.xml">
       <Filter>Resource Files</Filter>
     </Xml>
   </ItemGroup>
