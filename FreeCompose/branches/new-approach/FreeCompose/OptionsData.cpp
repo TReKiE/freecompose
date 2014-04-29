@@ -9,8 +9,8 @@
 
 #include "Utils.h"
 
-#undef  FORCE_DEFAULT_CONFIG
-#define FORCE_REGISTRY_CONFIG
+#define FORCE_DEFAULT_CONFIG 0
+#define FORCE_REGISTRY_CONFIG 0
 
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	StartActive        = options.StartActive;
@@ -146,8 +146,8 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 void COptionsData::Load( void ) {
-#ifndef FORCE_DEFAULT_CONFIG
-#ifndef FORCE_REGISTRY_CONFIG
+#if !FORCE_DEFAULT_CONFIG
+#if !FORCE_REGISTRY_CONFIG
 	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
 	if ( _LoadXmlFile( ) ) {
 		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
