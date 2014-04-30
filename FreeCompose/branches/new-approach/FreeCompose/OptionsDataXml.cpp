@@ -144,6 +144,38 @@ static inline XDocument CreateDOMDocument( void ) {
 	return doc;
 }
 
+// Resource loading
+
+static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
+	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( uID ), L"XMLFILE" );
+	if ( !hrsrc ) {
+		debug( L"LoadBinaryResourceAsBstr: FindResource failed, error is %lu", GetLastError( ) );
+		return _bstr_t( );
+	}
+
+	HGLOBAL hglob = LoadResource( nullptr, hrsrc );
+	if ( !hglob ) {
+		debug( L"LoadBinaryResourceAsBstr: LoadResource failed, error is %lu", GetLastError( ) );
+		return _bstr_t( );
+	}
+
+	DWORD dwSize = SizeofResource( nullptr, hrsrc );
+	if ( !dwSize ) {
+		debug( L"LoadBinaryResourceAsBstr: SizeofResource failed, error is %lu", GetLastError( ) );
+		return _bstr_t( );
+	}
+
+	LPCSTR pszConf = static_cast<LPSTR>( LockResource( hglob ) );
+	if ( !pszConf ) {
+		debug( L"LoadBinaryResourceAsBstr: LockResource failed, error is %lu", GetLastError( ) );
+		return _bstr_t( );
+	}
+
+	// hglob is not a real handle to a global object! Do not call GlobalFree() on it! This is not a leak, honest!
+
+	return SysAllocStringByteLen( pszConf, dwSize );
+}
+
 //==============================================================================
 // COptionsData implementation
 //==============================================================================
@@ -193,7 +225,7 @@ bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"COptionsData::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
 		return false;
 	}
 	catch ( ... ) {
@@ -209,29 +241,7 @@ bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 //
 
 bool COptionsData::_LoadDefaultConfiguration( void ) {
-	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( IDX_DEFAULT_CONFIGURATION ), L"XMLFILE" );
-	if ( !hrsrc ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: FindResource failed, error is %lu", GetLastError( ) );
-		return false;
-	}
-
-	HGLOBAL hglob = LoadResource( nullptr, hrsrc );
-	if ( !hglob ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: LoadResource failed, error is %lu", GetLastError( ) );
-		return false;
-	}
-
-	DWORD dwSize = SizeofResource( nullptr, hrsrc );
-	if ( !dwSize ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: SizeofResource failed, error is %lu", GetLastError( ) );
-		return false;
-	}
-
-	void* pvConf = static_cast<LPSTR>( LockResource( hglob ) );
-	if ( !pvConf ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: LockResource failed, error is %lu", GetLastError( ) );
-		return false;
-	}
+	_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
@@ -243,7 +253,7 @@ bool COptionsData::_LoadDefaultConfiguration( void ) {
 	// Load XML from memory
 	//
 	try {
-		_variant_t result = doc->loadXML( static_cast<LPCWSTR>( CString( static_cast<LPCSTR>( pvConf ), dwSize ) ) );
+		_variant_t result = doc->loadXML( bstrDefaultConfiguration );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
 			debug( L"COptionsData::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
 			return false;
