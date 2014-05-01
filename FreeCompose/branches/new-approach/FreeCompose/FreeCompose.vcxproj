@@ -151,7 +151,6 @@
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <BrowseInformation>true</BrowseInformation>
       <MinimalRebuild>false</MinimalRebuild>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -230,7 +229,6 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <CreateHotpatchableImage>false</CreateHotpatchableImage>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <ResourceCompile>
@@ -266,7 +264,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NTray.cpp" />
     <ClCompile Include="OptionsData.cpp" />
-    <ClCompile Include="OptionsDataXml.cpp">
+    <ClCompile Include="XmlOptionsManager.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</MultiProcessorCompilation>
@@ -292,6 +290,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NTray.h" />
     <ClInclude Include="OptionsData.h" />
+    <ClInclude Include="XmlOptionsManager.h" />
     <ClInclude Include="OptionsPropSheet.h" />
     <ClInclude Include="Sounds.h" />
     <ClInclude Include="StringMapper.h" />
