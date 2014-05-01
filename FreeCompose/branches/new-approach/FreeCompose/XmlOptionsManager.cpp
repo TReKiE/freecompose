@@ -1,26 +1,11 @@
 #include "stdafx.h"
 
-#import <msxml6.dll>
-
 #include "FreeCompose.h"
 #include "OptionsData.h"
 #include "StringMapper.h"
 #include "Utils.h"
 
 #include <Unicode.h>
-
-//==============================================================================
-// Type aliases
-//==============================================================================
-
-using XAttribute             = MSXML2::IXMLDOMAttributePtr;
-using XDocument              = MSXML2::IXMLDOMDocumentPtr;
-using XElement               = MSXML2::IXMLDOMElementPtr;
-using XNode                  = MSXML2::IXMLDOMNodePtr;
-using XNodeList              = MSXML2::IXMLDOMNodeListPtr;
-using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
-using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
-using XText                  = MSXML2::IXMLDOMTextPtr;
 
 //==============================================================================
 // Constants
@@ -51,6 +36,21 @@ static const StringMapper<CAPS_LOCK_SWAP_MODE> ClsmStringMapper {
 	L"swap",
 	L"replace",
 };
+
+using MethodPtr = bool (CXmlOptionsManager::*)( XNode const& );
+
+static std::map<wchar_t const*, MethodPtr> XmlElementNamesToMethods;
+class Initializer_ {
+	using pairtype = std::pair<wchar_t const*, MethodPtr>;
+
+public:
+	inline Initializer_( ) {
+		XmlElementNamesToMethods.insert( pairtype( L"aaa", &CXmlOptionsManager::_InterpretSchemaVersionNode ) );
+	}
+
+};
+
+static Initializer_ Instance_;
 
 //==============================================================================
 // Local functions
@@ -177,41 +177,66 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 }
 
 //==============================================================================
-// COptionsData implementation
+// CXmlOptionsManager implementation
 //==============================================================================
 
+bool CXmlOptionsManager::_InterpretSchemaVersionNode( XNode const& node ) {
+	CString text( static_cast<LPCWSTR>( node->text ) );
+	debug( L"InterpretSchemaVersionNode: text is %s\n", static_cast<LPCWSTR>( node->text ) );
+	return false;
+}
+
+bool CXmlOptionsManager::_DispatchNode( XNode const& node ) {
+	MethodPtr methodPtr = XmlElementNamesToMethods[node->nodeName];
+	( this->*methodPtr )( node );
+	return false;
+}
+
 //==============================================================================
-// COptionsData::_InterpretConfiguration
+// CXmlOptionsManager::_InterpretConfiguration
 //
 
-bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
-	XDocument doc = static_cast<IXMLDOMDocument*>( pvDoc );
-
+bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 	try {
-		XNode FcConfiguration = doc->documentElement;
+		XElement FcConfiguration = doc->documentElement;
 		if ( !CompareNodeName( FcConfiguration, L"FcConfiguration" ) ) {
-			debug( L"COptionsData::_InterpretConfiguration: document element is not <FcConfiguration>, aborting load\n" );
+			debug( L"CXmlOptionsManager::_InterpretConfiguration: document element is not <FcConfiguration>, aborting load\n" );
 			return false;
+		}
+		_bstr_t xmlns = FcConfiguration->namespaceURI;
+		if ( 0 != CString( static_cast<LPCWSTR>( xmlns ) ).Compare( XML_NAMESPACE ) ) {
+			debug( L"CXmlOptionsManager::_InterpretConfiguration: namespace doesn't match\n+ Our namespace:        %s\n+ Document's namespace: %s\n", XML_NAMESPACE, xmlns );
+			return false;
+		}
+
+		{
+			XNode child = FcConfiguration->firstChild;
+			while ( child ) {
+				debug( L"CXmlOptionsManager::_InterpretConfiguration: next child element:\nBase name: %s\nNode name: %s\n", static_cast<LPCWSTR>( child->baseName ), static_cast<LPCWSTR>( child->nodeName ) );
+
+				
+				child = child->nextSibling;
+			}
 		}
 
 		XNode SchemaVersion = FcConfiguration->selectSingleNode( L"SchemaVersion" );
 		int nSchemaVersion = CoerceXNode<unsigned>( SchemaVersion );
 		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
-			debug( L"COptionsData::_InterpretConfiguration: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
+			debug( L"CXmlOptionsManager::_InterpretConfiguration: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
 			return false;
 		}
 
 		XNode Options = FcConfiguration->selectSingleNode( L"Options" );
 
 		XNode Startup = Options->selectSingleNode( L"Startup" );
-		StartActive = BoolStringMapper[ Startup->selectSingleNode( L"StartActive" )->text ];
-		StartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
+		_pOptionsData->StartActive = BoolStringMapper[Startup->selectSingleNode( L"StartActive" )->text];
+		_pOptionsData->StartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
 
 		XNode Keyboard = Options->selectSingleNode( L"Keyboard" );
-		CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
-		CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
-		ComposeVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		SwapCapsLockVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
+		_pOptionsData->CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
+		_pOptionsData->CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
+		_pOptionsData->ComposeVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
+		_pOptionsData->SwapCapsLockVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
 
 		XNode Mappings = FcConfiguration->selectSingleNode( L"Mappings" );
 		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
@@ -220,16 +245,16 @@ bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
 			XNode mapping;
 			while ( mapping = mappingNodes->nextNode( ) ) {
-				ComposeSequences.Add( ComposeSequenceFromXNode( mapping ) );
+				_pOptionsData->ComposeSequences.Add( ComposeSequenceFromXNode( mapping ) );
 			}
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
+		debug( L"CXmlOptionsManager::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
 		return false;
 	}
 	catch ( ... ) {
-		debug( L"COptionsData::_InterpretConfiguration: caught some other kind of exception??\n" );
+		debug( L"CXmlOptionsManager::_InterpretConfiguration: caught some other kind of exception??\n" );
 		return false;
 	}
 
@@ -237,15 +262,15 @@ bool COptionsData::_InterpretConfiguration( void* pvDoc ) {
 }
 
 //==============================================================================
-// COptionsData::_LoadDefaultConfiguration
+// CXmlOptionsManager::_LoadDefaultConfiguration
 //
 
-bool COptionsData::_LoadDefaultConfiguration( void ) {
+bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 	_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
+		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -255,25 +280,25 @@ bool COptionsData::_LoadDefaultConfiguration( void ) {
 	try {
 		_variant_t result = doc->loadXML( bstrDefaultConfiguration );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"COptionsData::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
+			debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadDefaultConfiguration: Caught exception loading default configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Caught exception loading default configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
-	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
+	return _InterpretConfiguration( doc );
 }
 
 //==============================================================================
-// COptionsData::_LoadXmlFile
+// CXmlOptionsManager::_LoadXmlFile
 //
 
-bool COptionsData::_LoadXmlFile( void ) {
+bool CXmlOptionsManager::LoadXmlFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::_LoadXmlFile: Can't ensure app data folder exists\n" );
+		debug( L"CXmlOptionsManager::_LoadXmlFile: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -281,7 +306,7 @@ bool COptionsData::_LoadXmlFile( void ) {
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"COptionsData::_LoadXmlFile: Can't create instance of DOMDocument\n" );
+		debug( L"CXmlOptionsManager::_LoadXmlFile: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -291,25 +316,25 @@ bool COptionsData::_LoadXmlFile( void ) {
 	try {
 		_variant_t result = doc->load( _variant_t( str ) );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"COptionsData::_LoadXmlFile: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			debug( L"CXmlOptionsManager::_LoadXmlFile: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_LoadXmlFile: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::_LoadXmlFile: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
-	return _InterpretConfiguration( doc.GetInterfacePtr( ) );
+	return _InterpretConfiguration( doc );
 }
 
 //==============================================================================
-// COptionsData::_SaveXmlFile
+// CXmlOptionsManager::_SaveXmlFile
 //
 
-bool COptionsData::_SaveXmlFile( void ) {
+bool CXmlOptionsManager::SaveXmlFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"COptionsData::_SaveXmlFile: Can't ensure app data folder exists\n" );
+		debug( L"CXmlOptionsManager::_SaveXmlFile: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -317,7 +342,7 @@ bool COptionsData::_SaveXmlFile( void ) {
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"COptionsData::_SaveXmlFile: Can't create instance of DOMDocument\n" );
+		debug( L"CXmlOptionsManager::_SaveXmlFile: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -334,24 +359,25 @@ bool COptionsData::_SaveXmlFile( void ) {
 
 				XNode Startup = CreateAndAppendXNode( doc, L"Startup", Options );
 
-					XNode StartActive      = CreateAndAppendXNode( doc, L"StartActive",      Startup, BoolStringMapper[ !!this->StartActive ] );
-					XNode StartWithWindows = CreateAndAppendXNode( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!this->StartWithWindows ] );
+					XNode StartActive      = CreateAndAppendXNode( doc, L"StartActive",      Startup, BoolStringMapper[ !!_pOptionsData->StartActive ] );
+					XNode StartWithWindows = CreateAndAppendXNode( doc, L"StartWithWindows", Startup, BoolStringMapper[ !!_pOptionsData->StartWithWindows ] );
 
 				XNode Keyboard = CreateAndAppendXNode( doc, L"Keyboard", Options );
 
-					XNode CapsLockToggleMode = CreateAndAppendXNode( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ this->CapsLockToggleMode ] );
-					XNode CapsLockSwapMode   = CreateAndAppendXNode( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ this->CapsLockSwapMode ] );
-					XNode ComposeKey         = CreateAndAppendXNode( doc, L"ComposeKey",         Keyboard, this->ComposeVk );
-					XNode SwapCapsLockKey    = CreateAndAppendXNode( doc, L"SwapCapsLockKey",    Keyboard, this->SwapCapsLockVk );
+					XNode CapsLockToggleMode = CreateAndAppendXNode( doc, L"CapsLockToggleMode", Keyboard, CltmStringMapper[ _pOptionsData->CapsLockToggleMode ] );
+					XNode CapsLockSwapMode   = CreateAndAppendXNode( doc, L"CapsLockSwapMode",   Keyboard, ClsmStringMapper[ _pOptionsData->CapsLockSwapMode ] );
+					XNode ComposeKey         = CreateAndAppendXNode( doc, L"ComposeKey",         Keyboard, _pOptionsData->ComposeVk );
+					XNode SwapCapsLockKey    = CreateAndAppendXNode( doc, L"SwapCapsLockKey",    Keyboard, _pOptionsData->SwapCapsLockVk );
 
 			XNode Mappings = CreateAndAppendXNode( doc, L"Mappings", FcConfiguration );
 
 				XNode Group = CreateAndAppendXNode( doc, L"Group", Mappings );
 				XElement( Group )->setAttribute( L"Name", L"default" );
 
-				for ( INT_PTR n = 0; n < ComposeSequences.GetSize( ); n++ ) {
-					CString& strSequence = ComposeSequences[n].Sequence;
-					CString& strResult   = ComposeSequences[n].Result;
+				auto& composeSequences = _pOptionsData->ComposeSequences;
+				for ( INT_PTR n = 0; n < composeSequences.GetSize( ); n++ ) {
+					CString& strSequence = composeSequences[n].Sequence;
+					CString& strResult   = composeSequences[n].Result;
 
 					if ( strSequence.GetLength( ) == 0 || strResult.GetLength( ) == 0 ) {
 						continue;
@@ -363,7 +389,7 @@ bool COptionsData::_SaveXmlFile( void ) {
 				}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveXmlFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::_SaveXmlFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -373,12 +399,12 @@ bool COptionsData::_SaveXmlFile( void ) {
 	try {
 		HRESULT hr = doc->save( _variant_t( str ) );
 		if ( FAILED( hr ) ) {
-			debug( L"COptionsData::_SaveXmlFile: doc->save failed, hr=0x%08lX\n", hr );
+			debug( L"CXmlOptionsManager::_SaveXmlFile: doc->save failed, hr=0x%08lX\n", hr );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"COptionsData::_SaveXmlFile: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::_SaveXmlFile: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
