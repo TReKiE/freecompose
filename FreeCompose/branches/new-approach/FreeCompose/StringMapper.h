@@ -7,13 +7,25 @@ public:
 
 	}
 
-	inline StringMapper( _bstr_t const* strings ): StringMapper( ) {
+	inline StringMapper( _bstr_t const strings[] ): StringMapper( ) {
+		for ( auto s : strings ) {
+			_strings.Add( s );
+		}
+	}
+
+	inline StringMapper( wchar_t const* strings[] ): StringMapper( ) {
 		for ( auto s : strings ) {
 			_strings.Add( s );
 		}
 	}
 
 	inline StringMapper( std::initializer_list<_bstr_t> strings ): StringMapper( ) {
+		for ( auto s : strings ) {
+			_strings.Add( s );
+		}
+	}
+
+	inline StringMapper( std::initializer_list<wchar_t const*> strings ): StringMapper( ) {
 		for ( auto s : strings ) {
 			_strings.Add( s );
 		}
@@ -49,6 +61,10 @@ public:
 	}
 
 	inline T operator[]( _bstr_t const& value ) const {
+		return Map( value );
+	}
+
+	inline T operator[]( wchar_t const* value ) const {
 		return Map( value );
 	}
 
