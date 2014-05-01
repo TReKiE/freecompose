@@ -9,10 +9,8 @@
 
 #include "Utils.h"
 
-#define FORCE_DEFAULT_CONFIG 1
-#if !FORCE_DEFAULT_CONFIG
+#define FORCE_DEFAULT_CONFIG 0
 #define FORCE_REGISTRY_CONFIG 0
-#endif
 
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	StartActive        = options.StartActive;
@@ -52,19 +50,53 @@ bool COptionsData::operator!=( COptionsData const& options ) {
 	return ! operator==( options );
 }
 
+bool COptionsData::_CheckIfRegistryKeyExists( void ) {
+	CString registryKeyName( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName );
+	HKEY hkey;
+
+	LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, registryKeyName, 0, KEY_READ, &hkey );
+	if ( ERROR_SUCCESS != rc ) {
+		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %d\n", registryKeyName );
+		return false;
+	}
+
+	RegCloseKey( hkey );
+	return true;
+}
+
+void COptionsData::_LoadSequencesFromRegistry( void ) {
+	ComposeSequences.RemoveAll( );
+
+	unsigned count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
+	if ( count < 1 ) {
+		return;
+	}
+
+	ComposeSequence sequence;
+	CString section;
+	ComposeSequences.SetSize( count );
+
+	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %d mappings from registry:\n", count );
+	for ( unsigned n = 0; n < count; n++ ) {
+		section.Format( L"Mapping\\%d", n );
+		CString first    ( VkToString  ( theApp.GetProfileInt( section, L"First",    0 ) ) );
+		CString second   ( VkToString  ( theApp.GetProfileInt( section, L"Second",   0 ) ) );
+		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );
+		sequence.Sequence = first + second;
+		sequence.Result = composed;
+		debug( L"+ Mapping %3d: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
+		ComposeSequences[n] = sequence;
+	}
+	debug( L"COptionsData::_LoadSequencesFromRegistry: Mapping load completed.\n" );
+}
+
 bool COptionsData::_LoadFromRegistry( void ) {
+	if ( !_CheckIfRegistryKeyExists( ) ) {
+		return false;
+	}
+
 	BOOL fSwapCapsLock;
 	int nCapsLockSwapMode;
-
-	{
-		HKEY hkey;
-		LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, (LPCWSTR) ( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName ), 0, KEY_READ, &hkey );
-		if ( ERROR_SUCCESS != rc ) {
-			debug( L"COptionsData::_LoadFromRegistry: can't open key HKCU\\Software\\%s\\%s: error %d\n", theApp.m_pszRegistryKey, theApp.m_pszProfileName );
-			return false;
-		}
-		RegCloseKey( hkey );
-	}
 
 	StartActive        =  static_cast<BOOL>( theApp.GetProfileInt( L"Startup",  L"StartActive",        TRUE ) );
 	StartWithWindows   =  static_cast<BOOL>( theApp.GetProfileInt( L"Startup",  L"StartWithWindows",   FALSE ) );
@@ -82,49 +114,24 @@ bool COptionsData::_LoadFromRegistry( void ) {
 	
 	CapsLockSwapMode   = fSwapCapsLock ? static_cast<CAPS_LOCK_SWAP_MODE>( nCapsLockSwapMode ) : CLSM_NORMAL;
 
-	_LoadKeys( );
+	_LoadSequencesFromRegistry( );
 
 	return true;
 }
 
-void COptionsData::_LoadKeys( void ) {
-	ComposeSequences.RemoveAll( );
-
-	unsigned count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
-	if ( count < 1 ) {
-		return;
-	}
-
-	ComposeSequence sequence;
-	CString section;
-	ComposeSequences.SetSize( count );
-
-	debug( L"COptionsData::_LoadKeys: Loading %d mappings from registry:\n", count );
-	for ( unsigned n = 0; n < count; n++ ) {
-		section.Format( L"Mapping\\%d", n );
-		CString first    ( VkToString  ( theApp.GetProfileInt( section, L"First",    0 ) ) );
-		CString second   ( VkToString  ( theApp.GetProfileInt( section, L"Second",   0 ) ) );
-		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );
-		sequence.Sequence = first + second;
-		sequence.Result = composed;
-		debug( L"+ Mapping %3d: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
-		ComposeSequences[n] = sequence;
-	}
-	debug( L"COptionsData::_LoadKeys: Mapping load completed.\n" );
-}
-
 void COptionsData::_UpdateRunKey( void ) {
-	wchar_t lpszImageFilename[1024];
 	LSTATUS rc;
-	HKEY hk;
+	HKEY hkey;
 	
-	rc = RegOpenKeyEx( HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hk );
+	rc = RegOpenKeyEx( HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hkey );
 	if ( ERROR_SUCCESS != rc ) {
 		debug( L"COptionsData::_UpdateRunKey: RegOpenKeyEx failed: %d\n", rc );
 		return;
 	}
 
 	if ( StartWithWindows ) {
+		wchar_t lpszImageFilename[1024];
+
 		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
 		if ( rc > 0 ) {
 #ifndef _DEBUG
@@ -144,14 +151,14 @@ void COptionsData::_UpdateRunKey( void ) {
 		}
 #endif
 	}
-	RegCloseKey( hk );
+	RegCloseKey( hkey );
 }
 
 void COptionsData::Load( void ) {
 #if !FORCE_DEFAULT_CONFIG
 #if !FORCE_REGISTRY_CONFIG
 	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
-	if ( _LoadXmlFile( ) ) {
+	if ( _xmlOptionsHandler.LoadXmlFile( ) ) {
 		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
 		return;
 	}
@@ -160,7 +167,7 @@ void COptionsData::Load( void ) {
 #endif
 	if ( _LoadFromRegistry( ) ) {
 		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
-		if ( !_SaveXmlFile( ) ) {
+		if ( !_xmlOptionsHandler.SaveXmlFile( ) ) {
 			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
 			return;
 		}
@@ -168,13 +175,13 @@ void COptionsData::Load( void ) {
 #endif
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
-	_LoadDefaultConfiguration( );
-	if ( !_SaveXmlFile( ) ) {
+	_xmlOptionsHandler.LoadDefaultConfiguration( );
+	if ( !_xmlOptionsHandler.SaveXmlFile( ) ) {
 		debug( L"COptionsData::Load: Couldn't save default configuration to XML\n" );
 	}
 }
 
 void COptionsData::Save( void ) {
-	_SaveXmlFile( );
+	_xmlOptionsHandler.SaveXmlFile( );
 	_UpdateRunKey( );
 }
