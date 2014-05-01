@@ -3,6 +3,13 @@
 #import <msxml6.dll>
 
 //==============================================================================
+// Forward declarations
+//==============================================================================
+
+class COptionsData;
+class CXmlOptionsManager;
+
+//==============================================================================
 // Type aliases
 //==============================================================================
 
@@ -15,18 +22,17 @@ using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
 using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
 using XText                  = MSXML2::IXMLDOMTextPtr;
 
-//==============================================================================
-// Forward declarations
-//==============================================================================
-
-class COptionsData;
+using MethodPtr              = bool (CXmlOptionsManager::*)( XNode const& );
+using XmlMethodMap           = std::map<_bstr_t, MethodPtr>;
+using XmlMethodMapPair       = std::pair<_bstr_t, MethodPtr>;
 
 //==============================================================================
 // Class declarations
 //==============================================================================
 
 class CXmlOptionsManager {
-	// Rule of Five
+	// Rule of Five members
+
 	inline CXmlOptionsManager( ):
 		_pOptionsData( nullptr )
 	{ }
@@ -40,8 +46,7 @@ public:
 		operator=( options );
 	}
 
-	inline ~CXmlOptionsManager( ) {
-	}
+	inline ~CXmlOptionsManager( ) { }
 
 	inline CXmlOptionsManager& operator=( CXmlOptionsManager const& rhs ) {
 		_pOptionsData = rhs._pOptionsData;
@@ -63,7 +68,6 @@ public:
 		_pOptionsData = pOptionsData;
 	}
 
-
 	// Overloaded operators
 
 	bool operator==( CXmlOptionsManager const& );
@@ -79,8 +83,26 @@ private:
 
 	bool _InterpretConfiguration( XDocument& doc );
 
-	bool _DispatchNode( XNode const& node );
+	bool _DispatchChildren( wchar_t const* label,  XNode const& node, XmlMethodMap& map );
+	bool _DispatchNode( XNode const& node, XmlMethodMap& map );
+
 	bool _InterpretSchemaVersionNode( XNode const& node );
+
+	bool _InterpretOptionsNode( XNode const& node );
+		bool _InterpretStartupNode( XNode const& node );
+			bool _InterpretStartActiveNode( XNode const& node );
+			bool _InterpretStartWithWindowsNode( XNode const& node );
+		bool _InterpretKeyboardNode( XNode const& node );
+			bool _InterpretCapsLockToggleModeNode( XNode const& node );
+			bool _InterpretCapsLockSwapModeNode( XNode const& node );
+			bool _InterpretComposeKeyNode( XNode const& node );
+			bool _InterpretSwapCapsLockKeyNode( XNode const& node );
+
+	bool _InterpretMappingsNode( XNode const& node );
+		bool _InterpretGroupNode( XNode const& node );
+			bool _InterpretMappingNode( XNode const& node );
+
+	//bool _InterpretNode( XNode const& node );
 
 	friend class Initializer_;
 };
