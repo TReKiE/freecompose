@@ -1,12 +1,14 @@
 #pragma once
 
+#include "XmlOptionsManager.h"
+
 class COptionsData {
 public:
-	inline COptionsData( ) {
+	inline COptionsData( ): _xmlOptionsHandler( this ) { }
 
-	}
-
-	inline COptionsData( COptionsData const& options ) {
+	inline COptionsData( COptionsData const& options ):
+		_xmlOptionsHandler( this )
+	{
 		operator=( options );
 	}
 
@@ -18,8 +20,16 @@ public:
 	bool operator==( COptionsData const& );
 	bool operator!=( COptionsData const& );
 
+	//
+	// Methods
+	//
+
 	void Load( void );
 	void Save( void );
+
+	//
+	// Configuration store
+	//
 
 	CArray<ComposeSequence> ComposeSequences;
  
@@ -31,12 +41,10 @@ public:
 	DWORD SwapCapsLockVk;
 
 private:
-	bool _LoadFromRegistry( void );
-	void _LoadKeys( void );
-	void _UpdateRunKey( void );
+	CXmlOptionsManager _xmlOptionsHandler;
 
-	bool _InterpretConfiguration( void* pvDoc );
-	bool _LoadDefaultConfiguration( void );
-	bool _LoadXmlFile( void );
-	bool _SaveXmlFile( void );
+	bool _CheckIfRegistryKeyExists( void );
+	void _LoadSequencesFromRegistry( void );
+	bool _LoadFromRegistry( void );
+	void _UpdateRunKey( void );
 };
