@@ -37,19 +37,40 @@ static const StringMapper<CAPS_LOCK_SWAP_MODE> ClsmStringMapper {
 	L"replace",
 };
 
-using MethodPtr = bool (CXmlOptionsManager::*)( XNode const& );
+static XmlMethodMap RootElementsToMethods;
+	static XmlMethodMap OptionsElementsToMethods;
+		static XmlMethodMap StartupOptionsElementsToMethods;
+		static XmlMethodMap KeyboardOptionsElementsToMethods;
+	static XmlMethodMap MappingsElementsToMethods;
+		static XmlMethodMap GroupMappingsElementsToMethods;
 
-static std::map<wchar_t const*, MethodPtr> XmlElementNamesToMethods;
+//==============================================================================
+// Static initialization object for this translation unit
+//==============================================================================
+
 class Initializer_ {
-	using pairtype = std::pair<wchar_t const*, MethodPtr>;
-
 public:
 	inline Initializer_( ) {
-		XmlElementNamesToMethods.insert( pairtype( L"aaa", &CXmlOptionsManager::_InterpretSchemaVersionNode ) );
+		RootElementsToMethods.insert( XmlMethodMapPair( L"SchemaVersion", &CXmlOptionsManager::_InterpretSchemaVersionNode ) );
+		RootElementsToMethods.insert( XmlMethodMapPair( L"Options",       &CXmlOptionsManager::_InterpretOptionsNode       ) );
+		RootElementsToMethods.insert( XmlMethodMapPair( L"Mappings",      &CXmlOptionsManager::_InterpretMappingsNode      ) );
+
+		OptionsElementsToMethods.insert( XmlMethodMapPair( L"Startup",  &CXmlOptionsManager::_InterpretStartupNode  ) );
+		OptionsElementsToMethods.insert( XmlMethodMapPair( L"Keyboard", &CXmlOptionsManager::_InterpretKeyboardNode ) );
+
+		StartupOptionsElementsToMethods.insert( XmlMethodMapPair( L"StartActive",      &CXmlOptionsManager::_InterpretStartActiveNode      ) );
+		StartupOptionsElementsToMethods.insert( XmlMethodMapPair( L"StartWithWindows", &CXmlOptionsManager::_InterpretStartWithWindowsNode ) );
+
+		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"CapsLockToggleMode", &CXmlOptionsManager::_InterpretCapsLockToggleModeNode ) );
+		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"CapsLockSwapMode",   &CXmlOptionsManager::_InterpretCapsLockSwapModeNode   ) );
+		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"ComposeKey",         &CXmlOptionsManager::_InterpretComposeKeyNode         ) );
+		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"SwapCapsLockKey",    &CXmlOptionsManager::_InterpretSwapCapsLockKeyNode    ) );
+
+		MappingsElementsToMethods.insert( XmlMethodMapPair( L"Group", &CXmlOptionsManager::_InterpretGroupNode ) );
+
+		GroupMappingsElementsToMethods.insert( XmlMethodMapPair( L"Mapping", &CXmlOptionsManager::_InterpretMappingNode ) );
 	}
-
 };
-
 static Initializer_ Instance_;
 
 //==============================================================================
@@ -71,14 +92,22 @@ static inline Tout CoerceXNode( XNode const& value ) {
 // 'FromXNode' functions
 
 static inline ComposeSequence ComposeSequenceFromXNode( XNode const& value ) {
+	XNode nodeFirst, nodeSecond, nodeComposed;
+	XNode nodeSequence, nodeResult;
 	CString Sequence, Result;
 
-	XNode nodeFirst = value->selectSingleNode( L"First" );
-	XNode nodeSecond = value->selectSingleNode( L"Second" );
-	XNode nodeComposed = value->selectSingleNode( L"Composed" );
-
-	XNode nodeSequence = value->selectSingleNode( L"Sequence" );
-	XNode nodeResult = value->selectSingleNode( L"Result" );
+	XNode node = value->firstChild;
+	while ( node ) {
+		if      ( 0 == wcscmp( L"First",    node->nodeName ) ) { nodeFirst    = node; }
+		else if ( 0 == wcscmp( L"Second",   node->nodeName ) ) { nodeSecond   = node; }
+		else if ( 0 == wcscmp( L"Composed", node->nodeName ) ) { nodeComposed = node; }
+		else if ( 0 == wcscmp( L"Sequence", node->nodeName ) ) { nodeSequence = node; }
+		else if ( 0 == wcscmp( L"Result",   node->nodeName ) ) { nodeResult   = node; }
+		else {
+			debug( L"ComposeSequenceFromXNode: unknown node '%s'\n", static_cast<LPCWSTR>( node->nodeName ) );
+		}
+		node = node->nextSibling;
+	}
 
 	if ( nodeFirst && nodeSecond && nodeComposed ) {
 		CString First, Second, Composed;
@@ -181,15 +210,90 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 //==============================================================================
 
 bool CXmlOptionsManager::_InterpretSchemaVersionNode( XNode const& node ) {
-	CString text( static_cast<LPCWSTR>( node->text ) );
-	debug( L"InterpretSchemaVersionNode: text is %s\n", static_cast<LPCWSTR>( node->text ) );
-	return false;
+	int nSchemaVersion = Coerce<_bstr_t, unsigned>( static_cast<LPCWSTR>( node->text ) );
+	debug( L"CXmlOptionsManager::_InterpretSchemaVersionNode: version is '%s' => %d\n", static_cast<LPCWSTR>( node->text ), nSchemaVersion );
+	if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
+		debug( L"CXmlOptionsManager::_InterpretSchemaVersionNode: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
+		return false;
+	}
+	return true;
 }
 
-bool CXmlOptionsManager::_DispatchNode( XNode const& node ) {
-	MethodPtr methodPtr = XmlElementNamesToMethods[node->nodeName];
-	( this->*methodPtr )( node );
-	return false;
+bool CXmlOptionsManager::_InterpretOptionsNode( XNode const& node ) {
+	return _DispatchChildren( L"Options", node, OptionsElementsToMethods );
+}
+
+bool CXmlOptionsManager::_InterpretStartupNode( XNode const& node ) {
+	return _DispatchChildren( L"Options\\Startup", node, StartupOptionsElementsToMethods );
+}
+
+bool CXmlOptionsManager::_InterpretStartActiveNode( XNode const& node ) {
+	_pOptionsData->StartActive = BoolStringMapper[node->text];
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretStartWithWindowsNode( XNode const& node ) {
+	_pOptionsData->StartWithWindows = BoolStringMapper[node->text];
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretKeyboardNode( XNode const& node ) {
+	return _DispatchChildren( L"Options\\Keyboard", node, KeyboardOptionsElementsToMethods );
+}
+
+bool CXmlOptionsManager::_InterpretCapsLockToggleModeNode( XNode const& node ) {
+	_pOptionsData->CapsLockToggleMode = CltmStringMapper[node->text];
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretCapsLockSwapModeNode( XNode const& node ) {
+	_pOptionsData->CapsLockSwapMode = ClsmStringMapper[node->text];
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretComposeKeyNode( XNode const& node ) {
+	_pOptionsData->ComposeVk = CoerceXNode<unsigned>( node );
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretSwapCapsLockKeyNode( XNode const& node ) {
+	_pOptionsData->SwapCapsLockVk = CoerceXNode<unsigned>( node );
+	return true;
+}
+
+bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
+	return _DispatchChildren( L"Mappings", node, MappingsElementsToMethods );
+}
+
+bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
+	return _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
+}
+
+bool CXmlOptionsManager::_InterpretMappingNode( XNode const& node ) {
+	_pOptionsData->ComposeSequences.Add( ComposeSequenceFromXNode( node ) );
+	return true;
+}
+
+bool CXmlOptionsManager::_DispatchChildren( wchar_t const* label, XNode const& node, XmlMethodMap& map ) {
+	XNode child = node->firstChild;
+	while ( child ) {
+		debug( L"CXmlOptionsManager::_DispatchChildren: %s: child element: '%s'\n", label, static_cast<LPCWSTR>( child->nodeName ) );
+		if ( !_DispatchNode( child, map ) ) {
+			debug( L"CXmlOptionsManager::_DispatchChildren: %s: _DispatchNode failed\n", label );
+			// TODO return false
+		}
+		child = child->nextSibling;
+	}
+	return true;
+}
+
+bool CXmlOptionsManager::_DispatchNode( XNode const& node, XmlMethodMap& map ) {
+	MethodPtr methodPtr = map[node->nodeName];
+	if ( !methodPtr ) {
+		debug( L"CXmlOptionsManager::_DispatchNode: No method to call for node '%s'\n", static_cast<LPCWSTR>( node->nodeName ) );
+		return false;
+	}
+	return ( this->*methodPtr )( node );
 }
 
 //==============================================================================
@@ -205,49 +309,11 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 		}
 		_bstr_t xmlns = FcConfiguration->namespaceURI;
 		if ( 0 != CString( static_cast<LPCWSTR>( xmlns ) ).Compare( XML_NAMESPACE ) ) {
-			debug( L"CXmlOptionsManager::_InterpretConfiguration: namespace doesn't match\n+ Our namespace:        %s\n+ Document's namespace: %s\n", XML_NAMESPACE, xmlns );
+			debug( L"CXmlOptionsManager::_InterpretConfiguration: namespace contains unexpected URI\n+ Our namespace:        %s\n+ Document's namespace: %s\n", XML_NAMESPACE, xmlns );
 			return false;
 		}
 
-		{
-			XNode child = FcConfiguration->firstChild;
-			while ( child ) {
-				debug( L"CXmlOptionsManager::_InterpretConfiguration: next child element:\nBase name: %s\nNode name: %s\n", static_cast<LPCWSTR>( child->baseName ), static_cast<LPCWSTR>( child->nodeName ) );
-
-				
-				child = child->nextSibling;
-			}
-		}
-
-		XNode SchemaVersion = FcConfiguration->selectSingleNode( L"SchemaVersion" );
-		int nSchemaVersion = CoerceXNode<unsigned>( SchemaVersion );
-		if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
-			debug( L"CXmlOptionsManager::_InterpretConfiguration: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
-			return false;
-		}
-
-		XNode Options = FcConfiguration->selectSingleNode( L"Options" );
-
-		XNode Startup = Options->selectSingleNode( L"Startup" );
-		_pOptionsData->StartActive = BoolStringMapper[Startup->selectSingleNode( L"StartActive" )->text];
-		_pOptionsData->StartWithWindows = BoolStringMapper[ Startup->selectSingleNode( L"StartWithWindows" )->text ];
-
-		XNode Keyboard = Options->selectSingleNode( L"Keyboard" );
-		_pOptionsData->CapsLockToggleMode = CltmStringMapper[ Keyboard->selectSingleNode( L"CapsLockToggleMode" )->text ];
-		_pOptionsData->CapsLockSwapMode = ClsmStringMapper[ Keyboard->selectSingleNode( L"CapsLockSwapMode" )->text ];
-		_pOptionsData->ComposeVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"ComposeKey" ) );
-		_pOptionsData->SwapCapsLockVk = CoerceXNode<unsigned>( Keyboard->selectSingleNode( L"SwapCapsLockKey" ) );
-
-		XNode Mappings = FcConfiguration->selectSingleNode( L"Mappings" );
-		XNodeList groupNodes = Mappings->selectNodes( L"Group" );
-		XNode group;
-		while ( group = groupNodes->nextNode( ) ) {
-			XNodeList mappingNodes = group->selectNodes( L"Mapping" );
-			XNode mapping;
-			while ( mapping = mappingNodes->nextNode( ) ) {
-				_pOptionsData->ComposeSequences.Add( ComposeSequenceFromXNode( mapping ) );
-			}
-		}
+		_DispatchChildren( L"root", FcConfiguration, RootElementsToMethods );
 	}
 	catch ( _com_error e ) {
 		debug( L"CXmlOptionsManager::_InterpretConfiguration: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
