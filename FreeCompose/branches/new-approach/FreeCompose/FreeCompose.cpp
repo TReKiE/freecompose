@@ -23,29 +23,23 @@ CFreeComposeApp::CFreeComposeApp( ):
 
 bool CFreeComposeApp::IsAlreadyRunning( ) {
 	CString exclusionName( MakeInstanceExclusionName( CString( L"ca.zive.FreeCompose.instanceMutex" ), UNIQUE_TO_SESSION ) );
-	debug( L"CFreeComposeApp::IsAlreadyRunning: exclusionName=\"%s\"\n", exclusionName );
 
 	SetLastError( ERROR_SUCCESS );
 	m_hInstanceMutex = CreateMutex( nullptr, TRUE, exclusionName );
 	DWORD dwError = GetLastError( );
-	debug( L"CFreeComposeApp::IsAlreadyRunning: after CreateMutex: m_hInstanceMutex=0x%p dwError=%lu\n", m_hInstanceMutex, dwError );
 	if ( m_hInstanceMutex ) {
 		if ( ERROR_SUCCESS == dwError ) {
-			debug( L"Created locked mutex, so not running!\n" );
 			return false;
 		}
 		if ( ERROR_ALREADY_EXISTS == dwError ) {
-			debug( L"Mutex already exists, so already running =(\n" );
 			return true;
 		}
-		debug( L"Uh oh. m_hInstanceMutex is set, but we didn't catch dwError?\n" );
 	} else {
 		if ( ERROR_ACCESS_DENIED == dwError ) {
-			debug( L"CFreeComposeApp::InitInstance: CreateMutex returned ERROR_ACCESS_DENIED, so already running\n" );
 			return true;
 		}
-		debug( L"CFreeComposeApp::InitInstance: Uh oh. m_hInstanceMutex is not set, but we didn't catch dwError?\n" );
 	}
+	debug( L"CFreeComposeApp::IsAlreadyRunning: Something went wrong. m_hInstanceMutex=0x%p dwError=%lu\n", m_hInstanceMutex, dwError );
 	return true;
 }
 
