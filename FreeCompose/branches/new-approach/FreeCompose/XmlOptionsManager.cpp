@@ -38,11 +38,11 @@ static const StringMapper<CAPS_LOCK_SWAP_MODE> ClsmStringMapper {
 };
 
 static XmlMethodMap RootElementsToMethods;
-	static XmlMethodMap OptionsElementsToMethods;
-		static XmlMethodMap StartupOptionsElementsToMethods;
-		static XmlMethodMap KeyboardOptionsElementsToMethods;
-	static XmlMethodMap MappingsElementsToMethods;
-		static XmlMethodMap GroupMappingsElementsToMethods;
+static XmlMethodMap     OptionsElementsToMethods;
+static XmlMethodMap         StartupOptionsElementsToMethods;
+static XmlMethodMap         KeyboardOptionsElementsToMethods;
+static XmlMethodMap     MappingsElementsToMethods;
+static XmlMethodMap         GroupMappingsElementsToMethods;
 
 //==============================================================================
 // Static initialization object for this translation unit
@@ -51,24 +51,24 @@ static XmlMethodMap RootElementsToMethods;
 class Initializer_ {
 public:
 	inline Initializer_( ) {
-		RootElementsToMethods.insert( XmlMethodMapPair( L"SchemaVersion", &CXmlOptionsManager::_InterpretSchemaVersionNode ) );
-		RootElementsToMethods.insert( XmlMethodMapPair( L"Options",       &CXmlOptionsManager::_InterpretOptionsNode       ) );
-		RootElementsToMethods.insert( XmlMethodMapPair( L"Mappings",      &CXmlOptionsManager::_InterpretMappingsNode      ) );
+		RootElementsToMethods           .insert( XmlMethodMapPair( L"SchemaVersion",      &CXmlOptionsManager::_InterpretSchemaVersionNode      ) );
+		RootElementsToMethods           .insert( XmlMethodMapPair( L"Options",            &CXmlOptionsManager::_InterpretOptionsNode            ) );
+		RootElementsToMethods           .insert( XmlMethodMapPair( L"Mappings",           &CXmlOptionsManager::_InterpretMappingsNode           ) );
 
-		OptionsElementsToMethods.insert( XmlMethodMapPair( L"Startup",  &CXmlOptionsManager::_InterpretStartupNode  ) );
-		OptionsElementsToMethods.insert( XmlMethodMapPair( L"Keyboard", &CXmlOptionsManager::_InterpretKeyboardNode ) );
+		OptionsElementsToMethods        .insert( XmlMethodMapPair( L"Startup",            &CXmlOptionsManager::_InterpretStartupNode            ) );
+		OptionsElementsToMethods        .insert( XmlMethodMapPair( L"Keyboard",           &CXmlOptionsManager::_InterpretKeyboardNode           ) );
 
-		StartupOptionsElementsToMethods.insert( XmlMethodMapPair( L"StartActive",      &CXmlOptionsManager::_InterpretStartActiveNode      ) );
-		StartupOptionsElementsToMethods.insert( XmlMethodMapPair( L"StartWithWindows", &CXmlOptionsManager::_InterpretStartWithWindowsNode ) );
+		StartupOptionsElementsToMethods .insert( XmlMethodMapPair( L"StartActive",        &CXmlOptionsManager::_InterpretStartActiveNode        ) );
+		StartupOptionsElementsToMethods .insert( XmlMethodMapPair( L"StartWithWindows",   &CXmlOptionsManager::_InterpretStartWithWindowsNode   ) );
 
 		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"CapsLockToggleMode", &CXmlOptionsManager::_InterpretCapsLockToggleModeNode ) );
 		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"CapsLockSwapMode",   &CXmlOptionsManager::_InterpretCapsLockSwapModeNode   ) );
 		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"ComposeKey",         &CXmlOptionsManager::_InterpretComposeKeyNode         ) );
 		KeyboardOptionsElementsToMethods.insert( XmlMethodMapPair( L"SwapCapsLockKey",    &CXmlOptionsManager::_InterpretSwapCapsLockKeyNode    ) );
 
-		MappingsElementsToMethods.insert( XmlMethodMapPair( L"Group", &CXmlOptionsManager::_InterpretGroupNode ) );
+		MappingsElementsToMethods       .insert( XmlMethodMapPair( L"Group",              &CXmlOptionsManager::_InterpretGroupNode              ) );
 
-		GroupMappingsElementsToMethods.insert( XmlMethodMapPair( L"Mapping", &CXmlOptionsManager::_InterpretMappingNode ) );
+		GroupMappingsElementsToMethods  .insert( XmlMethodMapPair( L"Mapping",            &CXmlOptionsManager::_InterpretMappingNode            ) );
 	}
 };
 static Initializer_ Instance_;
@@ -91,7 +91,7 @@ static inline Tout CoerceXNode( XNode const& value ) {
 
 // 'FromXNode' functions
 
-static inline ComposeSequence ComposeSequenceFromXNode( XNode const& value ) {
+static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result ) {
 	XNode nodeFirst, nodeSecond, nodeComposed;
 	XNode nodeSequence, nodeResult;
 	CString Sequence, Result;
@@ -118,15 +118,15 @@ static inline ComposeSequence ComposeSequenceFromXNode( XNode const& value ) {
 		Sequence = First + Second;
 		Result   = Composed;
 	} else if ( nodeSequence && nodeResult ) {
-		debug( L"ComposeSequenceFromNode: new format\n" );
-
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
 		Result   = static_cast<LPCWSTR>( nodeResult->text );
 	} else {
-		debug( L"ComposeSequenceFromNode: unknown format???\n" );
+		debug( L"ComposeSequenceFromNode: invalid entry\n" );
+		return false;
 	}
 
-	return ComposeSequence( Sequence, Result );
+	result = ComposeSequence( Sequence, Result );
+	return true;
 }
 
 // CreateXNode functions
@@ -270,27 +270,31 @@ bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
 }
 
 bool CXmlOptionsManager::_InterpretMappingNode( XNode const& node ) {
-	_pOptionsData->ComposeSequences.Add( ComposeSequenceFromXNode( node ) );
-	return true;
+	ComposeSequence sequence;
+	if ( ComposeSequenceFromXNode( node, sequence ) ) {
+		_pOptionsData->ComposeSequences.Add( sequence );
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool CXmlOptionsManager::_DispatchChildren( wchar_t const* label, XNode const& node, XmlMethodMap& map ) {
 	XNode child = node->firstChild;
 	while ( child ) {
-		debug( L"CXmlOptionsManager::_DispatchChildren: %s: child element: '%s'\n", label, static_cast<LPCWSTR>( child->nodeName ) );
-		if ( !_DispatchNode( child, map ) ) {
-			debug( L"CXmlOptionsManager::_DispatchChildren: %s: _DispatchNode failed\n", label );
-			// TODO return false
+		if ( !_DispatchNode( label, child, map ) ) {
+			debug( L"CXmlOptionsManager::_DispatchChildren: %s: _DispatchNode failed on node '%s'\n", label, static_cast<LPCWSTR>( child->nodeName ) );
+			// TODO: return false?
 		}
 		child = child->nextSibling;
 	}
 	return true;
 }
 
-bool CXmlOptionsManager::_DispatchNode( XNode const& node, XmlMethodMap& map ) {
+bool CXmlOptionsManager::_DispatchNode( wchar_t const* label, XNode const& node, XmlMethodMap& map ) {
 	MethodPtr methodPtr = map[node->nodeName];
 	if ( !methodPtr ) {
-		debug( L"CXmlOptionsManager::_DispatchNode: No method to call for node '%s'\n", static_cast<LPCWSTR>( node->nodeName ) );
+		debug( L"CXmlOptionsManager::_DispatchNode: %s: No method to call for node '%s'\n", label, static_cast<LPCWSTR>( node->nodeName ) );
 		return false;
 	}
 	return ( this->*methodPtr )( node );
@@ -362,7 +366,7 @@ bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 // CXmlOptionsManager::_LoadXmlFile
 //
 
-bool CXmlOptionsManager::LoadXmlFile( void ) {
+bool CXmlOptionsManager::LoadFromFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"CXmlOptionsManager::_LoadXmlFile: Can't ensure app data folder exists\n" );
 		return false;
@@ -398,7 +402,7 @@ bool CXmlOptionsManager::LoadXmlFile( void ) {
 // CXmlOptionsManager::_SaveXmlFile
 //
 
-bool CXmlOptionsManager::SaveXmlFile( void ) {
+bool CXmlOptionsManager::SaveToFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"CXmlOptionsManager::_SaveXmlFile: Can't ensure app data folder exists\n" );
 		return false;

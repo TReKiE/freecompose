@@ -75,8 +75,8 @@ public:
 
 public:
 	bool LoadDefaultConfiguration( void );
-	bool LoadXmlFile( void );
-	bool SaveXmlFile( void );
+	bool LoadFromFile( void );
+	bool SaveToFile( void );
 
 private:
 	COptionsData* _pOptionsData;
@@ -84,7 +84,7 @@ private:
 	bool _InterpretConfiguration( XDocument& doc );
 
 	bool _DispatchChildren( wchar_t const* label,  XNode const& node, XmlMethodMap& map );
-	bool _DispatchNode( XNode const& node, XmlMethodMap& map );
+	bool _DispatchNode( wchar_t const* label, XNode const& node, XmlMethodMap& map );
 
 	bool _InterpretSchemaVersionNode( XNode const& node );
 
