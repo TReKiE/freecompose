@@ -131,7 +131,6 @@ void COptionsData::_UpdateRunKey( void ) {
 
 	if ( StartWithWindows ) {
 		wchar_t lpszImageFilename[1024];
-
 		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
 		if ( rc > 0 ) {
 #ifndef _DEBUG
@@ -158,7 +157,7 @@ void COptionsData::Load( void ) {
 #if !FORCE_DEFAULT_CONFIG
 #if !FORCE_REGISTRY_CONFIG
 	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
-	if ( _xmlOptionsHandler.LoadXmlFile( ) ) {
+	if ( _xmlOptionsHandler.LoadFromFile( ) ) {
 		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
 		return;
 	}
@@ -167,7 +166,7 @@ void COptionsData::Load( void ) {
 #endif
 	if ( _LoadFromRegistry( ) ) {
 		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
-		if ( !_xmlOptionsHandler.SaveXmlFile( ) ) {
+		if ( !_xmlOptionsHandler.SaveToFile( ) ) {
 			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
 			return;
 		}
@@ -176,12 +175,12 @@ void COptionsData::Load( void ) {
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
 	_xmlOptionsHandler.LoadDefaultConfiguration( );
-	if ( !_xmlOptionsHandler.SaveXmlFile( ) ) {
+	if ( !_xmlOptionsHandler.SaveToFile( ) ) {
 		debug( L"COptionsData::Load: Couldn't save default configuration to XML\n" );
 	}
 }
 
 void COptionsData::Save( void ) {
-	_xmlOptionsHandler.SaveXmlFile( );
+	_xmlOptionsHandler.SaveToFile( );
 	_UpdateRunKey( );
 }
