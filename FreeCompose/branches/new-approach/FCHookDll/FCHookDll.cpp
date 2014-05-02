@@ -38,8 +38,13 @@ static void _SetComposeSequencesImpl( ComposeSequence* pSequences, INT_PTR cSequ
 //==============================================================================
 
 void ReleaseComposeSequences( void ) {
-	_SetComposeSequencesImpl( nullptr, 0 );
-	ComposeSequenceTree.ReleaseTree( );
+	LOCK( cs ) {
+		if ( ComposeSequences ) {
+			delete[] ComposeSequences;
+		}
+		ComposeSequences = nullptr;
+		cComposeSequences = 0;
+	} UNLOCK( cs );
 }
 
 //==============================================================================
@@ -67,9 +72,10 @@ FCHOOKDLL_API BOOL FcInitialize( void ) {
 }
 
 FCHOOKDLL_API BOOL FcUninitialize( void ) {
-	if ( 0 == InterlockedDecrement( &cClients ) ) {
-		ReleaseComposeSequences( );
-	}
+	// TODO HACK TODO HACK TODO HACK
+	//if ( 0 == InterlockedDecrement( &cClients ) ) {
+	//	ReleaseComposeSequences( );
+	//}
 
 	return TRUE;
 }
