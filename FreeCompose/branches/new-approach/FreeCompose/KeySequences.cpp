@@ -18,17 +18,38 @@ const int HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
 IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
 
 BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
-	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListItemChanged )
+	ON_NOTIFY( LVN_COLUMNCLICK, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListColumnClick )
 	ON_NOTIFY( NM_DBLCLK,       IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListDoubleClick )
+	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CKeySequences::OnKeyComboListItemChanged )
 
 	ON_BN_CLICKED( IDADD,    &CKeySequences::OnBnClickedAdd    )
 	ON_BN_CLICKED( IDEDIT,   &CKeySequences::OnBnClickedEdit   )
 	ON_BN_CLICKED( IDREMOVE, &CKeySequences::OnBnClickedRemove )
 END_MESSAGE_MAP( )
 
+CKeySequences::sortcallbackfunc* CKeySequences::ResultColumnSortFuncMap[] = {
+	&CKeySequences::_ListComparer_Unsorted,
+	&CKeySequences::_ListComparer_Ascending_Result,
+	&CKeySequences::_ListComparer_Descending_Result,
+};
+
+CKeySequences::sortcallbackfunc* CKeySequences::SequenceColumnSortFuncMap[] = {
+	&CKeySequences::_ListComparer_Unsorted,
+	&CKeySequences::_ListComparer_Ascending_Sequence,
+	&CKeySequences::_ListComparer_Descending_Sequence,
+};
+
+int ColumnHeaderFormatFlagsMap[] = {
+	0,
+	HDF_SORTUP,
+	HDF_SORTDOWN
+};
+
 CKeySequences::CKeySequences( COptionsData& Options ):
 	CPropertyPage ( IDD ),
-	m_Options     ( Options )
+	m_Options     ( Options ),
+	m_nSortColumn ( -1 ),
+	m_SortState   ( ssUnsorted )
 {
 	m_nColumnWidths[0] = m_nColumnWidths[1] = 0;
 }
@@ -83,13 +104,47 @@ void CKeySequences::_AdjustColumns( void ) {
 	m_KeyComboList.SetColumnWidth( 1, m_nColumnWidths[1] );
 }
 
+//
+// Huh. Subtraction is so much easier, for certain kinds of comparisons.
+//
+
+int CKeySequences::_ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM ) {
+	return static_cast<int>( index1 - index2 );
+}
+
+int CKeySequences::_ListComparer_Ascending_Result( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	return static_cast<int>( self->m_Options.ComposeSequences[index1].Result - self->m_Options.ComposeSequences[index2].Result );
+}
+
+int CKeySequences::_ListComparer_Descending_Result( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	return static_cast<int>( self->m_Options.ComposeSequences[index2].Result - self->m_Options.ComposeSequences[index1].Result );
+}
+
+int CKeySequences::_ListComparer_Ascending_Sequence( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	return static_cast<int>( self->m_Options.ComposeSequences[index1].Sequence.Compare( self->m_Options.ComposeSequences[index2].Result ) );
+}
+
+int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	return static_cast<int>( self->m_Options.ComposeSequences[index2].Sequence.Compare( self->m_Options.ComposeSequences[index1].Result ) );
+}
+
 void CKeySequences::_FillKeyComboList( void ) {
+	SetRedraw( FALSE );
+
 	m_KeyComboList.DeleteAllItems( );
 	INT_PTR limit = m_Options.ComposeSequences.GetCount( );
 	for ( INT_PTR n = 0; n < limit; n++ ) {
 		_AddOneKeySequence( n );
 	}
 	_AdjustColumns( );
+
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
 }
 
 void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
@@ -141,6 +196,53 @@ void CKeySequences::OnKeyComboListItemChanged( NMHDR* /*pNMHDR*/, LRESULT* pResu
 
 void CKeySequences::OnKeyComboListDoubleClick( NMHDR* /*pNMHDR*/, LRESULT* pResult ) {
 	OnBnClickedEdit( );
+
+	*pResult = 0;
+}
+
+void CKeySequences::OnKeyComboListColumnClick( NMHDR* pNMHDR, LRESULT* pResult ) {
+	NMLISTVIEW* pnmlv = reinterpret_cast<NMLISTVIEW*>( pNMHDR );
+
+	m_nSortColumn = pnmlv->iSubItem;
+	m_SortState = static_cast<SORTSTATE>( ( m_SortState + 1 ) % 3 );
+	debug( L"CKeySequences::OnKeyComboListColumnClick: column %d sortstate %d self 0x%p\n", m_nSortColumn, m_SortState, this );
+
+	//
+	// Step 1: tell combo box to sort itself
+	//
+
+	PFNLVCOMPARE pfnCompare = nullptr;
+	switch ( m_nSortColumn ) {
+		case ResultColumn: pfnCompare = ResultColumnSortFuncMap[m_SortState];
+		case SequenceColumn: pfnCompare = SequenceColumnSortFuncMap[m_SortState];
+	}
+	if ( !pfnCompare ) {
+		debug( L"CKeySequences::OnKeyComboListColumnClick: !!! m_SortState is invalid !!!\n" );
+		return;
+	}
+
+	if ( !m_KeyComboList.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
+		debug( L"CKeySequences::OnKeyComboListColumnClick: SortItems failed?\n" );
+	}
+
+	//
+	// Step 2: get the header control to display the appropriate indication
+	//
+
+	HDITEM hdItem = { HDI_FORMAT, };
+	CHeaderCtrl* phdr = m_KeyComboList.GetHeaderCtrl( );
+	if ( !phdr->GetItem( m_nSortColumn, &hdItem ) ) {
+		debug( L"CKeySequences::OnKeyComboListColumnClick: GetItem failed?\n" );
+		return;
+	}
+	hdItem.fmt = ( hdItem.fmt & ~( HDF_SORTUP | HDF_SORTDOWN ) ) | ColumnHeaderFormatFlagsMap[m_SortState];
+	if ( !phdr->SetItem( m_nSortColumn, &hdItem ) ) {
+		debug( L"CKeySequences::OnKeyComboListColumnClick: SetItem failed?\n" );
+		return;
+	}
+
+	Invalidate( );
+	UpdateWindow( );
 
 	*pResult = 0;
 }
