@@ -28,6 +28,7 @@
 #include <comdef.h>
 #include <comip.h>
 #include <comutil.h>
+#include <VersionHelpers.h>
 
 #include <FCHookDll.h>
 #include <FCShared.h>
