@@ -1,6 +1,6 @@
 #pragma once
 
-#import <msxml6.dll>
+#import <msxml6.dll> exclude( "_FILETIME", "ISequentialStream" )
 
 //==============================================================================
 // Forward declarations
