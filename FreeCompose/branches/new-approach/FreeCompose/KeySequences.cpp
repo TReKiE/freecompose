@@ -51,7 +51,7 @@ CKeySequences::CKeySequences( COptionsData& Options ):
 	m_nSortColumn ( -1 ),
 	m_SortState   ( ssUnsorted )
 {
-	for ( auto& n : m_nColumnWidths ) { n = 0; }
+
 }
 
 CKeySequences::~CKeySequences( ) {
