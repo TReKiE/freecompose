@@ -142,6 +142,25 @@ FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
 END
 
+IDD_EDITKEYSEQUENCE2 DIALOGEX 0, 0, 221, 178
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit compose sequence"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,111,157,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,165,157,50,14
+    GROUPBOX        "Key sequence",IDC_STATIC,7,7,207,41
+    EDITTEXT        IDC_EDIT1,84,23,60,14,ES_AUTOHSCROLL
+    LTEXT           "&Sequence:",IDC_STATIC,22,25,35,8
+    GROUPBOX        "Result character",IDC_STATIC,6,60,210,86
+    CONTROL         "&Character",IDC_RESULT_ASCHARACTER,"Button",BS_AUTORADIOBUTTON,22,78,48,10
+    CONTROL         "Code point, in &hexadecimal",IDC_RESULT_ASHEXCODEPOINT,
+                    "Button",BS_AUTORADIOBUTTON,22,94,102,10
+    CONTROL         "Code point, in &decimal",IDC_RESULT_ASDECCODEPOINT,
+                    "Button",BS_AUTORADIOBUTTON,22,110,86,10
+    EDITTEXT        IDC_EDITRESULT,22,126,60,14,ES_AUTOHSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -228,6 +247,14 @@ BEGIN
         RIGHTMARGIN, 245
         TOPMARGIN, 7
         BOTTOMMARGIN, 189
+    END
+
+    IDD_EDITKEYSEQUENCE2, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 214
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
     END
 END
 #endif    // APSTUDIO_INVOKED
