@@ -11,12 +11,6 @@
 #define IDD_EDITKEYSEQUENCE             132
 #define IDD_SOUNDS                      133
 #define IDD_EDITKEYSEQUENCE2            134
-#define IDC_EDIT1                       1001
-#define IDC_RESULT_ASCHARACTER          1002
-#define IDC_RESULT_ASHEXCODEPOINT       1003
-#define IDC_RESULT_ASDECCODEPOINT       1004
-#define IDC_EDIT2                       1005
-#define IDC_EDITRESULT                  1005
 #define IDC_ABOUT_VERSION               2001
 #define IDC_ABOUT_COPYRIGHT             2002
 #define IDC_KEYCOMBOLIST                3001
@@ -33,6 +27,11 @@
 #define IDC_CAPSLOCKTOGGLEMODE_DISABLED 4008
 #define IDC_SEQUENCE                    5001
 #define IDC_RESULT                      5002
+#define IDC_EDITKEYSEQUENCE             5101
+#define IDC_RESULT_ASCHARACTER          5102
+#define IDC_RESULT_ASHEXCODEPOINT       5103
+#define IDC_RESULT_ASDECCODEPOINT       5104
+#define IDC_EDITRESULT                  5105
 #define IDS_VK_NAMES_BASE               8000
 #define IDS_VK_LCONTROL                 8000
 #define IDS_VK_RCONTROL                 8001
