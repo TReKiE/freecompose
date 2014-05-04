@@ -17,9 +17,9 @@ public:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
 
-	afx_msg void OnKeyComboListColumnClick( NMHDR* pNMHDR, LRESULT* pResult );
-	afx_msg void OnKeyComboListDoubleClick( NMHDR* pNMHDR, LRESULT* pResult );
-	afx_msg void OnKeyComboListItemChanged( NMHDR* pNMHDR, LRESULT* pResult );
+	afx_msg void OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult );
+	afx_msg void OnListDoubleClick( NMHDR* pnmhdr, LRESULT* pResult );
+	afx_msg void OnListItemChanged( NMHDR* pnmhdr, LRESULT* pResult );
 
 	afx_msg void OnBnClickedAdd( );
 	afx_msg void OnBnClickedEdit( );
@@ -28,15 +28,17 @@ public:
 private:
 	COptionsData& m_Options;
 
-	int m_nColumnWidths[2];
+	int m_nColumnWidths[3];
 
-	CListCtrl m_KeyComboList;
+	CListCtrl m_List;
+	CHeaderCtrl* m_pListHeader;
 	CButton m_btnAdd;
 	CButton m_btnEdit;
 	CButton m_btnRemove;
 
 	SORTSTATE m_SortState;
 	int m_nSortColumn;
+	int* m_pnSortIndices;
 
 	CString _FormatResultString( ComposeSequence const& sequence );
 	void _AddOneKeySequence( const INT_PTR n );
@@ -44,6 +46,7 @@ private:
 	void _AdjustColumns( void );
 	void _FillKeyComboList( void );
 	void _AddNewKeySequence( const INT_PTR n );
+	void _SetColumnSortState( int nColumn, SORTSTATE state );
 
 	static int CALLBACK _ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM );
 	static int CALLBACK _ListComparer_Ascending_Result( LPARAM index1, LPARAM index2, LPARAM );
@@ -52,10 +55,11 @@ private:
 	static int CALLBACK _ListComparer_Descending_Sequence( LPARAM index1, LPARAM index2, LPARAM );
 
 	using sortcallbackfunc = int CALLBACK ( LPARAM, LPARAM, LPARAM );
-	static sortcallbackfunc* ResultColumnSortFuncMap[3];
+	static sortcallbackfunc* ResultColumnsSortFuncMap[3];
 	static sortcallbackfunc* SequenceColumnSortFuncMap[3];
 
-	static int const ResultColumn = 0;
-	static int const SequenceColumn = 1;
+	static int const ResultCodePointColumn = 0;
+	static int const ResultCharacterColumn = 1;
+	static int const SequenceColumn = 2;
 
 };
