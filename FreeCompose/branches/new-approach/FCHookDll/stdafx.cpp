@@ -29,8 +29,8 @@ namespace Stringify {
 
 };
 
-UINT const FCM_PIP = RegisterWindowMessage( L"FcHookDll.FCM_PIP" );
-UINT const FCM_KEY = RegisterWindowMessage( L"FcHookDll.FCM_KEY" );
+UINT const FCM_PIP = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_PIP" );
+UINT const FCM_KEY = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 
 //==============================================================================
 // Static class members
