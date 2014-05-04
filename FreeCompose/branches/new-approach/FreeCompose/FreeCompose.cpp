@@ -44,6 +44,7 @@ bool CFreeComposeApp::IsAlreadyRunning( ) {
 }
 
 BOOL CFreeComposeApp::InitInstance( ) {
+	// If there's already another instance running within this session, activate it instead.
 	if ( IsAlreadyRunning( ) ) {
 		::PostMessage( HWND_BROADCAST, APP_ACTIVATE, 0, 0 );
 		return FALSE;
@@ -55,18 +56,26 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	INITCOMMONCONTROLSEX InitCtrls = { sizeof( InitCtrls ), ICC_WIN95_CLASSES };
 	InitCommonControlsEx( &InitCtrls );
 
-	HRESULT hr = CoInitializeEx( NULL, COINIT_MULTITHREADED );
+	// Initialize COM
+	HRESULT hr = CoInitializeEx( nullptr, COINIT_MULTITHREADED );
 	if ( FAILED( hr ) ) {
 		debug( L"CFreeComposeApp::InitInstance: CoInitializeEx failed, hr=0x%lX\n", hr );
 		return FALSE;
 	}
 
-	SetRegistryKey( CString( (LPCWSTR) AFX_IDS_COMPANY_NAME ) );
+	// Store Common Controls (ComCtl32.dll) version for later use
+	g_dwCommonControlsVersion = GetComCtl32Version( );
 
+	// Configure MFC
+	SetRegistryKey( LoadFromStringTable( AFX_IDS_COMPANY_NAME ) );
+
+	// Initialize MFC
 	CWinApp::InitInstance( );
 
+	// Initialize the debug log
 	InitializeDebugLogFile( );
 
+	// Check FCHookDLL's API version against the version we were built with
 	debug( L"CFreeComposeApp::InitInstance: FreeCompose API version: host %lu, DLL %lu\n", FCHOOKDLL_API_VERSION, FcGetApiVersion( ) );
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
@@ -76,11 +85,13 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 
+	// Initialize FCHookDLL
 	if ( !FcInitialize( ) ) {
 		debug( L"CFreeComposeApp::InitInstance: FcInitialize failed\n" );
 		return FALSE;
 	}
 
+	// Create and (not) show our hidden window
 	CMainFrame* pFrame = new CMainFrame;
 	if ( !pFrame ) {
 		return FALSE;
@@ -91,6 +102,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	pFrame->ShowWindow( SW_HIDE );
 	pFrame->UpdateWindow( );
 
+	// DONE
 	return TRUE;
 }
 
