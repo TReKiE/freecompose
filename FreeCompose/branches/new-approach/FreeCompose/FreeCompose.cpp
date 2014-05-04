@@ -44,6 +44,12 @@ bool CFreeComposeApp::IsAlreadyRunning( ) {
 }
 
 BOOL CFreeComposeApp::InitInstance( ) {
+	if ( !IsWindowsXPOrGreater( ) ) {
+		debug( L"CFreeComposeApp::InitInstance: Windows version too low\n" );
+		MessageBox( nullptr, L"FreeCompose now requires Windows XP or later, I'm afraid. =(", L"FreeCompose", MB_ICONERROR | MB_OK );
+		return FALSE;
+	}
+
 	// If there's already another instance running within this session, activate it instead.
 	if ( IsAlreadyRunning( ) ) {
 		::PostMessage( HWND_BROADCAST, APP_ACTIVATE, 0, 0 );
