@@ -39,6 +39,12 @@ CKeySequences::sortcallbackfunc* CKeySequences::SequenceColumnSortFuncMap[] = {
 	&CKeySequences::_ListComparer_Descending_Sequence,
 };
 
+CKeySequences::sortcallbackfunc** CKeySequences::ColumnSortFuncMap[] = {
+	ResultColumnsSortFuncMap,
+	ResultColumnsSortFuncMap,
+	SequenceColumnSortFuncMap,
+};
+
 int ColumnHeaderFormatFlagsMap[] = {
 	0,
 	HDF_SORTUP,
@@ -272,26 +278,30 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	// Step 1: tell combo box to sort itself
 	//
 
-	PFNLVCOMPARE pfnCompare = nullptr;
-	switch ( m_nSortColumn ) {
-		case ResultCodePointColumn: pfnCompare = ResultColumnsSortFuncMap[m_SortState];  break;
-		case ResultCharacterColumn: pfnCompare = ResultColumnsSortFuncMap[m_SortState];  break;
-		case SequenceColumn:        pfnCompare = SequenceColumnSortFuncMap[m_SortState]; break;
-	}
+	_ASSERTE( m_nSortColumn >= 0 && m_nSortColumn < NumberOfColumns );
+	_ASSERTE( m_SortState >= ssUnsorted && m_SortState < ssMaximumValue );
+	PFNLVCOMPARE pfnCompare = ColumnSortFuncMap[m_nSortColumn][m_SortState];
 	if ( !pfnCompare ) {
-		debug( L"CKeySequences::OnListColumnClick: !!! m_nSortColumn is invalid !!!\n" );
+		debug( L"CKeySequences::OnListColumnClick: problem with ColumnSortFuncMap[column %d][state %d]: it's nullptr?\n", m_nSortColumn, m_SortState );
 		return;
 	}
 
 	int count = m_List.GetItemCount( );
 	m_pnSortIndices = new int[count];
+
+	if ( !m_pnSortIndices ) {
+		debug( L"CKeySequences::OnListColumnClick: unable to allocate %d sort indices\n", count );
+		return;
+	}
+
 	for ( int n = 0; n < count; n++ ) {
 		m_pnSortIndices[n] = static_cast<int>( m_List.GetItemData( n ) );
 	}
 	if ( !m_List.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
-		debug( L"CKeySequences::OnListColumnClick: SortItems failed?\n" );
+		debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
 	}
 	delete[] m_pnSortIndices;
+	m_pnSortIndices = nullptr;
 
 	//
 	// Step 2: get the header control to display the appropriate indication
@@ -376,6 +386,8 @@ void CKeySequences::OnBnClickedRemove( ) {
 	qsort_s( items,   count, sizeof( int ), compare_keys_reverse, nullptr );
 	qsort_s( indices, count, sizeof( int ), compare_keys_reverse, nullptr );
 
+	SetRedraw( FALSE );
+
 	// TODO TEST
 	n = count;
 	do {
@@ -388,4 +400,8 @@ void CKeySequences::OnBnClickedRemove( ) {
 	delete[] indices;
 
 	SetModified( );
+	
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
 }
