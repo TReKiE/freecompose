@@ -5,6 +5,7 @@
 enum SORTSTATE { ssUnsorted, ssAscending, ssDescending, ssMaximumValue };
 
 class CKeySequences: public CPropertyPage {
+
 	DECLARE_DYNAMIC( CKeySequences )
 	DECLARE_MESSAGE_MAP( )
 
@@ -32,8 +33,8 @@ private:
 	static int const NumberOfColumns = 3;
 
 	using sortcallbackfunc = int CALLBACK ( LPARAM, LPARAM, LPARAM );
-	static sortcallbackfunc* ResultColumnsSortFuncMap[3];  // 3 is the number of SORTSTATEs, NOT the number of columns!
-	static sortcallbackfunc* SequenceColumnSortFuncMap[3]; // 3 is the number of SORTSTATEs, NOT the number of columns!
+	static sortcallbackfunc* ResultColumnsSortFuncMap[ssMaximumValue];
+	static sortcallbackfunc* SequenceColumnSortFuncMap[ssMaximumValue];
 	static sortcallbackfunc** ColumnSortFuncMap[NumberOfColumns];
 
 private:
@@ -53,11 +54,13 @@ private:
 
 private:
 	CString _FormatResultString( ComposeSequence const& sequence );
+	int _MeasureListItemText( CString const& str );
+	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence );
 	void _AddOneKeySequence( const INT_PTR n );
 	void _UpdateOneKeySequence( const INT_PTR n );
-	void _AdjustColumns( void );
-	void _FillKeyComboList( void );
 	void _AddNewKeySequence( const INT_PTR n );
+	void _FillKeyComboList( void );
+	void _SetColumnWidths( void );
 	void _SetColumnSortState( int nColumn, SORTSTATE state );
 
 private:

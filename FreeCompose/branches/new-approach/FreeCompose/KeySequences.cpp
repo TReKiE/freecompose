@@ -12,10 +12,16 @@
 
 #include "Utils.h"
 
+//
+// Constants
+//
+
 const int ITEM_FUDGE_FACTOR   = 12;
 const int HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
 
-IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
+//
+// CKeySequences declarations
+//
 
 BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
 	ON_NOTIFY( NM_DBLCLK,       IDC_KEYCOMBOLIST, &CKeySequences::OnListDoubleClick )
@@ -26,6 +32,11 @@ BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
 	ON_BN_CLICKED( IDEDIT,   &CKeySequences::OnBnClickedEdit   )
 	ON_BN_CLICKED( IDREMOVE, &CKeySequences::OnBnClickedRemove )
 END_MESSAGE_MAP( )
+IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
+
+//
+// CKeySequences static member variables
+//
 
 CKeySequences::sortcallbackfunc* CKeySequences::ResultColumnsSortFuncMap[] = {
 	&CKeySequences::_ListComparer_Unsorted,
@@ -45,11 +56,15 @@ CKeySequences::sortcallbackfunc** CKeySequences::ColumnSortFuncMap[] = {
 	SequenceColumnSortFuncMap,
 };
 
-int ColumnHeaderFormatFlagsMap[] = {
+int const ColumnHeaderFormatFlagsMap[] = {
 	0,
 	HDF_SORTUP,
 	HDF_SORTDOWN
 };
+
+//
+// CKeySequences constructors and destructors
+//
 
 CKeySequences::CKeySequences( COptionsData& Options ):
 	CPropertyPage ( IDD ),
@@ -64,13 +79,9 @@ CKeySequences::~CKeySequences( ) {
 
 }
 
-void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
-	CPropertyPage::DoDataExchange( pDX );
-	DDX_Control( pDX, IDC_KEYCOMBOLIST, m_List      );
-	DDX_Control( pDX, IDADD,            m_btnAdd    );
-	DDX_Control( pDX, IDEDIT,           m_btnEdit   );
-	DDX_Control( pDX, IDREMOVE,         m_btnRemove );
-}
+//
+// CKeySequences private methods
+//
 
 // TODO error handling
 inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequence ) {
@@ -81,18 +92,25 @@ inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequen
 	return strResult;
 }
 
+inline int CKeySequences::_MeasureListItemText( CString const& str ) {
+	return m_List.GetStringWidth( str ) + ITEM_FUDGE_FACTOR;
+}
+
+inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence ) {
+	m_nColumnWidths[0] = std::max( _MeasureListItemText( strCodePoint ), m_nColumnWidths[0] );
+	m_nColumnWidths[1] = std::max( _MeasureListItemText( strCharacter ), m_nColumnWidths[1] );
+	m_nColumnWidths[2] = std::max( _MeasureListItemText( strSequence  ), m_nColumnWidths[2] );
+}
+
 // TODO error handling
 void CKeySequences::_AddOneKeySequence( const INT_PTR n ) {
 	ComposeSequence const& sequence = m_Options.ComposeSequences[n];
 	CString strResult( _FormatResultString( sequence ) );
 
-	m_nColumnWidths[0] = std::max( m_List.GetStringWidth( strResult ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[0] );
+	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
+
 	int item = m_List.InsertItem( LVIF_TEXT | LVIF_PARAM, static_cast<int>( n ), strResult, 0, 0, 0, n );
-
-	m_nColumnWidths[1] = std::max( m_List.GetStringWidth( sequence.Result ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[1] );
-	m_List.SetItem( item, 1, LVIF_TEXT, sequence.Result, 0, 0, 0, 0 );
-
-	m_nColumnWidths[2] = std::max( m_List.GetStringWidth( sequence.Sequence ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[2] );
+	m_List.SetItem( item, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
 	m_List.SetItem( item, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 }
 
@@ -101,17 +119,40 @@ void CKeySequences::_UpdateOneKeySequence( const INT_PTR n ) {
 	const ComposeSequence& sequence = m_Options.ComposeSequences[n];
 	CString strResult( _FormatResultString( sequence ) );
 
-	m_nColumnWidths[0] = std::max( m_List.GetStringWidth( strResult ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[0] );
-	m_List.SetItem( static_cast<int>( n ), 0, LVIF_TEXT, strResult, 0, 0, 0, 0 );
+	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
-	m_nColumnWidths[1] = std::max( m_List.GetStringWidth( sequence.Result ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[1] );
-	m_List.SetItem( static_cast<int>( n ), 1, LVIF_TEXT, sequence.Result, 0, 0, 0, 0 );
-
-	m_nColumnWidths[2] = std::max( m_List.GetStringWidth( sequence.Sequence ) + ITEM_FUDGE_FACTOR, m_nColumnWidths[2] );
+	m_List.SetItem( static_cast<int>( n ), 0, LVIF_TEXT, strResult,         0, 0, 0, 0 );
+	m_List.SetItem( static_cast<int>( n ), 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
 	m_List.SetItem( static_cast<int>( n ), 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 }
 
-void CKeySequences::_AdjustColumns( void ) {
+void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
+	SetRedraw( FALSE );
+
+	_AddOneKeySequence( n );
+	_SetColumnWidths( );
+
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
+}
+
+void CKeySequences::_FillKeyComboList( void ) {
+	SetRedraw( FALSE );
+
+	m_List.DeleteAllItems( );
+	INT_PTR limit = m_Options.ComposeSequences.GetCount( );
+	for ( INT_PTR n = 0; n < limit; n++ ) {
+		_AddOneKeySequence( n );
+	}
+	_SetColumnWidths( );
+
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
+}
+
+void CKeySequences::_SetColumnWidths( void ) {
 	m_List.SetColumnWidth( 0, m_nColumnWidths[0] );
 	m_List.SetColumnWidth( 1, m_nColumnWidths[1] );
 	m_List.SetColumnWidth( 2, m_nColumnWidths[2] );
@@ -131,6 +172,7 @@ void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
 }
 
 //
+// CKeySequences comparison functions, for the list control.
 // Huh. Subtraction is so much easier, for certain kinds of comparisons.
 //
 
@@ -138,6 +180,7 @@ int CKeySequences::_ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM 
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
 	index1 = self->m_pnSortIndices[ index1 ];
 	index2 = self->m_pnSortIndices[ index2 ];
+
 	return static_cast<int>( index1 - index2 );
 }
 
@@ -145,9 +188,11 @@ int CKeySequences::_ListComparer_Ascending_Result( LPARAM index1, LPARAM index2,
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
 	index1 = self->m_pnSortIndices[ index1 ];
 	index2 = self->m_pnSortIndices[ index2 ];
+
 	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
 	CString& result1 = composeSequences[index1].Result;
 	CString& result2 = composeSequences[index2].Result;
+
 	return static_cast<int>( result1.Compare( result2 ) );
 }
 
@@ -155,9 +200,11 @@ int CKeySequences::_ListComparer_Descending_Result( LPARAM index1, LPARAM index2
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
 	index1 = self->m_pnSortIndices[ index1 ];
 	index2 = self->m_pnSortIndices[ index2 ];
+
 	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
 	CString& result1 = composeSequences[index1].Result;
 	CString& result2 = composeSequences[index2].Result;
+
 	return static_cast<int>( result2.Compare( result1 ) );
 }
 
@@ -165,9 +212,11 @@ int CKeySequences::_ListComparer_Ascending_Sequence( LPARAM index1, LPARAM index
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
 	index1 = self->m_pnSortIndices[ index1 ];
 	index2 = self->m_pnSortIndices[ index2 ];
+
 	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
 	CString& sequence1 = composeSequences[index1].Sequence;
 	CString& sequence2 = composeSequences[index2].Sequence;
+
 	return static_cast<int>( sequence1.Compare( sequence2 ) );
 }
 
@@ -175,36 +224,25 @@ int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM inde
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
 	index1 = self->m_pnSortIndices[ index1 ];
 	index2 = self->m_pnSortIndices[ index2 ];
+
 	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
 	CString& sequence1 = composeSequences[index1].Sequence;
 	CString& sequence2 = composeSequences[index2].Sequence;
+
 	return static_cast<int>( sequence2.Compare( sequence1 ) );
 }
 
-void CKeySequences::_FillKeyComboList( void ) {
-	SetRedraw( FALSE );
+//
+// CKeySequences implementation
+//
 
-	m_List.DeleteAllItems( );
-	INT_PTR limit = m_Options.ComposeSequences.GetCount( );
-	for ( INT_PTR n = 0; n < limit; n++ ) {
-		_AddOneKeySequence( n );
-	}
-	_AdjustColumns( );
+void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
+	CPropertyPage::DoDataExchange( pDX );
 
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
-}
-
-void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
-	SetRedraw( FALSE );
-
-	_AddOneKeySequence( n );
-	_AdjustColumns( );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
+	DDX_Control( pDX, IDC_KEYCOMBOLIST, m_List      );
+	DDX_Control( pDX, IDADD,            m_btnAdd    );
+	DDX_Control( pDX, IDEDIT,           m_btnEdit   );
+	DDX_Control( pDX, IDREMOVE,         m_btnRemove );
 }
 
 BOOL CKeySequences::OnInitDialog( ) {
@@ -350,7 +388,7 @@ void CKeySequences::OnBnClickedEdit( ) {
 		SetRedraw( FALSE );
 
 		_UpdateOneKeySequence( k );
-		_AdjustColumns( );
+		_SetColumnWidths( );
 		SetModified( );
 
 		SetRedraw( TRUE );
