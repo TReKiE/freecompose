@@ -71,7 +71,7 @@ inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequen
 	CString strResult;
 	unsigned chResult;
 	Utf16ToUtf32( sequence.Result, chResult );
-	strResult.Format( L"U+%06X %s", chResult, sequence.Result );
+	strResult.Format( L"U+%06X", chResult );
 	return strResult;
 }
 
