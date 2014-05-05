@@ -5,9 +5,6 @@
 
 #include "Utils.h"
 
-extern void InitializeDebug( void );
-extern void TerminateDebug( void );
-
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//{{AFX_MSG_MAP( CFreeComposeApp )
 	//}}AFX_MSG_MAP
@@ -44,9 +41,9 @@ bool CFreeComposeApp::IsAlreadyRunning( ) {
 }
 
 BOOL CFreeComposeApp::InitInstance( ) {
-	if ( !IsWindowsXPOrGreater( ) ) {
+	if ( !IsWindowsVersionOrGreater( WindowsMajorVersion, WindowsMinorVersion, WindowsServicePackMajor ) ) {
 		debug( L"CFreeComposeApp::InitInstance: Windows version too low\n" );
-		MessageBox( nullptr, L"FreeCompose now requires Windows XP or later, I'm afraid. =(", L"FreeCompose", MB_ICONERROR | MB_OK );
+		MessageBox( nullptr, LoadFromStringTable( IDS_APP_WINVER_TOO_LOW ), LoadFromStringTable( AFX_IDS_APP_TITLE ), MB_ICONERROR | MB_OK );
 		return FALSE;
 	}
 
@@ -70,7 +67,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	}
 
 	// Store Common Controls (ComCtl32.dll) version for later use
-	g_dwCommonControlsVersion = GetComCtl32Version( );
+	GetComCtl32Version( );
 
 	// Configure MFC
 	SetRegistryKey( LoadFromStringTable( AFX_IDS_COMPANY_NAME ) );
