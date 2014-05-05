@@ -253,10 +253,10 @@ BOOL CKeySequences::OnInitDialog( ) {
 	m_pListHeader = m_List.GetHeaderCtrl( );
 
 	DWORD dwExtendedStyles = LVS_EX_FLATSB | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP | LVS_EX_LABELTIP | LVS_EX_TWOCLICKACTIVATE;
-	if ( g_dwCommonControlsVersion >= COMCTL32VER_WINXP ) {
+	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
 		dwExtendedStyles |= LVS_EX_DOUBLEBUFFER;
 	}
-	if ( g_dwCommonControlsVersion >= COMCTL32VER_VISTA ) {
+	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_VISTA ) {
 		dwExtendedStyles |= LVS_EX_COLUMNSNAPPOINTS;
 	}
 	m_List.SetExtendedStyle( m_List.GetExtendedStyle( ) | dwExtendedStyles );
