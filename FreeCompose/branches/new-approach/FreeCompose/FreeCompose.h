@@ -23,5 +23,3 @@ extern UINT const APP_NOTIFYICON;
 
 extern UINT const FCM_KEY;
 extern UINT const FCM_PIP;
-
-extern DWORD g_dwCommonControlsVersion;
