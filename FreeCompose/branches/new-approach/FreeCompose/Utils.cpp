@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "Utils.h"
 
 // XXX
@@ -53,29 +54,38 @@ UINT VkToVsc( DWORD vk ) {
 }
 
 DWORD GetComCtl32Version( void ) {
+	if ( g_CommonControlsApiVersion ) {
+		return g_CommonControlsApiVersion;
+	}
+
 	HMODULE hmod = LoadLibrary( L"COMCTL32.DLL" );
 	if ( !hmod ) {
 		debug( L"GetComCtl32Version: LoadLibrary failed: %ld\n", GetLastError( ) );
 		return 0;
 	}
 
-	DLLGETVERSIONPROC pproc = reinterpret_cast<DLLGETVERSIONPROC>( GetProcAddress( hmod, "DllGetVersion" ) );
-	if ( !pproc ) {
+	DLLGETVERSIONPROC pfnDllGetVersion = reinterpret_cast<DLLGETVERSIONPROC>( GetProcAddress( hmod, "DllGetVersion" ) );
+	if ( !pfnDllGetVersion ) {
 		debug( L"GetComCtl32Version: GetProcAddress failed: %ld\n", GetLastError( ) );
 		FreeLibrary( hmod );
 		return 0;
 	}
 
-	DLLVERSIONINFO dvi = { sizeof( dvi ), };
-	HRESULT hr = (*pproc)( &dvi );
-	if ( FAILED(hr) ) {
+	DLLVERSIONINFO2 dvi = { sizeof( DLLVERSIONINFO2 ), };
+	HRESULT hr = (*pfnDllGetVersion)( &dvi.info1 );
+	if ( FAILED( hr ) ) {
 		debug( L"GetComCtl32Version: DLLGETVERSIONPROC call failed, hr=0x%08lX\n", hr );
-		FreeLibrary( hmod );
-		return 0;
 	}
 
 	FreeLibrary( hmod );
-	return PACKVERSION( dvi.dwMajorVersion, dvi.dwMinorVersion );
+
+	g_CommonControlsApiVersion     = PACKVERSION( dvi.info1.dwMajorVersion, dvi.info1.dwMinorVersion );
+	g_CommonControlsDllMajorVersion = static_cast<unsigned>( ( dvi.ullVersion >> 48 ) & 0xFFFFull );
+	g_CommonControlsDllMinorVersion = static_cast<unsigned>( ( dvi.ullVersion >> 32 ) & 0xFFFFull );
+	g_CommonControlsDllBuildNumber  = static_cast<unsigned>( ( dvi.ullVersion >> 16 ) & 0xFFFFull );
+	g_CommonControlsDllQfeNumber    = static_cast<unsigned>( ( dvi.ullVersion       ) & 0xFFFFull );
+
+	return g_CommonControlsApiVersion;
 }
 
 //
@@ -86,68 +96,82 @@ DWORD GetComCtl32Version( void ) {
 CString MakeInstanceExclusionName( CString const& input, EXCLUSION_KIND const kind ) {
 	switch ( kind ) {
 		case UNIQUE_TO_SYSTEM:
-			return CString( input );
+			return input;
 
 		case UNIQUE_TO_DESKTOP: {
 			CString s = input;
-			DWORD len;
+
 			HDESK desktop = GetThreadDesktop( GetCurrentThreadId( ) );
-			BOOL result = GetUserObjectInformation( desktop, UOI_NAME, NULL, 0, &len );
-			DWORD err = ::GetLastError( );
-			if ( !result && err == ERROR_INSUFFICIENT_BUFFER ) {
-				LPBYTE data = new BYTE[len];
-				result = GetUserObjectInformation( desktop, UOI_NAME, data, len, &len );
+
+			DWORD len;
+			SetLastError( ERROR_SUCCESS );
+			BOOL result = GetUserObjectInformation( desktop, UOI_NAME, nullptr, 0, &len );
+			DWORD err = GetLastError( );
+			if ( !result && ( ERROR_INSUFFICIENT_BUFFER == err ) ) {
+				BYTE* data = new BYTE[len];
+				GetUserObjectInformation( desktop, UOI_NAME, data, len, &len );
 				s += L"-";
-				s += (wchar_t*) data;
+				s += reinterpret_cast<wchar_t*>( data );
 				delete[] data;
 			} else {
-				s += L"-Win9x";
+				s += L"-static";
 			}
 			return s;
 		}
 
 		case UNIQUE_TO_SESSION: {
 			CString s = input;
+
 			HANDLE token;
-			DWORD len;
-			BOOL result = OpenProcessToken( GetCurrentProcess( ), TOKEN_QUERY, &token );
-			if ( result ) {
-				GetTokenInformation( token, TokenStatistics, NULL, 0, &len );
+			if ( OpenProcessToken( GetCurrentProcess( ), TOKEN_QUERY, &token ) ) {
+				DWORD len;
+				GetTokenInformation( token, TokenStatistics, nullptr, 0, &len );
+
 				LPBYTE data = new BYTE[len];
 				GetTokenInformation( token, TokenStatistics, data, len, &len );
-				LUID uid = ( (PTOKEN_STATISTICS) data )->AuthenticationId;
+
+				CloseHandle( token );
+
+				LUID uid = reinterpret_cast<PTOKEN_STATISTICS>( data )->AuthenticationId;
+
 				CString t;
 				t.Format( L"-%08x%08x", uid.HighPart, uid.LowPart );
 				s += t;
+
 				delete[] data;
 			}
 			return s;
 		}
 
 		case UNIQUE_TO_TRUSTEE: {
+			size_t const NAMELENGTH = 64;
+
 			CString s = input;
 
-			const size_t NAMELENGTH = 64;
-			TCHAR userName[NAMELENGTH];
+			wchar_t userName[NAMELENGTH];
 			DWORD userNameLength = NAMELENGTH;
-			TCHAR domainName[NAMELENGTH];
-			DWORD domainNameLength = NAMELENGTH;
+			GetUserName( userName, &userNameLength );
 
-			if ( GetUserName( userName, &userNameLength ) ) {
-				// The NetApi calls are very time consuming
-				// This technique gets the domain name via an
-				// environment variable
-				domainNameLength = ExpandEnvironmentStrings( L"%USERDOMAIN%", domainName, NAMELENGTH );
-				CString t;
-				t.Format( L"-%s-%s", domainName, userName );
-				s += t;
+			// The NetApi calls are very time consuming.
+			// This technique gets the domain name via an environment variable.
+			wchar_t domainName[NAMELENGTH];
+			DWORD domainNameLength = ExpandEnvironmentStrings( L"%USERDOMAIN%", domainName, NAMELENGTH );
+
+			if ( userNameLength < 1 ) {
+				wcscpy_s( userName, L"<unknown_username>" );
 			}
-			return s;
+			if ( domainNameLength < 1 ) {
+				wcscpy_s( domainName, L"<unknown_domainname>" );
+			}
+
+			CString t;
+			t.Format( L"-%s-%s", domainName, userName );
+			return s + t;
 		}
 
 		default:
 			debug( L"CreateExclusionName: invalid value for EXCLUSION_KIND kind: %d\n", kind );
-			return CString( input );
+			return input;
 	}
 }
 
