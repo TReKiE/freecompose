@@ -432,6 +432,11 @@ BEGIN
     IDS_VK_BACK             "Backspace"
 END
 
+STRINGTABLE
+BEGIN
+    IDS_APP_WINVER_TOO_LOW  "Unfortunately, FreeCompose now requires at least Windows XP. =("
+END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
