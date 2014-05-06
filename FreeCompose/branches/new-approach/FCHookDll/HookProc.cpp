@@ -17,8 +17,8 @@ using namespace std;
 // Global variables
 //==============================================================================
 
-CapsLockMutator* capsLockMutator = NULL;
-CapsLockToggler* capsLockToggler = NULL;
+CapsLockMutator* capsLockMutator = nullptr;
+CapsLockToggler* capsLockToggler = nullptr;
 wstring          translationBuffer;
 
 //==============================================================================
@@ -40,7 +40,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation );
 //static int FindComposeSequence( unsigned ch1, unsigned ch2 ) {
 //	ComposeSequence needle1 = { ch1, ch2 };
 //	ComposeSequence needle2 = { ch2, ch1 };
-//	ComposeSequence* match = NULL;
+//	ComposeSequence* match = nullptr;
 //
 //	LOCK( cs ) {
 //		if ( cComposeSequences < 1 )
@@ -265,14 +265,14 @@ void InitializeKeyEventDispatcher( void ) {
 
 void ChangeComposeKey( DWORD const vkNew ) {
 	KeyEventHandler* keh = KeyEventHandlers[ vkCompose ];
-	KeyEventHandlers[ vkCompose ] = NULL;
+	KeyEventHandlers[ vkCompose ] = nullptr;
 	KeyEventHandlers[ vkNew ] = keh;
 	vkCompose = vkNew;
 }
 
 void ChangeCapsLockSwapKey( DWORD const vkNew ) {
 	KeyEventHandler* keh = KeyEventHandlers[ vkCapsLockSwap ];
-	KeyEventHandlers[ vkCapsLockSwap ] = NULL;
+	KeyEventHandlers[ vkCapsLockSwap ] = nullptr;
 	KeyEventHandlers[ vkNew ] = keh;
 	vkCapsLockSwap = vkNew;
 }
@@ -280,13 +280,13 @@ void ChangeCapsLockSwapKey( DWORD const vkNew ) {
 void ConfigureCapsLockHandling( void ) {
 	if ( capsLockToggler ) {
 		delete capsLockToggler;
-		capsLockToggler = NULL;
+		capsLockToggler = nullptr;
 	}
 	capsLockToggler = CapsLockTogglerFactory::Create( clToggleMode );
 
 	if ( capsLockMutator ) {
 		delete capsLockMutator;
-		capsLockMutator = NULL;
+		capsLockMutator = nullptr;
 	}
 	capsLockMutator = CapsLockMutatorFactory::Create( clSwapMode );
 
@@ -297,7 +297,7 @@ void ConfigureCapsLockHandling( void ) {
 	} else {
 		if ( KeyEventHandlers[ VK_CAPITAL ] ) {
 			KeyEventHandler* temp = KeyEventHandlers[ VK_CAPITAL ];
-			KeyEventHandlers[ VK_CAPITAL ] = NULL;
+			KeyEventHandlers[ VK_CAPITAL ] = nullptr;
 			if ( temp ) {
 				delete temp;
 			}
