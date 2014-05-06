@@ -78,7 +78,7 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 
 	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %d mappings from registry:\n", count );
 	for ( unsigned n = 0; n < count; n++ ) {
-		section.Format( L"Mapping\\%d", n );
+		section.Format( L"Mapping\\%u", n );
 		CString first    ( VkToString  ( theApp.GetProfileInt( section, L"First",    0 ) ) );
 		CString second   ( VkToString  ( theApp.GetProfileInt( section, L"Second",   0 ) ) );
 		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );

@@ -293,10 +293,10 @@ void CMainFrame::OnAppZapConf( void ) {
 	SetLastError( 0 );
 	if ( !DeleteFile( str ) ) {
 		DWORD dwError = GetLastError( );
-		debug( L"CMainFrame::OnAppZapConf: Error %d while trying to delete file.", dwError );
+		debug( L"CMainFrame::OnAppZapConf: Error %lu while trying to delete file.", dwError );
 
 		wchar_t pwzMessage[1024];
-		swprintf_s( pwzMessage, 1024, L"Error %d occurred while trying to zap the configuration.", dwError );
+		swprintf_s( pwzMessage, 1024, L"Error %lu occurred while trying to zap the configuration.", dwError );
 		MessageBox( pwzMessage, appTitle, MB_OK|MB_ICONERROR );
 		return;
 	}
