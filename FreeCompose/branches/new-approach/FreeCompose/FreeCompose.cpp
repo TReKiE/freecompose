@@ -83,7 +83,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	if ( FCHOOKDLL_API_VERSION != FcGetApiVersion( ) ) {
 		CString str;
 		str.Format( LoadFromStringTable( IDS_MAINFRAME_MISMATCH_PROMPT ), FcGetApiVersion( ), FCHOOKDLL_API_VERSION );
-		MessageBox( NULL, str, LoadFromStringTable( IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
+		MessageBox( nullptr, str, LoadFromStringTable( IDS_MAINFRAME_MISMATCH_TITLE ), MB_ICONHAND );
 		// Hey, maybe we can use Windows Installer to try to repair the file!
 		return FALSE;
 	}

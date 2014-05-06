@@ -19,7 +19,7 @@ FCSHARED_API void TerminateDebugLogFile( void ) {
 	// do nothing
 }
 #else
-static FILE* debugFile = NULL;
+static FILE* debugFile = nullptr;
 
 FCSHARED_API void InitializeDebugLogFile( void ) {
 	if ( ! EnsureFreeComposeFolderExists( ) ) {
@@ -39,14 +39,14 @@ FCSHARED_API void InitializeDebugLogFile( void ) {
 
 	errno = 0;
 	debugFile = _wfsopen( buf, L"at+,ccs=UTF-16LE", _SH_DENYNO );
-	if ( NULL == debugFile ) {
+	if ( nullptr == debugFile ) {
 		debug( L"InitializeDebug: _wfsopen('%s') failed: %d\n", buf, errno );
 		return;
 	}
-	setvbuf( debugFile, NULL, _IONBF, 0 );
+	setvbuf( debugFile, nullptr, _IONBF, 0 );
 
 	wchar_t wcstr[256];
-	time_t timenow = time( NULL );
+	time_t timenow = time( nullptr );
 	tm tmnow;
 	if ( 0 == localtime_s( &tmnow, &timenow ) ) {
 		wcsftime( wcstr, _countof( wcstr ), L"========  Log opened at %Y-%m-%d %H:%M:%S  ========\n", &tmnow );
@@ -57,7 +57,7 @@ FCSHARED_API void InitializeDebugLogFile( void ) {
 FCSHARED_API void TerminateDebugLogFile( void ) {
 	if ( debugFile ) {
 		fclose( debugFile );
-		debugFile = NULL;
+		debugFile = nullptr;
 	}
 }
 

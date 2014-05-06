@@ -53,7 +53,7 @@ CapsLockMutator* CapsLockMutatorFactory::Create( CAPS_LOCK_SWAP_MODE clSwapMode 
 	switch ( clSwapMode ) {
 		case CLSM_SWAP:    return new CapsLockReplacer;
 		case CLSM_REPLACE: return new CapsLockSwapper;
-		default:           return NULL;
+		default:           return nullptr;
 	}
 }
 
@@ -92,7 +92,7 @@ CapsLockToggler* CapsLockTogglerFactory::Create( CAPS_LOCK_TOGGLE_MODE clToggleM
 	switch ( clToggleMode ) {
 		case CLTM_PRESSTWICE: return new CapsLockPressTwiceToggler;
 		case CLTM_DISABLED:   return new CapsLockDisabledToggler;
-		default:              return NULL;
+		default:              return nullptr;
 	}	
 }
 
