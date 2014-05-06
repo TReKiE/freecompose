@@ -18,8 +18,8 @@ public:
 	inline const COptionsData& GetNewOptions     ( void ) const { return m_NewOptions; }
 
 private:
-	COptionsPropSheet( UINT    nIDCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
-	COptionsPropSheet( LPCWSTR pszCaption, CWnd* pParentWnd = NULL, UINT iSelectPage = 0 );
+	COptionsPropSheet( UINT    nIDCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0 );
+	COptionsPropSheet( LPCWSTR pszCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0 );
 
 	virtual void OnApplyNow( );
 

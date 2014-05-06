@@ -47,7 +47,7 @@ void CKeyEdit::OnKeyDown( UINT nChar, UINT /*nRepCnt*/, UINT /*nFlags*/ ) {
 	if ( ! KEY_XALNUM( nChar ) )
 		return;
 
-	m_dwVk = (DWORD) nChar | ( IsKeyDown( VK_SHIFT ) ? 0x80000000UL : 0UL );
+	m_dwVk = static_cast<DWORD>( nChar ) | ( IsKeyDown( VK_SHIFT ) ? 0x80000000UL : 0UL );
 	_Update( );
 }
 

@@ -5,7 +5,6 @@
 #include "AboutDlg.h"
 #include "OptionsPropSheet.h"
 #include "NTray.h"
-
 #include "Utils.h"
 
 //
@@ -48,12 +47,12 @@ static bool IsCapsLockOn( void ) {
 //
 
 CMainFrame::CMainFrame( ):
-	m_pTrayIcon   ( NULL ),
-	m_pOptions    ( NULL ),
-	m_strTitle    ( (LPCWSTR) AFX_IDS_APP_TITLE ),
-	m_strEnabled  ( (LPCWSTR) IDS_MAINFRAME_ENABLED ),
-	m_strDisabled ( (LPCWSTR) IDS_MAINFRAME_DISABLED ),
-	m_pPropSheet  ( NULL )
+	m_pTrayIcon   ( nullptr ),
+	m_pOptions    ( nullptr ),
+	m_strTitle    ( LoadFromStringTable( AFX_IDS_APP_TITLE ) ),
+	m_strEnabled  ( LoadFromStringTable( IDS_MAINFRAME_ENABLED ) ),
+	m_strDisabled ( LoadFromStringTable( IDS_MAINFRAME_DISABLED ) ),
+	m_pPropSheet  ( nullptr )
 {
 }
 
@@ -136,7 +135,7 @@ void CMainFrame::OnClose( ) {
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook( );
 	}
-	FcSetNotifyWindowHandle( NULL );
+	FcSetNotifyWindowHandle( nullptr );
 	
 	delete m_pTrayIcon;
 
@@ -209,7 +208,7 @@ void CMainFrame::OnAppExit( ) {
 		fPropSheetOpen = ( NULL != m_pPropSheet );
 	} UNLOCK( m_csPropSheet );
 	if ( fPropSheetOpen ) {
-		MessageBox( CString( (LPCWSTR) IDS_MAINFRAME_CLOSEOPTIONSFIRST ), CString( (LPCWSTR) AFX_IDS_APP_TITLE ), MB_ICONWARNING|MB_OK );
+		MessageBox( LoadFromStringTable( IDS_MAINFRAME_CLOSEOPTIONSFIRST ), LoadFromStringTable( AFX_IDS_APP_TITLE ), MB_ICONWARNING|MB_OK );
 	} else {
 		OnClose( );
 	}
@@ -249,7 +248,7 @@ void CMainFrame::OnAppConfigure( ) {
 	COptionsPropSheet options( *m_pOptions, this );
 	LOCK( m_csPropSheet ) { m_pPropSheet = &options; } UNLOCK( m_csPropSheet );
 	INT_PTR rc = options.DoModal( );
-	LOCK( m_csPropSheet ) { m_pPropSheet = NULL;     } UNLOCK( m_csPropSheet );
+	LOCK( m_csPropSheet ) { m_pPropSheet = nullptr;  } UNLOCK( m_csPropSheet );
 
 	if ( IDOK != rc ) {
 		return;
@@ -257,7 +256,7 @@ void CMainFrame::OnAppConfigure( ) {
 
 	const COptionsData& newoptions = options.GetNewOptions( );
 	if ( *m_pOptions != newoptions ) {
-		OnReconfigure( 0, (LPARAM) &options );
+		OnReconfigure( 0, reinterpret_cast<LPARAM>( &options ) );
 	}
 }
 
@@ -272,7 +271,7 @@ void CMainFrame::OnAppToggle( void ) {
 
 #ifdef _DEBUG
 void CMainFrame::OnAppZapConf( void ) {
-	CString appTitle( (LPCWSTR) AFX_IDS_APP_TITLE );
+	CString appTitle = LoadFromStringTable( AFX_IDS_APP_TITLE );
 
 	debug( L"CMainFrame::OnAppZapConf: Prompting to confirm deletion\n" );
 	int nResult = MessageBox( L"Did you really mean to click the 'Zap configuration file' menu item??", appTitle, MB_YESNO|MB_ICONQUESTION|MB_DEFBUTTON2 );
@@ -312,9 +311,9 @@ void CMainFrame::OnUpdateAppCapsLock( CCmdUI* pui ) {
 
 void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 	if ( FcIsHookEnabled( ) ) {
-		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_DISABLE ) );
+		pui->SetText( LoadFromStringTable( IDS_MAINFRAME_MENU_DISABLE ) );
 	} else {
-		pui->SetText( CString( (LPCWSTR) IDS_MAINFRAME_MENU_ENABLE ) );
+		pui->SetText( LoadFromStringTable( IDS_MAINFRAME_MENU_ENABLE ) );
 	}
 }
 

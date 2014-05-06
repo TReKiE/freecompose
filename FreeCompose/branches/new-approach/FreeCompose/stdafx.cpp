@@ -15,6 +15,10 @@ UINT const APP_RECONFIGURE = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_RE
 UINT const FCM_KEY         = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 UINT const FCM_PIP         = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_PIP" );
 
+//
+// Common Controls (COMCTL32) version
+//
+
 DWORD g_CommonControlsApiVersion = 0;
 
 unsigned g_CommonControlsDllMajorVersion = 0;

@@ -101,7 +101,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	}
 
 	m_pMainWnd = pFrame;
-	pFrame->LoadFrame( IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, NULL, NULL );
+	pFrame->LoadFrame( IDR_MAINFRAME, WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, nullptr, nullptr );
 	pFrame->ShowWindow( SW_HIDE );
 	pFrame->UpdateWindow( );
 

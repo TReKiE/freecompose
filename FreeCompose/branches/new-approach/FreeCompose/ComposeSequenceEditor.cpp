@@ -13,7 +13,7 @@ BEGIN_MESSAGE_MAP(CComposeSequenceEditor, CDialog)
 END_MESSAGE_MAP()
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
-	CDialog    ( CComposeSequenceEditor::IDD, pParent ),
+	CDialog    ( IDD, pParent ),
 	m_sequence ( sequence ),
 	m_mode     ( mode ),
 	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )

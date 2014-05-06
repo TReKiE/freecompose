@@ -4,12 +4,13 @@
 #include "stdafx.h"
 #include "FreeCompose.h"
 #include "AboutDlg.h"
+#include "Utils.h"
 
 BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
 END_MESSAGE_MAP( )
 
 CAboutDlg::CAboutDlg( ):
-	CDialog( CAboutDlg::IDD )
+	CDialog( IDD )
 {
 
 }
@@ -59,8 +60,8 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	}
 
 	m_strVersion.Format(
-		CString( (LPCWSTR) IDS_ABOUT_VERSION ),
-		CString( (LPCWSTR) AFX_IDS_APP_TITLE ),
+		LoadFromStringTable( IDS_ABOUT_VERSION ),
+		LoadFromStringTable( AFX_IDS_APP_TITLE ),
 		HIWORD( pvsffi->dwProductVersionMS ), LOWORD( pvsffi->dwProductVersionMS ),
 		HIWORD( pvsffi->dwProductVersionLS ), LOWORD( pvsffi->dwProductVersionLS )
 	);
