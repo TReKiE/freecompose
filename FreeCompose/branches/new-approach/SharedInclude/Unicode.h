@@ -28,11 +28,11 @@ inline bool IsSecondSurrogate( unsigned const ch ) {
 
 
 inline wchar_t MakeFirstSurrogate( unsigned const ch ) {
-	return (wchar_t) ( 0xD800 + ( ( ch - 0x10000 ) >> 10 ) );
+	return static_cast<wchar_t>( 0xD800 + ( ( ch - 0x10000 ) >> 10 ) );
 }
 
 inline wchar_t MakeSecondSurrogate( unsigned const ch ) {
-	return (wchar_t) ( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
+	return static_cast<wchar_t>( 0xDC00 + ( ( ch - 0x10000 ) & 0x3FF ) );
 }
 
 #ifdef __AFXSTR_H__
@@ -46,7 +46,7 @@ inline CString Utf32ToUtf16( unsigned const ch ) {
 		};
 		return CString( tmp );
 	} else {
-		return CString( (wchar_t) ch );
+		return CString( static_cast<wchar_t>( ch ) );
 	}
 }
 
@@ -58,7 +58,7 @@ inline bool Utf16ToUtf32( CString const& s, unsigned& ch ) {
 			if ( IsSurrogate( s[0] ) ) {
 				return false;
 			}
-			ch = (unsigned) s[0];
+			ch = static_cast<unsigned>( s[0] );
 			return true;
 
 		case 2:
@@ -67,7 +67,7 @@ inline bool Utf16ToUtf32( CString const& s, unsigned& ch ) {
 			if ( ! IsFirstSurrogate( w1 ) || ! IsSecondSurrogate( w2 ) ) {
 				return false;
 			}
-			ch = 0x10000 | ( ( (unsigned) w1 & 0x3FF ) << 10 ) | ( (unsigned) w2 & 0x3FF );
+			ch = 0x10000 | ( ( static_cast<unsigned>( w1 ) & 0x3FF ) << 10 ) | ( static_cast<unsigned>( w2 ) & 0x3FF );
 			return true;
 	}
 
