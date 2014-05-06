@@ -300,12 +300,12 @@ const UINT wm_TaskbarCreated = RegisterWindowMessage(L"TaskbarCreated");
 
 CTrayNotifyIcon::CTrayNotifyIcon() : m_bCreated(FALSE),
                                      m_bHidden(FALSE),
-                                     m_pNotificationWnd(NULL),
+                                     m_pNotificationWnd(nullptr),
                                      m_bDefaultMenuItemByPos(TRUE),
                                      m_nDefaultMenuItem(0),
-                                     m_hDynamicIcon(NULL),
+                                     m_hDynamicIcon(nullptr),
                                      m_ShellVersion(Version4), //Assume version 4 of the shell
-                                     m_phIcons(NULL),
+                                     m_phIcons(nullptr),
                                      m_nNumIcons(0),
                                      m_nTimerID(0),
                                      m_nCurrentIconIndex(0),
@@ -353,7 +353,7 @@ CTrayNotifyIcon::~CTrayNotifyIcon()
   if (m_hDynamicIcon)
   {
     DestroyIcon(m_hDynamicIcon);
-    m_hDynamicIcon = NULL;
+    m_hDynamicIcon = nullptr;
   }
 }
 
@@ -587,7 +587,7 @@ HICON CTrayNotifyIcon::BitmapToIcon(CBitmap* pBitmap)
   int nMaskSize = h*(w/8);
   ATL::CHeapPtr<BYTE> pMask;
   if (!pMask.Allocate(nMaskSize))
-    return NULL;
+    return nullptr;
   memset(pMask.m_pData, 0, nMaskSize);
 
   //Create a mask bitmap
@@ -601,7 +601,7 @@ HICON CTrayNotifyIcon::BitmapToIcon(CBitmap* pBitmap)
 
   //Handle the error
   if (!bSuccess)
-    return NULL;
+    return nullptr;
 
   //Create an ICON base on the bitmap just created
   ICONINFO iconInfo;
@@ -741,7 +741,7 @@ BOOL CTrayNotifyIcon::Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipTe
       }
       else
       {
-        ATLASSERT(hIcon != NULL); //You forget to provide a user icon
+        ATLASSERT(hIcon != nullptr); //You forget to provide a user icon
       }
       m_NotifyIconData.dwInfoFlags = NIIF_USER;
       break;
@@ -877,7 +877,7 @@ BOOL CTrayNotifyIcon::SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBallo
       }
       else
       {
-        ATLASSERT(hUserIcon != NULL); //You forget to provide a user icon
+        ATLASSERT(hUserIcon != nullptr); //You forget to provide a user icon
         m_NotifyIconData.uFlags |= NIF_ICON;
         m_NotifyIconData.hIcon = hUserIcon;
       }
@@ -985,13 +985,13 @@ int	CTrayNotifyIcon::GetTooltipMaxSize()
 	if (m_ShellVersion >= Version5)
 	{
 		NOTIFYICONDATA_2 dummy;
-		m_nTooltipMaxSize = _countof(dummy.szTip) - 1; //The -1 is to allow size for the NULL terminator
+		m_nTooltipMaxSize = _countof(dummy.szTip) - 1; //The -1 is to allow size for the nullptr terminator
     DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
 	}
 	else
 	{
 		NOTIFYICONDATA_1 dummy;
-		m_nTooltipMaxSize = _countof(dummy.szTip) - 1; //The -1 is to allow size for the NULL terminator
+		m_nTooltipMaxSize = _countof(dummy.szTip) - 1; //The -1 is to allow size for the nullptr terminator
     DBG_UNREFERENCED_LOCAL_VARIABLE(dummy);
 	}
 
@@ -1038,12 +1038,12 @@ BOOL CTrayNotifyIcon::SetIcon(UINT nIDResource)
 
 BOOL CTrayNotifyIcon::SetStandardIcon(LPCTSTR lpIconName)
 {
-  return SetIcon(::LoadIcon(NULL, lpIconName));
+  return SetIcon(::LoadIcon(nullptr, lpIconName));
 }
 
 BOOL CTrayNotifyIcon::SetStandardIcon(UINT nIDResource)
 {
-  return SetIcon(::LoadIcon(NULL, MAKEINTRESOURCE(nIDResource)));
+  return SetIcon(::LoadIcon(nullptr, MAKEINTRESOURCE(nIDResource)));
 }
 
 BOOL CTrayNotifyIcon::SetIcon(HICON* phIcons, int nNumIcons, DWORD dwDelay)
@@ -1117,7 +1117,7 @@ CTrayNotifyIconString CTrayNotifyIcon::GetTooltipText() const
 
 HICON CTrayNotifyIcon::GetIcon() const
 {
-  HICON hIcon = NULL;
+  HICON hIcon = nullptr;
   if (m_bCreated)
   {
     if (UsingAnimatedIcon())
@@ -1174,9 +1174,9 @@ LRESULT CTrayNotifyIcon::OnTrayNotification(WPARAM wParam, LPARAM lParam)
       GetCursorPos(&ptCursor);
       ::SetForegroundWindow(m_NotifyIconData.hWnd);  
     #ifdef _AFX
-      ::TrackPopupMenu(pSubMenu->m_hMenu, TPM_LEFTBUTTON, ptCursor.x, ptCursor.y, 0, m_NotifyIconData.hWnd, NULL);
+      ::TrackPopupMenu(pSubMenu->m_hMenu, TPM_LEFTBUTTON, ptCursor.x, ptCursor.y, 0, m_NotifyIconData.hWnd, nullptr);
     #else
-      ::TrackPopupMenu(subMenu, TPM_LEFTBUTTON, ptCursor.x, ptCursor.y, 0, m_NotifyIconData.hWnd, NULL);
+      ::TrackPopupMenu(subMenu, TPM_LEFTBUTTON, ptCursor.x, ptCursor.y, 0, m_NotifyIconData.hWnd, nullptr);
     #endif
       ::PostMessage(m_NotifyIconData.hWnd, WM_NULL, 0, 0);
     }
@@ -1205,7 +1205,7 @@ BOOL CTrayNotifyIcon::GetDynamicDCAndBitmap(CDC* pDC, CBitmap* pBitmap)
   //Get the HWND for the desktop
 #ifdef _AFX
   CWnd* pWndScreen = CWnd::GetDesktopWindow();
-  if (pWndScreen == NULL)
+  if (pWndScreen == nullptr)
     return FALSE;
 #else
   CWindow WndScreen(::GetDesktopWindow());
@@ -1216,7 +1216,7 @@ BOOL CTrayNotifyIcon::GetDynamicDCAndBitmap(CDC* pDC, CBitmap* pBitmap)
   //Get the desktop HDC to create a compatible bitmap from
 #ifdef _AFX
   CDC* pDCScreen = pWndScreen->GetDC();
-  if (pDCScreen == NULL)
+  if (pDCScreen == nullptr)
     return FALSE;
 #else
   CDC DCScreen(WndScreen.GetDC());
@@ -1233,7 +1233,7 @@ BOOL CTrayNotifyIcon::GetDynamicDCAndBitmap(CDC* pDC, CBitmap* pBitmap)
 #ifdef _AFX
   BOOL bSuccess = pBitmap->CreateCompatibleBitmap(pDCScreen, w, h);
 #else
-  BOOL bSuccess = (pBitmap->CreateCompatibleBitmap(DCScreen.operator HDC(), w, h) != NULL);
+  BOOL bSuccess = (pBitmap->CreateCompatibleBitmap(DCScreen.operator HDC(), w, h) != nullptr);
 #endif
   if (!bSuccess)
   {
@@ -1249,7 +1249,7 @@ BOOL CTrayNotifyIcon::GetDynamicDCAndBitmap(CDC* pDC, CBitmap* pBitmap)
 #ifdef _AFX
   bSuccess = pDC->CreateCompatibleDC(pDCScreen);
 #else
-  bSuccess = (pDC->CreateCompatibleDC(DCScreen.operator HDC()) != NULL);
+  bSuccess = (pDC->CreateCompatibleDC(DCScreen.operator HDC()) != nullptr);
 #endif
   if (!bSuccess)
   {
@@ -1326,7 +1326,7 @@ void CTrayNotifyIcon::StartAnimation(HICON* phIcons, int nNumIcons, DWORD dwDela
   StopAnimation();
 
   //Hive away all the values locally
-  ATLASSERT(m_phIcons == NULL);
+  ATLASSERT(m_phIcons == nullptr);
   m_phIcons = new HICON[nNumIcons];
   for (int i=0; i<nNumIcons; i++)
     m_phIcons[i] = phIcons[i];
@@ -1350,7 +1350,7 @@ void CTrayNotifyIcon::StopAnimation()
   if (m_phIcons)
   {
     delete [] m_phIcons;
-    m_phIcons = NULL;
+    m_phIcons = nullptr;
   }
 
   //Reset the other animation related variables
@@ -1432,5 +1432,5 @@ void CTrayNotifyIcon::OnTimer(UINT_PTR nIDEvent)
 BOOL CTrayNotifyIcon::CreateHelperWindow()
 {
   //Let the base class do its thing
-  return (CWindowImpl<CTrayNotifyIcon>::Create(NULL, CWindow::rcDefault, L"CTrayNotifyIcon Helper Window", WS_OVERLAPPEDWINDOW) != NULL);
+  return (CWindowImpl<CTrayNotifyIcon>::Create(nullptr, CWindow::rcDefault, L"CTrayNotifyIcon Helper Window", WS_OVERLAPPEDWINDOW) != nullptr);
 }
