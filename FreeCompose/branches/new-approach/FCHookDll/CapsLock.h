@@ -30,7 +30,6 @@ public:
 private:
 	CapsLockMutatorFactory( );
 	CapsLockMutatorFactory( CapsLockMutatorFactory& );
-	~CapsLockMutatorFactory( );
 	CapsLockMutatorFactory& operator=( CapsLockMutatorFactory& );
 
 };
@@ -73,7 +72,6 @@ public:
 private:
 	CapsLockTogglerFactory( );
 	CapsLockTogglerFactory( CapsLockTogglerFactory& );
-	~CapsLockTogglerFactory( );
 	CapsLockTogglerFactory& operator=( CapsLockTogglerFactory& );
 
 };

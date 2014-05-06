@@ -104,7 +104,7 @@ static void RegenerateKey( KBDLLHOOKSTRUCT* pkb ) {
 
 	debug( L"RegenerateKey: vk=0x%08x flags=0x%08x\n", pkb->vkCode, pkb->flags );
 	input.type = INPUT_KEYBOARD;
-	input.ki.wVk = (WORD) pkb->vkCode;
+	input.ki.wVk = static_cast<WORD>( pkb->vkCode );
 	input.ki.time = pkb->time;
 	input.ki.dwExtraInfo = pkb->dwExtraInfo;
 
@@ -183,7 +183,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
 //==============================================================================
 
 LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam ) {
-	KBDLLHOOKSTRUCT* pkb = (KBDLLHOOKSTRUCT*) lParam;
+	KBDLLHOOKSTRUCT* pkb = reinterpret_cast<KBDLLHOOKSTRUCT*>( lParam );
 	wstring translated;
 
 	//
