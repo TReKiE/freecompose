@@ -7,9 +7,9 @@ template<typename T> class FreeListAllocator {
 
 public:
 	inline void* operator new( const std::size_t size ) {
-		void* pv = NULL;
+		void* pv = nullptr;
 
-		if ( sizeof( T ) == size && NULL != _head ) {
+		if ( sizeof( T ) == size && nullptr != _head ) {
 			pv = _head;
 			_head = _head->_next;
 			return pv;

@@ -205,7 +205,7 @@ void CMainFrame::OnAppAbout(void) {
 void CMainFrame::OnAppExit( ) {
 	bool fPropSheetOpen;
 	LOCK( m_csPropSheet ) {
-		fPropSheetOpen = ( NULL != m_pPropSheet );
+		fPropSheetOpen = ( nullptr != m_pPropSheet );
 	} UNLOCK( m_csPropSheet );
 	if ( fPropSheetOpen ) {
 		MessageBox( LoadFromStringTable( IDS_MAINFRAME_CLOSEOPTIONSFIRST ), LoadFromStringTable( AFX_IDS_APP_TITLE ), MB_ICONWARNING|MB_OK );
@@ -236,7 +236,7 @@ void CMainFrame::OnAppConfigure( ) {
 	bool reused = false;
 
 	LOCK( m_csPropSheet ) {
-		if ( NULL != m_pPropSheet ) {
+		if ( nullptr != m_pPropSheet ) {
 			debug( L"CMainFrame::OnAppConfigure: reusing existing prop sheet\n" );
 			m_pPropSheet->ShowWindow( SW_SHOW );
 			reused = true;

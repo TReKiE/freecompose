@@ -152,16 +152,16 @@ public:
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
-  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWnd* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
 #else
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
   BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bShow = TRUE);
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
-  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON hIcon, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);                  
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, CBitmap* pBitmap, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
+  BOOL Create(CWindow* pNotifyWnd, UINT uID, LPCTSTR pszTooltipText, LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, UINT nTimeout, BalloonStyle style, HICON* phIcons, int nNumIcons, DWORD dwDelay, UINT nNotifyMessage, UINT uMenuID = 0, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr, BOOL bQuietTime = FALSE, BOOL bShow = TRUE);
 #endif  
 
 //Sets or gets the Tooltip text
@@ -214,7 +214,7 @@ public:
   BOOL IsHidden() const { return m_bHidden; };
 
 //Sets or gets the Balloon style tooltip settings
-  BOOL                  SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, BalloonStyle style, UINT nTimeout, HICON hUserIcon = NULL, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = NULL);
+  BOOL                  SetBalloonDetails(LPCTSTR pszBalloonText, LPCTSTR pszBalloonCaption, BalloonStyle style, UINT nTimeout, HICON hUserIcon = nullptr, BOOL bNoSound = FALSE, BOOL bLargeIcon = FALSE, BOOL bRealtime = FALSE, HICON hBalloonIcon = nullptr);
   CTrayNotifyIconString GetBalloonText() const;
   CTrayNotifyIconString GetBalloonCaption() const;
   BalloonStyle          GetBalloonStyle() const;

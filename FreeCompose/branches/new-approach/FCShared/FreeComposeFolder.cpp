@@ -11,7 +11,7 @@ FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
 	bool ret = false;
 	int rc;
 
-	LPWSTR appDataFolder = NULL;
+	LPWSTR appDataFolder = nullptr;
 	if ( !_GetAppDataFolder( appDataFolder ) ) {
 		return false;
 	}
@@ -42,7 +42,7 @@ FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
 	bool ret = false;
 	int rc;
 
-	LPWSTR appDataFolder = NULL;
+	LPWSTR appDataFolder = nullptr;
 	if ( !_GetAppDataFolder( appDataFolder ) ) {
 		return false;
 	}
@@ -61,13 +61,13 @@ FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
 
 	wchar_t folder[1024];
 	swprintf_s( folder, 1024, L"%s\\%s", appDataFolder, companyName );
-	if ( ! CreateDirectory( folder, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
+	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
 		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
 		goto ret;
 	}
 
 	swprintf_s( folder, 1024, L"%s\\%s\\%s", appDataFolder, companyName, appName );
-	if ( ! CreateDirectory( folder, NULL ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
+	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
 		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
 		goto ret;
 	}

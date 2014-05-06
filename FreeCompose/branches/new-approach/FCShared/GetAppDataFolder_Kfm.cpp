@@ -6,12 +6,12 @@
 #include <KnownFolders.h>
 
 bool _GetAppDataFolderFromKfm( LPWSTR& lpsz ) {
-	IKnownFolderManager* pkfm = NULL;
-	IKnownFolder* pkf = NULL;
+	IKnownFolderManager* pkfm = nullptr;
+	IKnownFolder* pkf = nullptr;
 	bool ret = false;
 	HRESULT hr;
 
-	hr = CoCreateInstance( CLSID_KnownFolderManager, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS( &pkfm ) );
+	hr = CoCreateInstance( CLSID_KnownFolderManager, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS( &pkfm ) );
 	if ( FAILED(hr) ) {
 		debug( L"_GetAppDataFolderFromKfm: CoCreateInstance(CLSID_KnownFolderManager) failed: 0x%08x\n", hr );
 		goto out1;

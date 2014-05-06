@@ -2,7 +2,7 @@
 #include "FCShared.h"
 #include "Internal.h"
 
-HINSTANCE hDllInst = NULL;
+HINSTANCE hDllInst = nullptr;
 
 BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpReserved*/ ) {
 	switch ( ulReasonForCall ) {
