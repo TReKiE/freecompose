@@ -23,12 +23,14 @@ BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):
-	CPropertyPage ( CFeatures::IDD ),
+	CPropertyPage ( IDD ),
 	m_Options     ( Options )
 {
+
 }
 
 CFeatures::~CFeatures( ) {
+
 }
 
 void CFeatures::DoDataExchange( CDataExchange* pDX ) {
@@ -36,7 +38,6 @@ void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 
 	DDX_Check( pDX, IDC_ENABLEONSTARTUP,  m_Options.StartActive );
 	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.StartWithWindows );
-	// XXX //DDX_Check( pDX, IDC_SWAPCAPSLOCK,     m_Options.m_fSwapCapsLock );
 
 	DDX_Control( pDX, IDC_COMPOSE_KEY,                   m_cbComposeKey );
 	DDX_Control( pDX, IDC_SWAPCAPSLOCK,                  m_btnSwapCapsLock );
@@ -47,17 +48,9 @@ void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 }
 
 BOOL CFeatures::OnInitDialog( ) {
-	if ( ! CPropertyPage::OnInitDialog( ) )
+	if ( !CPropertyPage::OnInitDialog( ) ) {
 		return FALSE;
-
-	debug( L"CFeatures::OnInitDialog: SA:%c SWW:%c CLM:%d CLS:%d VC:0x%02x VSCL:0x%02x\n",
-		m_Options.StartActive      ? L'T' : L'f',
-		m_Options.StartWithWindows ? L'T' : L'f',
-		m_Options.CapsLockToggleMode,
-		m_Options.CapsLockSwapMode,
-		m_Options.ComposeVk,
-		m_Options.SwapCapsLockVk
-	);
+	}
 
 	CString keyName;
 	int index;
@@ -90,8 +83,6 @@ BOOL CFeatures::OnInitDialog( ) {
 		}
 	}
 
-	// XXX //m_cbSwapCapsLockKey.EnableWindow( m_Options.m_fSwapCapsLock ? TRUE : FALSE );
-
 	switch ( m_Options.CapsLockToggleMode ) {
 		case CLTM_NORMAL:     m_btnCltmNormal    .SetCheck( BST_CHECKED ); break;
 		case CLTM_PRESSTWICE: m_btnCltmPressTwice.SetCheck( BST_CHECKED ); break;
@@ -107,52 +98,45 @@ BOOL CFeatures::OnInitDialog( ) {
 //
 
 void CFeatures::OnChanged( ) {
-	debug( L"CFeatures::OnChanged\n" );
-
 	SetModified( );
 }
 
 void CFeatures::OnComposeKeyChanged( ) {
-	debug( L"CFeatures::OnComposeKeyChanged\n" );
-
 	int index = m_cbComposeKey.GetCurSel( );
-	if ( CB_ERR == index )
+	if ( CB_ERR == index ) {
 		return;
+	}
 
-	DWORD_PTR dw = m_cbComposeKey.GetItemData( index );
-	if ( CB_ERR == dw )
+	DWORD dw = static_cast<DWORD>( m_cbComposeKey.GetItemData( index ) );
+	if ( CB_ERR == dw ) {
 		return;
+	}
 
-	m_Options.ComposeVk = (DWORD) dw;
+	m_Options.ComposeVk = dw;
 	SetModified( );
 }
 
 void CFeatures::OnSwapCapsLockChanged( ) {
-	debug( L"CFeatures::OnSwapCapsLockChanged\n" );
-
-	SetModified( );
 	m_cbSwapCapsLockKey.EnableWindow( BST_CHECKED == m_btnSwapCapsLock.GetCheck( ) );
+	SetModified( );
 }
 
 void CFeatures::OnSwapCapsLockKeyChanged( ) {
-	debug( L"CFeatures::OnSwapCapsLockKeyChanged\n" );
-
 	int index = m_cbSwapCapsLockKey.GetCurSel( );
-	if ( CB_ERR == index )
+	if ( CB_ERR == index ) {
 		return;
+	}
 
-	DWORD_PTR dw = m_cbSwapCapsLockKey.GetItemData( index );
-	if ( CB_ERR == dw )
+	DWORD dw = static_cast<DWORD>( m_cbSwapCapsLockKey.GetItemData( index ) );
+	if ( CB_ERR == dw ) {
 		return;
+	}
 
-	m_Options.SwapCapsLockVk = (DWORD) dw;
+	m_Options.SwapCapsLockVk = dw;
 	SetModified( );
 }
 
 void CFeatures::OnCapsLockModeChanged( UINT uID ) {
-	debug( L"CFeatures::OnCapsLockModeChanged %d\n", uID );
-
-	SetModified( );
 	switch ( uID ) {
 		case IDC_CAPSLOCKTOGGLEMODE_NORMAL:
 			m_Options.CapsLockToggleMode = CLTM_NORMAL;
@@ -166,4 +150,5 @@ void CFeatures::OnCapsLockModeChanged( UINT uID ) {
 			m_Options.CapsLockToggleMode = CLTM_DISABLED;
 			break;
 	}
+	SetModified( );
 }

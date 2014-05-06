@@ -15,7 +15,7 @@ BEGIN_MESSAGE_MAP( COptionsPropSheet, CPropertySheet )
 END_MESSAGE_MAP()
 
 COptionsPropSheet::COptionsPropSheet( const COptionsData& options, CWnd* pParentWnd, UINT iSelectPage ):
-	CPropertySheet ( CString( (LPCWSTR) IDS_OPTIONSPROPSHEET_TITLE ), pParentWnd, iSelectPage ),
+	CPropertySheet ( LoadFromStringTable( IDS_OPTIONSPROPSHEET_TITLE ), pParentWnd, iSelectPage ),
 	m_CurOptions   ( options ),
 	m_NewOptions   ( m_CurOptions ),
 	m_KeySequences ( m_NewOptions ),
@@ -32,9 +32,8 @@ COptionsPropSheet::~COptionsPropSheet( ) {
 }
 
 int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
-	int ret = CPropertySheet::OnCreate( lpcs );
-	if ( 0 != ret ) {
-		return ret;
+	if ( CPropertySheet::OnCreate( lpcs ) ) {
+		return -1;
 	}
 
 	// Default Property Sheet window styles:
@@ -66,7 +65,7 @@ void COptionsPropSheet::OnApplyNow( ) {
 	m_Features.UpdateData( TRUE );
 
 	if ( m_pParentWnd && m_CurOptions != m_NewOptions ) {
-		m_pParentWnd->SendMessage( APP_RECONFIGURE, 0, (LPARAM) this );
+		m_pParentWnd->SendMessage( APP_RECONFIGURE, 0, reinterpret_cast<LPARAM>( this ) );
 	}
 	
 	m_KeySequences.SetModified( FALSE );

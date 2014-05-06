@@ -75,7 +75,7 @@ public:
 	inline T Map( _bstr_t const& value ) const {
 		T ret = static_cast<T>( 0 );
 		for ( INT_PTR n = 0; n < _strings.GetCount( ); n++ ) {
-			if ( (LPCWSTR) _strings[n] && 0 == wcsicmp( _strings[n], value ) ) {
+			if ( static_cast<LPCWSTR>( _strings[n] ) && 0 == wcsicmp( _strings[n], value ) ) {
 #pragma warning(suppress: 4800)
 				ret = static_cast<T>( n );
 				break;
