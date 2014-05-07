@@ -8,7 +8,7 @@ static wchar_t* CompositionSoundNames[] = {
 	L"FC_Composition_KeyPressed",
 	L"FC_Composition_Succeeded",
 	L"FC_Composition_Failed",
-	L"FC_Composition_Aborted",
+	L"FC_Composition_Cancelled",
 	L"FC_Composition_Escape",
 };
 
@@ -17,7 +17,7 @@ static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_KEYPRESSED,
 	IDS_APPSOUND_COMPOSITION_SUCCEEDED,
 	IDS_APPSOUND_COMPOSITION_FAILED,
-	IDS_APPSOUND_COMPOSITION_ABORTED,
+	IDS_APPSOUND_COMPOSITION_CANCELLED,
 	IDS_APPSOUND_COMPOSITION_ESCAPE,
 };
 
