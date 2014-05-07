@@ -159,6 +159,7 @@ static inline XDocument CreateDOMDocument( void ) {
 	HRESULT hr = doc.CreateInstance( L"Msxml2.DOMDocument.6.0" );
 	if ( FAILED( hr ) ) {
 		debug( L"CreateDOMDocument: failed, hr=0x%08lX\n", hr );
+		return doc;
 	}
 
 	try {
@@ -206,15 +207,12 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 
 	if ( !LoadBinaryResource( uID, pvResource, cbResource ) ) {
 		debug( L"LoadBinaryResourceAsBstr: LoadBinaryResource(%u) failed: %lu\n", GetLastError( ) );
-		return _bstr_t( );
 	}
-
-	// hglob is not a real handle to a global object! Do not call GlobalFree() on it! This is not a leak, honest!
 
 	BSTR bstrResource = SysAllocStringLen( nullptr, static_cast<unsigned>( cbResource ) + 1 );
 
-	unsigned char* pch = static_cast<unsigned char*>( pvResource );
 	unsigned cb = static_cast<unsigned>( cbResource );
+	unsigned char* pch = static_cast<unsigned char*>( pvResource );
 	wchar_t* pwz = bstrResource;
 
 	for ( unsigned n = 0; n < cb; n++ ) {
