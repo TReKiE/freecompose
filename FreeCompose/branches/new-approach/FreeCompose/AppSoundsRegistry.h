@@ -3,6 +3,6 @@
 class CAppSoundsRegistry {
 public:
 
-	static void CreateFcAppSoundsRegistry( void );
+	static void RegisterFcAppSounds( void );
 
 };

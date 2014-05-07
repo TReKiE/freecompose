@@ -21,7 +21,7 @@ static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_ESCAPE,
 };
 
-void CAppSoundsRegistry::CreateFcAppSoundsRegistry( void ) {
+void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 	LSTATUS ls;
 	CString tmp;
 	DWORD dwDisposition;
