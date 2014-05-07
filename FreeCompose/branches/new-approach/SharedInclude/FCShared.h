@@ -37,9 +37,9 @@
 //=============================================================================
 
 #ifndef _DEBUG
-extern inline void debug( LPCWSTR /*format*/, ... ) { }
+extern inline void debug( _In_z_ _Printf_format_string_ LPCWSTR /*format*/, ... ) { }
 #else
-FCSHARED_API void debug( LPCWSTR format, ... );
+FCSHARED_API void debug( _In_z_ _Printf_format_string_ LPCWSTR format, ... );
 #endif
 
 FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz );

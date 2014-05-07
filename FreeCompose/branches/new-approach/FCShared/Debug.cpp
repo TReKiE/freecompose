@@ -61,7 +61,7 @@ FCSHARED_API void TerminateDebugLogFile( void ) {
 	}
 }
 
-FCSHARED_API void debug( LPCWSTR format, ... ) {
+FCSHARED_API void debug( _In_z_ _Printf_format_string_ LPCWSTR format, ... ) {
 	wchar_t buf[1024];
 	va_list va;
 
