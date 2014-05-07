@@ -443,7 +443,7 @@ BEGIN
     IDS_APPSOUND_COMPOSITION_KEYPRESSED "Composition: Key pressed"
     IDS_APPSOUND_COMPOSITION_SUCCEEDED "Composition: Succeeded"
     IDS_APPSOUND_COMPOSITION_FAILED "Composition: Failed"
-    IDS_APPSOUND_COMPOSITION_ABORTED "Composition: Aborted"
+    IDS_APPSOUND_COMPOSITION_CANCELLED "Composition: Cancelled"
     IDS_APPSOUND_COMPOSITION_ESCAPE "Composition: Escape"
 END
 #endif    // English (United States) resources
