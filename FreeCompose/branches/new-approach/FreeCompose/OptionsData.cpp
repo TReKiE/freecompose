@@ -9,7 +9,7 @@
 
 #include "Utils.h"
 
-#define FORCE_DEFAULT_CONFIG 0
+#define FORCE_DEFAULT_CONFIG  0
 #define FORCE_REGISTRY_CONFIG 0
 
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
@@ -168,8 +168,8 @@ void COptionsData::Load( void ) {
 		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
 		if ( !_xmlOptionsHandler.SaveToFile( ) ) {
 			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
-			return;
 		}
+		return;
 	}
 #endif
 
