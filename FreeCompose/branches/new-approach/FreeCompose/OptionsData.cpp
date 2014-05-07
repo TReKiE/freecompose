@@ -56,7 +56,7 @@ bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
 
 	LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, registryKeyName, 0, KEY_READ, &hkey );
 	if ( ERROR_SUCCESS != rc ) {
-		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %d\n", registryKeyName );
+		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %ld\n", registryKeyName, rc );
 		return false;
 	}
 
@@ -76,7 +76,7 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 	CString section;
 	ComposeSequences.SetSize( count );
 
-	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %d mappings from registry:\n", count );
+	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %u mappings from registry:\n", count );
 	for ( unsigned n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%u", n );
 		CString first    ( VkToString  ( theApp.GetProfileInt( section, L"First",    0 ) ) );
