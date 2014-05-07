@@ -110,6 +110,7 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 	}
 
 	if ( nodeFirst && nodeSecond && nodeComposed ) {
+		debug( L"ComposeSequenceFromXNode: Translating sequence\n" );
 		CString First, Second, Composed;
 		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text ) ) );
 		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text ) ) );
@@ -203,6 +204,30 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 	// hglob is not a real handle to a global object! Do not call GlobalFree() on it! This is not a leak, honest!
 
 	return SysAllocStringByteLen( pszConf, dwSize );
+}
+
+static inline bool LoadBinaryResource( unsigned uID, void*& pvResource, size_t& cbResource ) {
+	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( uID ), L"XMLFILE" );
+	if ( !hrsrc ) {
+		debug( L"LoadBinaryResourceAsBstr: FindResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	HGLOBAL hglob = LoadResource( nullptr, hrsrc );
+	if ( !hglob ) {
+		debug( L"LoadBinaryResourceAsBstr: LoadResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	DWORD dwSize = SizeofResource( nullptr, hrsrc );
+	if ( !dwSize ) {
+		debug( L"LoadBinaryResourceAsBstr: SizeofResource failed, error is %lu", GetLastError( ) );
+		return false;
+	}
+
+	pvResource = LockResource( hglob );
+	cbResource = dwSize;
+	return true;
 }
 
 //==============================================================================
@@ -336,13 +361,24 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 //
 
 bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
-	_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
-
+	//_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
+	
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
 		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
 		return false;
 	}
+
+	void* pvDefaultConfiguration;
+	size_t cbDefaultConfiguration;
+	if ( !LoadBinaryResource( IDX_DEFAULT_CONFIGURATION, pvDefaultConfiguration, cbDefaultConfiguration ) ) {
+		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: LoadBinaryResource failed: %lu\n", GetLastError( ) );
+		return false;
+	}
+	BSTR bstrRaw = SysAllocStringByteLen( nullptr, static_cast<unsigned>( cbDefaultConfiguration + 1 ) );
+	memcpy( bstrRaw, pvDefaultConfiguration, cbDefaultConfiguration );
+	*( reinterpret_cast<char*>( bstrRaw ) + cbDefaultConfiguration ) = 0;
+	_bstr_t bstrDefaultConfiguration( bstrRaw, false );
 
 	//
 	// Load XML from memory
