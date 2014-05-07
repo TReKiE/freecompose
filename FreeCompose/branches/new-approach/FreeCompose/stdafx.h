@@ -23,6 +23,8 @@
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxtempl.h>
+
+#include <atlbase.h>
 #include <atlwin.h>
 
 #include <comdef.h>

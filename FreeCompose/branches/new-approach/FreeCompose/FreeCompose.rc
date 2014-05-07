@@ -24,7 +24,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // XMLFILE
 //
 
-IDX_DEFAULT_CONFIGURATION XMLFILE                 "C:\\IceKarma\\Projects\\FreeCompose\\FreeCompose\\res\\DefaultConfiguration.xml"
+IDX_DEFAULT_CONFIGURATION XMLFILE                 "res\\DefaultConfiguration.xml"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -437,6 +437,15 @@ BEGIN
     IDS_APP_WINVER_TOO_LOW  "Unfortunately, FreeCompose now requires at least Windows XP. =("
 END
 
+STRINGTABLE
+BEGIN
+    IDS_APPSOUND_COMPOSITION_STARTING "Composition: Starting"
+    IDS_APPSOUND_COMPOSITION_KEYPRESSED "Composition: Key pressed"
+    IDS_APPSOUND_COMPOSITION_SUCCEEDED "Composition: Succeeded"
+    IDS_APPSOUND_COMPOSITION_FAILED "Composition: Failed"
+    IDS_APPSOUND_COMPOSITION_ABORTED "Composition: Aborted"
+    IDS_APPSOUND_COMPOSITION_ESCAPE "Composition: Escape"
+END
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

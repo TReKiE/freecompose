@@ -3,6 +3,7 @@
 #include "FreeCompose.h"
 #include "MainFrm.h"
 
+#include "AppSoundsRegistry.h"
 #include "Utils.h"
 
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
@@ -93,6 +94,8 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		debug( L"CFreeComposeApp::InitInstance: FcInitialize failed\n" );
 		return FALSE;
 	}
+
+	CAppSoundsRegistry::CreateFcAppSoundsRegistry( );
 
 	// Create and (not) show our hidden window
 	CMainFrame* pFrame = new CMainFrame;
