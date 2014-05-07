@@ -176,36 +176,6 @@ static inline XDocument CreateDOMDocument( void ) {
 
 // Resource loading
 
-static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
-	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( uID ), L"XMLFILE" );
-	if ( !hrsrc ) {
-		debug( L"LoadBinaryResourceAsBstr: FindResource failed, error is %lu", GetLastError( ) );
-		return _bstr_t( );
-	}
-
-	HGLOBAL hglob = LoadResource( nullptr, hrsrc );
-	if ( !hglob ) {
-		debug( L"LoadBinaryResourceAsBstr: LoadResource failed, error is %lu", GetLastError( ) );
-		return _bstr_t( );
-	}
-
-	DWORD dwSize = SizeofResource( nullptr, hrsrc );
-	if ( !dwSize ) {
-		debug( L"LoadBinaryResourceAsBstr: SizeofResource failed, error is %lu", GetLastError( ) );
-		return _bstr_t( );
-	}
-
-	LPCSTR pszConf = static_cast<LPSTR>( LockResource( hglob ) );
-	if ( !pszConf ) {
-		debug( L"LoadBinaryResourceAsBstr: LockResource failed, error is %lu", GetLastError( ) );
-		return _bstr_t( );
-	}
-
-	// hglob is not a real handle to a global object! Do not call GlobalFree() on it! This is not a leak, honest!
-
-	return SysAllocStringByteLen( pszConf, dwSize );
-}
-
 static inline bool LoadBinaryResource( unsigned uID, void*& pvResource, size_t& cbResource ) {
 	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( uID ), L"XMLFILE" );
 	if ( !hrsrc ) {
@@ -228,6 +198,31 @@ static inline bool LoadBinaryResource( unsigned uID, void*& pvResource, size_t& 
 	pvResource = LockResource( hglob );
 	cbResource = dwSize;
 	return true;
+}
+
+static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
+	void* pvResource = nullptr;
+	size_t cbResource = 0;
+
+	if ( !LoadBinaryResource( uID, pvResource, cbResource ) ) {
+		debug( L"LoadBinaryResourceAsBstr: LoadBinaryResource(%u) failed: %lu\n", GetLastError( ) );
+		return _bstr_t( );
+	}
+
+	// hglob is not a real handle to a global object! Do not call GlobalFree() on it! This is not a leak, honest!
+
+	BSTR bstrResource = SysAllocStringLen( nullptr, static_cast<unsigned>( cbResource ) + 1 );
+
+	unsigned char* pch = static_cast<unsigned char*>( pvResource );
+	unsigned cb = static_cast<unsigned>( cbResource );
+	wchar_t* pwz = bstrResource;
+
+	for ( unsigned n = 0; n < cb; n++ ) {
+		pwz[n] = static_cast<wchar_t>( pch[n] );
+	}
+	pwz[cb] = 0;
+
+	return bstrResource;
 }
 
 //==============================================================================
@@ -361,24 +356,13 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 //
 
 bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
-	//_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
-	
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
 		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
-	void* pvDefaultConfiguration;
-	size_t cbDefaultConfiguration;
-	if ( !LoadBinaryResource( IDX_DEFAULT_CONFIGURATION, pvDefaultConfiguration, cbDefaultConfiguration ) ) {
-		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: LoadBinaryResource failed: %lu\n", GetLastError( ) );
-		return false;
-	}
-	BSTR bstrRaw = SysAllocStringByteLen( nullptr, static_cast<unsigned>( cbDefaultConfiguration + 1 ) );
-	memcpy( bstrRaw, pvDefaultConfiguration, cbDefaultConfiguration );
-	*( reinterpret_cast<char*>( bstrRaw ) + cbDefaultConfiguration ) = 0;
-	_bstr_t bstrDefaultConfiguration( bstrRaw, false );
+	_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
 
 	//
 	// Load XML from memory
