@@ -167,15 +167,15 @@ LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
 
 	switch ( wPip ) {
 		case PIP_OK_1:
-			::Beep( 523, 100 );
+			Beep( 523, 100 );
 			break;
 
 		case PIP_OK_2:
-			::Beep( 523, 100 );
+			Beep( 523, 100 );
 			break;
 
 		case PIP_OK_3:
-			::Beep( 1047, 100 );
+			Beep( 1047, 100 );
 			break;
 
 		case PIP_ABORT:
