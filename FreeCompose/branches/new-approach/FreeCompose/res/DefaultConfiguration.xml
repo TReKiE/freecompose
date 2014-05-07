@@ -16,1149 +16,920 @@
     <Mappings>
         <Group Name="default">
             <Mapping>
-                <First>67</First>
-                <Second>187</Second>
-                <Composed>8364</Composed>
+                <Sequence>c=</Sequence>
+                <Result>€</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>187</Second>
-                <Composed>8364</Composed>
+                <Sequence>C=</Sequence>
+                <Result>€</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>77</Second>
-                <Composed>8482</Composed>
+                <Sequence>tm</Sequence>
+                <Result>™</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>77</Second>
-                <Composed>8482</Composed>
+                <Sequence>Tm</Sequence>
+                <Result>™</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>2147483725</Second>
-                <Composed>8482</Composed>
+                <Sequence>tM</Sequence>
+                <Result>™</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>2147483725</Second>
-                <Composed>8482</Composed>
+                <Sequence>TM</Sequence>
+                <Result>™</Result>
             </Mapping>
             <Mapping>
-                <First>2147483697</First>
-                <Second>2147483697</Second>
-                <Composed>161</Composed>
+                <Sequence>!!</Sequence>
+                <Result>¡</Result>
             </Mapping>
             <Mapping>
-                <First>67</First>
-                <Second>191</Second>
-                <Composed>162</Composed>
+                <Sequence>c/</Sequence>
+                <Result>¢</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>191</Second>
-                <Composed>162</Composed>
+                <Sequence>C/</Sequence>
+                <Result>¢</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>189</Second>
-                <Composed>163</Composed>
+                <Sequence>l-</Sequence>
+                <Result>£</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>189</Second>
-                <Composed>163</Composed>
+                <Sequence>L-</Sequence>
+                <Result>£</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>187</Second>
-                <Composed>163</Composed>
+                <Sequence>l=</Sequence>
+                <Result>£</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>187</Second>
-                <Composed>163</Composed>
+                <Sequence>L=</Sequence>
+                <Result>£</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>88</Second>
-                <Composed>164</Composed>
+                <Sequence>ox</Sequence>
+                <Result>¤</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>88</Second>
-                <Composed>164</Composed>
+                <Sequence>Ox</Sequence>
+                <Result>¤</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483736</Second>
-                <Composed>164</Composed>
+                <Sequence>oX</Sequence>
+                <Result>¤</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483736</Second>
-                <Composed>164</Composed>
+                <Sequence>OX</Sequence>
+                <Result>¤</Result>
             </Mapping>
             <Mapping>
-                <First>89</First>
-                <Second>187</Second>
-                <Composed>165</Composed>
+                <Sequence>y=</Sequence>
+                <Result>¥</Result>
             </Mapping>
             <Mapping>
-                <First>2147483737</First>
-                <Second>187</Second>
-                <Composed>165</Composed>
+                <Sequence>Y=</Sequence>
+                <Result>¥</Result>
             </Mapping>
             <Mapping>
-                <First>2147483868</First>
-                <Second>2147483868</Second>
-                <Composed>166</Composed>
+                <Sequence>||</Sequence>
+                <Result>¦</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>79</Second>
-                <Composed>167</Composed>
+                <Sequence>so</Sequence>
+                <Result>§</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>79</Second>
-                <Composed>167</Composed>
+                <Sequence>So</Sequence>
+                <Result>§</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>2147483727</Second>
-                <Composed>167</Composed>
+                <Sequence>sO</Sequence>
+                <Result>§</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>2147483727</Second>
-                <Composed>167</Composed>
+                <Sequence>SO</Sequence>
+                <Result>§</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>67</Second>
-                <Composed>169</Composed>
+                <Sequence>oc</Sequence>
+                <Result>©</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>67</Second>
-                <Composed>169</Composed>
+                <Sequence>Oc</Sequence>
+                <Result>©</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483715</Second>
-                <Composed>169</Composed>
+                <Sequence>oC</Sequence>
+                <Result>©</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483715</Second>
-                <Composed>169</Composed>
+                <Sequence>OC</Sequence>
+                <Result>©</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483837</Second>
-                <Composed>170</Composed>
+                <Sequence>a_</Sequence>
+                <Result>ª</Result>
             </Mapping>
             <Mapping>
-                <First>2147483836</First>
-                <Second>2147483836</Second>
-                <Composed>171</Composed>
+                <Sequence>&lt;&lt;</Sequence>
+                <Result>«</Result>
             </Mapping>
             <Mapping>
-                <First>189</First>
-                <Second>188</Second>
-                <Composed>172</Composed>
+                <Sequence>-,</Sequence>
+                <Result>¬</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>82</Second>
-                <Composed>174</Composed>
+                <Sequence>or</Sequence>
+                <Result>®</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>82</Second>
-                <Composed>174</Composed>
+                <Sequence>Or</Sequence>
+                <Result>®</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483730</Second>
-                <Composed>174</Composed>
+                <Sequence>oR</Sequence>
+                <Result>®</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483730</Second>
-                <Composed>174</Composed>
+                <Sequence>OR</Sequence>
+                <Result>®</Result>
             </Mapping>
             <Mapping>
-                <First>48</First>
-                <Second>2147483702</Second>
-                <Composed>176</Composed>
+                <Sequence>0^</Sequence>
+                <Result>°</Result>
             </Mapping>
             <Mapping>
-                <First>2147483835</First>
-                <Second>189</Second>
-                <Composed>177</Composed>
+                <Sequence>+-</Sequence>
+                <Result>±</Result>
             </Mapping>
             <Mapping>
-                <First>50</First>
-                <Second>2147483702</Second>
-                <Composed>178</Composed>
+                <Sequence>2^</Sequence>
+                <Result>²</Result>
             </Mapping>
             <Mapping>
-                <First>51</First>
-                <Second>2147483702</Second>
-                <Composed>179</Composed>
+                <Sequence>3^</Sequence>
+                <Result>³</Result>
             </Mapping>
             <Mapping>
-                <First>77</First>
-                <Second>85</Second>
-                <Composed>181</Composed>
+                <Sequence>mu</Sequence>
+                <Result>µ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483725</First>
-                <Second>85</Second>
-                <Composed>181</Composed>
+                <Sequence>Mu</Sequence>
+                <Result>µ</Result>
             </Mapping>
             <Mapping>
-                <First>77</First>
-                <Second>2147483733</Second>
-                <Composed>181</Composed>
+                <Sequence>mU</Sequence>
+                <Result>µ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483725</First>
-                <Second>2147483733</Second>
-                <Composed>181</Composed>
+                <Sequence>MU</Sequence>
+                <Result>µ</Result>
             </Mapping>
             <Mapping>
-                <First>80</First>
-                <Second>2147483697</Second>
-                <Composed>182</Composed>
+                <Sequence>p!</Sequence>
+                <Result>¶</Result>
             </Mapping>
             <Mapping>
-                <First>2147483728</First>
-                <Second>2147483697</Second>
-                <Composed>182</Composed>
+                <Sequence>P!</Sequence>
+                <Result>¶</Result>
             </Mapping>
             <Mapping>
-                <First>49</First>
-                <Second>2147483702</Second>
-                <Composed>185</Composed>
+                <Sequence>1^</Sequence>
+                <Result>¹</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483837</Second>
-                <Composed>186</Composed>
+                <Sequence>o_</Sequence>
+                <Result>º</Result>
             </Mapping>
             <Mapping>
-                <First>2147483838</First>
-                <Second>2147483838</Second>
-                <Composed>187</Composed>
+                <Sequence>&gt;&gt;</Sequence>
+                <Result>»</Result>
             </Mapping>
             <Mapping>
-                <First>49</First>
-                <Second>52</Second>
-                <Composed>188</Composed>
+                <Sequence>14</Sequence>
+                <Result>¼</Result>
             </Mapping>
             <Mapping>
-                <First>49</First>
-                <Second>50</Second>
-                <Composed>189</Composed>
+                <Sequence>12</Sequence>
+                <Result>½</Result>
             </Mapping>
             <Mapping>
-                <First>51</First>
-                <Second>52</Second>
-                <Composed>190</Composed>
+                <Sequence>34</Sequence>
+                <Result>¾</Result>
             </Mapping>
             <Mapping>
-                <First>2147483839</First>
-                <Second>2147483839</Second>
-                <Composed>191</Composed>
+                <Sequence>??</Sequence>
+                <Result>¿</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>192</Second>
-                <Composed>192</Composed>
+                <Sequence>A`</Sequence>
+                <Result>À</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>222</Second>
-                <Composed>193</Composed>
+                <Sequence>A'</Sequence>
+                <Result>Á</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>2147483702</Second>
-                <Composed>194</Composed>
+                <Sequence>A^</Sequence>
+                <Result>Â</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>2147483840</Second>
-                <Composed>195</Composed>
+                <Sequence>A~</Sequence>
+                <Result>Ã</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>2147483870</Second>
-                <Composed>196</Composed>
+                <Sequence>A"</Sequence>
+                <Result>Ä</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>2147483704</Second>
-                <Composed>197</Composed>
+                <Sequence>A*</Sequence>
+                <Result>Å</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>69</Second>
-                <Composed>198</Composed>
+                <Sequence>Ae</Sequence>
+                <Result>Æ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>2147483717</Second>
-                <Composed>198</Composed>
+                <Sequence>AE</Sequence>
+                <Result>Æ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>188</Second>
-                <Composed>199</Composed>
+                <Sequence>C,</Sequence>
+                <Result>Ç</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>192</Second>
-                <Composed>200</Composed>
+                <Sequence>E`</Sequence>
+                <Result>È</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>222</Second>
-                <Composed>201</Composed>
+                <Sequence>E'</Sequence>
+                <Result>É</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>2147483702</Second>
-                <Composed>202</Composed>
+                <Sequence>E^</Sequence>
+                <Result>Ê</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>2147483870</Second>
-                <Composed>203</Composed>
+                <Sequence>E"</Sequence>
+                <Result>Ë</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>192</Second>
-                <Composed>204</Composed>
+                <Sequence>I`</Sequence>
+                <Result>Ì</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>222</Second>
-                <Composed>205</Composed>
+                <Sequence>I'</Sequence>
+                <Result>Í</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>2147483702</Second>
-                <Composed>206</Composed>
+                <Sequence>I^</Sequence>
+                <Result>Î</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>2147483870</Second>
-                <Composed>207</Composed>
+                <Sequence>I"</Sequence>
+                <Result>Ï</Result>
             </Mapping>
             <Mapping>
-                <First>2147483716</First>
-                <Second>189</Second>
-                <Composed>208</Composed>
+                <Sequence>D-</Sequence>
+                <Result>Ð</Result>
             </Mapping>
             <Mapping>
-                <First>2147483726</First>
-                <Second>2147483840</Second>
-                <Composed>209</Composed>
+                <Sequence>N~</Sequence>
+                <Result>Ñ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>192</Second>
-                <Composed>210</Composed>
+                <Sequence>O`</Sequence>
+                <Result>Ò</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>222</Second>
-                <Composed>211</Composed>
+                <Sequence>O'</Sequence>
+                <Result>Ó</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483702</Second>
-                <Composed>212</Composed>
+                <Sequence>O^</Sequence>
+                <Result>Ô</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483840</Second>
-                <Composed>213</Composed>
+                <Sequence>O~</Sequence>
+                <Result>Õ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483870</Second>
-                <Composed>214</Composed>
+                <Sequence>O"</Sequence>
+                <Result>Ö</Result>
             </Mapping>
             <Mapping>
-                <First>88</First>
-                <Second>88</Second>
-                <Composed>215</Composed>
+                <Sequence>xx</Sequence>
+                <Result>×</Result>
             </Mapping>
             <Mapping>
-                <First>2147483736</First>
-                <Second>88</Second>
-                <Composed>215</Composed>
+                <Sequence>Xx</Sequence>
+                <Result>×</Result>
             </Mapping>
             <Mapping>
-                <First>88</First>
-                <Second>2147483736</Second>
-                <Composed>215</Composed>
+                <Sequence>xX</Sequence>
+                <Result>×</Result>
             </Mapping>
             <Mapping>
-                <First>2147483736</First>
-                <Second>2147483736</Second>
-                <Composed>215</Composed>
+                <Sequence>XX</Sequence>
+                <Result>×</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>191</Second>
-                <Composed>216</Composed>
+                <Sequence>O/</Sequence>
+                <Result>Ø</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>192</Second>
-                <Composed>217</Composed>
+                <Sequence>U`</Sequence>
+                <Result>Ù</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>222</Second>
-                <Composed>218</Composed>
+                <Sequence>U'</Sequence>
+                <Result>Ú</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>2147483702</Second>
-                <Composed>219</Composed>
+                <Sequence>U^</Sequence>
+                <Result>Û</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>2147483870</Second>
-                <Composed>220</Composed>
+                <Sequence>U"</Sequence>
+                <Result>Ü</Result>
             </Mapping>
             <Mapping>
-                <First>2147483737</First>
-                <Second>222</Second>
-                <Composed>221</Composed>
+                <Sequence>Y'</Sequence>
+                <Result>Ý</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>72</Second>
-                <Composed>222</Composed>
+                <Sequence>Th</Sequence>
+                <Result>Þ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>2147483720</Second>
-                <Composed>222</Composed>
+                <Sequence>TH</Sequence>
+                <Result>Þ</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>83</Second>
-                <Composed>223</Composed>
+                <Sequence>ss</Sequence>
+                <Result>ß</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>83</Second>
-                <Composed>223</Composed>
+                <Sequence>Ss</Sequence>
+                <Result>ß</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>2147483731</Second>
-                <Composed>223</Composed>
+                <Sequence>sS</Sequence>
+                <Result>ß</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>2147483731</Second>
-                <Composed>223</Composed>
+                <Sequence>SS</Sequence>
+                <Result>ß</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>192</Second>
-                <Composed>224</Composed>
+                <Sequence>a`</Sequence>
+                <Result>à</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>222</Second>
-                <Composed>225</Composed>
+                <Sequence>a'</Sequence>
+                <Result>á</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483702</Second>
-                <Composed>226</Composed>
+                <Sequence>a^</Sequence>
+                <Result>â</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483840</Second>
-                <Composed>227</Composed>
+                <Sequence>a~</Sequence>
+                <Result>ã</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483870</Second>
-                <Composed>228</Composed>
+                <Sequence>a"</Sequence>
+                <Result>ä</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483704</Second>
-                <Composed>229</Composed>
+                <Sequence>a*</Sequence>
+                <Result>å</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>69</Second>
-                <Composed>230</Composed>
+                <Sequence>ae</Sequence>
+                <Result>æ</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>2147483717</Second>
-                <Composed>230</Composed>
+                <Sequence>aE</Sequence>
+                <Result>æ</Result>
             </Mapping>
             <Mapping>
-                <First>67</First>
-                <Second>188</Second>
-                <Composed>231</Composed>
+                <Sequence>c,</Sequence>
+                <Result>ç</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>192</Second>
-                <Composed>232</Composed>
+                <Sequence>e`</Sequence>
+                <Result>è</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>222</Second>
-                <Composed>233</Composed>
+                <Sequence>e'</Sequence>
+                <Result>é</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>2147483702</Second>
-                <Composed>234</Composed>
+                <Sequence>e^</Sequence>
+                <Result>ê</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>2147483870</Second>
-                <Composed>235</Composed>
+                <Sequence>e"</Sequence>
+                <Result>ë</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>192</Second>
-                <Composed>236</Composed>
+                <Sequence>i`</Sequence>
+                <Result>ì</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>222</Second>
-                <Composed>237</Composed>
+                <Sequence>i'</Sequence>
+                <Result>í</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>2147483702</Second>
-                <Composed>238</Composed>
+                <Sequence>i^</Sequence>
+                <Result>î</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>2147483870</Second>
-                <Composed>239</Composed>
+                <Sequence>i"</Sequence>
+                <Result>ï</Result>
             </Mapping>
             <Mapping>
-                <First>68</First>
-                <Second>189</Second>
-                <Composed>240</Composed>
+                <Sequence>d-</Sequence>
+                <Result>ð</Result>
             </Mapping>
             <Mapping>
-                <First>78</First>
-                <Second>2147483840</Second>
-                <Composed>241</Composed>
+                <Sequence>n~</Sequence>
+                <Result>ñ</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>192</Second>
-                <Composed>242</Composed>
+                <Sequence>o`</Sequence>
+                <Result>ò</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>222</Second>
-                <Composed>243</Composed>
+                <Sequence>o'</Sequence>
+                <Result>ó</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483702</Second>
-                <Composed>244</Composed>
+                <Sequence>o^</Sequence>
+                <Result>ô</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483840</Second>
-                <Composed>245</Composed>
+                <Sequence>o~</Sequence>
+                <Result>õ</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483870</Second>
-                <Composed>246</Composed>
+                <Sequence>o"</Sequence>
+                <Result>ö</Result>
             </Mapping>
             <Mapping>
-                <First>2147483834</First>
-                <Second>189</Second>
-                <Composed>247</Composed>
+                <Sequence>:-</Sequence>
+                <Result>÷</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>191</Second>
-                <Composed>248</Composed>
+                <Sequence>o/</Sequence>
+                <Result>ø</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>192</Second>
-                <Composed>249</Composed>
+                <Sequence>u`</Sequence>
+                <Result>ù</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>222</Second>
-                <Composed>250</Composed>
+                <Sequence>u'</Sequence>
+                <Result>ú</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>2147483702</Second>
-                <Composed>251</Composed>
+                <Sequence>u^</Sequence>
+                <Result>û</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>2147483870</Second>
-                <Composed>252</Composed>
+                <Sequence>u"</Sequence>
+                <Result>ü</Result>
             </Mapping>
             <Mapping>
-                <First>89</First>
-                <Second>222</Second>
-                <Composed>253</Composed>
+                <Sequence>y'</Sequence>
+                <Result>ý</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>72</Second>
-                <Composed>254</Composed>
+                <Sequence>th</Sequence>
+                <Result>þ</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>2147483720</Second>
-                <Composed>254</Composed>
+                <Sequence>tH</Sequence>
+                <Result>þ</Result>
             </Mapping>
             <Mapping>
-                <First>89</First>
-                <Second>2147483870</Second>
-                <Composed>255</Composed>
+                <Sequence>y"</Sequence>
+                <Result>ÿ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>189</Second>
-                <Composed>256</Composed>
+                <Sequence>A-</Sequence>
+                <Result>Ā</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>189</Second>
-                <Composed>257</Composed>
+                <Sequence>a-</Sequence>
+                <Result>ā</Result>
             </Mapping>
             <Mapping>
-                <First>2147483713</First>
-                <Second>188</Second>
-                <Composed>260</Composed>
+                <Sequence>A,</Sequence>
+                <Result>Ą</Result>
             </Mapping>
             <Mapping>
-                <First>65</First>
-                <Second>188</Second>
-                <Composed>261</Composed>
+                <Sequence>a,</Sequence>
+                <Result>ą</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>222</Second>
-                <Composed>262</Composed>
+                <Sequence>C'</Sequence>
+                <Result>Ć</Result>
             </Mapping>
             <Mapping>
-                <First>67</First>
-                <Second>222</Second>
-                <Composed>263</Composed>
+                <Sequence>c'</Sequence>
+                <Result>ć</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>2147483702</Second>
-                <Composed>264</Composed>
+                <Sequence>C^</Sequence>
+                <Result>Ĉ</Result>
             </Mapping>
             <Mapping>
-                <First>67</First>
-                <Second>2147483702</Second>
-                <Composed>265</Composed>
+                <Sequence>c^</Sequence>
+                <Result>ĉ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483715</First>
-                <Second>190</Second>
-                <Composed>266</Composed>
+                <Sequence>C.</Sequence>
+                <Result>Ċ</Result>
             </Mapping>
             <Mapping>
-                <First>67</First>
-                <Second>190</Second>
-                <Composed>267</Composed>
+                <Sequence>c.</Sequence>
+                <Result>ċ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>189</Second>
-                <Composed>274</Composed>
+                <Sequence>E-</Sequence>
+                <Result>Ē</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>189</Second>
-                <Composed>275</Composed>
+                <Sequence>e-</Sequence>
+                <Result>ē</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>190</Second>
-                <Composed>278</Composed>
+                <Sequence>E.</Sequence>
+                <Result>Ė</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>190</Second>
-                <Composed>279</Composed>
+                <Sequence>e.</Sequence>
+                <Result>ė</Result>
             </Mapping>
             <Mapping>
-                <First>2147483717</First>
-                <Second>188</Second>
-                <Composed>280</Composed>
+                <Sequence>E,</Sequence>
+                <Result>Ę</Result>
             </Mapping>
             <Mapping>
-                <First>69</First>
-                <Second>188</Second>
-                <Composed>281</Composed>
+                <Sequence>e,</Sequence>
+                <Result>ę</Result>
             </Mapping>
             <Mapping>
-                <First>2147483719</First>
-                <Second>2147483702</Second>
-                <Composed>284</Composed>
+                <Sequence>G^</Sequence>
+                <Result>Ĝ</Result>
             </Mapping>
             <Mapping>
-                <First>71</First>
-                <Second>2147483702</Second>
-                <Composed>285</Composed>
+                <Sequence>g^</Sequence>
+                <Result>ĝ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483719</First>
-                <Second>190</Second>
-                <Composed>288</Composed>
+                <Sequence>G.</Sequence>
+                <Result>Ġ</Result>
             </Mapping>
             <Mapping>
-                <First>71</First>
-                <Second>190</Second>
-                <Composed>289</Composed>
+                <Sequence>g.</Sequence>
+                <Result>ġ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483719</First>
-                <Second>188</Second>
-                <Composed>290</Composed>
+                <Sequence>G,</Sequence>
+                <Result>Ģ</Result>
             </Mapping>
             <Mapping>
-                <First>71</First>
-                <Second>188</Second>
-                <Composed>291</Composed>
+                <Sequence>g,</Sequence>
+                <Result>ģ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483720</First>
-                <Second>2147483702</Second>
-                <Composed>292</Composed>
+                <Sequence>H^</Sequence>
+                <Result>Ĥ</Result>
             </Mapping>
             <Mapping>
-                <First>72</First>
-                <Second>2147483702</Second>
-                <Composed>293</Composed>
+                <Sequence>h^</Sequence>
+                <Result>ĥ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483720</First>
-                <Second>189</Second>
-                <Composed>294</Composed>
+                <Sequence>H-</Sequence>
+                <Result>Ħ</Result>
             </Mapping>
             <Mapping>
-                <First>72</First>
-                <Second>189</Second>
-                <Composed>295</Composed>
+                <Sequence>h-</Sequence>
+                <Result>ħ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>2147483840</Second>
-                <Composed>296</Composed>
+                <Sequence>I~</Sequence>
+                <Result>Ĩ</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>2147483840</Second>
-                <Composed>297</Composed>
+                <Sequence>i~</Sequence>
+                <Result>ĩ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>189</Second>
-                <Composed>298</Composed>
+                <Sequence>I-</Sequence>
+                <Result>Ī</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>189</Second>
-                <Composed>299</Composed>
+                <Sequence>i-</Sequence>
+                <Result>ī</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>188</Second>
-                <Composed>302</Composed>
+                <Sequence>I,</Sequence>
+                <Result>Į</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>188</Second>
-                <Composed>303</Composed>
+                <Sequence>i,</Sequence>
+                <Result>į</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>190</Second>
-                <Composed>304</Composed>
+                <Sequence>I.</Sequence>
+                <Result>İ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>2147483722</Second>
-                <Composed>306</Composed>
+                <Sequence>IJ</Sequence>
+                <Result>Ĳ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483721</First>
-                <Second>74</Second>
-                <Composed>306</Composed>
+                <Sequence>Ij</Sequence>
+                <Result>Ĳ</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>2147483722</Second>
-                <Composed>307</Composed>
+                <Sequence>iJ</Sequence>
+                <Result>ĳ</Result>
             </Mapping>
             <Mapping>
-                <First>73</First>
-                <Second>74</Second>
-                <Composed>307</Composed>
+                <Sequence>ij</Sequence>
+                <Result>ĳ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483722</First>
-                <Second>2147483702</Second>
-                <Composed>308</Composed>
+                <Sequence>J^</Sequence>
+                <Result>Ĵ</Result>
             </Mapping>
             <Mapping>
-                <First>74</First>
-                <Second>2147483702</Second>
-                <Composed>309</Composed>
+                <Sequence>j^</Sequence>
+                <Result>ĵ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483723</First>
-                <Second>188</Second>
-                <Composed>310</Composed>
+                <Sequence>K,</Sequence>
+                <Result>Ķ</Result>
             </Mapping>
             <Mapping>
-                <First>75</First>
-                <Second>188</Second>
-                <Composed>311</Composed>
+                <Sequence>k,</Sequence>
+                <Result>ķ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>222</Second>
-                <Composed>313</Composed>
+                <Sequence>L'</Sequence>
+                <Result>Ĺ</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>222</Second>
-                <Composed>314</Composed>
+                <Sequence>l'</Sequence>
+                <Result>ĺ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>188</Second>
-                <Composed>315</Composed>
+                <Sequence>L,</Sequence>
+                <Result>Ļ</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>188</Second>
-                <Composed>316</Composed>
+                <Sequence>l,</Sequence>
+                <Result>ļ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>190</Second>
-                <Composed>319</Composed>
+                <Sequence>L.</Sequence>
+                <Result>Ŀ</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>190</Second>
-                <Composed>320</Composed>
+                <Sequence>l.</Sequence>
+                <Result>ŀ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483724</First>
-                <Second>191</Second>
-                <Composed>321</Composed>
+                <Sequence>L/</Sequence>
+                <Result>Ł</Result>
             </Mapping>
             <Mapping>
-                <First>76</First>
-                <Second>191</Second>
-                <Composed>322</Composed>
+                <Sequence>l/</Sequence>
+                <Result>ł</Result>
             </Mapping>
             <Mapping>
-                <First>2147483726</First>
-                <Second>222</Second>
-                <Composed>323</Composed>
+                <Sequence>N'</Sequence>
+                <Result>Ń</Result>
             </Mapping>
             <Mapping>
-                <First>78</First>
-                <Second>222</Second>
-                <Composed>324</Composed>
+                <Sequence>n'</Sequence>
+                <Result>ń</Result>
             </Mapping>
             <Mapping>
-                <First>2147483726</First>
-                <Second>188</Second>
-                <Composed>325</Composed>
+                <Sequence>N,</Sequence>
+                <Result>Ņ</Result>
             </Mapping>
             <Mapping>
-                <First>78</First>
-                <Second>188</Second>
-                <Composed>326</Composed>
+                <Sequence>n,</Sequence>
+                <Result>ņ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483726</First>
-                <Second>2147483719</Second>
-                <Composed>330</Composed>
+                <Sequence>NG</Sequence>
+                <Result>Ŋ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483726</First>
-                <Second>71</Second>
-                <Composed>330</Composed>
+                <Sequence>Ng</Sequence>
+                <Result>Ŋ</Result>
             </Mapping>
             <Mapping>
-                <First>78</First>
-                <Second>2147483719</Second>
-                <Composed>331</Composed>
+                <Sequence>nG</Sequence>
+                <Result>ŋ</Result>
             </Mapping>
             <Mapping>
-                <First>78</First>
-                <Second>71</Second>
-                <Composed>331</Composed>
+                <Sequence>ng</Sequence>
+                <Result>ŋ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>189</Second>
-                <Composed>332</Composed>
+                <Sequence>O-</Sequence>
+                <Result>Ō</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>189</Second>
-                <Composed>333</Composed>
+                <Sequence>o-</Sequence>
+                <Result>ō</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>2147483717</Second>
-                <Composed>338</Composed>
+                <Sequence>OE</Sequence>
+                <Result>Œ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483727</First>
-                <Second>69</Second>
-                <Composed>338</Composed>
+                <Sequence>Oe</Sequence>
+                <Result>Œ</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>2147483717</Second>
-                <Composed>339</Composed>
+                <Sequence>oE</Sequence>
+                <Result>œ</Result>
             </Mapping>
             <Mapping>
-                <First>79</First>
-                <Second>69</Second>
-                <Composed>339</Composed>
+                <Sequence>oe</Sequence>
+                <Result>œ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483730</First>
-                <Second>222</Second>
-                <Composed>340</Composed>
+                <Sequence>R'</Sequence>
+                <Result>Ŕ</Result>
             </Mapping>
             <Mapping>
-                <First>82</First>
-                <Second>222</Second>
-                <Composed>341</Composed>
+                <Sequence>r'</Sequence>
+                <Result>ŕ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483730</First>
-                <Second>188</Second>
-                <Composed>342</Composed>
+                <Sequence>R,</Sequence>
+                <Result>Ŗ</Result>
             </Mapping>
             <Mapping>
-                <First>82</First>
-                <Second>188</Second>
-                <Composed>343</Composed>
+                <Sequence>r,</Sequence>
+                <Result>ŗ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>222</Second>
-                <Composed>346</Composed>
+                <Sequence>S'</Sequence>
+                <Result>Ś</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>222</Second>
-                <Composed>347</Composed>
+                <Sequence>s'</Sequence>
+                <Result>ś</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>2147483702</Second>
-                <Composed>348</Composed>
+                <Sequence>S^</Sequence>
+                <Result>Ŝ</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>2147483702</Second>
-                <Composed>349</Composed>
+                <Sequence>s^</Sequence>
+                <Result>ŝ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483731</First>
-                <Second>188</Second>
-                <Composed>350</Composed>
+                <Sequence>S,</Sequence>
+                <Result>Ş</Result>
             </Mapping>
             <Mapping>
-                <First>83</First>
-                <Second>188</Second>
-                <Composed>351</Composed>
+                <Sequence>s,</Sequence>
+                <Result>ş</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>188</Second>
-                <Composed>354</Composed>
+                <Sequence>T,</Sequence>
+                <Result>Ţ</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>188</Second>
-                <Composed>355</Composed>
+                <Sequence>t,</Sequence>
+                <Result>ţ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483732</First>
-                <Second>189</Second>
-                <Composed>358</Composed>
+                <Sequence>T-</Sequence>
+                <Result>Ŧ</Result>
             </Mapping>
             <Mapping>
-                <First>84</First>
-                <Second>189</Second>
-                <Composed>359</Composed>
+                <Sequence>t-</Sequence>
+                <Result>ŧ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>2147483840</Second>
-                <Composed>360</Composed>
+                <Sequence>U~</Sequence>
+                <Result>Ũ</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>2147483840</Second>
-                <Composed>361</Composed>
+                <Sequence>u~</Sequence>
+                <Result>ũ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>189</Second>
-                <Composed>362</Composed>
+                <Sequence>U-</Sequence>
+                <Result>Ū</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>189</Second>
-                <Composed>363</Composed>
+                <Sequence>u-</Sequence>
+                <Result>ū</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>2147483704</Second>
-                <Composed>366</Composed>
+                <Sequence>U*</Sequence>
+                <Result>Ů</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>2147483704</Second>
-                <Composed>367</Composed>
+                <Sequence>u*</Sequence>
+                <Result>ů</Result>
             </Mapping>
             <Mapping>
-                <First>2147483733</First>
-                <Second>188</Second>
-                <Composed>370</Composed>
+                <Sequence>U,</Sequence>
+                <Result>Ų</Result>
             </Mapping>
             <Mapping>
-                <First>85</First>
-                <Second>188</Second>
-                <Composed>371</Composed>
+                <Sequence>u,</Sequence>
+                <Result>ų</Result>
             </Mapping>
             <Mapping>
-                <First>2147483735</First>
-                <Second>2147483702</Second>
-                <Composed>372</Composed>
+                <Sequence>W^</Sequence>
+                <Result>Ŵ</Result>
             </Mapping>
             <Mapping>
-                <First>87</First>
-                <Second>2147483702</Second>
-                <Composed>373</Composed>
+                <Sequence>w^</Sequence>
+                <Result>ŵ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483737</First>
-                <Second>2147483702</Second>
-                <Composed>374</Composed>
+                <Sequence>Y^</Sequence>
+                <Result>Ŷ</Result>
             </Mapping>
             <Mapping>
-                <First>89</First>
-                <Second>2147483702</Second>
-                <Composed>375</Composed>
+                <Sequence>y^</Sequence>
+                <Result>ŷ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483737</First>
-                <Second>2147483870</Second>
-                <Composed>376</Composed>
+                <Sequence>Y"</Sequence>
+                <Result>Ÿ</Result>
             </Mapping>
             <Mapping>
-                <First>2147483738</First>
-                <Second>222</Second>
-                <Composed>377</Composed>
+                <Sequence>Z'</Sequence>
+                <Result>Ź</Result>
             </Mapping>
             <Mapping>
-                <First>90</First>
-                <Second>222</Second>
-                <Composed>378</Composed>
+                <Sequence>z'</Sequence>
+                <Result>ź</Result>
             </Mapping>
             <Mapping>
-                <First>2147483738</First>
-                <Second>190</Second>
-                <Composed>379</Composed>
+                <Sequence>Z.</Sequence>
+                <Result>Ż</Result>
             </Mapping>
             <Mapping>
-                <First>90</First>
-                <Second>190</Second>
-                <Composed>380</Composed>
+                <Sequence>z.</Sequence>
+                <Result>ż</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>192</Second>
-                <Composed>768</Composed>
+                <Sequence>@`</Sequence>
+                <Result>̀</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>222</Second>
-                <Composed>769</Composed>
+                <Sequence>@'</Sequence>
+                <Result>́</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>2147483702</Second>
-                <Composed>770</Composed>
+                <Sequence>@^</Sequence>
+                <Result>̂</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>2147483840</Second>
-                <Composed>771</Composed>
+                <Sequence>@~</Sequence>
+                <Result>̃</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>189</Second>
-                <Composed>772</Composed>
+                <Sequence>@-</Sequence>
+                <Result>̄</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>190</Second>
-                <Composed>775</Composed>
+                <Sequence>@.</Sequence>
+                <Result>̇</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>2147483870</Second>
-                <Composed>776</Composed>
+                <Sequence>@"</Sequence>
+                <Result>̈</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>2147483704</Second>
-                <Composed>778</Composed>
+                <Sequence>@*</Sequence>
+                <Result>̊</Result>
             </Mapping>
             <Mapping>
-                <First>2147483698</First>
-                <Second>188</Second>
-                <Composed>807</Composed>
+                <Sequence>@,</Sequence>
+                <Result>̧</Result>
             </Mapping>
         </Group>
     </Mappings>
