@@ -95,7 +95,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 
-	CAppSoundsRegistry::CreateFcAppSoundsRegistry( );
+	CAppSoundsRegistry::RegisterFcAppSounds( );
 
 	// Create and (not) show our hidden window
 	CMainFrame* pFrame = new CMainFrame;
