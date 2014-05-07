@@ -26,7 +26,7 @@ COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	return *this;
 }
 
-bool COptionsData::operator==( COptionsData const& options ) {
+bool COptionsData::operator==( COptionsData const& options ) const {
 	if ( StartActive        != options.StartActive        ) { return false; }
 	if ( StartWithWindows   != options.StartWithWindows   ) { return false; }
 	if ( CapsLockToggleMode != options.CapsLockToggleMode ) { return false; }
@@ -46,11 +46,11 @@ bool COptionsData::operator==( COptionsData const& options ) {
 	return true;
 }
 
-bool COptionsData::operator!=( COptionsData const& options ) {
+bool COptionsData::operator!=( COptionsData const& options ) const {
 	return ! operator==( options );
 }
 
-bool COptionsData::_CheckIfRegistryKeyExists( void ) {
+bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
 	CString registryKeyName( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName );
 	HKEY hkey;
 
