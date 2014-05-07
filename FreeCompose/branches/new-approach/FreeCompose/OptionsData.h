@@ -7,7 +7,7 @@ public:
 	inline COptionsData( ): _xmlOptionsHandler( this ) { }
 
 	inline COptionsData( COptionsData const& options ):
-		_xmlOptionsHandler( this )
+		COptionsData( )
 	{
 		operator=( options );
 	}
@@ -17,8 +17,8 @@ public:
 	}
 
 	COptionsData& operator=( COptionsData const& );
-	bool operator==( COptionsData const& );
-	bool operator!=( COptionsData const& );
+	bool operator==( COptionsData const& ) const;
+	bool operator!=( COptionsData const& ) const;
 
 	//
 	// Methods
@@ -43,7 +43,7 @@ public:
 private:
 	CXmlOptionsManager _xmlOptionsHandler;
 
-	bool _CheckIfRegistryKeyExists( void );
+	bool _CheckIfRegistryKeyExists( void ) const;
 	void _LoadSequencesFromRegistry( void );
 	bool _LoadFromRegistry( void );
 	void _UpdateRunKey( void );
