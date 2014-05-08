@@ -21,6 +21,10 @@ static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_ESCAPE,
 };
 
+//
+// Implementation
+//
+
 void CAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
 	LSTATUS ls;
 	CRegKey EventLabels;
@@ -78,10 +82,47 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 	ls = FreeCompose.Close( );
 }
 
+void CAppSoundsRegistry::_UnregisterEventLabels( void ) {
+	CRegKey EventLabels;
+	LSTATUS ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
+	if ( ERROR_SUCCESS != ls ) {
+		debug( L"CAppSoundsRegistry::_UnregisterEventLabels: EventLabels.Open failed: %ld\n", ls );
+		return;
+	}
+
+	for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
+		ls = EventLabels.RecurseDeleteKey( CompositionSoundNames[n] );
+		debug( L"CAppSoundsRegistry::_UnregisterEventLabels: delete of '%s': %ld\n", CompositionSoundNames[n], ls );
+	}
+	ls = EventLabels.Close( );
+}
+
+void CAppSoundsRegistry::_UnregisterApp( void ) {
+	CRegKey Apps;
+	LSTATUS ls = Apps.Open( HKEY_CURRENT_USER, L"AppEvents\\Schemes\\Apps" );
+	if ( ERROR_SUCCESS != ls ) {
+		debug( L"CAppSoundsRegistry::_UnregisterApp: open of HKCU\\AppEvents\\Schemes\\Apps failed: %ld\n", ls );
+		return;
+	}
+
+	ls = Apps.RecurseDeleteKey( L"FreeCompose" );
+	debug( L"CAppSoundsRegistry::_UnregisterApp: delete of 'FreeCompose': %ld\n", ls );
+	ls = Apps.Close( );
+}
+
+//
+// Interface
+//
+
 void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 	wchar_t wzExeName[1024];
 	GetModuleFileName( AfxGetInstanceHandle( ), wzExeName, 1024 );
 
 	_RegisterEventLabels( wzExeName );
 	_RegisterApp( wzExeName );
+}
+
+void CAppSoundsRegistry::UnregisterFcAppSounds( void ) {
+	_UnregisterEventLabels( );
+	_UnregisterApp( );
 }
