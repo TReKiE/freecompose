@@ -19,10 +19,12 @@ COptionsPropSheet::COptionsPropSheet( const COptionsData& options, CWnd* pParent
 	m_CurOptions   ( options ),
 	m_NewOptions   ( m_CurOptions ),
 	m_KeySequences ( m_NewOptions ),
-	m_Features     ( m_NewOptions )
+	m_Features     ( m_NewOptions ),
+	m_Sounds       ( m_NewOptions )
 {
 	AddPage( &m_KeySequences );
 	AddPage( &m_Features );
+	AddPage( &m_Sounds );
 
 	m_psh.hIcon = AfxGetApp()->LoadIcon( IDR_MAINFRAME );
 	m_psh.dwFlags |= PSH_USEHICON;
