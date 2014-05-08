@@ -28,18 +28,15 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 
 	wchar_t wzExeName[1024];
 	GetModuleFileName( AfxGetInstanceHandle( ), wzExeName, 1024 );
-	
-	CRegKey AppEvents;
-	ls = AppEvents.Open( HKEY_CURRENT_USER, L"AppEvents" );
 
 	CRegKey EventLabels;
-	ls = EventLabels.Open( AppEvents, L"EventLabels" );
+	ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
 
 	for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
 		CRegKey key;
 		tmp.Format( L"@%s,%d", wzExeName, -CompositionDisplayNameIds[n] );
 		dwDisposition = 0;
-		ls = key.Create( EventLabels, CompositionSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ|KEY_WRITE, nullptr, &dwDisposition );
+		ls = key.Create( EventLabels, CompositionSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
 		if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
 			ls = key.SetStringValue( nullptr, CompositionSoundNames[n], REG_SZ );
 			ls = key.SetStringValue( L"DispFileName", tmp );
@@ -49,16 +46,10 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 
 	ls = EventLabels.Close( );
 
-	CRegKey Schemes;
-	ls = Schemes.Open( AppEvents, L"Schemes" );
-
-	CRegKey Apps;
-	ls = Apps.Open( Schemes, L"Apps" );
-
 	CRegKey FreeCompose;
 	tmp.Format( L"@%s,%d", wzExeName, -AFX_IDS_APP_TITLE );
 	dwDisposition = 0;
-	ls = FreeCompose.Create( Apps, L"FreeCompose", nullptr, REG_OPTION_NON_VOLATILE, KEY_READ|KEY_WRITE, nullptr, &dwDisposition );
+	ls = FreeCompose.Create( HKEY_CURRENT_USER, L"AppEvents\\Schemes\\Apps\\FreeCompose", nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
 	if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
 		ls = FreeCompose.SetStringValue( nullptr, LoadFromStringTable( AFX_IDS_APP_TITLE ) );
 		ls = FreeCompose.SetStringValue( L"DispFileName", tmp );
@@ -83,7 +74,4 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 	}
 
 	ls = FreeCompose.Close( );
-	ls = Apps.Close( );
-	ls = Schemes.Close( );
-	ls = AppEvents.Close( );
 }
