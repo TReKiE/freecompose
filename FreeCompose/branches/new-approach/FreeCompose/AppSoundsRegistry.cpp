@@ -40,7 +40,7 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 		tmp.Format( L"@%s,%d", wzExeName, -CompositionDisplayNameIds[n] );
 		dwDisposition = 0;
 		ls = key.Create( EventLabels, CompositionSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ|KEY_WRITE, nullptr, &dwDisposition );
-		if ( REG_CREATED_NEW_KEY == dwDisposition ) {
+		if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
 			ls = key.SetStringValue( nullptr, CompositionSoundNames[n], REG_SZ );
 			ls = key.SetStringValue( L"DispFileName", tmp );
 		}
@@ -59,7 +59,7 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 	tmp.Format( L"@%s,%d", wzExeName, -AFX_IDS_APP_TITLE );
 	dwDisposition = 0;
 	ls = FreeCompose.Create( Apps, L"FreeCompose", nullptr, REG_OPTION_NON_VOLATILE, KEY_READ|KEY_WRITE, nullptr, &dwDisposition );
-	if ( REG_CREATED_NEW_KEY == dwDisposition ) {
+	if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
 		ls = FreeCompose.SetStringValue( nullptr, LoadFromStringTable( AFX_IDS_APP_TITLE ) );
 		ls = FreeCompose.SetStringValue( L"DispFileName", tmp );
 

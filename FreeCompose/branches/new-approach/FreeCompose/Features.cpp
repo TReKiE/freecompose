@@ -58,7 +58,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		SetLastError( ERROR_SUCCESS );
 		if ( !keyName.LoadString( IDS_VK_NAMES_BASE + n ) ) {
 			DWORD dwError = GetLastError( );
-			debug( L"CFeatures::OnInitDialog: LoadString(%lu) failed, error=%lu\n", IDS_VK_NAMES_BASE + n, dwError );
+			debug( L"CFeatures::OnInitDialog: LoadString(%d) failed, error=%lu\n", IDS_VK_NAMES_BASE + n, dwError );
 			continue;
 		}
 

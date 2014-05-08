@@ -163,7 +163,7 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 }
 
 LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
-	debug( L"CMainFrame::OnFcmPip: wPip=%d\n", wPip );
+	debug( L"CMainFrame::OnFcmPip: wPip=%llu\n", wPip );
 
 	switch ( wPip ) {
 		case PIP_OK_1:
@@ -228,7 +228,7 @@ void CMainFrame::OnAppCapsLock( void ) {
 
 	UINT u = SendInput( 2, inputs, sizeof( INPUT ) );
 	if ( u < 2 ) {
-		debug( L"CMainFrame::OnAppCapsLock: SendInput failed: sent=%d err=%d\n", u, GetLastError( ) );
+		debug( L"CMainFrame::OnAppCapsLock: SendInput failed: sent=%u err=%lu\n", u, GetLastError( ) );
 	}
 }
 

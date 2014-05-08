@@ -10,7 +10,7 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION 0x0030
+#define FCHOOKDLL_API_VERSION ((DWORD) 0x0030)
 
 //==============================================================================
 // Types

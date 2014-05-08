@@ -56,7 +56,7 @@ bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
 
 	LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, registryKeyName, 0, KEY_READ, &hkey );
 	if ( ERROR_SUCCESS != rc ) {
-		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %ld\n", registryKeyName, rc );
+		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %ld\n", registryKeyName.GetString( ), rc );
 		return false;
 	}
 
@@ -84,7 +84,7 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );
 		sequence.Sequence = first + second;
 		sequence.Result = composed;
-		debug( L"+ Mapping %3d: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
+		debug( L"+ Mapping %4u: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
 		ComposeSequences[n] = sequence;
 	}
 	debug( L"COptionsData::_LoadSequencesFromRegistry: Mapping load completed.\n" );
@@ -140,7 +140,7 @@ void COptionsData::_UpdateRunKey( void ) {
 			}
 #endif
 		} else {
-			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %d\n", GetLastError( ) );
+			debug( L"COptionsData::_UpdateRunKey: GetModuleFileNameEx failed: %lu\n", GetLastError( ) );
 		}
 	} else {
 #ifndef _DEBUG

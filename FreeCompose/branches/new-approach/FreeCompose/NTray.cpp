@@ -1372,7 +1372,7 @@ HICON CTrayNotifyIcon::GetCurrentAnimationIcon() const
   return m_phIcons[m_nCurrentIconIndex]; 
 }
 
-BOOL CTrayNotifyIcon::ProcessWindowMessage(HWND /*hWnd*/, UINT nMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD /*dwMsgMapID*/)
+BOOL CTrayNotifyIcon::ProcessWindowMessage(_In_ HWND /*hWnd*/, _In_ UINT nMsg, _In_ WPARAM wParam, _In_ LPARAM lParam, _Inout_ LRESULT& lResult, _In_ DWORD /*dwMsgMapID*/)
 {
   lResult = 0;
   BOOL bHandled = FALSE;
