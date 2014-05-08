@@ -37,8 +37,8 @@ UINT const FCM_KEY = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 //==============================================================================
 
 #if DEBUG_NODES_LEAVES
-size_t COMPOSE_TREE_NODE::_cNodes = 0;
-size_t COMPOSE_TREE_NODE::_cLeaves = 0;
+size_t CComposeTreeNode::_cNodes = 0;
+size_t CComposeTreeNode::_cLeaves = 0;
 #endif
 
 //==============================================================================
@@ -51,7 +51,7 @@ HHOOK                      hHook                 = nullptr;
 ComposeSequence*           ComposeSequences      = nullptr;
 INT_PTR                    cComposeSequences     = 0;
 
-COMPOSE_SEQUENCE_TREE      ComposeSequenceTree;
+CComposeSequenceTree       ComposeSequenceTree;
 
 CAPS_LOCK_TOGGLE_MODE      clToggleMode          = CLTM_NORMAL;
 CAPS_LOCK_SWAP_MODE        clSwapMode            = CLSM_SWAP;

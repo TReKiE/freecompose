@@ -133,7 +133,7 @@ static bool TranslateKey( KBDLLHOOKSTRUCT* pkb, wstring& translation ) {
 	HWND hwndForeground = GetForegroundWindow( );
 	DWORD pid, tid = GetWindowThreadProcessId( hwndForeground, &pid );
 	HKL hkl = GetKeyboardLayout( tid );
-	debug( L"TranslateKey: hwndForeground: 0x%p, pid: %d, tid: %d, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
+	debug( L"TranslateKey: hwndForeground: 0x%p, pid: %lu, tid: %lu, hkl: 0x%p\n", hwndForeground, pid, tid, hkl );
 
 	wchar_t buf[65] = { 0, }; // accept up to 64 characters, plus the terminating NUL
 	int rc = ToUnicodeEx( pkb->vkCode, pkb->scanCode, keyState, buf, 64, 0, hkl );
@@ -197,11 +197,11 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|ComposeState=%s wParam=0x%04x isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
+	debug( L"LLKP|ComposeState=%s wParam=0x%04llX isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = KeyEventHandlers[ pkb->vkCode ];
-	debug( L"LLKP|Calling KeyEventHandlers[%ld](0x%p)->Key%s(pkb=0x%p)\n", pkb->vkCode, keh, isKeyDown ? L"Down" : L"Up", pkb );
+	debug( L"LLKP|Calling KeyEventHandlers[%lu](0x%p)->Key%s(pkb=0x%p)\n", pkb->vkCode, keh, isKeyDown ? L"Down" : L"Up", pkb );
 	if ( keh ) {
 		if ( isKeyDown ) {
 			dHandler = keh->KeyDown( pkb );

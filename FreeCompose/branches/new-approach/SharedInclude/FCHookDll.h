@@ -47,6 +47,8 @@ WPARAM const PIP_ABORT = 4;
 WPARAM const PIP_ERROR = 5;
 WPARAM const PIP_FAIL  = 6;
 
+int const MAXIMUM_SEQUENCE_LENGTH = 16;
+
 //==============================================================================
 // Function prototypes
 //==============================================================================
