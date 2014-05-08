@@ -206,10 +206,13 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 	size_t cbResource = 0;
 
 	if ( !LoadBinaryResource( uID, pvResource, cbResource ) ) {
-		debug( L"LoadBinaryResourceAsBstr: LoadBinaryResource(%u) failed: %lu\n", GetLastError( ) );
+		debug( L"LoadBinaryResourceAsBstr: LoadBinaryResource(%u) failed: %lu\n", uID, GetLastError( ) );
 	}
 
 	BSTR bstrResource = SysAllocStringLen( nullptr, static_cast<unsigned>( cbResource ) + 1 );
+	if ( !bstrResource ) {
+		return nullptr;
+	}
 
 	unsigned cb = static_cast<unsigned>( cbResource );
 	unsigned char* pch = static_cast<unsigned char*>( pvResource );
@@ -330,8 +333,9 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 			return false;
 		}
 		_bstr_t xmlns = FcConfiguration->namespaceURI;
-		if ( 0 != CString( static_cast<LPCWSTR>( xmlns ) ).Compare( XML_NAMESPACE ) ) {
-			debug( L"CXmlOptionsManager::_InterpretConfiguration: namespace contains unexpected URI\n+ Our namespace:        %s\n+ Document's namespace: %s\n", XML_NAMESPACE, xmlns );
+		LPWSTR pwzXmlns = static_cast<LPWSTR>( xmlns );
+		if ( 0 != CString( pwzXmlns ).Compare( XML_NAMESPACE ) ) {
+			debug( L"CXmlOptionsManager::_InterpretConfiguration: namespace contains unexpected URI\n+ Our namespace:        '%s'\n+ Document's namespace: '%s'\n", XML_NAMESPACE, pwzXmlns );
 			return false;
 		}
 

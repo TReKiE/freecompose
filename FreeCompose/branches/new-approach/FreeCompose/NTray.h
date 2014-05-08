@@ -236,7 +236,7 @@ protected:
   void         StartAnimation(HICON* phIcons, int nNumIcons, DWORD dwDelay);
   void         StopAnimation();
   HICON        GetCurrentAnimationIcon() const;
-  virtual BOOL ProcessWindowMessage(HWND hWnd, UINT nMsg, WPARAM wParam, LPARAM lParam, LRESULT& lResult, DWORD dwMsgMapID);
+  virtual BOOL ProcessWindowMessage(_In_ HWND hWnd, _In_ UINT nMsg, _In_ WPARAM wParam, _In_ LPARAM lParam, _Inout_ LRESULT& lResult, _In_ DWORD dwMsgMapID);
   LRESULT      OnTaskbarCreated(WPARAM wParam, LPARAM lParam);
   void         OnTimer(UINT_PTR nIDEvent);
   void         OnDestroy();

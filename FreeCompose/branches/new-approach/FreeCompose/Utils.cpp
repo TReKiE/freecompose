@@ -10,7 +10,7 @@ CString VscToString( UINT vsc ) {
 	memset( buf, 0, sizeof( buf ) );
 	rc = GetKeyNameText( vsc, buf, _countof( buf ) );
 	if ( 0 == rc ) {
-		debug( L"VscToString(0x%08x): GetKeyNameText: error %d\n", vsc, GetLastError( ) );
+		debug( L"VscToString(0x%08x): GetKeyNameText: error %lu\n", vsc, GetLastError( ) );
 		return CString( );
 	}
 
@@ -60,13 +60,13 @@ DWORD GetComCtl32Version( void ) {
 
 	HMODULE hmod = LoadLibrary( L"COMCTL32.DLL" );
 	if ( !hmod ) {
-		debug( L"GetComCtl32Version: LoadLibrary failed: %ld\n", GetLastError( ) );
+		debug( L"GetComCtl32Version: LoadLibrary failed: %lu\n", GetLastError( ) );
 		return 0;
 	}
 
 	DLLGETVERSIONPROC pfnDllGetVersion = reinterpret_cast<DLLGETVERSIONPROC>( GetProcAddress( hmod, "DllGetVersion" ) );
 	if ( !pfnDllGetVersion ) {
-		debug( L"GetComCtl32Version: GetProcAddress failed: %ld\n", GetLastError( ) );
+		debug( L"GetComCtl32Version: GetProcAddress failed: %lu\n", GetLastError( ) );
 		FreeLibrary( hmod );
 		return 0;
 	}

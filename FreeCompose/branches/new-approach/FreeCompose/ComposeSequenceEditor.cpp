@@ -33,7 +33,7 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 
 void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& result ) {
 	if ( IDC_RESULT != nIDC ) {
-		debug( L"CComposeSequenceEditor::DDX_Char: wrong control ID?!\n", nIDC );
+		debug( L"CComposeSequenceEditor::DDX_Char: wrong control ID %d?!\n", nIDC );
 		return;
 	}
 

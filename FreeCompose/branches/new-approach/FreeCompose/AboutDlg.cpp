@@ -37,7 +37,7 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	void* pvdata = malloc( dwBytes );
 	if ( !pvdata ) {
 		DWORD dwError = GetLastError( );
-		debug( L"CAboutDlg::InitDialog: malloc(%lu) failed, errno: %lu, Win32 error: %lu\n", dwBytes, errno, dwError );
+		debug( L"CAboutDlg::InitDialog: malloc(%lu) failed, errno: %d, Win32 error: %lu\n", dwBytes, errno, dwError );
 		return FALSE;
 	}
 
