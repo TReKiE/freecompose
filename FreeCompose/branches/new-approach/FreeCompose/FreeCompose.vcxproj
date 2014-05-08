@@ -287,9 +287,7 @@
     <ClInclude Include="AppSoundsRegistry.h" />
     <ClInclude Include="ComposeSequenceEditor.h" />
     <ClInclude Include="Features.h" />
-    <ClInclude Include="FreeCompose.h">
-      <DependentUpon>res\FreeCompose.xsd</DependentUpon>
-    </ClInclude>
+    <ClInclude Include="FreeCompose.h" />
     <ClInclude Include="KeyEdit.h" />
     <ClInclude Include="KeySequences.h" />
     <ClInclude Include="MainFrm.h" />
@@ -316,7 +314,7 @@
     <Xml Include="res\DefaultConfiguration.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Xsd Include="res\FreeCompose.xsd" />
+    <None Include="res\FcConfiguration.xsd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
