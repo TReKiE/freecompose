@@ -8,7 +8,7 @@ bool _GetAppDataFolderFromShell( LPWSTR& lpsz ) {
 	wchar_t buf[MAX_PATH];
 
 	if ( ! SHGetSpecialFolderPath( nullptr, buf, CSIDL_APPDATA, FALSE ) ) {
-		debug( L"SHGetSpecialFolderPath failed: %d\n", GetLastError( ) );
+		debug( L"SHGetSpecialFolderPath failed: %lu\n", GetLastError( ) );
 		return false;
 	}
 

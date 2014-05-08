@@ -62,13 +62,13 @@ FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
 	wchar_t folder[1024];
 	swprintf_s( folder, 1024, L"%s\\%s", appDataFolder, companyName );
 	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
-		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
+		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", folder, GetLastError( ) );
 		goto ret;
 	}
 
 	swprintf_s( folder, 1024, L"%s\\%s\\%s", appDataFolder, companyName, appName );
 	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
-		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %d\n", folder, GetLastError( ) );
+		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", folder, GetLastError( ) );
 		goto ret;
 	}
 
