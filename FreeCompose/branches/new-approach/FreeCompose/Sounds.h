@@ -1,5 +1,7 @@
 #pragma once
 
+#include "OptionsData.h"
+
 class CSounds: public CPropertyPage {
 	DECLARE_DYNAMIC( CSounds )
 	DECLARE_MESSAGE_MAP( )
@@ -7,9 +9,12 @@ class CSounds: public CPropertyPage {
 public:
 	enum { IDD = IDD_SOUNDS };
 
-	CSounds( );
+	CSounds( COptionsData& Options );
 	virtual ~CSounds( );
 
-protected:
+private:
+	COptionsData& m_Options;
+
 	virtual void DoDataExchange( CDataExchange* pDX );
+	virtual BOOL OnInitDialog( );
 };
