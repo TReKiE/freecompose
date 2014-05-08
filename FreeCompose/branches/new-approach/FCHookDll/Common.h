@@ -29,7 +29,7 @@ extern HHOOK                      hHook;
 extern ComposeSequence*           ComposeSequences;
 extern INT_PTR                    cComposeSequences;
 
-extern COMPOSE_SEQUENCE_TREE      ComposeSequenceTree;
+extern CComposeSequenceTree       ComposeSequenceTree;
 
 extern CAPS_LOCK_TOGGLE_MODE      clToggleMode;
 extern CAPS_LOCK_SWAP_MODE        clSwapMode;

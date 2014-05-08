@@ -3,7 +3,7 @@
 // Control whether to disable all backend functionality so the UI may be debugged in relative isolation.
 #undef UI_DEBUGGING_ONLY
 
-// Control certain debug messages from COMPOSE_SEQUENCE_TREE and COMPOSE_TREE_NODE.
+// Control certain debug messages from CComposeSequenceTree and CComposeTreeNode.
 #undef DEBUG_NODES_LEAVES
 
 // Enable redirection of malloc, free, etc. to _malloc_dbg, _free_dbg, etc.
