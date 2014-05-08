@@ -21,33 +21,35 @@ static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_ESCAPE,
 };
 
-void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
+void CAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
 	LSTATUS ls;
+	CRegKey EventLabels;
 	CString tmp;
 	DWORD dwDisposition;
 
-	wchar_t wzExeName[1024];
-	GetModuleFileName( AfxGetInstanceHandle( ), wzExeName, 1024 );
-
-	CRegKey EventLabels;
 	ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
-
 	for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
 		CRegKey key;
-		tmp.Format( L"@%s,%d", wzExeName, -CompositionDisplayNameIds[n] );
+		tmp.Format( L"@%s,%d", pwzExeName, -CompositionDisplayNameIds[n] );
 		dwDisposition = 0;
 		ls = key.Create( EventLabels, CompositionSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
 		if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
-			ls = key.SetStringValue( nullptr, CompositionSoundNames[n], REG_SZ );
+			ls = key.SetStringValue( nullptr, CompositionSoundNames[n] );
 			ls = key.SetStringValue( L"DispFileName", tmp );
 		}
 		ls = key.Close( );
 	}
 
 	ls = EventLabels.Close( );
+}
 
+void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 	CRegKey FreeCompose;
-	tmp.Format( L"@%s,%d", wzExeName, -AFX_IDS_APP_TITLE );
+	CString tmp;
+	LSTATUS ls;
+	DWORD dwDisposition;
+
+	tmp.Format( L"@%s,%d", pwzExeName, -AFX_IDS_APP_TITLE );
 	dwDisposition = 0;
 	ls = FreeCompose.Create( HKEY_CURRENT_USER, L"AppEvents\\Schemes\\Apps\\FreeCompose", nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
 	if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
@@ -57,16 +59,16 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 		for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
 			CRegKey soundkey;
 			ls = soundkey.Create( FreeCompose, CompositionSoundNames[n] );
-			ls = soundkey.SetStringValue( nullptr, CompositionSoundNames[n], REG_SZ );
+			ls = soundkey.SetStringValue( nullptr, CompositionSoundNames[n] );
 
 			CRegKey dotdefaultkey;
 			ls = dotdefaultkey.Create( soundkey, L".Default" );
-			ls = dotdefaultkey.SetStringValue( nullptr, L"", REG_SZ );
+			ls = dotdefaultkey.SetStringValue( nullptr, L"" );
 			ls = dotdefaultkey.Close( );
 
 			CRegKey dotnonekey;
 			ls = dotnonekey.Create( soundkey, L".None" );
-			ls = dotnonekey.SetStringValue( nullptr, L"", REG_SZ );
+			ls = dotnonekey.SetStringValue( nullptr, L"" );
 			ls = dotnonekey.Close( );
 
 			ls = soundkey.Close( );
@@ -74,4 +76,12 @@ void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
 	}
 
 	ls = FreeCompose.Close( );
+}
+
+void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
+	wchar_t wzExeName[1024];
+	GetModuleFileName( AfxGetInstanceHandle( ), wzExeName, 1024 );
+
+	_RegisterEventLabels( wzExeName );
+	_RegisterApp( wzExeName );
 }
