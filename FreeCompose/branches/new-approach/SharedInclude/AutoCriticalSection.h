@@ -17,7 +17,7 @@ public:
 		SetLastError( ERROR_SUCCESS );
 		if ( !InitializeCriticalSectionAndSpinCount( &cs, cSpin ) ) {
 			DWORD dwError = GetLastError( );
-			debug( L"AutoCriticalSection::`ctor(cSpin=%lu): InitializeCriticalSectionAndSpinCount failed: error=%lu\n", dwError );
+			debug( L"AutoCriticalSection::`ctor(cSpin=%lu): InitializeCriticalSectionAndSpinCount failed: error=%lu\n", cSpin, dwError );
 			DebugBreak( );
 		}
 	}
