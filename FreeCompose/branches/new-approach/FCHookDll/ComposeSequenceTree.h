@@ -15,6 +15,63 @@ public:
 	}
 
 private:
+	// srPrefix means that a sequence comprising a prefix of strSequence terminates in a leaf.
+	// srAlreadyExists means that the complete sequence in strSequence exists and terminates in a leaf.
+	// srUnambiguous means that the complete sequence terminates on a nonexistent leaf, or
+	//               we don't even reach the leaf because we run out of branches on the way down.
+	enum SEQUENCE_RESULT {
+		srUnknown,
+		srPrefix,
+		srAlreadyExists,
+		srUnambiguous,
+		srMaximumValue,
+	};
+
+	bool _IsSequenceUnambiguous( _In_ CString const& strSequence, _Out_ SEQUENCE_RESULT& SequenceResult, _Out_ int& nIndex ) {
+		CComposeTreeNode* pNode = _pRoot;
+		CString strResult;
+		int n;
+
+		SequenceResult = srUnknown;
+		nIndex = -1;
+
+		int cchSequence = strSequence.GetLength( );
+		for ( n = 0; n < cchSequence - 1; n++ ) {
+			wchar_t ch = strSequence[n];
+
+			if ( ( n > 0 ) && pNode->GetLeaf( ch, strResult ) ) {
+				debug( L"CComposeSequenceTree::_IsSequenceAmbiguous: sequence '%s' is a prefix at index %d\n", strSequence.GetString( ), n );
+				SequenceResult = srPrefix;
+				nIndex = n;
+				return false;
+			}
+
+			CComposeTreeNode* pNext = pNode->GetChild( ch );
+			if ( !pNext ) {
+				debug( L"CComposeSequenceTree::_IsSequenceAmbiguous: sequence '%s' is unambiguous starting at index %d\n", strSequence.GetString( ), n );
+				SequenceResult = srUnambiguous;
+				nIndex = n;
+				break;
+			}
+
+			pNode = pNext;
+		}
+
+		if ( ( srUnknown == SequenceResult ) && pNode->GetLeaf( strSequence[n], strResult ) ) {
+			debug( L"CComposeSequenceTree::_IsSequenceAmbiguous: whole sequence '%s' already exists\n", strSequence.GetString( ) );
+			SequenceResult = srAlreadyExists;
+			nIndex = n;
+			return false;
+		}
+
+		SequenceResult = srUnambiguous;
+		if ( -1 == nIndex ) {
+			nIndex = n;
+		}
+
+		return true;
+	}
+
 	bool _ValidateSequence( CString const& strSequence ) {
 		int cchSequence = strSequence.GetLength( );
 		if ( cchSequence < 2 ) {
@@ -41,7 +98,7 @@ private:
 		return true;
 	}
 
-	void _AddSequence( CString const& strSequence, CString const& strResult ) {
+	bool _AddSequence( CString const& strSequence, CString& strResult ) {
 		CComposeTreeNode* pNode = _pRoot;
 		int n;
 
@@ -58,17 +115,19 @@ private:
 			pNode = pNext;
 		}
 
-		pNode->AddLeaf( strSequence[n], const_cast<CString&>( strResult ) );
+		pNode->AddLeaf( strSequence[n], strResult );
+
+		return true;
 	}
 
 public:
-	void BuildTree( ComposeSequence const* pSequences, INT_PTR cSequences ) {
+	void BuildTree( ComposeSequence* pSequences, INT_PTR cSequences ) {
 		ReleaseTree( );
 		_pRoot = new CComposeTreeNode( );
 
 		for ( INT_PTR index = 0; index < cSequences; index++ ) {
-			CString const& sequence = pSequences[index].Sequence;
-			CString const& result = pSequences[index].Result;
+			CString& sequence = pSequences[index].Sequence;
+			CString& result = pSequences[index].Result;
 			int cchSequence = sequence.GetLength( );
 
 			if ( !_ValidateSequence( sequence ) ) {
@@ -80,14 +139,37 @@ public:
 				continue;
 			}
 
-			_AddSequence( sequence, result );
-
 			if ( 2 == cchSequence ) {
-				// for backwards compatibility, if a sequence is two characters long, add its reverse as well
-				wchar_t ch[2] = { sequence[0], sequence[1] };
-				CString swapped( ch, 2 );
+				wchar_t ch[2] = { sequence[1], sequence[0] };
+				CString reverse( ch, 2 );
 
-				_AddSequence( swapped, result );
+				SEQUENCE_RESULT sr1, sr2;
+				int index1, index2;
+				bool f1, f2;
+				f1 = _IsSequenceUnambiguous( sequence, sr1, index1 );
+				f2 = _IsSequenceUnambiguous( reverse,  sr2, index2 );
+
+				wchar_t* pwzDirection;
+				if ( !f1 ) {
+					pwzDirection = L"forward";
+				} else if ( !f2 ) {
+					pwzDirection = L"reverse";
+				} else {
+					pwzDirection = L"neither [this means 'everything is okay']";
+					_AddSequence( sequence, result );
+					_AddSequence( reverse,  result );
+				}
+				debug( L"CComposeSequenceTree::BuildTree: two-character sequence, and %s sequence is not unambiguous.\n+ sr1=%d index1=%d f1=%s\n+ sr2=%d index2=%d f2=%s\n", pwzDirection, sr1, index1, ( f1 ? L"TRUE" : L"false" ), sr2, index2, ( f2 ? L"TRUE" : L"false" ) );
+			} else {
+				SEQUENCE_RESULT sr;
+				int index;
+
+				bool f = _IsSequenceUnambiguous( sequence, sr, index );
+				if ( !f ) {
+					debug( L"CComposeSequenceTree::BuildTree: multi-character sequence, and sequence is not unambiguous.\n+ sr=%d index=%d f1%s\n", sr, index, ( f ? L"TRUE" : L"false" ) );
+				} else {
+					_AddSequence( sequence, result );
+				}
 			}
 		}
 	}
