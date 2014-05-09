@@ -1,7 +1,7 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
+#ifndef __cplusplus
+#error Sorry, you must compile FCHookDll.h as C++.
 #endif
 
 #ifdef FCHOOKDLL_EXPORTS
@@ -10,19 +10,9 @@ extern "C" {
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#define FCHOOKDLL_API_VERSION ((DWORD) 0x0030)
-
 //==============================================================================
 // Types
 //==============================================================================
-
-struct ComposeSequence {
-	ComposeSequence( ) { }
-	ComposeSequence( CString& sequence, CString& result ): Sequence( sequence ), Result( result ) { }
-
-	CString Sequence;
-	CString Result;
-};
 
 enum CAPS_LOCK_TOGGLE_MODE {
 	CLTM_NORMAL     = 1,
@@ -37,8 +27,75 @@ enum CAPS_LOCK_SWAP_MODE {
 };
 
 //==============================================================================
+// Classes
+//==============================================================================
+
+class FCHOOKDLL_API ComposeSequence {
+public:
+
+	inline ComposeSequence( ):
+		Disabled        ( false ),
+		CaseInsensitive ( false ),
+		Reversible      ( false )
+	{
+
+	}
+
+	ComposeSequence( CString& sequence, CString& result ):
+		Sequence        ( sequence ),
+		Result          ( result ),
+		Disabled        ( false ),
+		CaseInsensitive ( false ),
+		Reversible      ( false )
+	{
+
+	}
+
+	ComposeSequence( CString& sequence, CString& result, bool const disabled, bool const caseInsensitive, bool const reversible ):
+		Sequence        ( sequence ),
+		Result          ( result ),
+		Disabled        ( disabled ),
+		CaseInsensitive ( caseInsensitive ),
+		Reversible      ( reversible )
+	{
+
+	}
+
+	inline bool operator==( ComposeSequence const& b ) const {
+		return
+			(
+			( Sequence.Compare( b.Sequence ) == 0 )  &&
+			(   Result.Compare( b.Result   ) == 0 )  &&
+			(        Disabled == b.Disabled        ) &&
+			( CaseInsensitive == b.CaseInsensitive ) &&
+			(      Reversible == b.Reversible      )
+			);
+	}
+
+	inline bool operator!=( ComposeSequence const& b ) const {
+		return
+			(
+			( Sequence.Compare( b.Sequence ) != 0 )  ||
+			(   Result.Compare( b.Result   ) != 0 )  ||
+			(        Disabled != b.Disabled        ) ||
+			( CaseInsensitive != b.CaseInsensitive ) ||
+			(      Reversible != b.Reversible      )
+			);
+	}
+
+	CString Sequence;
+	CString Result;
+
+	bool Disabled;
+	bool CaseInsensitive;
+	bool Reversible;
+};
+
+//==============================================================================
 // Constants
 //==============================================================================
+
+DWORD const FCHOOKDLL_API_VERSION = 0x0190;
 
 WPARAM const PIP_OK_1  = 1;
 WPARAM const PIP_OK_2  = 2;
@@ -98,7 +155,3 @@ FCHOOKDLL_API CAPS_LOCK_TOGGLE_MODE FcGetCapsLockToggleMode( void );
 
 FCHOOKDLL_API BOOL FcSetCapsLockSwapMode( CAPS_LOCK_SWAP_MODE mode );
 FCHOOKDLL_API CAPS_LOCK_SWAP_MODE FcGetCapsLockSwapMode( void );
-
-#ifdef __cplusplus
-};
-#endif
