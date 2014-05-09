@@ -91,14 +91,6 @@ template<typename T> extern inline T compare_keys_reverse( void* /*context*/, vo
 		return 0;
 }
 
-extern inline bool operator==( ComposeSequence const& a, ComposeSequence const& b ) {
-	return ( ( 0 == a.Sequence.Compare( b.Sequence ) ) && ( 0 == a.Result.Compare( b.Result ) ) );
-}
-
-extern inline bool operator!=( ComposeSequence const& a, ComposeSequence const& b ) {
-	return ( ( 0 != a.Sequence.Compare( b.Sequence ) ) || ( 0 != a.Result.Compare( b.Result ) ) );
-}
-
 extern inline bool IsKeyDown( const DWORD vk ) {
 	unsigned u = static_cast<unsigned short>( GetKeyState( vk ) );
 	return ( u & 0x8000U ) == 0x8000U;
