@@ -1,6 +1,6 @@
 #pragma once
 
-class CComposeTreeNode {
+class FCHOOKDLL_API CComposeTreeNode {
 	using Tchildren = std::map<int, CComposeTreeNode*>;
 	using Tleaves = std::map<int, CString&>;
 
