@@ -83,6 +83,8 @@ private:
 	COptionsData* _pOptionsData;
 	CString _strCurrentGroupName;
 
+	bool _ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result );
+
 	bool _InterpretConfiguration( XDocument& doc );
 
 	bool _DispatchChildren( wchar_t const* label,  XNode const& node, XmlMethodMap& map );
@@ -103,8 +105,6 @@ private:
 	bool _InterpretMappingsNode( XNode const& node );
 		bool _InterpretGroupNode( XNode const& node );
 			bool _InterpretMappingNode( XNode const& node );
-
-	//bool _InterpretNode( XNode const& node );
 
 	friend class Initializer_;
 };

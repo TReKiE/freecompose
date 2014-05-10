@@ -98,7 +98,7 @@ static inline bool SafeXNodeToBool( XNode const& pNode, bool const fDefault = fa
 
 // 'FromXNode' functions
 
-static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result ) {
+inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result ) {
 	XNode nodeFirst, nodeSecond, nodeComposed;
 	XNode nodeSequence, nodeResult;
 	CString Sequence, Result;
@@ -111,7 +111,7 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 		else if ( 0 == wcscmp( L"Sequence", node->nodeName ) ) { nodeSequence = node; }
 		else if ( 0 == wcscmp( L"Result",   node->nodeName ) ) { nodeResult   = node; }
 		else {
-			debug( L"ComposeSequenceFromXNode: unknown node '%s'\n", static_cast<LPCWSTR>( node->nodeName ) );
+			debug( L"CXmlOptionsManager::_ComposeSequenceFromXNode: unknown node '%s'\n", static_cast<LPCWSTR>( node->nodeName ) );
 		}
 		node = node->nextSibling;
 	}
@@ -121,7 +121,7 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 	bool reversible = false;
 
 	if ( nodeFirst && nodeSecond && nodeComposed ) {
-		debug( L"ComposeSequenceFromXNode: Translating sequence\n" );
+		debug( L"CXmlOptionsManager::_ComposeSequenceFromXNode: Translating sequence\n" );
 		CString First, Second, Composed;
 		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text    ) ) );
 		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text   ) ) );
@@ -142,19 +142,19 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 			}
 		}
 		catch ( _com_error e ) {
-			debug( L"ComposeSequenceFromXNode: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
+			debug( L"CXmlOptionsManager::_ComposeSequenceFromXNode: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
 			return false;
 		}
 		catch ( ... ) {
-			debug( L"ComposeSequenceFromXNode: caught some other kind of exception??\n" );
+			debug( L"CXmlOptionsManager::_ComposeSequenceFromXNode: caught some other kind of exception??\n" );
 			return false;
 		}
 	} else {
-		debug( L"ComposeSequenceFromNode: invalid entry\n" );
+		debug( L"CXmlOptionsManager::_ComposeSequenceFromXNode: invalid entry\n" );
 		return false;
 	}
 
-	result = ComposeSequence( Sequence, Result, disabled, caseInsensitive, reversible );
+	result = ComposeSequence( _strCurrentGroupName, Sequence, Result, disabled, caseInsensitive, reversible );
 	return true;
 }
 
@@ -321,12 +321,14 @@ bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
 			_strCurrentGroupName = static_cast<LPCWSTR>( groupName->text );
 		}
 	}
-	return _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
+	bool fRet = _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
+	_strCurrentGroupName.Empty( );
+	return fRet;
 }
 
 bool CXmlOptionsManager::_InterpretMappingNode( XNode const& node ) {
 	ComposeSequence sequence;
-	if ( ComposeSequenceFromXNode( node, sequence ) ) {
+	if ( _ComposeSequenceFromXNode( node, sequence ) ) {
 		_pOptionsData->ComposeSequences.Add( sequence );
 		return true;
 	} else {
