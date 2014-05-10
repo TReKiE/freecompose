@@ -4,7 +4,11 @@
 
 class COptionsData {
 public:
-	inline COptionsData( ): _xmlOptionsHandler( this ) { }
+	inline COptionsData( ):
+		_xmlOptionsHandler( this )
+	{
+
+	}
 
 	inline COptionsData( COptionsData const& options ):
 		COptionsData( )
