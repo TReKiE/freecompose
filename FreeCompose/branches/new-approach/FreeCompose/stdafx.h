@@ -11,13 +11,14 @@
 #include "targetver.h"
 
 #include <cerrno>
-#include <cstdlib>
 #include <crtdbg.h>
+#include <cstdlib>
 #include <malloc.h>
 
 #include <algorithm>
 #include <initializer_list>
 #include <map>
+#include <vector>
 
 #include <afxwin.h>
 #include <afxcmn.h>
