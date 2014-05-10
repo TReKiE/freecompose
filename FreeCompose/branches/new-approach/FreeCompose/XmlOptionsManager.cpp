@@ -89,6 +89,13 @@ static inline Tout CoerceXNode( XNode const& value ) {
 	return Coerce<_bstr_t, Tout>( value->text );
 }
 
+static inline bool SafeXNodeToBool( XNode const& pNode, bool const fDefault = false ) {
+	if ( !pNode || !pNode->text ) {
+		return fDefault;
+	}
+	return BoolStringMapper[pNode->text];
+}
+
 // 'FromXNode' functions
 
 static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result ) {
@@ -109,11 +116,15 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 		node = node->nextSibling;
 	}
 
+	bool disabled = false;
+	bool caseInsensitive = false;
+	bool reversible = false;
+
 	if ( nodeFirst && nodeSecond && nodeComposed ) {
 		debug( L"ComposeSequenceFromXNode: Translating sequence\n" );
 		CString First, Second, Composed;
-		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text ) ) );
-		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text ) ) );
+		First    =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeFirst->text    ) ) );
+		Second   =   VkToString( static_cast<unsigned>( static_cast<_variant_t>( nodeSecond->text   ) ) );
 		Composed = Utf32ToUtf16( static_cast<unsigned>( static_cast<_variant_t>( nodeComposed->text ) ) );
 
 		Sequence = First + Second;
@@ -121,12 +132,29 @@ static inline bool ComposeSequenceFromXNode( XNode const& value, ComposeSequence
 	} else if ( nodeSequence && nodeResult ) {
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
 		Result   = static_cast<LPCWSTR>( nodeResult->text );
+
+		try {
+			XNamedNodeMap attributes = value->attributes;
+			if ( attributes ) {
+				disabled        = SafeXNodeToBool( attributes->getNamedItem( L"Disabled"        ) );
+				caseInsensitive = SafeXNodeToBool( attributes->getNamedItem( L"CaseInsensitive" ) );
+				reversible      = SafeXNodeToBool( attributes->getNamedItem( L"Reversible"      ) );
+			}
+		}
+		catch ( _com_error e ) {
+			debug( L"ComposeSequenceFromXNode: Caught COM error exception while parsing configuration, hr=0x%08lX '%s'\n", e.Error( ), e.ErrorMessage( ) );
+			return false;
+		}
+		catch ( ... ) {
+			debug( L"ComposeSequenceFromXNode: caught some other kind of exception??\n" );
+			return false;
+		}
 	} else {
 		debug( L"ComposeSequenceFromNode: invalid entry\n" );
 		return false;
 	}
 
-	result = ComposeSequence( Sequence, Result );
+	result = ComposeSequence( Sequence, Result, disabled, caseInsensitive, reversible );
 	return true;
 }
 
@@ -287,6 +315,12 @@ bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
 }
 
 bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
+	if ( node && node->attributes ) {
+		XNode groupName = node->attributes->getNamedItem( L"Name" );
+		if ( groupName ) {
+			_strCurrentGroupName = static_cast<LPCWSTR>( groupName->text );
+		}
+	}
 	return _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
 }
 
@@ -468,16 +502,29 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 
 				auto& composeSequences = _pOptionsData->ComposeSequences;
 				for ( INT_PTR n = 0; n < composeSequences.GetSize( ); n++ ) {
-					CString& strSequence = composeSequences[n].Sequence;
-					CString& strResult   = composeSequences[n].Result;
+					ComposeSequence& composeSequence = composeSequences[n];
 
-					if ( strSequence.GetLength( ) == 0 || strResult.GetLength( ) == 0 ) {
+					if ( composeSequence.Sequence.GetLength( ) == 0 || composeSequence.Result.GetLength( ) == 0 ) {
 						continue;
 					}
 
 					XNode mapping = CreateAndAppendXNode( doc, L"Mapping", Group );
-						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", mapping, static_cast<LPCWSTR>( strSequence ) );
-						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( strResult ) );
+
+					{
+						XElement mappingElement = mapping;
+						if ( composeSequence.Disabled ) {
+							mappingElement->setAttribute( L"Disabled", BoolStringMapper[composeSequence.Disabled] );
+						}
+						if ( composeSequence.CaseInsensitive ) {
+							mappingElement->setAttribute( L"CaseInsensitive", BoolStringMapper[composeSequence.CaseInsensitive] );
+						}
+						if ( composeSequence.Reversible ) {
+							mappingElement->setAttribute( L"Reversible", BoolStringMapper[composeSequence.Reversible] );
+						}
+					}
+
+						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", mapping, static_cast<LPCWSTR>( composeSequence.Sequence ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( composeSequence.Result ) );
 				}
 	}
 	catch ( _com_error e ) {
