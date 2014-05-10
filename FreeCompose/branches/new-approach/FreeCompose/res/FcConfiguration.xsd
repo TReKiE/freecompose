@@ -54,6 +54,9 @@
 													<xs:element name="Sequence" type="xs:string" />
 													<xs:element name="Result" type="xs:string" />
 												</xs:sequence>
+												<xs:attribute name="Disabled" type="xs:boolean" use="optional" />
+												<xs:attribute name="CaseInsensitive" type="xs:boolean" use="optional" />
+												<xs:attribute name="Reversible" type="xs:boolean" use="optional" />
 											</xs:complexType>
 										</xs:element>
 									</xs:sequence>

@@ -81,6 +81,7 @@ public:
 
 private:
 	COptionsData* _pOptionsData;
+	CString _strCurrentGroupName;
 
 	bool _InterpretConfiguration( XDocument& doc );
 
