@@ -11,8 +11,8 @@
 // Constants
 //==============================================================================
 
-int const CONFIGURATION_SCHEMA_VERSION = 2;
-wchar_t const XML_NAMESPACE[] = L"http://www.zive.ca/xmlns/FreeCompose/configuration/2";
+int const CONFIGURATION_SCHEMA_VERSION = 1;
+wchar_t const XML_NAMESPACE[] = L"http://www.zive.ca/xmlns/FreeCompose/configuration/1";
 
 //==============================================================================
 // Local objects
@@ -131,7 +131,7 @@ inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, C
 		Result   = Composed;
 	} else if ( nodeSequence && nodeResult ) {
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
-		Result   = static_cast<LPCWSTR>( nodeResult->text );
+		Result   = static_cast<LPCWSTR>( nodeResult->text ); // TODO need to use a CDATA section
 
 		try {
 			XNamedNodeMap attributes = value->attributes;
@@ -315,26 +315,32 @@ bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
 }
 
 bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
-	int index = _pOptionsData->ComposeSequenceGroups.GetSize( );
-	_pOptionsData->ComposeSequenceGroups.SetSize( index + 1 );
-	_pCurrentComposeSequenceGroup = &_pOptionsData->ComposeSequenceGroups[index];
-
+	CString groupName;
 	if ( node && node->attributes ) {
-		XNode groupName = node->attributes->getNamedItem( L"Name" );
-		if ( groupName && 0 != wcsicmp( L"default", groupName->text ) ) {
-			_pCurrentComposeSequenceGroup->Name = static_cast<LPCWSTR>( groupName->text );
+		XNode Name = node->attributes->getNamedItem( L"Name" );
+		if ( Name ) {
+			groupName = static_cast<LPCWSTR>( Name->text );
 		}
 	}
 
+	ComposeSequenceGroup* pCurrentGroup = _pOptionsData->FindComposeSequenceGroup( groupName );
+	if ( !pCurrentGroup ) {
+		int index = _pOptionsData->ComposeSequenceGroups.GetSize( );
+		_pOptionsData->ComposeSequenceGroups.SetSize( index + 1 );
+		pCurrentGroup = &_pOptionsData->ComposeSequenceGroups[index];
+	}
+
+	_pCurrentComposeSequences = &pCurrentGroup->ComposeSequences;
 	bool fRet = _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
-	_pCurrentComposeSequenceGroup = nullptr;
+	_pCurrentComposeSequences = nullptr;
+
 	return fRet;
 }
 
 bool CXmlOptionsManager::_InterpretMappingNode( XNode const& node ) {
 	ComposeSequence sequence;
 	if ( _ComposeSequenceFromXNode( node, sequence ) ) {
-		_pCurrentComposeSequenceGroup->ComposeSequences.Add( sequence );
+		_pCurrentComposeSequences->Add( sequence );
 		return true;
 	} else {
 		return false;

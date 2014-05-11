@@ -28,6 +28,8 @@ public:
 	// Methods
 	//
 
+	ComposeSequenceGroup* FindComposeSequenceGroup( CString const& name );
+
 	void Load( void );
 	void Save( void );
 

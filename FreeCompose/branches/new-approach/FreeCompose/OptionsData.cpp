@@ -175,6 +175,17 @@ void COptionsData::_UpdateRunKey( void ) {
 	RegCloseKey( hkey );
 }
 
+ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& name ) {
+	int limit = ComposeSequenceGroups.GetCount( );
+	for ( int index = 0; index < limit; index++ ) {
+		if ( name.CompareNoCase( ComposeSequenceGroups[index].Name ) ) {
+			return &ComposeSequenceGroups[index];
+		}
+	}
+
+	return nullptr;
+}
+
 void COptionsData::Load( void ) {
 #if !FORCE_DEFAULT_CONFIG
 #if !FORCE_REGISTRY_CONFIG
