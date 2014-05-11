@@ -33,15 +33,6 @@ UINT const FCM_PIP = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_PIP" );
 UINT const FCM_KEY = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 
 //==============================================================================
-// Static class members
-//==============================================================================
-
-#if DEBUG_NODES_LEAVES
-size_t CComposeTreeNode::_cNodes = 0;
-size_t CComposeTreeNode::_cLeaves = 0;
-#endif
-
-//==============================================================================
 // Globals
 //==============================================================================
 
