@@ -1,8 +1,4 @@
-// KeySequences.cpp : implementation file
-
 #include "stdafx.h"
-
-#include <numeric>
 
 #include <Unicode.h>
 
@@ -11,6 +7,42 @@
 #include "ComposeSequenceEditor.h"
 
 #include "Utils.h"
+
+#if defined( _DEBUG ) && defined( TEST )
+
+//==============================================================================
+// TEST CODE
+
+#include <ComposeSequenceTree.h>
+
+#pragma warning( push )
+#pragma warning( disable: 4189 4239 )
+
+static class TestComposeSequenceTree {
+public:
+	TestComposeSequenceTree( ) {
+		ComposeSequence composeSequences[] = {
+			ComposeSequence( CString( L"A-" ),   CString( L"\u0100" ),       false, false, true  ),
+			ComposeSequence( CString( L"a-" ),   CString( L"\u0101" ),       false, false, true  ),
+			ComposeSequence( CString( L"a:-" ),  CString( L"\u00E4\u0304" ), false, false, false ),
+			ComposeSequence( CString( L"a-:" ),  CString( L"\u0101\u0308" ), false, false, false ),
+			ComposeSequence( CString( L"abcd" ), CString( L"\u0950" ),       false, true,  false ),
+		};
+		CComposeSequenceTree tree;
+		tree.BuildTree( composeSequences, _countof( composeSequences ) );
+
+		CString sequence, result;
+		sequence = L"-A";
+		bool f = tree.LookUp( sequence, result );
+	}
+} x_TestComposeSequenceTree;
+
+#pragma warning( pop )
+
+// END TEST CODE
+//==============================================================================
+
+#endif
 
 //
 // Constants
