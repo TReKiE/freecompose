@@ -2,7 +2,12 @@
 
 #include "OptionsData.h"
 
-enum SORTSTATE { ssUnsorted, ssAscending, ssDescending, ssMaximumValue };
+enum SORTSTATE {
+	ssUnsorted,
+	ssAscending,
+	ssDescending,
+	ssMaximumValue,
+};
 
 class CKeySequences: public CPropertyPage {
 
