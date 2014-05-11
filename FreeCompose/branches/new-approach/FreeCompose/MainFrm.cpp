@@ -75,7 +75,12 @@ void CMainFrame::_Initialize( void ) {
 }
 
 void CMainFrame::_Reconfigure( void ) {
-	FcSetComposeSequences( m_pOptions->ComposeSequences.GetData( ), static_cast<DWORD>( m_pOptions->ComposeSequences.GetCount( ) ) );
+	ComposeSequenceArray allSequences;
+	int cGroups = m_pOptions->ComposeSequenceGroups.GetCount( );
+	for ( int n = 0; n < cGroups; n++ ) {
+		allSequences.Append( m_pOptions->ComposeSequenceGroups[n].ComposeSequences );
+	}
+	FcSetComposeSequences( allSequences.GetData( ), static_cast<DWORD>( allSequences.GetCount( ) ) );
 
 	FcSetCapsLockToggleMode( m_pOptions->CapsLockToggleMode );
 

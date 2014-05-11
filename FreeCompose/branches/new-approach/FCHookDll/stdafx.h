@@ -26,8 +26,11 @@
 #include <map>
 #include <utility>
 
-// Windows SDK
+// MFC
 #include <afx.h>
+#include <afxtempl.h>
+
+// Windows SDK
 #include <windows.h>
 
 // FCShared

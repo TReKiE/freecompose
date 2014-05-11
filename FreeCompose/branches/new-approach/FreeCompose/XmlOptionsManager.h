@@ -35,6 +35,7 @@ class CXmlOptionsManager {
 	// Rule of Five members
 
 	inline CXmlOptionsManager( ):
+		_pCurrentComposeSequenceGroup( nullptr ),
 		_pOptionsData( nullptr )
 	{ }
 
@@ -65,8 +66,11 @@ public:
 
 	// User constructors
 public:
-	inline CXmlOptionsManager( COptionsData* pOptionsData ) {
-		_pOptionsData = pOptionsData;
+	inline CXmlOptionsManager( COptionsData* pOptionsData ):
+		_pCurrentComposeSequenceGroup( nullptr ),
+		_pOptionsData( pOptionsData )
+	{
+
 	}
 
 	// Overloaded operators
@@ -80,8 +84,8 @@ public:
 	bool SaveToFile( void );
 
 private:
+	ComposeSequenceGroup* _pCurrentComposeSequenceGroup;
 	COptionsData* _pOptionsData;
-	CString _strCurrentGroupName;
 
 	bool _ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result );
 

@@ -10,7 +10,7 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#include "ComposeSequence.h"
+#include "ComposeSequenceGroup.h"
 
 //==============================================================================
 // Types
