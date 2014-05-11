@@ -83,10 +83,13 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ComposeSequenceTree.h">
+    <ClInclude Include="..\SharedInclude\ComposeSequence.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ComposeTreeNode.h">
+    <ClInclude Include="..\SharedInclude\ComposeSequenceTree.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SharedInclude\ComposeTreeNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

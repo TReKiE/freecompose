@@ -220,12 +220,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\SharedInclude\ComposeSequence.h" />
+    <ClInclude Include="..\SharedInclude\ComposeSequenceTree.h" />
+    <ClInclude Include="..\SharedInclude\ComposeTreeNode.h" />
     <ClInclude Include="..\SharedInclude\FCHookDll.h" />
     <ClInclude Include="CapsLock.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="ComposeKeyHandler.h" />
-    <ClInclude Include="ComposeSequenceTree.h" />
-    <ClInclude Include="ComposeTreeNode.h" />
     <ClInclude Include="HookProc.h" />
     <ClInclude Include="Key.h" />
     <ClInclude Include="KeyEventHandler.h" />
