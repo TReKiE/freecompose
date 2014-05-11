@@ -19,15 +19,19 @@ public:
 	bool LookUp( CString const& strSequence, CString& strResult );
 
 private:
-	// srPrefix means that a sequence comprising a prefix of strSequence terminates in a leaf.
-	// srAlreadyExists means that the complete sequence in strSequence exists and terminates in a leaf.
-	// srUnambiguous means that the complete sequence terminates on a nonexistent leaf, or
-	//               we don't even reach the leaf because we run out of branches on the way down.
 	enum SEQUENCE_RESULT {
 		srUnknown,
+
+		// srPrefix means that a sequence comprising a prefix of strSequence terminates in a leaf.
 		srPrefix,
+
+		// srAlreadyExists means that the complete sequence in strSequence exists and terminates in a leaf.
 		srAlreadyExists,
+
+		// srUnambiguous means that the complete sequence terminates on a nonexistent leaf, or
+		//               we don't even reach the leaf because we run out of branches on the way down.
 		srUnambiguous,
+
 		srMaximumValue,
 	};
 
