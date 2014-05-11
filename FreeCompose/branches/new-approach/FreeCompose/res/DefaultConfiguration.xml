@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FcConfiguration xmlns="http://www.zive.ca/xmlns/FreeCompose/configuration/2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://C:/IceKarma/Projects/FreeCompose/FreeCompose.xsd">
-    <SchemaVersion>2</SchemaVersion>
+<FcConfiguration xmlns="http://www.zive.ca/xmlns/FreeCompose/configuration/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file://C:/IceKarma/Projects/FreeCompose/FreeCompose/res/FcConfiguration.xsd">
+    <SchemaVersion>1</SchemaVersion>
     <Options>
         <Startup>
             <StartActive>true</StartActive>
