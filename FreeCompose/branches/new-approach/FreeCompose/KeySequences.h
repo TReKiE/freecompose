@@ -58,6 +58,9 @@ private:
 	CArray<unsigned> m_ListIndexMap;
 
 private:
+	unsigned _MakeComposeSequenceGroupKey( int const groupIndex, int const sequenceIndex );
+	int _GroupIndex( unsigned const key );
+	int _SequenceIndex( unsigned const key );
 	ComposeSequence& _GetComposeSequence( unsigned const uKey );
 	ComposeSequence& _GetComposeSequenceFromListIndex( int const nItemIndex );
 	CString _FormatResultString( ComposeSequence const& sequence );
