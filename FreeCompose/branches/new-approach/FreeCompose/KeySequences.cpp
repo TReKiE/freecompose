@@ -468,7 +468,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 	do {
 		n--;
 		m_List.DeleteItem( items[n] );
-		m_Options.ComposeSequenceGroups[indices[n] >> 16].ComposeSequences.RemoveAt( indices[n] & 0xFFFF );
+		m_Options.ComposeSequenceGroups[_GroupIndex( indices[n] )].ComposeSequences.RemoveAt( _SequenceIndex( indices[n] ) );
 	} while ( n > 0 );
 
 	delete[] items;
