@@ -55,15 +55,16 @@ private:
 
 	SORTSTATE m_SortState;
 	int m_nSortColumn;
-	int* m_pnSortIndices;
+	CArray<unsigned> m_ListIndexMap;
 
 private:
+	ComposeSequence& _GetComposeSequence( unsigned const uKey );
+	ComposeSequence& _GetComposeSequenceFromListIndex( int const nItemIndex );
 	CString _FormatResultString( ComposeSequence const& sequence );
 	int _MeasureListItemText( CString const& str );
 	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence );
-	void _AddOneKeySequence( const INT_PTR n );
-	void _UpdateOneKeySequence( const INT_PTR n );
-	void _AddNewKeySequence( const INT_PTR n );
+	int _AddOneKeySequence( ComposeSequence const& composeSequence, unsigned const csgkey );
+	void _UpdateOneKeySequence( int const nItemIndex, ComposeSequence const& sequence );
 	void _FillKeyComboList( void );
 	void _SetColumnWidths( void );
 	void _SetColumnSortState( int nColumn, SORTSTATE state );

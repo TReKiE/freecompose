@@ -154,7 +154,7 @@ inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, C
 		return false;
 	}
 
-	result = ComposeSequence( _strCurrentGroupName, Sequence, Result, disabled, caseInsensitive, reversible );
+	result = ComposeSequence( Sequence, Result, disabled, caseInsensitive, reversible );
 	return true;
 }
 
@@ -315,21 +315,26 @@ bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
 }
 
 bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
+	int index = _pOptionsData->ComposeSequenceGroups.GetSize( );
+	_pOptionsData->ComposeSequenceGroups.SetSize( index + 1 );
+	_pCurrentComposeSequenceGroup = &_pOptionsData->ComposeSequenceGroups[index];
+
 	if ( node && node->attributes ) {
 		XNode groupName = node->attributes->getNamedItem( L"Name" );
-		if ( groupName ) {
-			_strCurrentGroupName = static_cast<LPCWSTR>( groupName->text );
+		if ( groupName && 0 != wcsicmp( L"default", groupName->text ) ) {
+			_pCurrentComposeSequenceGroup->Name = static_cast<LPCWSTR>( groupName->text );
 		}
 	}
+
 	bool fRet = _DispatchChildren( L"Mappings\\Group", node, GroupMappingsElementsToMethods );
-	_strCurrentGroupName.Empty( );
+	_pCurrentComposeSequenceGroup = nullptr;
 	return fRet;
 }
 
 bool CXmlOptionsManager::_InterpretMappingNode( XNode const& node ) {
 	ComposeSequence sequence;
 	if ( _ComposeSequenceFromXNode( node, sequence ) ) {
-		_pOptionsData->ComposeSequences.Add( sequence );
+		_pCurrentComposeSequenceGroup->ComposeSequences.Add( sequence );
 		return true;
 	} else {
 		return false;
@@ -499,35 +504,40 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 
 			XNode Mappings = CreateAndAppendXNode( doc, L"Mappings", FcConfiguration );
 
-				XNode Group = CreateAndAppendXNode( doc, L"Group", Mappings );
-				XElement( Group )->setAttribute( L"Name", L"default" );
+			int groupCount = _pOptionsData->ComposeSequenceGroups.GetCount( );
+			for ( INT_PTR groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+				ComposeSequenceGroup& composeSequenceGroup = _pOptionsData->ComposeSequenceGroups[groupIndex];
 
-				auto& composeSequences = _pOptionsData->ComposeSequences;
-				for ( INT_PTR n = 0; n < composeSequences.GetSize( ); n++ ) {
-					ComposeSequence& composeSequence = composeSequences[n];
+				XNode Group = CreateAndAppendXNode( doc, L"Group", Mappings );
+				XElement GroupElement = Group;
+				if ( !composeSequenceGroup.Name.IsEmpty( ) ) {
+					GroupElement->setAttribute( L"Name", static_cast<LPCWSTR>( composeSequenceGroup.Name ) );
+				}
+
+				int sequenceCount = composeSequenceGroup.ComposeSequences.GetSize( );
+				for ( INT_PTR sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
+					ComposeSequence& composeSequence = composeSequenceGroup.ComposeSequences[sequenceIndex];
 
 					if ( composeSequence.Sequence.GetLength( ) == 0 || composeSequence.Result.GetLength( ) == 0 ) {
 						continue;
 					}
 
-					XNode mapping = CreateAndAppendXNode( doc, L"Mapping", Group );
-
-					{
-						XElement mappingElement = mapping;
-						if ( composeSequence.Disabled ) {
-							mappingElement->setAttribute( L"Disabled", BoolStringMapper[composeSequence.Disabled] );
-						}
-						if ( composeSequence.CaseInsensitive ) {
-							mappingElement->setAttribute( L"CaseInsensitive", BoolStringMapper[composeSequence.CaseInsensitive] );
-						}
-						if ( composeSequence.Reversible ) {
-							mappingElement->setAttribute( L"Reversible", BoolStringMapper[composeSequence.Reversible] );
-						}
+					XNode Mapping = CreateAndAppendXNode( doc, L"Mapping", Group );
+					XElement MappingElement = Mapping;
+					if ( composeSequence.Disabled ) {
+						MappingElement->setAttribute( L"Disabled", BoolStringMapper[composeSequence.Disabled] );
+					}
+					if ( composeSequence.CaseInsensitive ) {
+						MappingElement->setAttribute( L"CaseInsensitive", BoolStringMapper[composeSequence.CaseInsensitive] );
+					}
+					if ( composeSequence.Reversible ) {
+						MappingElement->setAttribute( L"Reversible", BoolStringMapper[composeSequence.Reversible] );
 					}
 
-						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", mapping, static_cast<LPCWSTR>( composeSequence.Sequence ) );
-						XNode result   = CreateAndAppendXNode( doc, L"Result",   mapping, static_cast<LPCWSTR>( composeSequence.Result ) );
+						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping, static_cast<LPCWSTR>( composeSequence.Sequence ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping, static_cast<LPCWSTR>( composeSequence.Result ) );
 				}
+			}
 	}
 	catch ( _com_error e ) {
 		debug( L"CXmlOptionsManager::_SaveXmlFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );

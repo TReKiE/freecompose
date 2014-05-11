@@ -17,7 +17,7 @@ public:
 	}
 
 	inline ~COptionsData( ) {
-		ComposeSequences.RemoveAll( );
+
 	}
 
 	COptionsData& operator=( COptionsData const& );
@@ -35,7 +35,7 @@ public:
 	// Configuration store
 	//
 
-	CArray<ComposeSequence> ComposeSequences;
+	ComposeSequenceGroupArray ComposeSequenceGroups;
  
 	BOOL StartActive;
 	BOOL StartWithWindows;

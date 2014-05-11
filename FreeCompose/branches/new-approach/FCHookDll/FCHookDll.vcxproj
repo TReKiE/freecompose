@@ -221,6 +221,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SharedInclude\ComposeSequence.h" />
+    <ClInclude Include="..\SharedInclude\ComposeSequenceGroup.h" />
     <ClInclude Include="..\SharedInclude\ComposeSequenceTree.h" />
     <ClInclude Include="..\SharedInclude\ComposeTreeNode.h" />
     <ClInclude Include="..\SharedInclude\FCHookDll.h" />

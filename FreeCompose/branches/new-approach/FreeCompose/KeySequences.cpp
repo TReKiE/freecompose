@@ -115,6 +115,14 @@ CKeySequences::~CKeySequences( ) {
 // CKeySequences private methods
 //
 
+inline ComposeSequence& CKeySequences::_GetComposeSequence( unsigned const uKey ) {
+	return m_Options.ComposeSequenceGroups[uKey >> 16].ComposeSequences[uKey & 0xFFFF];
+}
+
+inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( int const nItemIndex ) {
+	return _GetComposeSequence( m_ListIndexMap[nItemIndex] );
+}
+
 // TODO error handling
 inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequence ) {
 	CString strResult;
@@ -135,47 +143,44 @@ inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strC
 }
 
 // TODO error handling
-void CKeySequences::_AddOneKeySequence( const INT_PTR n ) {
-	ComposeSequence const& sequence = m_Options.ComposeSequences[n];
+// TODO ARGH, list item index != array index!
+int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned const csgKey ) {
 	CString strResult( _FormatResultString( sequence ) );
 
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
-	int item = m_List.InsertItem( LVIF_TEXT | LVIF_PARAM, static_cast<int>( n ), strResult, 0, 0, 0, n );
-	m_List.SetItem( item, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
-	m_List.SetItem( item, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
+	int nItemIndex = m_List.InsertItem( LVIF_TEXT | LVIF_PARAM, m_List.GetItemCount( ), strResult, 0, 0, 0, static_cast<LPARAM>( csgKey ) );
+	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
+	return nItemIndex;
 }
 
 // TODO error handling
-void CKeySequences::_UpdateOneKeySequence( const INT_PTR n ) {
-	const ComposeSequence& sequence = m_Options.ComposeSequences[n];
+// TODO ARGH, list item index != array index!
+void CKeySequences::_UpdateOneKeySequence( int const nItemIndex, ComposeSequence const& sequence ) {
 	CString strResult( _FormatResultString( sequence ) );
 
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
-	m_List.SetItem( static_cast<int>( n ), 0, LVIF_TEXT, strResult,         0, 0, 0, 0 );
-	m_List.SetItem( static_cast<int>( n ), 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
-	m_List.SetItem( static_cast<int>( n ), 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
-}
-
-void CKeySequences::_AddNewKeySequence( const INT_PTR n ) {
-	SetRedraw( FALSE );
-
-	_AddOneKeySequence( n );
-	_SetColumnWidths( );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
+	m_List.SetItem( nItemIndex, 0, LVIF_TEXT, strResult,         0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 }
 
 void CKeySequences::_FillKeyComboList( void ) {
 	SetRedraw( FALSE );
 
 	m_List.DeleteAllItems( );
-	INT_PTR limit = m_Options.ComposeSequences.GetCount( );
-	for ( INT_PTR n = 0; n < limit; n++ ) {
-		_AddOneKeySequence( n );
+	m_ListIndexMap.RemoveAll( );
+
+	int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+	for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+		int sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
+		for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
+			unsigned csgKey = ( groupIndex << 16 ) | sequenceIndex;
+			int nListIndex = _AddOneKeySequence( _GetComposeSequence( csgKey ), csgKey );
+			m_ListIndexMap.SetAtGrow( nListIndex, csgKey );
+		}
 	}
 	_SetColumnWidths( );
 
@@ -210,56 +215,40 @@ void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
 
 int CKeySequences::_ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
-	index1 = self->m_pnSortIndices[ index1 ];
-	index2 = self->m_pnSortIndices[ index2 ];
+	index1 = self->m_ListIndexMap[index1];
+	index2 = self->m_ListIndexMap[index2];
 
 	return static_cast<int>( index1 - index2 );
 }
 
 int CKeySequences::_ListComparer_Ascending_Result( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
-	index1 = self->m_pnSortIndices[ index1 ];
-	index2 = self->m_pnSortIndices[ index2 ];
-
-	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
-	CString& result1 = composeSequences[index1].Result;
-	CString& result2 = composeSequences[index2].Result;
+	CString& result1 = self->_GetComposeSequenceFromListIndex( index1 ).Result;
+	CString& result2 = self->_GetComposeSequenceFromListIndex( index2 ).Result;
 
 	return static_cast<int>( result1.Compare( result2 ) );
 }
 
 int CKeySequences::_ListComparer_Descending_Result( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
-	index1 = self->m_pnSortIndices[ index1 ];
-	index2 = self->m_pnSortIndices[ index2 ];
-
-	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
-	CString& result1 = composeSequences[index1].Result;
-	CString& result2 = composeSequences[index2].Result;
+	CString& result1 = self->_GetComposeSequenceFromListIndex( index1 ).Result;
+	CString& result2 = self->_GetComposeSequenceFromListIndex( index2 ).Result;
 
 	return static_cast<int>( result2.Compare( result1 ) );
 }
 
 int CKeySequences::_ListComparer_Ascending_Sequence( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
-	index1 = self->m_pnSortIndices[ index1 ];
-	index2 = self->m_pnSortIndices[ index2 ];
-
-	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
-	CString& sequence1 = composeSequences[index1].Sequence;
-	CString& sequence2 = composeSequences[index2].Sequence;
+	CString& sequence1 = self->_GetComposeSequenceFromListIndex( index1 ).Sequence;
+	CString& sequence2 = self->_GetComposeSequenceFromListIndex( index2 ).Sequence;
 
 	return static_cast<int>( sequence1.Compare( sequence2 ) );
 }
 
 int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
 	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
-	index1 = self->m_pnSortIndices[ index1 ];
-	index2 = self->m_pnSortIndices[ index2 ];
-
-	CArray<ComposeSequence>& composeSequences = self->m_Options.ComposeSequences;
-	CString& sequence1 = composeSequences[index1].Sequence;
-	CString& sequence2 = composeSequences[index2].Sequence;
+	CString& sequence1 = self->_GetComposeSequenceFromListIndex( index1 ).Sequence;
+	CString& sequence2 = self->_GetComposeSequenceFromListIndex( index2 ).Sequence;
 
 	return static_cast<int>( sequence2.Compare( sequence1 ) );
 }
@@ -357,21 +346,16 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	}
 
 	int count = m_List.GetItemCount( );
-	m_pnSortIndices = new int[count];
 
-	if ( !m_pnSortIndices ) {
-		debug( L"CKeySequences::OnListColumnClick: unable to allocate %d sort indices\n", count );
-		return;
-	}
-
-	for ( int n = 0; n < count; n++ ) {
-		m_pnSortIndices[n] = static_cast<int>( m_List.GetItemData( n ) );
-	}
 	if ( !m_List.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
 		debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
 	}
-	delete[] m_pnSortIndices;
-	m_pnSortIndices = nullptr;
+
+	// TODO make into function _UpdateListIndexMap()
+	m_ListIndexMap.RemoveAll( );
+	for ( int n = 0; n < count; n++ ) {
+		m_ListIndexMap.SetAtGrow( n, static_cast<int>( m_List.GetItemData( n ) ) );
+	}
 
 	//
 	// Step 2: get the header control to display the appropriate indication
@@ -394,7 +378,17 @@ void CKeySequences::OnBnClickedAdd( ) {
 
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		_AddNewKeySequence( m_Options.ComposeSequences.Add( sequence ) );
+		SetRedraw( FALSE );
+
+		// TODO figure out which group we should add to
+		unsigned key = 0;
+		_AddOneKeySequence( sequence, key );
+		_SetColumnWidths( );
+
+		SetRedraw( TRUE );
+		Invalidate( );
+		UpdateWindow( );
+
 		SetModified( );
 	}
 }
@@ -410,16 +404,15 @@ void CKeySequences::OnBnClickedEdit( ) {
 	}
 
 	int nItem = m_List.GetNextSelectedItem( pos );
-	int k = static_cast<int>( m_List.GetItemData( nItem ) );
-	ComposeSequence sequence = m_Options.ComposeSequences[k];
+	ComposeSequence sequence( _GetComposeSequenceFromListIndex( nItem ) );
 	CComposeSequenceEditor edit( sequence, semEdit, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
-		m_Options.ComposeSequences[k] = sequence;
+		_GetComposeSequenceFromListIndex( nItem ) = sequence;
 
 		SetRedraw( FALSE );
 
-		_UpdateOneKeySequence( k );
+		_UpdateOneKeySequence( nItem, sequence );
 		_SetColumnWidths( );
 		SetModified( );
 
@@ -463,7 +456,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 	do {
 		n--;
 		m_List.DeleteItem( items[n] );
-		m_Options.ComposeSequences.RemoveAt( indices[n] );
+		m_Options.ComposeSequenceGroups[indices[n] >> 16].ComposeSequences.RemoveAt( indices[n] & 0xFFFF );
 	} while ( n > 0 );
 
 	delete[] items;

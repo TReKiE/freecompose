@@ -20,8 +20,11 @@ COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	ComposeVk          = options.ComposeVk;
 	SwapCapsLockVk     = options.SwapCapsLockVk;
 
-	ComposeSequences.RemoveAll( );
-	ComposeSequences.Copy( options.ComposeSequences );
+	ComposeSequenceGroups.RemoveAll( );
+	int limit = ComposeSequenceGroups.GetCount( );
+	for ( int n = 0; n < limit; n++ ) {
+		ComposeSequenceGroups.SetAt( n, options.ComposeSequenceGroups[n] );
+	}
 
 	return *this;
 }
@@ -34,12 +37,28 @@ bool COptionsData::operator==( COptionsData const& options ) const {
 	if ( ComposeVk          != options.ComposeVk          ) { return false; }
 	if ( SwapCapsLockVk     != options.SwapCapsLockVk     ) { return false; }
 
-	if ( ComposeSequences.GetCount( ) != options.ComposeSequences.GetCount( ) ) {
+	if ( ComposeSequenceGroups.GetCount( ) != options.ComposeSequenceGroups.GetCount( ) ) {
 		return false;
 	}
-	for ( int n = 0; n < ComposeSequences.GetCount( ); n++ ) {
-		if ( ComposeSequences[n] != options.ComposeSequences[n] ) {
+
+	int cGroups = ComposeSequenceGroups.GetCount( );
+	for ( int groupIndex = 0; groupIndex < cGroups; groupIndex++ ) {
+		ComposeSequenceGroup const& lGroup = ComposeSequenceGroups[groupIndex];
+		ComposeSequenceGroup const& rGroup = options.ComposeSequenceGroups[groupIndex];
+
+		if ( 0 != lGroup.Name.Compare( rGroup.Name ) ) {
 			return false;
+		}
+
+		if ( lGroup.ComposeSequences.GetCount( ) != rGroup.ComposeSequences.GetCount( ) ) {
+			return false;
+		}
+
+		int cSequences = lGroup.ComposeSequences.GetCount( );
+		for ( int sequenceIndex = 0; sequenceIndex < cSequences; sequenceIndex++ ) {
+			if ( lGroup.ComposeSequences[sequenceIndex] != rGroup.ComposeSequences[sequenceIndex] ) {
+				return false;
+			}
 		}
 	}
 
@@ -47,7 +66,7 @@ bool COptionsData::operator==( COptionsData const& options ) const {
 }
 
 bool COptionsData::operator!=( COptionsData const& options ) const {
-	return ! operator==( options );
+	return !operator==( options );
 }
 
 bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
@@ -65,16 +84,17 @@ bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
 }
 
 void COptionsData::_LoadSequencesFromRegistry( void ) {
-	ComposeSequences.RemoveAll( );
+	ComposeSequenceGroups.RemoveAll( );
 
 	unsigned count = theApp.GetProfileInt( L"Mapping", L"Count", 0 );
 	if ( count < 1 ) {
 		return;
 	}
 
+	ComposeSequenceGroup group;
 	ComposeSequence sequence;
 	CString section;
-	ComposeSequences.SetSize( count );
+	group.ComposeSequences.SetSize( count );
 
 	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %u mappings from registry:\n", count );
 	for ( unsigned n = 0; n < count; n++ ) {
@@ -85,9 +105,11 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 		sequence.Sequence = first + second;
 		sequence.Result = composed;
 		debug( L"+ Mapping %4u: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
-		ComposeSequences[n] = sequence;
+		group.ComposeSequences.Add( sequence );
 	}
+
 	debug( L"COptionsData::_LoadSequencesFromRegistry: Mapping load completed.\n" );
+	ComposeSequenceGroups.Add( group );
 }
 
 bool COptionsData::_LoadFromRegistry( void ) {
