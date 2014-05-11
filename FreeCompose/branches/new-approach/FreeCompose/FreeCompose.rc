@@ -25,6 +25,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDX_DEFAULT_CONFIGURATION XMLFILE                 "res\\DefaultConfiguration.xml"
+IDX_FCCONFIGURATION_SCHEMA XMLFILE                "res\\FcConfiguration.xsd"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
