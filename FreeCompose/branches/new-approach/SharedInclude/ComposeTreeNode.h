@@ -7,25 +7,8 @@ class FCHOOKDLL_API CComposeTreeNode {
 	Tchildren children;
 	Tleaves leaves;
 
-#if DEBUG_NODES_LEAVES
-private: /*static*/
-	static size_t _cNodes;
-	static size_t _cLeaves;
-#endif
-
 public:
-#if DEBUG_NODES_LEAVES
-	inline CComposeTreeNode( ) {
-		_cNodes++;
-	}
-#endif
-
 	inline ~CComposeTreeNode( ) {
-#if DEBUG_NODES_LEAVES
-		_cNodes--;
-		_cLeaves -= leaves.size( );
-#endif
-
 		for ( auto& item : children ) {
 			delete item.second;
 		}
@@ -58,9 +41,6 @@ public:
 
 	inline void AddLeaf( int character, CString& result ) {
 		leaves.insert( Tleaves::value_type( character, result ) );
-#if DEBUG_NODES_LEAVES
-		_cLeaves++;
-#endif
 	}
 
 };
