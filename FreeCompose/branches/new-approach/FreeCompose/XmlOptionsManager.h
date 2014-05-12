@@ -14,6 +14,7 @@ class CXmlOptionsManager;
 //==============================================================================
 
 using XAttribute             = MSXML2::IXMLDOMAttributePtr;
+using XCDATASection          = MSXML2::IXMLDOMCDATASectionPtr;
 using XDocument              = MSXML2::IXMLDOMDocumentPtr;
 using XElement               = MSXML2::IXMLDOMElementPtr;
 using XNamedNodeMap          = MSXML2::IXMLDOMNamedNodeMapPtr;

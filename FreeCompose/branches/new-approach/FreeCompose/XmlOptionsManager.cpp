@@ -131,7 +131,7 @@ inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, C
 		Result   = Composed;
 	} else if ( nodeSequence && nodeResult ) {
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
-		Result   = static_cast<LPCWSTR>( nodeResult->text ); // TODO need to use a CDATA section
+		Result   = static_cast<LPCWSTR>( nodeResult->text );
 
 		try {
 			XNamedNodeMap attributes = value->attributes;
@@ -352,7 +352,6 @@ bool CXmlOptionsManager::_DispatchChildren( wchar_t const* label, XNode const& n
 	while ( child ) {
 		if ( !_DispatchNode( label, child, map ) ) {
 			debug( L"CXmlOptionsManager::_DispatchChildren: %s: _DispatchNode failed on node '%s'\n", label, static_cast<LPCWSTR>( child->nodeName ) );
-			// TODO: return false?
 		}
 		child = child->nextSibling;
 	}
@@ -541,7 +540,8 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 					}
 
 						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping, static_cast<LPCWSTR>( composeSequence.Sequence ) );
-						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping, static_cast<LPCWSTR>( composeSequence.Result ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping );
+						result->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Result ) ) );
 				}
 			}
 	}
