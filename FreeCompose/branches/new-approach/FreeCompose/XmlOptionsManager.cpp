@@ -511,6 +511,10 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 			int groupCount = _pOptionsData->ComposeSequenceGroups.GetCount( );
 			for ( INT_PTR groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 				ComposeSequenceGroup& composeSequenceGroup = _pOptionsData->ComposeSequenceGroups[groupIndex];
+				if ( 0 == composeSequenceGroup.ComposeSequences.GetCount( ) ) {
+					debug( L"CXmlOptionsManager::SaveToFile: skipping group #%d '%s'", groupIndex, composeSequenceGroup.Name );
+					continue;
+				}
 
 				XNode Group = CreateAndAppendXNode( doc, L"Group", Mappings );
 				XElement GroupElement = Group;
