@@ -158,7 +158,13 @@ int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned
 
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
-	int nItemIndex = m_List.InsertItem( LVIF_TEXT | LVIF_PARAM, m_List.GetItemCount( ), strResult, 0, 0, 0, static_cast<LPARAM>( csgKey ) );
+	LVITEM lvItem = { LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID };
+	lvItem.iItem = m_List.GetItemCount( );
+	lvItem.iSubItem = 0;
+	lvItem.pszText = const_cast<LPWSTR>( static_cast<LPCWSTR>( strResult ) );
+	lvItem.lParam = static_cast<LPARAM>( csgKey );
+	lvItem.iGroupId = _GroupIndex( csgKey );
+	int nItemIndex = m_List.InsertItem( &lvItem );
 	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
 	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 	return nItemIndex;
@@ -169,7 +175,11 @@ void CKeySequences::_UpdateOneKeySequence( int const nItemIndex, ComposeSequence
 
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
-	m_List.SetItem( nItemIndex, 0, LVIF_TEXT, strResult,         0, 0, 0, 0 );
+	LVITEM lvItem = { LVIF_TEXT | LVIF_GROUPID };
+	lvItem.iItem = nItemIndex;
+	lvItem.pszText = const_cast<LPWSTR>( static_cast<LPCWSTR>( strResult ) );
+	lvItem.iGroupId = _GroupIndex( m_ListIndexMap[nItemIndex] );
+	m_List.SetItem( &lvItem );
 	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
 	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 }
@@ -387,7 +397,7 @@ void CKeySequences::OnBnClickedAdd( ) {
 		SetRedraw( FALSE );
 
 		// TODO figure out which group we should add to
-		unsigned key = m_Options.ComposeSequenceGroups[0].ComposeSequences.Add( sequence );
+		unsigned key = _MakeComposeSequenceGroupKey( 0, m_Options.ComposeSequenceGroups[0].ComposeSequences.Add( sequence ) );
 		_AddOneKeySequence( sequence, key );
 		_SetColumnWidths( );
 
