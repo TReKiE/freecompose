@@ -325,9 +325,8 @@ bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
 
 	ComposeSequenceGroup* pCurrentGroup = _pOptionsData->FindComposeSequenceGroup( groupName );
 	if ( !pCurrentGroup ) {
-		int index = _pOptionsData->ComposeSequenceGroups.GetSize( );
-		_pOptionsData->ComposeSequenceGroups.SetSize( index + 1 );
-		pCurrentGroup = &_pOptionsData->ComposeSequenceGroups[index];
+		_pOptionsData->ComposeSequenceGroups.Add( ComposeSequenceGroup( groupName ) );
+		pCurrentGroup = _pOptionsData->FindComposeSequenceGroup( groupName );
 	}
 
 	_pCurrentComposeSequences = &pCurrentGroup->ComposeSequences;
