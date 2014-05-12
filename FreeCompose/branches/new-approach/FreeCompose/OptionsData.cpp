@@ -94,6 +94,7 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 	ComposeSequenceGroup group;
 	ComposeSequence sequence;
 	CString section;
+	group.Name = L"(default)";
 	group.ComposeSequences.SetSize( count );
 
 	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %u mappings from registry:\n", count );
