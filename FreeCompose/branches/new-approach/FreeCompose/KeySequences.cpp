@@ -387,7 +387,7 @@ void CKeySequences::OnBnClickedAdd( ) {
 		SetRedraw( FALSE );
 
 		// TODO figure out which group we should add to
-		unsigned key = 0;
+		unsigned key = m_Options.ComposeSequenceGroups[0].ComposeSequences.Add( sequence );
 		_AddOneKeySequence( sequence, key );
 		_SetColumnWidths( );
 
