@@ -97,7 +97,6 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 	group.Name = L"(default)";
 	group.ComposeSequences.SetSize( count );
 
-	debug( L"COptionsData::_LoadSequencesFromRegistry: Loading %u mappings from registry:\n", count );
 	for ( unsigned n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%u", n );
 		CString first    (   VkToString( theApp.GetProfileInt( section, L"First",    0 ) ) );
@@ -105,11 +104,9 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 		CString composed ( Utf32ToUtf16( theApp.GetProfileInt( section, L"Composed", 0 ) ) );
 		sequence.Sequence = first + second;
 		sequence.Result = composed;
-		debug( L"+ Mapping %4u: '%s' => ='%s'\n", n, static_cast<LPCWSTR>( sequence.Sequence ), static_cast<LPCWSTR>( sequence.Result ) );
 		group.ComposeSequences.Add( sequence );
 	}
 
-	debug( L"COptionsData::_LoadSequencesFromRegistry: Mapping load completed.\n" );
 	ComposeSequenceGroups.Add( group );
 }
 
