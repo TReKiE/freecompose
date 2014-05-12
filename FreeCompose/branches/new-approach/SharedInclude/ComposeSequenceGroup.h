@@ -2,8 +2,15 @@
 
 #include <ComposeSequence.h>
 
+//==============================================================================
+// Forward declarations
+//==============================================================================
+
 class ComposeSequenceGroup;
-using ComposeSequenceGroupArray = CArray<ComposeSequenceGroup>;
+
+//==============================================================================
+// Classes
+//==============================================================================
 
 class ComposeSequenceGroup {
 public:
@@ -61,3 +68,9 @@ public:
 	CString Name;
 	ComposeSequenceArray ComposeSequences;
 };
+
+//==============================================================================
+// Type aliases
+//==============================================================================
+
+using ComposeSequenceGroupArray = CArray<ComposeSequenceGroup>;
