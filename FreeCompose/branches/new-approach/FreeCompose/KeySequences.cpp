@@ -135,7 +135,6 @@ inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( int con
 	return _GetComposeSequence( m_ListIndexMap[nItemIndex] );
 }
 
-// TODO error handling
 inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequence ) {
 	CString strResult;
 	unsigned chResult;
@@ -154,8 +153,6 @@ inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strC
 	m_nColumnWidths[2] = std::max( _MeasureListItemText( strSequence  ), m_nColumnWidths[2] );
 }
 
-// TODO error handling
-// TODO ARGH, list item index != array index!
 int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned const csgKey ) {
 	CString strResult( _FormatResultString( sequence ) );
 
@@ -167,8 +164,6 @@ int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned
 	return nItemIndex;
 }
 
-// TODO error handling
-// TODO ARGH, list item index != array index!
 void CKeySequences::_UpdateOneKeySequence( int const nItemIndex, ComposeSequence const& sequence ) {
 	CString strResult( _FormatResultString( sequence ) );
 
@@ -254,7 +249,7 @@ int CKeySequences::_ListComparer_Ascending_Sequence( LPARAM index1, LPARAM index
 	CString& sequence1 = self->_GetComposeSequenceFromListIndex( index1 ).Sequence;
 	CString& sequence2 = self->_GetComposeSequenceFromListIndex( index2 ).Sequence;
 
-	return sequence1.Compare( sequence2 );
+	return sequence1.CompareNoCase( sequence2 );
 }
 
 int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
@@ -262,7 +257,7 @@ int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM inde
 	CString& sequence1 = self->_GetComposeSequenceFromListIndex( index1 ).Sequence;
 	CString& sequence2 = self->_GetComposeSequenceFromListIndex( index2 ).Sequence;
 
-	return sequence2.Compare( sequence1 );
+	return sequence2.CompareNoCase( sequence1 );
 }
 
 //
