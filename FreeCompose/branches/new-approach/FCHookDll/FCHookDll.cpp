@@ -73,9 +73,9 @@ FCHOOKDLL_API BOOL FcInitialize( void ) {
 
 FCHOOKDLL_API BOOL FcUninitialize( void ) {
 	// TODO HACK TODO HACK TODO HACK
-	//if ( 0 == InterlockedDecrement( &cClients ) ) {
-	//	ReleaseComposeSequences( );
-	//}
+	if ( 0 == InterlockedDecrement( &cClients ) ) {
+		//ReleaseComposeSequences( );
+	}
 
 	return TRUE;
 }
