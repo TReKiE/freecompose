@@ -101,8 +101,6 @@ private:
 	bool _DispatchChildren( wchar_t const* label,  XNode const& node, XmlMethodMap& map );
 	bool _DispatchNode( wchar_t const* label, XNode const& node, XmlMethodMap& map );
 
-	bool _InterpretSchemaVersionNode( XNode const& node );
-
 	bool _InterpretOptionsNode( XNode const& node );
 		bool _InterpretStartupNode( XNode const& node );
 			bool _InterpretStartActiveNode( XNode const& node );
