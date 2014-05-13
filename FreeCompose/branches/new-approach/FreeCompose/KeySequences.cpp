@@ -135,7 +135,7 @@ inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( int con
 	return _GetComposeSequence( m_ListIndexMap[nItemIndex] );
 }
 
-inline CString CKeySequences::_FormatResultString( ComposeSequence const& sequence ) {
+inline CString CKeySequences::_FormatComposeSequenceResult( ComposeSequence const& sequence ) {
 	CString strResult;
 	unsigned chResult;
 	Utf16ToUtf32( sequence.Result, chResult );
@@ -153,9 +153,31 @@ inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strC
 	m_nColumnWidths[2] = std::max( _MeasureListItemText( strSequence  ), m_nColumnWidths[2] );
 }
 
-int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned const csgKey ) {
-	CString strResult( _FormatResultString( sequence ) );
+void CKeySequences::_AddGroup( int const groupIndex ) {
+	LVGROUP lv = {
+		/* cbSize    */ sizeof( LVGROUP ),
+		/* mask      */ LVGF_HEADER | LVGF_GROUPID | LVGF_STATE | LVGF_ALIGN,
+		/* pszHeader */ const_cast<LPWSTR>( static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ) ),
+		/* cchHeader */ 0,
+		/* pszFooter */ nullptr,
+		/* cchFooter */ 0,
+		/* iGroupId  */ groupIndex,
+		/* stateMask */ LVGS_COLLAPSIBLE,
+		/* state     */ LVGS_COLLAPSIBLE,
+		/* uAlign    */ LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT
+	};
+	m_List.InsertGroup( groupIndex, &lv );
+}
 
+void CKeySequences::_UpdateGroup( int const groupIndex ) {
+	LVGROUP lv = { sizeof( LVGROUP ), LVGF_HEADER | LVGF_GROUPID, };
+	lv.pszHeader = const_cast<LPWSTR>( static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ) );
+	lv.iGroupId = groupIndex;
+	m_List.SetGroupInfo( groupIndex, &lv );
+}
+
+int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigned const csgKey ) {
+	CString strResult( _FormatComposeSequenceResult( sequence ) );
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID };
@@ -170,9 +192,8 @@ int CKeySequences::_AddOneKeySequence( ComposeSequence const& sequence, unsigned
 	return nItemIndex;
 }
 
-void CKeySequences::_UpdateOneKeySequence( int const nItemIndex, ComposeSequence const& sequence ) {
-	CString strResult( _FormatResultString( sequence ) );
-
+void CKeySequences::_UpdateComposeSequence( int const nItemIndex, ComposeSequence const& sequence ) {
+	CString strResult( _FormatComposeSequenceResult( sequence ) );
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_GROUPID };
@@ -195,7 +216,7 @@ void CKeySequences::_FillList( void ) {
 		int sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
 		for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
 			unsigned csgKey = _MakeComposeSequenceGroupKey( groupIndex, sequenceIndex );
-			int nListIndex = _AddOneKeySequence( _GetComposeSequence( csgKey ), csgKey );
+			int nListIndex = _AddComposeSequence( _GetComposeSequence( csgKey ), csgKey );
 			m_ListIndexMap.SetAtGrow( nListIndex, csgKey );
 		}
 	}
@@ -348,7 +369,7 @@ BOOL CKeySequences::OnInitDialog( ) {
 			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, m_Options.ComposeSequenceGroups[groupIndex].Name, ret );
 		}
 
-		m_List.EnableGroupView( TRUE );
+		m_List.EnableGroupView( groupCount > 1 );
 	}
 
 	//
@@ -458,9 +479,10 @@ void CKeySequences::OnBnClickedAdd( ) {
 	SetRedraw( FALSE );
 
 	unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
-	_AddOneKeySequence( sequence, key );
+	_UpdateGroup( focusedGroup );
+	m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+	_AddComposeSequence( sequence, key );
 	_SetColumnWidths( );
-
 	SetModified( );
 
 	SetRedraw( TRUE );
@@ -487,9 +509,10 @@ void CKeySequences::OnBnClickedEdit( ) {
 
 		SetRedraw( FALSE );
 
-		_UpdateOneKeySequence( nItem, sequence );
+		_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
+		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+		_UpdateComposeSequence( nItem, sequence );
 		_SetColumnWidths( );
-
 		SetModified( );
 
 		SetRedraw( TRUE );
@@ -539,7 +562,9 @@ void CKeySequences::OnBnClickedRemove( ) {
 	delete[] indices;
 
 	SetModified( );
-	
+
+	m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+
 	SetRedraw( TRUE );
 	Invalidate( );
 	UpdateWindow( );
