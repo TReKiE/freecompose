@@ -51,7 +51,6 @@ static XmlMethodMap         GroupMappingsElementsToMethods;
 class Initializer_ {
 public:
 	inline Initializer_( ) {
-		RootElementsToMethods           .insert( XmlMethodMapPair( L"SchemaVersion",      &CXmlOptionsManager::_InterpretSchemaVersionNode      ) );
 		RootElementsToMethods           .insert( XmlMethodMapPair( L"Options",            &CXmlOptionsManager::_InterpretOptionsNode            ) );
 		RootElementsToMethods           .insert( XmlMethodMapPair( L"Mappings",           &CXmlOptionsManager::_InterpretMappingsNode           ) );
 
@@ -254,16 +253,6 @@ static inline bool _LoadXDocumentFromResource( unsigned const uID, XDocument& do
 //==============================================================================
 // CXmlOptionsManager implementation
 //==============================================================================
-
-bool CXmlOptionsManager::_InterpretSchemaVersionNode( XNode const& node ) {
-	int nSchemaVersion = Coerce<_bstr_t, unsigned>( static_cast<LPCWSTR>( node->text ) );
-	debug( L"CXmlOptionsManager::_InterpretSchemaVersionNode: version is '%s' => %d\n", static_cast<LPCWSTR>( node->text ), nSchemaVersion );
-	if ( CONFIGURATION_SCHEMA_VERSION != nSchemaVersion ) {
-		debug( L"CXmlOptionsManager::_InterpretSchemaVersionNode: wrong schema version %d in file, vs. %d, aborting load\n", nSchemaVersion, CONFIGURATION_SCHEMA_VERSION );
-		return false;
-	}
-	return true;
-}
 
 bool CXmlOptionsManager::_InterpretOptionsNode( XNode const& node ) {
 	return _DispatchChildren( L"Options", node, OptionsElementsToMethods );
@@ -562,8 +551,6 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 	try {
         doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-16le'" ) );
 		XNode FcConfiguration = CreateAndAppendXNode( doc, L"FcConfiguration", doc );
-
-			XNode SchemaVersion = CreateAndAppendXNode( doc, L"SchemaVersion", FcConfiguration, CONFIGURATION_SCHEMA_VERSION );
 
 			XNode Options = CreateAndAppendXNode( doc, L"Options", FcConfiguration );
 
