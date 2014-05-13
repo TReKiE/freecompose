@@ -137,24 +137,21 @@ void CComposeSequenceTree::BuildTree( ComposeSequence* pSequences, INT_PTR cSequ
 			f1 = _IsSequenceUnambiguous( sequence, sr1, index1 );
 			f2 = _IsSequenceUnambiguous( reverse,  sr2, index2 );
 
-			wchar_t* pwzDirection;
 			if ( !f1 ) {
-				pwzDirection = L"forward";
+				debug( L"CComposeSequenceTree::BuildTree: two-character sequence, and forward sequence is ambiguous.\n+ sr1=%d index1=%d f1=%s\n+ sr2=%d index2=%d f2=%s\n", sr1, index1, ( f1 ? L"TRUE" : L"false" ), sr2, index2, ( f2 ? L"TRUE" : L"false" ) );
 			} else if ( !f2 ) {
-				pwzDirection = L"reverse";
+				debug( L"CComposeSequenceTree::BuildTree: two-character sequence, and reverse sequence is ambiguous.\n+ sr1=%d index1=%d f1=%s\n+ sr2=%d index2=%d f2=%s\n", sr1, index1, ( f1 ? L"TRUE" : L"false" ), sr2, index2, ( f2 ? L"TRUE" : L"false" ) );
 			} else {
-				pwzDirection = L"neither [this means 'everything is okay']";
 				_AddSequence( sequence, result );
 				_AddSequence( reverse,  result );
 			}
-			debug( L"CComposeSequenceTree::BuildTree: two-character sequence, and %s sequence is not unambiguous.\n+ sr1=%d index1=%d f1=%s\n+ sr2=%d index2=%d f2=%s\n", pwzDirection, sr1, index1, ( f1 ? L"TRUE" : L"false" ), sr2, index2, ( f2 ? L"TRUE" : L"false" ) );
 		} else {
 			SEQUENCE_RESULT sr;
 			int index;
 
 			bool f = _IsSequenceUnambiguous( sequence, sr, index );
 			if ( !f ) {
-				debug( L"CComposeSequenceTree::BuildTree: multi-character sequence, and sequence is not unambiguous.\n+ sr=%d index=%d f1%s\n", sr, index, ( f ? L"TRUE" : L"false" ) );
+				debug( L"CComposeSequenceTree::BuildTree: multi-character sequence, and sequence is ambiguous.\n+ sr=%d index=%d f1%s\n", sr, index, ( f ? L"TRUE" : L"false" ) );
 			} else {
 				_AddSequence( sequence, result );
 			}
