@@ -25,7 +25,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDX_DEFAULT_CONFIGURATION XMLFILE                 "res\\DefaultConfiguration.xml"
-IDX_FCCONFIGURATION_SCHEMA XMLFILE                "res\\FcConfiguration.xsd"
+IDX_FCCONFIGURATION_SCHEMA XMLFILE                 "res\\FcConfiguration.xsd"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -389,15 +389,6 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_ABOUT_VERSION       "%s version %d.%d.%d.%d"
-    IDS_EDITKEYSEQUENCE_TITLE_EDIT "Edit key sequence"
-    IDS_EDITKEYSEQUENCE_TITLE_ADD "Add key sequence"
-    IDS_EDITKEYSEQUENCE_CANTBEBLANK "Key may not be left blank."
-    IDS_KEYSEQUENCES_SEQUENCE "Sequence"
-    IDS_KEYSEQUENCES_RESULT_CODEPOINT "Unicode"
-    IDS_KEYSEQUENCES_RESULT_CHARACTER "Character"
-    IDS_KEYSEQUENCES_CONFIRM_TITLE "Remove key sequences"
-    IDS_KEYSEQUENCES_CONFIRM_PROMPT "Are you sure?"
     IDS_MAINFRAME_ENABLED   "FreeCompose is enabled."
     IDS_MAINFRAME_DISABLED  "FreeCompose is disabled."
     IDS_MAINFRAME_MISMATCH_TITLE "Uh oh"
@@ -405,11 +396,6 @@ BEGIN
                             "FC API version mismatch: DLL %d vs. host %d"
     IDS_MAINFRAME_MENU_ENABLE "&Enable"
     IDS_MAINFRAME_MENU_DISABLE "&Disable"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
     IDS_MAINFRAME_CLOSEOPTIONSFIRST 
                             "Please close the options dialog before exiting FreeCompose."
 END
@@ -435,6 +421,39 @@ END
 
 STRINGTABLE
 BEGIN
+    IDS_ABOUT_VERSION       "%s version %d.%d.%d.%d"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPTIONSPROPSHEET_TITLE "FreeCompose options"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_KEYSEQUENCES_SEQUENCE "Sequence"
+    IDS_KEYSEQUENCES_RESULT_CODEPOINT "Unicode"
+    IDS_KEYSEQUENCES_RESULT_CHARACTER "Character"
+    IDS_KEYSEQUENCES_ENABLED "Enabled"
+    IDS_KEYSEQUENCES_CASEINSENSITIVE "Case insensitive"
+    IDS_KEYSEQUENCES_REVERSIBLE "Reversible"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_KEYSEQUENCES_CONFIRM_TITLE "Remove key sequences"
+    IDS_KEYSEQUENCES_CONFIRM_PROMPT "Are you sure?"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_EDITKEYSEQUENCE_TITLE_EDIT "Edit key sequence"
+    IDS_EDITKEYSEQUENCE_TITLE_ADD "Add key sequence"
+    IDS_EDITKEYSEQUENCE_CANTBEBLANK "Key may not be left blank."
+END
+
+STRINGTABLE
+BEGIN
     IDS_APP_WINVER_TOO_LOW  "Unfortunately, FreeCompose now requires at least Windows XP. =("
 END
 
@@ -447,6 +466,7 @@ BEGIN
     IDS_APPSOUND_COMPOSITION_CANCELLED "Composition: Cancelled"
     IDS_APPSOUND_COMPOSITION_ESCAPE "Composition: Escape"
 END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
