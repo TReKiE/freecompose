@@ -21,10 +21,7 @@ COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	SwapCapsLockVk     = options.SwapCapsLockVk;
 
 	ComposeSequenceGroups.RemoveAll( );
-	int limit = ComposeSequenceGroups.GetCount( );
-	for ( int n = 0; n < limit; n++ ) {
-		ComposeSequenceGroups.SetAt( n, options.ComposeSequenceGroups[n] );
-	}
+	ComposeSequenceGroups.Append( options.ComposeSequenceGroups );
 
 	return *this;
 }
@@ -95,7 +92,6 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 	ComposeSequence sequence;
 	CString section;
 	group.Name = L"(default)";
-	group.ComposeSequences.SetSize( count );
 
 	for ( unsigned n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%u", n );
@@ -176,7 +172,7 @@ void COptionsData::_UpdateRunKey( void ) {
 ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& name ) {
 	int limit = ComposeSequenceGroups.GetCount( );
 	for ( int index = 0; index < limit; index++ ) {
-		if ( name.CompareNoCase( ComposeSequenceGroups[index].Name ) ) {
+		if ( 0 == name.CompareNoCase( ComposeSequenceGroups[index].Name ) ) {
 			return &ComposeSequenceGroups[index];
 		}
 	}
