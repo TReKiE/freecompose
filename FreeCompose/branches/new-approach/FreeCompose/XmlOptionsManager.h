@@ -91,6 +91,7 @@ private:
 	COptionsData* _pOptionsData;
 	XSchemaCollection _xmlSchemaCache;
 
+	XDocument _CreateDomDocument( void );
 	bool _LoadSchema( void );
 
 	bool _ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result );

@@ -182,27 +182,6 @@ static inline bool CompareNodeName( XNode elt, LPCWSTR name ) {
 	return 0 == CString( static_cast<LPCWSTR>( elt->nodeName ) ).Compare( name );
 }
 
-static inline XDocument CreateDOMDocument( void ) {
-	XDocument doc;
-	HRESULT hr = doc.CreateInstance( L"Msxml2.DOMDocument.6.0" );
-	if ( FAILED( hr ) ) {
-		debug( L"CreateDOMDocument: failed, hr=0x%08lX\n", hr );
-		return doc;
-	}
-
-	try {
-		doc->async = VARIANT_FALSE;
-		doc->validateOnParse = VARIANT_FALSE;
-		doc->resolveExternals = VARIANT_FALSE;
-		doc->preserveWhiteSpace = VARIANT_FALSE;
-	}
-	catch ( _com_error e ) {
-		debug( L"CreateDOMDocument: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
-		doc.Release( );
-	}
-	return doc;
-}
-
 // Resource loading
 
 static inline bool LoadBinaryResource( unsigned const uID, void*& pvResource, size_t& cbResource ) {
@@ -420,13 +399,45 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 }
 
 //==============================================================================
+// CXmlOptionsManager::_CreateDomDocument
+//
+
+inline XDocument CXmlOptionsManager::_CreateDomDocument( void ) {
+	XDocument doc;
+	HRESULT hr = doc.CreateInstance( L"Msxml2.DOMDocument.6.0" );
+	if ( FAILED( hr ) ) {
+		debug( L"CXmlOptionsManager::_CreateDomDocument: failed, hr=0x%08lX\n", hr );
+		return doc;
+	}
+
+	try {
+		doc->async = VARIANT_FALSE;
+		doc->preserveWhiteSpace = VARIANT_FALSE;
+		doc->resolveExternals = VARIANT_FALSE;
+
+		if ( _xmlSchemaCache ) {
+			XDocument2 doc2 = doc;
+			doc2->schemas = _xmlSchemaCache.GetInterfacePtr( );
+			doc->validateOnParse = VARIANT_TRUE;
+		} else {
+			doc->validateOnParse = VARIANT_FALSE;
+		}
+	}
+	catch ( _com_error e ) {
+		debug( L"CXmlOptionsManager::_CreateDomDocument: Caught exception setting up DOMDocument, hr=0x%08lX\n", e.Error( ) );
+		doc.Release( );
+	}
+	return doc;
+}
+
+//==============================================================================
 // CXmlOptionsManager::_LoadSchema
 //
 
 bool CXmlOptionsManager::_LoadSchema( void ) {
 	_xmlSchemaCache = nullptr;
 
-	XDocument schemaDoc = CreateDOMDocument( );
+	XDocument schemaDoc = _CreateDomDocument( );
 	if ( !schemaDoc ) {
 		debug( L"CXmlOptionsManager::_LoadSchema: Can't create instance of DOMDocument\n" );
 		return false;
@@ -466,18 +477,14 @@ bool CXmlOptionsManager::_LoadSchema( void ) {
 //
 
 bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
-	XDocument doc = CreateDOMDocument( );
+	if ( !_xmlSchemaCache && !_LoadSchema( ) ) {
+		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
+	}
+
+	XDocument doc = _CreateDomDocument( );
 	if ( !doc ) {
 		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
 		return false;
-	}
-	if ( !_LoadSchema( ) ) {
-		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
-	}
-	if ( _xmlSchemaCache ) {
-		XDocument2 doc2 = doc;
-		doc2->schemas = _xmlSchemaCache.GetInterfacePtr( );
-		doc->validateOnParse = VARIANT_TRUE;
 	}
 
 	if ( !_LoadXDocumentFromResource( IDX_DEFAULT_CONFIGURATION, doc ) ) {
@@ -498,21 +505,20 @@ bool CXmlOptionsManager::LoadFromFile( void ) {
 		return false;
 	}
 
+	if ( !_xmlSchemaCache && !_LoadSchema( ) ) {
+		debug( L"CXmlOptionsManager::LoadFromFile: Can't load schema, but carrying on\n" );
+	}
+
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
 	XDocument doc;
 	try {
-		doc = CreateDOMDocument( );
+		doc = _CreateDomDocument( );
 		if ( !doc ) {
 			debug( L"CXmlOptionsManager::LoadFromFile: Can't create instance of DOMDocument\n" );
 			return false;
 		}
 		if ( !_LoadSchema( ) ) {
 			debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
-		}
-		if ( _xmlSchemaCache ) {
-			XDocument2 doc2 = doc;
-			doc2->schemas = _xmlSchemaCache.GetInterfacePtr( );
-			doc->validateOnParse = VARIANT_TRUE;
 		}
 
 		//
@@ -544,7 +550,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
 
-	XDocument doc = CreateDOMDocument( );
+	XDocument doc = _CreateDomDocument( );
 	if ( !doc ) {
 		debug( L"CXmlOptionsManager::SaveToFile: Can't create instance of DOMDocument\n" );
 		return false;
