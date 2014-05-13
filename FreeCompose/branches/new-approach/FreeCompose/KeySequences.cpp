@@ -394,6 +394,8 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	}
 	debug( L"CKeySequences::OnListColumnClick: column %d sortstate %d self 0x%p\n", m_nSortColumn, m_SortState, this );
 
+	SetRedraw( FALSE );
+
 	//
 	// Step 1: tell combo box to sort itself
 	//
@@ -425,6 +427,7 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	}
 	_SetColumnSortState( m_nSortColumn, m_SortState );
 
+	SetRedraw( TRUE );
 	Invalidate( );
 	UpdateWindow( );
 
@@ -436,38 +439,40 @@ void CKeySequences::OnBnClickedAdd( ) {
 	CComposeSequenceEditor edit( sequence, semAdd, this );
 
 	INT_PTR rc = edit.DoModal( );
-	if ( IDOK == rc ) {
-		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
-		int focusedGroup = -1;
-		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
-			LVGROUP lv = { sizeof( LVGROUP ), LVGF_STATE };
-			lv.stateMask = LVGS_FOCUSED;
-			int ret = m_List.GetGroupInfo( groupIndex, &lv );
-			if ( ( lv.state & LVGS_FOCUSED ) != 0 ) {
-				focusedGroup = groupIndex;
-				break;
-			}
-		}
-		if ( -1 == focusedGroup ) {
-			focusedGroup = 0;
-		}
-
-		SetRedraw( FALSE );
-
-		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
-		_AddOneKeySequence( sequence, key );
-		_SetColumnWidths( );
-
-		SetModified( );
-
-		SetRedraw( TRUE );
-		Invalidate( );
-		UpdateWindow( );
+	if ( IDOK != rc ) {
+		return;
 	}
+
+	int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+	int focusedGroup = -1;
+	for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+		LVGROUP lv = { sizeof( LVGROUP ), LVGF_STATE };
+		lv.stateMask = LVGS_FOCUSED;
+		int ret = m_List.GetGroupInfo( groupIndex, &lv );
+		if ( ( lv.state & LVGS_FOCUSED ) != 0 ) {
+			focusedGroup = groupIndex;
+			break;
+		}
+	}
+	if ( -1 == focusedGroup ) {
+		focusedGroup = 0;
+	}
+
+	SetRedraw( FALSE );
+
+	unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
+	_AddOneKeySequence( sequence, key );
+	_SetColumnWidths( );
+
+	SetModified( );
+
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
 }
 
 void CKeySequences::OnBnClickedEdit( ) {
-	if ( m_List.GetSelectedCount( ) < 1 ) {
+	if ( m_List.GetSelectedCount( ) != 1 ) {
 		return;
 	}
 
