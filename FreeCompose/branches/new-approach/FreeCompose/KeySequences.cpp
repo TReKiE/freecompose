@@ -184,7 +184,7 @@ void CKeySequences::_UpdateOneKeySequence( int const nItemIndex, ComposeSequence
 	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
 }
 
-void CKeySequences::_FillKeyComboList( void ) {
+void CKeySequences::_FillList( void ) {
 	SetRedraw( FALSE );
 
 	m_List.DeleteAllItems( );
@@ -288,7 +288,17 @@ BOOL CKeySequences::OnInitDialog( ) {
 		return FALSE;
 	}
 
+	//
+	// Store pointer to list's header control for later use
+	//
+
 	m_pListHeader = m_List.GetHeaderCtrl( );
+
+	//
+	// Configure the list's appearance and behavior
+	//
+
+	m_List.ModifyStyle( 0, LVS_ALIGNTOP, 0 );
 
 	DWORD dwExtendedStyles = LVS_EX_FLATSB | LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP | LVS_EX_LABELTIP | LVS_EX_TWOCLICKACTIVATE;
 	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
@@ -298,6 +308,10 @@ BOOL CKeySequences::OnInitDialog( ) {
 		dwExtendedStyles |= LVS_EX_COLUMNSNAPPOINTS;
 	}
 	m_List.SetExtendedStyle( m_List.GetExtendedStyle( ) | dwExtendedStyles );
+
+	//
+	// Configure our three columns
+	//
 
 	CString strLabels[] = {
 		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT_CODEPOINT ),
@@ -314,7 +328,37 @@ BOOL CKeySequences::OnInitDialog( ) {
 	m_nColumnWidths[1] = widths[1];
 	m_nColumnWidths[2] = widths[2];
 
-	_FillKeyComboList( );
+	//
+	// Configure groups
+	//
+
+	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
+		LVGROUP lv = { sizeof( LVGROUP ), LVGF_HEADER | LVGF_FOOTER | LVGF_GROUPID | LVGF_ALIGN };
+		CString tmp;
+
+		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+			tmp.Format( L"Top of compose sequence group #%d: '%s'", groupIndex, m_Options.ComposeSequenceGroups[groupIndex] );
+			wcscpy_s( lv.pszHeader, lv.cchHeader, static_cast<LPCWSTR>( tmp ) );
+
+			tmp.Format( L"Bottom of Compose sequence group #%d: '%s'", groupIndex, m_Options.ComposeSequenceGroups[groupIndex] );
+			wcscpy_s( lv.pszFooter, lv.cchFooter, static_cast<LPCWSTR>( tmp ) );
+
+			lv.iGroupId = groupIndex;
+			lv.uAlign = LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT;
+
+			int ret = m_List.SetGroupInfo( groupIndex, &lv );
+			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, m_Options.ComposeSequenceGroups[groupIndex].Name, ret );
+		}
+
+		m_List.EnableGroupView( TRUE );
+	}
+
+	//
+	// Fill the list with compose sequences
+	//
+
+	_FillList( );
 	
 	return TRUE;
 }
@@ -362,13 +406,12 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 		return;
 	}
 
-	int count = m_List.GetItemCount( );
-
 	if ( !m_List.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
 		debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
 	}
 
 	m_ListIndexMap.RemoveAll( );
+	int count = m_List.GetItemCount( );
 	for ( int n = 0; n < count; n++ ) {
 		m_ListIndexMap.SetAtGrow( n, static_cast<unsigned>( m_List.GetItemData( n ) ) );
 	}
@@ -394,10 +437,24 @@ void CKeySequences::OnBnClickedAdd( ) {
 
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK == rc ) {
+		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+		int focusedGroup = -1;
+		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+			LVGROUP lv = { sizeof( LVGROUP ), LVGF_STATE };
+			lv.stateMask = LVGS_FOCUSED;
+			int ret = m_List.GetGroupInfo( groupIndex, &lv );
+			if ( ( lv.state & LVGS_FOCUSED ) != 0 ) {
+				focusedGroup = groupIndex;
+				break;
+			}
+		}
+		if ( -1 == focusedGroup ) {
+			focusedGroup = 0;
+		}
+
 		SetRedraw( FALSE );
 
-		// TODO figure out which group we should add to
-		unsigned key = _MakeComposeSequenceGroupKey( 0, m_Options.ComposeSequenceGroups[0].ComposeSequences.Add( sequence ) );
+		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
 		_AddOneKeySequence( sequence, key );
 		_SetColumnWidths( );
 

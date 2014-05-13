@@ -68,7 +68,7 @@ private:
 	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence );
 	int _AddOneKeySequence( ComposeSequence const& composeSequence, unsigned const csgkey );
 	void _UpdateOneKeySequence( int const nItemIndex, ComposeSequence const& sequence );
-	void _FillKeyComboList( void );
+	void _FillList( void );
 	void _SetColumnWidths( void );
 	void _SetColumnSortState( int nColumn, SORTSTATE state );
 
