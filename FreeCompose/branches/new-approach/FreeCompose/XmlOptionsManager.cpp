@@ -205,7 +205,7 @@ static inline XDocument CreateDOMDocument( void ) {
 
 // Resource loading
 
-static inline bool LoadBinaryResource( unsigned uID, void*& pvResource, size_t& cbResource ) {
+static inline bool LoadBinaryResource( unsigned const uID, void*& pvResource, size_t& cbResource ) {
 	HRSRC hrsrc = FindResource( nullptr, MAKEINTRESOURCE( uID ), L"XMLFILE" );
 	if ( !hrsrc ) {
 		debug( L"LoadBinaryResourceAsBstr: FindResource failed, error is %lu", GetLastError( ) );
@@ -229,7 +229,7 @@ static inline bool LoadBinaryResource( unsigned uID, void*& pvResource, size_t& 
 	return true;
 }
 
-static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
+static inline BSTR LoadBinaryResourceAsBstr( unsigned const uID ) {
 	void* pvResource = nullptr;
 	size_t cbResource = 0;
 
@@ -252,6 +252,24 @@ static inline BSTR LoadBinaryResourceAsBstr( unsigned uID ) {
 	pwz[cb] = 0;
 
 	return bstrResource;
+}
+
+static inline bool _LoadXDocumentFromResource( unsigned const uID, XDocument& doc ) {
+	_bstr_t bstrXml( LoadBinaryResourceAsBstr( uID ), false );
+
+	try {
+		_variant_t result = doc->loadXML( bstrXml );
+		if ( !static_cast<VARIANT_BOOL>( result ) ) {
+			debug( L"_LoadXDocumentFromResource: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
+			return false;
+		}
+	}
+	catch ( _com_error e ) {
+		debug( L"_LoadXDocumentFromResource: Caught exception loading default configuration, hr=0x%08lX\n", e.Error( ) );
+		return false;
+	}
+
+	return true;
 }
 
 //==============================================================================
@@ -316,10 +334,13 @@ bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
 
 bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
 	CString groupName;
-	if ( node && node->attributes ) {
-		XNode Name = node->attributes->getNamedItem( L"Name" );
-		if ( Name ) {
-			groupName = static_cast<LPCWSTR>( Name->text );
+	if ( node ) {
+		XNamedNodeMap attributes = node->attributes;
+		if ( attributes ) {
+			XNode Name = attributes->getNamedItem( L"Name" );
+			if ( Name ) {
+				groupName = static_cast<LPCWSTR>( Name->text );
+			}
 		}
 	}
 
@@ -399,30 +420,68 @@ bool CXmlOptionsManager::_InterpretConfiguration( XDocument& doc ) {
 }
 
 //==============================================================================
-// CXmlOptionsManager::_LoadDefaultConfiguration
+// CXmlOptionsManager::_LoadSchema
+//
+
+bool CXmlOptionsManager::_LoadSchema( void ) {
+	_xmlSchemaCache = nullptr;
+
+	XDocument schemaDoc = CreateDOMDocument( );
+	if ( !schemaDoc ) {
+		debug( L"CXmlOptionsManager::_LoadSchema: Can't create instance of DOMDocument\n" );
+		return false;
+	}
+
+	if ( !_LoadXDocumentFromResource( IDX_FCCONFIGURATION_SCHEMA, schemaDoc ) ) {
+		debug( L"CXmlOptionsManager::_LoadSchema: _LoadXDocumentFromResource failed\n" );
+		return false;
+	}
+
+	HRESULT hr = _xmlSchemaCache.CreateInstance( L"Msxml2.XMLSchemaCache.6.0" );
+	if ( FAILED( hr ) ) {
+		debug( L"CXmlOptionsManager::_LoadSchema: Can't create instance of XMLSchemaCache, hr=0x%08lX\n", hr );
+		return false;
+	}
+
+	try {
+		_xmlSchemaCache->add( _bstr_t( XML_NAMESPACE ), _variant_t( schemaDoc.GetInterfacePtr( ) ) );
+	}
+	catch ( _com_error e ) {
+		debug( L"CXmlOptionsManager::_LoadSchema: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
+		IErrorInfoPtr pErrorInfo = e.ErrorInfo( );
+		if ( pErrorInfo ) {
+			BSTR bstrDescription, bstrSource;
+			hr = pErrorInfo->GetDescription( &bstrDescription );
+			hr = pErrorInfo->GetSource( &bstrSource );
+			debug( L"+ Description: %s\n+ Source: %s\n", bstrDescription, bstrSource );
+			return false;
+		}
+		return false;
+	}
+	return true;
+}
+
+//==============================================================================
+// CXmlOptionsManager::LoadDefaultConfiguration
 //
 
 bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
+		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't create instance of DOMDocument\n" );
 		return false;
 	}
-
-	_bstr_t bstrDefaultConfiguration( LoadBinaryResourceAsBstr( IDX_DEFAULT_CONFIGURATION ), false );
-
-	//
-	// Load XML from memory
-	//
-	try {
-		_variant_t result = doc->loadXML( bstrDefaultConfiguration );
-		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: doc->loadXML failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<LPCWSTR>( doc->parseError->reason ) );
-			return false;
-		}
+	if ( !_LoadSchema( ) ) {
+		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
 	}
-	catch ( _com_error e ) {
-		debug( L"CXmlOptionsManager::_LoadDefaultConfiguration: Caught exception loading default configuration, hr=0x%08lX\n", e.Error( ) );
+	if ( _xmlSchemaCache ) {
+		XDocument2 doc2 = doc;
+		doc2->schemas = _xmlSchemaCache.GetInterfacePtr( );
+		doc->validateOnParse = VARIANT_TRUE;
+	}
+
+	if ( !_LoadXDocumentFromResource( IDX_DEFAULT_CONFIGURATION, doc ) ) {
+		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: _LoadXDocumentFromResource failed\n" );
 		return false;
 	}
 
@@ -430,35 +489,43 @@ bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 }
 
 //==============================================================================
-// CXmlOptionsManager::_LoadXmlFile
+// CXmlOptionsManager::LoadFromFile
 //
 
 bool CXmlOptionsManager::LoadFromFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"CXmlOptionsManager::_LoadXmlFile: Can't ensure app data folder exists\n" );
+		debug( L"CXmlOptionsManager::LoadFromFile: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
 	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
-
-	XDocument doc = CreateDOMDocument( );
-	if ( !doc ) {
-		debug( L"CXmlOptionsManager::_LoadXmlFile: Can't create instance of DOMDocument\n" );
-		return false;
-	}
-
-	//
-	// Load XML from disk
-	//
+	XDocument doc;
 	try {
+		doc = CreateDOMDocument( );
+		if ( !doc ) {
+			debug( L"CXmlOptionsManager::LoadFromFile: Can't create instance of DOMDocument\n" );
+			return false;
+		}
+		if ( !_LoadSchema( ) ) {
+			debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
+		}
+		if ( _xmlSchemaCache ) {
+			XDocument2 doc2 = doc;
+			doc2->schemas = _xmlSchemaCache.GetInterfacePtr( );
+			doc->validateOnParse = VARIANT_TRUE;
+		}
+
+		//
+		// Load XML from disk
+		//
 		_variant_t result = doc->load( _variant_t( str ) );
 		if ( !static_cast<VARIANT_BOOL>( result ) ) {
-			debug( L"CXmlOptionsManager::_LoadXmlFile: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
+			debug( L"CXmlOptionsManager::LoadFromFile: doc->load failed: line %ld column %ld: hr=0x%08lX %s", doc->parseError->line, doc->parseError->linepos, doc->parseError->errorCode, static_cast<wchar_t const*>( doc->parseError->reason ) );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"CXmlOptionsManager::_LoadXmlFile: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::LoadFromFile: Caught exception loading configuration file, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -466,12 +533,12 @@ bool CXmlOptionsManager::LoadFromFile( void ) {
 }
 
 //==============================================================================
-// CXmlOptionsManager::_SaveXmlFile
+// CXmlOptionsManager::SaveToFile
 //
 
 bool CXmlOptionsManager::SaveToFile( void ) {
 	if ( !EnsureFreeComposeFolderExists( ) ) {
-		debug( L"CXmlOptionsManager::_SaveXmlFile: Can't ensure app data folder exists\n" );
+		debug( L"CXmlOptionsManager::SaveToFile: Can't ensure app data folder exists\n" );
 		return false;
 	}
 
@@ -479,7 +546,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 
 	XDocument doc = CreateDOMDocument( );
 	if ( !doc ) {
-		debug( L"CXmlOptionsManager::_SaveXmlFile: Can't create instance of DOMDocument\n" );
+		debug( L"CXmlOptionsManager::SaveToFile: Can't create instance of DOMDocument\n" );
 		return false;
 	}
 
@@ -549,7 +616,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 			}
 	}
 	catch ( _com_error e ) {
-		debug( L"CXmlOptionsManager::_SaveXmlFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::SaveToFile: Caught exception creating elements, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 
@@ -559,12 +626,12 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 	try {
 		HRESULT hr = doc->save( _variant_t( str ) );
 		if ( FAILED( hr ) ) {
-			debug( L"CXmlOptionsManager::_SaveXmlFile: doc->save failed, hr=0x%08lX\n", hr );
+			debug( L"CXmlOptionsManager::SaveToFile: doc->save failed, hr=0x%08lX\n", hr );
 			return false;
 		}
 	}
 	catch ( _com_error e ) {
-		debug( L"CXmlOptionsManager::_SaveXmlFile: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
+		debug( L"CXmlOptionsManager::SaveToFile: Caught exception saving configuration, hr=0x%08lX\n", e.Error( ) );
 		return false;
 	}
 

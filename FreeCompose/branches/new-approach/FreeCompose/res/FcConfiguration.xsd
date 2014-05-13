@@ -9,6 +9,7 @@
 	</xs:simpleType>
 	<xs:simpleType name="CapsLockSwapModeEnumeration">
 		<xs:restriction base="xs:string">
+			<xs:enumeration value="normal" />
 			<xs:enumeration value="swap" />
 			<xs:enumeration value="replace" />
 		</xs:restriction>
@@ -16,24 +17,22 @@
 	<xs:element name="FcConfiguration">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="SyntaxVersion" type="xs:unsignedInt" default="1" />
 				<xs:element name="Options">
 					<xs:complexType>
 						<xs:sequence>
 							<xs:element name="Startup">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="StartActive" type="xs:boolean" />
-										<xs:element name="StartWithWindows" type="xs:boolean" />
+										<xs:element name="StartActive" type="xs:boolean" minOccurs="0" maxOccurs="1" default="false" />
+										<xs:element name="StartWithWindows" type="xs:boolean" minOccurs="0" maxOccurs="1" default="false" />
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
 							<xs:element name="Keyboard">
 								<xs:complexType>
 									<xs:sequence>
-										<xs:element name="SwapCapsLock" type="xs:boolean" />
-										<xs:element name="CapsLockToggleMode" type="CapsLockToggleModeEnumeration" />
-										<xs:element name="CapsLockSwapMode" type="CapsLockSwapModeEnumeration" />
+										<xs:element name="CapsLockToggleMode" type="CapsLockToggleModeEnumeration" minOccurs="0" maxOccurs="1" default="normal" />
+										<xs:element name="CapsLockSwapMode" type="CapsLockSwapModeEnumeration" minOccurs="0" maxOccurs="1" default="normal" />
 										<xs:element name="ComposeKey" type="xs:unsignedByte" />
 										<xs:element name="SwapCapsLockKey" type="xs:unsignedByte" />
 									</xs:sequence>
