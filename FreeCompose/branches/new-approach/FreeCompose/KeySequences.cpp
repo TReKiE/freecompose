@@ -333,21 +333,16 @@ BOOL CKeySequences::OnInitDialog( ) {
 	//
 
 	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
-		LVGROUP lv = { sizeof( LVGROUP ), LVGF_HEADER | LVGF_FOOTER | LVGF_GROUPID | LVGF_ALIGN };
-		CString tmp;
-
 		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
-			tmp.Format( L"Top of compose sequence group #%d: '%s'", groupIndex, m_Options.ComposeSequenceGroups[groupIndex] );
-			wcscpy_s( lv.pszHeader, lv.cchHeader, static_cast<LPCWSTR>( tmp ) );
-
-			tmp.Format( L"Bottom of Compose sequence group #%d: '%s'", groupIndex, m_Options.ComposeSequenceGroups[groupIndex] );
-			wcscpy_s( lv.pszFooter, lv.cchFooter, static_cast<LPCWSTR>( tmp ) );
-
+			LVGROUP lv = { sizeof( LVGROUP ), LVGF_HEADER | LVGF_GROUPID | LVGF_STATE | LVGF_ALIGN };
+			lv.pszHeader = const_cast<LPWSTR>( static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ) );
 			lv.iGroupId = groupIndex;
+			lv.stateMask = LVGS_COLLAPSIBLE;
+			lv.state = LVGS_COLLAPSIBLE;
 			lv.uAlign = LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT;
 
-			int ret = m_List.SetGroupInfo( groupIndex, &lv );
+			int ret = m_List.InsertGroup( groupIndex, &lv );
 			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, m_Options.ComposeSequenceGroups[groupIndex].Name, ret );
 		}
 
