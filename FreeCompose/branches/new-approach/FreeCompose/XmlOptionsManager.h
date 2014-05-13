@@ -16,12 +16,14 @@ class CXmlOptionsManager;
 using XAttribute             = MSXML2::IXMLDOMAttributePtr;
 using XCDATASection          = MSXML2::IXMLDOMCDATASectionPtr;
 using XDocument              = MSXML2::IXMLDOMDocumentPtr;
+using XDocument2             = MSXML2::IXMLDOMDocument2Ptr;
 using XElement               = MSXML2::IXMLDOMElementPtr;
 using XNamedNodeMap          = MSXML2::IXMLDOMNamedNodeMapPtr;
 using XNode                  = MSXML2::IXMLDOMNodePtr;
 using XNodeList              = MSXML2::IXMLDOMNodeListPtr;
 using XParseError            = MSXML2::IXMLDOMParseErrorPtr;
 using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
+using XSchemaCollection      = MSXML2::IXMLDOMSchemaCollectionPtr;
 using XText                  = MSXML2::IXMLDOMTextPtr;
 
 using MethodPtr              = bool (CXmlOptionsManager::*)( XNode const& );
@@ -87,6 +89,9 @@ public:
 private:
 	ComposeSequenceArray* _pCurrentComposeSequences;
 	COptionsData* _pOptionsData;
+	XSchemaCollection _xmlSchemaCache;
+
+	bool _LoadSchema( void );
 
 	bool _ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result );
 
