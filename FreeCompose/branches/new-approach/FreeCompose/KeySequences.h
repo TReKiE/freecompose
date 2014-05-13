@@ -48,7 +48,6 @@ private:
 	int m_nColumnWidths[NumberOfColumns];
 
 	CListCtrl m_List;
-	CHeaderCtrl* m_pListHeader;
 	CButton m_btnAdd;
 	CButton m_btnEdit;
 	CButton m_btnRemove;

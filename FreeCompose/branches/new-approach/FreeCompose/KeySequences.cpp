@@ -213,13 +213,16 @@ void CKeySequences::_SetColumnWidths( void ) {
 }
 
 void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
+	CHeaderCtrl* pListHeader = m_List.GetHeaderCtrl( );
+
 	HDITEM hdItem = { HDI_FORMAT, };
-	if ( !m_pListHeader->GetItem( nColumn, &hdItem ) ) {
+	if ( !pListHeader->GetItem( nColumn, &hdItem ) ) {
 		debug( L"CKeySequences::_SetColumnSortState: GetItem failed?\n" );
 		return;
 	}
+
 	hdItem.fmt = ( hdItem.fmt & ~( HDF_SORTUP | HDF_SORTDOWN ) ) | ColumnHeaderFormatFlagsMap[state];
-	if ( !m_pListHeader->SetItem( nColumn, &hdItem ) ) {
+	if ( !pListHeader->SetItem( nColumn, &hdItem ) ) {
 		debug( L"CKeySequences::_SetColumnSortState: SetItem failed?\n" );
 		return;
 	}
@@ -289,12 +292,6 @@ BOOL CKeySequences::OnInitDialog( ) {
 	}
 
 	//
-	// Store pointer to list's header control for later use
-	//
-
-	m_pListHeader = m_List.GetHeaderCtrl( );
-
-	//
 	// Configure the list's appearance and behavior
 	//
 
@@ -335,13 +332,18 @@ BOOL CKeySequences::OnInitDialog( ) {
 	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
 		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
-			LVGROUP lv = { sizeof( LVGROUP ), LVGF_HEADER | LVGF_GROUPID | LVGF_STATE | LVGF_ALIGN };
-			lv.pszHeader = const_cast<LPWSTR>( static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ) );
-			lv.iGroupId = groupIndex;
-			lv.stateMask = LVGS_COLLAPSIBLE;
-			lv.state = LVGS_COLLAPSIBLE;
-			lv.uAlign = LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT;
-
+			LVGROUP lv = {
+				/* cbSize    */ sizeof( LVGROUP ),
+				/* mask      */ LVGF_HEADER | LVGF_GROUPID | LVGF_STATE | LVGF_ALIGN,
+				/* pszHeader */ const_cast<LPWSTR>( static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ) ),
+				/* cchHeader */ 0,
+				/* pszFooter */ nullptr,
+				/* cchFooter */ 0,
+				/* iGroupId  */ groupIndex,
+				/* stateMask */ LVGS_COLLAPSIBLE,
+				/* state     */ LVGS_COLLAPSIBLE,
+				/* uAlign    */ LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT
+			};
 			int ret = m_List.InsertGroup( groupIndex, &lv );
 			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, m_Options.ComposeSequenceGroups[groupIndex].Name, ret );
 		}
