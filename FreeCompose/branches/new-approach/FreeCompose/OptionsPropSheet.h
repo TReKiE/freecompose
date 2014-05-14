@@ -21,6 +21,7 @@ private:
 	COptionsPropSheet( UINT    nIDCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0 );
 	COptionsPropSheet( LPCWSTR pszCaption, CWnd* pParentWnd = nullptr, UINT iSelectPage = 0 );
 
+	virtual BOOL OnInitDialog( );
 	virtual void OnApplyNow( );
 
 	afx_msg int OnCreate( LPCREATESTRUCT lpcs );
