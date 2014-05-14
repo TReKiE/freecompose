@@ -32,15 +32,22 @@ public:
 	afx_msg void OnBnClickedRemove( );
 
 private:
-	static int const ResultCodePointColumn = 0;
-	static int const ResultCharacterColumn = 1;
-	static int const SequenceColumn = 2;
-	static int const NumberOfColumns = 3;
+	static int const ResultCodePointColumn   = 0;
+	static int const ResultCharacterColumn   = 1;
+	static int const SequenceColumn          = 2;
+	static int const EnabledColumn           = 3;
+	static int const CaseInsensitiveColumn   = 4;
+	static int const ReversibleColumn        = 5;
+	static int const NumberOfColumns         = 6;
 
 	using sortcallbackfunc = int CALLBACK ( LPARAM, LPARAM, LPARAM );
 	static sortcallbackfunc* ResultColumnsSortFuncMap[ssMaximumValue];
 	static sortcallbackfunc* SequenceColumnSortFuncMap[ssMaximumValue];
+	static sortcallbackfunc* EnabledColumnSortFuncMap[ssMaximumValue];
+	static sortcallbackfunc* CaseInsensitiveColumnSortFuncMap[ssMaximumValue];
+	static sortcallbackfunc* ReversibleColumnSortFuncMap[ssMaximumValue];
 	static sortcallbackfunc** ColumnSortFuncMap[NumberOfColumns];
+	static int const ColumnHeaderFormatFlagsMap[3];
 
 private:
 	COptionsData& m_Options;
@@ -64,7 +71,7 @@ private:
 	ComposeSequence& _GetComposeSequenceFromListIndex( int const nItemIndex );
 	CString _FormatComposeSequenceResult( ComposeSequence const& sequence );
 	int _MeasureListItemText( CString const& str );
-	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence );
+	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence, CString const& strEnabled, CString const& strCaseInsensitive, CString const& strReversible );
 	void _AddGroup( int const groupIndex );
 	void _UpdateGroup( int const groupIndex );
 	int _AddComposeSequence( ComposeSequence const& composeSequence, unsigned const csgkey );
@@ -79,5 +86,11 @@ private:
 	static int CALLBACK _ListComparer_Descending_Result( LPARAM index1, LPARAM index2, LPARAM );
 	static int CALLBACK _ListComparer_Ascending_Sequence( LPARAM index1, LPARAM index2, LPARAM );
 	static int CALLBACK _ListComparer_Descending_Sequence( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Ascending_Enabled( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Descending_Enabled( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Ascending_CaseInsensitive( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Descending_CaseInsensitive( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Ascending_Reversible( LPARAM index1, LPARAM index2, LPARAM );
+	static int CALLBACK _ListComparer_Descending_Reversible( LPARAM index1, LPARAM index2, LPARAM );
 
 };
