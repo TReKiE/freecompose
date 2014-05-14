@@ -69,7 +69,7 @@ private:
 	int _SequenceIndex( unsigned const key );
 	ComposeSequence& _GetComposeSequence( unsigned const uKey );
 	ComposeSequence& _GetComposeSequenceFromListIndex( int const nItemIndex );
-	CString _FormatComposeSequenceResult( ComposeSequence const& sequence );
+	CString _FormatCodePoint( ComposeSequence const& sequence );
 	int _MeasureListItemText( CString const& str );
 	void _MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence, CString const& strEnabled, CString const& strCaseInsensitive, CString const& strReversible );
 	void _AddGroup( int const groupIndex );
