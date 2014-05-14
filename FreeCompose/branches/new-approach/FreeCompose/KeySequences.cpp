@@ -48,8 +48,10 @@ public:
 // Constants
 //
 
-const int ITEM_FUDGE_FACTOR   = 12;
-const int HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
+int const ITEM_FUDGE_FACTOR   = 12;
+int const HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
+
+wchar_t const BooleanToGlyph[2] = { L'\u2718', L'\u2714' };
 
 //
 // CKeySequences declarations
@@ -82,13 +84,34 @@ CKeySequences::sortcallbackfunc* CKeySequences::SequenceColumnSortFuncMap[] = {
 	&CKeySequences::_ListComparer_Descending_Sequence,
 };
 
+CKeySequences::sortcallbackfunc* CKeySequences::EnabledColumnSortFuncMap[] = {
+	&CKeySequences::_ListComparer_Unsorted,
+	&CKeySequences::_ListComparer_Ascending_Enabled,
+	&CKeySequences::_ListComparer_Descending_Enabled,
+};
+
+CKeySequences::sortcallbackfunc* CKeySequences::CaseInsensitiveColumnSortFuncMap[] = {
+	&CKeySequences::_ListComparer_Unsorted,
+	&CKeySequences::_ListComparer_Ascending_CaseInsensitive,
+	&CKeySequences::_ListComparer_Descending_CaseInsensitive,
+};
+
+CKeySequences::sortcallbackfunc* CKeySequences::ReversibleColumnSortFuncMap[] = {
+	&CKeySequences::_ListComparer_Unsorted,
+	&CKeySequences::_ListComparer_Ascending_Reversible,
+	&CKeySequences::_ListComparer_Descending_Reversible,
+};
+
 CKeySequences::sortcallbackfunc** CKeySequences::ColumnSortFuncMap[] = {
 	ResultColumnsSortFuncMap,
 	ResultColumnsSortFuncMap,
 	SequenceColumnSortFuncMap,
+	EnabledColumnSortFuncMap,
+	CaseInsensitiveColumnSortFuncMap,
+	ReversibleColumnSortFuncMap,
 };
 
-int const ColumnHeaderFormatFlagsMap[] = {
+int const CKeySequences::ColumnHeaderFormatFlagsMap[] = {
 	0,
 	HDF_SORTUP,
 	HDF_SORTDOWN
@@ -147,10 +170,13 @@ inline int CKeySequences::_MeasureListItemText( CString const& str ) {
 	return m_List.GetStringWidth( str ) + ITEM_FUDGE_FACTOR;
 }
 
-inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence ) {
-	m_nColumnWidths[0] = std::max( _MeasureListItemText( strCodePoint ), m_nColumnWidths[0] );
-	m_nColumnWidths[1] = std::max( _MeasureListItemText( strCharacter ), m_nColumnWidths[1] );
-	m_nColumnWidths[2] = std::max( _MeasureListItemText( strSequence  ), m_nColumnWidths[2] );
+inline void CKeySequences::_MeasureListItemStringsAndUpdate( CString const& strCodePoint, CString const& strCharacter, CString const& strSequence, CString const& strEnabled, CString const& strCaseInsensitive, CString const& strReversible ) {
+	m_nColumnWidths[0] = std::max( _MeasureListItemText( strCodePoint       ), m_nColumnWidths[0] );
+	m_nColumnWidths[1] = std::max( _MeasureListItemText( strCharacter       ), m_nColumnWidths[1] );
+	m_nColumnWidths[2] = std::max( _MeasureListItemText( strSequence        ), m_nColumnWidths[2] );
+	m_nColumnWidths[3] = std::max( _MeasureListItemText( strEnabled         ), m_nColumnWidths[3] );
+	m_nColumnWidths[4] = std::max( _MeasureListItemText( strCaseInsensitive ), m_nColumnWidths[4] );
+	m_nColumnWidths[5] = std::max( _MeasureListItemText( strReversible      ), m_nColumnWidths[5] );
 }
 
 void CKeySequences::_AddGroup( int const groupIndex ) {
@@ -177,8 +203,11 @@ void CKeySequences::_UpdateGroup( int const groupIndex ) {
 }
 
 int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigned const csgKey ) {
-	CString strResult( _FormatComposeSequenceResult( sequence ) );
-	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
+	CString strResult          ( _FormatComposeSequenceResult( sequence ) );
+	CString strEnabled         ( BooleanToGlyph[ !sequence.Disabled       ] );
+	CString strCaseInsensitive ( BooleanToGlyph[ sequence.CaseInsensitive ] );
+	CString strReversible      ( BooleanToGlyph[ sequence.Reversible      ] );
+	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence, strEnabled, strCaseInsensitive, strReversible );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID };
 	lvItem.iItem = m_List.GetItemCount( );
@@ -187,22 +216,31 @@ int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigne
 	lvItem.lParam = static_cast<LPARAM>( csgKey );
 	lvItem.iGroupId = _GroupIndex( csgKey );
 	int nItemIndex = m_List.InsertItem( &lvItem );
-	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
-	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,    0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence,  0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 3, LVIF_TEXT, strEnabled,         0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 4, LVIF_TEXT, strCaseInsensitive, 0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 5, LVIF_TEXT, strReversible,      0, 0, 0, 0 );
 	return nItemIndex;
 }
 
 void CKeySequences::_UpdateComposeSequence( int const nItemIndex, ComposeSequence const& sequence ) {
-	CString strResult( _FormatComposeSequenceResult( sequence ) );
-	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence );
+	CString strResult          ( _FormatComposeSequenceResult( sequence ) );
+	CString strEnabled         ( BooleanToGlyph[ !sequence.Disabled       ] );
+	CString strCaseInsensitive ( BooleanToGlyph[ sequence.CaseInsensitive ] );
+	CString strReversible      ( BooleanToGlyph[ sequence.Reversible      ] );
+	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence, strEnabled, strCaseInsensitive, strReversible );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_GROUPID };
 	lvItem.iItem = nItemIndex;
 	lvItem.pszText = const_cast<LPWSTR>( static_cast<LPCWSTR>( strResult ) );
 	lvItem.iGroupId = _GroupIndex( m_ListIndexMap[nItemIndex] );
 	m_List.SetItem( &lvItem );
-	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,   0, 0, 0, 0 );
-	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence, 0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, sequence.Result,    0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Sequence,  0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 3, LVIF_TEXT, strEnabled,         0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 4, LVIF_TEXT, strCaseInsensitive, 0, 0, 0, 0 );
+	m_List.SetItem( nItemIndex, 5, LVIF_TEXT, strReversible,      0, 0, 0, 0 );
 }
 
 void CKeySequences::_FillList( void ) {
@@ -231,6 +269,9 @@ void CKeySequences::_SetColumnWidths( void ) {
 	m_List.SetColumnWidth( 0, m_nColumnWidths[0] );
 	m_List.SetColumnWidth( 1, m_nColumnWidths[1] );
 	m_List.SetColumnWidth( 2, m_nColumnWidths[2] );
+	m_List.SetColumnWidth( 3, m_nColumnWidths[3] );
+	m_List.SetColumnWidth( 4, m_nColumnWidths[4] );
+	m_List.SetColumnWidth( 5, m_nColumnWidths[5] );
 }
 
 void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
@@ -294,6 +335,54 @@ int CKeySequences::_ListComparer_Descending_Sequence( LPARAM index1, LPARAM inde
 	return sequence2.CompareNoCase( sequence1 );
 }
 
+int CKeySequences::_ListComparer_Ascending_Enabled( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool enabled1 = !self->_GetComposeSequenceFromListIndex( index1 ).Disabled;
+	bool enabled2 = !self->_GetComposeSequenceFromListIndex( index2 ).Disabled;
+
+	return enabled1 > enabled2;
+}
+
+int CKeySequences::_ListComparer_Descending_Enabled( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool enabled1 = !self->_GetComposeSequenceFromListIndex( index1 ).Disabled;
+	bool enabled2 = !self->_GetComposeSequenceFromListIndex( index2 ).Disabled;
+
+	return enabled2 > enabled1;
+}
+
+int CKeySequences::_ListComparer_Ascending_CaseInsensitive( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool caseInsensitive1 = !self->_GetComposeSequenceFromListIndex( index1 ).CaseInsensitive;
+	bool caseInsensitive2 = !self->_GetComposeSequenceFromListIndex( index2 ).CaseInsensitive;
+
+	return caseInsensitive1 > caseInsensitive2;
+}
+
+int CKeySequences::_ListComparer_Descending_CaseInsensitive( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool caseInsensitive1 = !self->_GetComposeSequenceFromListIndex( index1 ).CaseInsensitive;
+	bool caseInsensitive2 = !self->_GetComposeSequenceFromListIndex( index2 ).CaseInsensitive;
+
+	return caseInsensitive2 > caseInsensitive1;
+}
+
+int CKeySequences::_ListComparer_Ascending_Reversible( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool reversible1 = !self->_GetComposeSequenceFromListIndex( index1 ).Reversible;
+	bool reversible2 = !self->_GetComposeSequenceFromListIndex( index2 ).Reversible;
+
+	return reversible1 > reversible2;
+}
+
+int CKeySequences::_ListComparer_Descending_Reversible( LPARAM index1, LPARAM index2, LPARAM lparamSelf ) {
+	CKeySequences* self = reinterpret_cast<CKeySequences*>( lparamSelf );
+	bool reversible1 = !self->_GetComposeSequenceFromListIndex( index1 ).Reversible;
+	bool reversible2 = !self->_GetComposeSequenceFromListIndex( index2 ).Reversible;
+
+	return reversible2 > reversible1;
+}
+
 //
 // CKeySequences implementation
 //
@@ -331,20 +420,19 @@ BOOL CKeySequences::OnInitDialog( ) {
 	// Configure our three columns
 	//
 
-	CString strLabels[] = {
+	CString strLabels[NumberOfColumns] = {
 		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT_CODEPOINT ),
 		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT_CHARACTER ),
 		LoadFromStringTable( IDS_KEYSEQUENCES_SEQUENCE ),
+		CString( ),
+		L"Ignore case", //LoadFromStringTable( IDS_KEYSEQUENCES_CASEINSENSITIVE ),
+		LoadFromStringTable( IDS_KEYSEQUENCES_REVERSIBLE ),
 	};
 
-	int widths[3];
-	for ( int n = 0; n < 3; n++ ) {
-		widths[n] = m_List.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
-		m_List.InsertColumn( n, strLabels[n], LVCFMT_LEFT, widths[n] );
+	for ( int n = 0; n < NumberOfColumns; n++ ) {
+		m_nColumnWidths[n] = m_List.GetStringWidth( strLabels[n] ) + HEADER_FUDGE_FACTOR;
+		m_List.InsertColumn( n, strLabels[n], LVCFMT_LEFT, m_nColumnWidths[n] );
 	}
-	m_nColumnWidths[0] = widths[0];
-	m_nColumnWidths[1] = widths[1];
-	m_nColumnWidths[2] = widths[2];
 
 	//
 	// Configure groups
@@ -402,6 +490,7 @@ void CKeySequences::OnListDoubleClick( NMHDR* /*pnmhdr*/, LRESULT* pResult ) {
 
 void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	NMLISTVIEW* pnmlv = reinterpret_cast<NMLISTVIEW*>( pnmhdr );
+	*pResult = 0;
 
 	int nPrevSortColumn = m_nSortColumn;
 	m_nSortColumn = pnmlv->iSubItem;
