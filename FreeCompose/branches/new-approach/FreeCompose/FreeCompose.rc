@@ -467,6 +467,11 @@ BEGIN
     IDS_APPSOUND_COMPOSITION_ESCAPE "Composition: Escape"
 END
 
+STRINGTABLE
+BEGIN
+    IDS_DEFAULT_GROUP_NAME  "Default"
+END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

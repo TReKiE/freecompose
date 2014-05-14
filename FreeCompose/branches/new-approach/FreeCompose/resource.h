@@ -55,6 +55,7 @@
 #define IDS_VK_PAUSE                    8012
 #define IDS_VK_TAB                      8013
 #define IDS_VK_BACK                     8014
+#define IDS_DEFAULT_GROUP_NAME          9001
 #define IDS_ABOUT_VERSION               10001
 #define IDS_OPTIONSPROPSHEET_TITLE      11001
 #define IDS_KEYSEQUENCES_SEQUENCE       12001
