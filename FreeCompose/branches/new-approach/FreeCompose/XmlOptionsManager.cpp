@@ -308,6 +308,9 @@ bool CXmlOptionsManager::_InterpretGroupNode( XNode const& node ) {
 			XNode Name = attributes->getNamedItem( L"Name" );
 			if ( Name ) {
 				groupName = static_cast<LPCWSTR>( Name->text );
+				if ( groupName.IsEmpty( ) ) {
+					groupName = LoadFromStringTable( IDS_DEFAULT_GROUP_NAME );
+				}
 			}
 		}
 	}

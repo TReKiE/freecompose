@@ -13,7 +13,7 @@
         </Keyboard>
     </Options>
     <Mappings>
-        <Group Name="Default">
+        <Group Name="">
             <Mapping>
                 <Sequence>c=</Sequence>
                 <Result>€</Result>

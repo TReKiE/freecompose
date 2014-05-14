@@ -91,7 +91,7 @@ void COptionsData::_LoadSequencesFromRegistry( void ) {
 	ComposeSequenceGroup group;
 	ComposeSequence sequence;
 	CString section;
-	group.Name = L"Default";
+	group.Name = LoadFromStringTable( IDS_DEFAULT_GROUP_NAME );
 
 	for ( unsigned n = 0; n < count; n++ ) {
 		section.Format( L"Mapping\\%u", n );
