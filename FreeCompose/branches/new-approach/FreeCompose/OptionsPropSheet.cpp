@@ -56,10 +56,20 @@ int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
 	//                                    |         `----------- WS_EX_WINDOWEDGE
 	//                                    `--------------------- WS_EX_CONTROLPARENT
 
-	ModifyStyle( WS_MAXIMIZEBOX, WS_MINIMIZEBOX );
+	ModifyStyle( WS_MAXIMIZEBOX, WS_MINIMIZEBOX | WS_SIZEBOX );
 	ModifyStyleEx( 0U, WS_EX_APPWINDOW );
 
 	return 0;
+}
+
+int COptionsPropSheet::OnInitDialog( ) {
+	BOOL bRet = CPropertySheet::OnInitDialog( );
+
+	CRect rect;
+	::GetWindowRect( m_hWnd, &rect );
+	::SetWindowPos( m_hWnd, nullptr, 0, 0, rect.right - rect.left + 8, rect.bottom - rect.top + 10, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER );
+
+	return bRet;
 }
 
 void COptionsPropSheet::OnApplyNow( ) {
