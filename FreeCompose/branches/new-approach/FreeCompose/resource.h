@@ -2,14 +2,15 @@
 // Microsoft Visual C++ generated include file.
 // Used by FreeCompose.rc
 //
+#define IDOK_ADDANOTHER                 25
 #define IDP_OLE_INIT_FAILED             100
 #define IDR_MAINFRAME                   128
 #define IDM_TRAY_MENU                   129
 #define IDD_ABOUTBOX                    130
 #define IDD_KEYSEQUENCES                131
 #define IDD_FEATURES                    132
-#define IDD_EDITKEYSEQUENCE             133
-#define IDD_EDITKEYSEQUENCE2            134
+#define IDD_EDITKEYSEQUENCE_OLD         133
+#define IDD_EDITKEYSEQUENCE             134
 #define IDD_SOUNDS                      135
 #define IDADD                           1001
 #define IDEDIT                          1002
@@ -25,13 +26,16 @@
 #define IDC_CAPSLOCKTOGGLEMODE_NORMAL   4006
 #define IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE 4007
 #define IDC_CAPSLOCKTOGGLEMODE_DISABLED 4008
-#define IDC_SEQUENCE                    5001
-#define IDC_RESULT                      5002
-#define IDC_EDITKEYSEQUENCE             5101
-#define IDC_RESULT_ASCHARACTER          5102
-#define IDC_RESULT_ASHEXCODEPOINT       5103
-#define IDC_RESULT_ASDECCODEPOINT       5104
-#define IDC_EDITRESULT                  5105
+#define IDC_EDITKEYSEQUENCE             5001
+#define IDC_RESULT_ASCHARACTER          5002
+#define IDC_RESULT_ASHEXCODEPOINT       5003
+#define IDC_RESULT_ASDECCODEPOINT       5004
+#define IDC_EDITRESULT                  5005
+#define IDC_OPTION_ENABLED              5006
+#define IDC_OPTION_CASEINSENSITIVE      5007
+#define IDC_OPTION_REVERSIBLE           5008
+#define IDC_SEQUENCE                    5901
+#define IDC_RESULT                      5902
 #define IDS_MAINFRAME_ENABLED           6001
 #define IDS_MAINFRAME_DISABLED          6002
 #define IDS_MAINFRAME_MISMATCH_TITLE    6003
