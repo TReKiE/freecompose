@@ -7,6 +7,30 @@
 
 #include "Utils.h"
 
+//==============================================================================
+//
+// Guide to this dialog's controls
+// ===============================
+//
+// Type    Resource ID
+// ------  --------------------------
+// Edit    IDC_EDITKEYSEQUENCE
+//
+// Radio   IDC_RESULT_ASCHARACTER
+// Radio   IDC_RESULT_ASHEXCODEPOINT
+// Radio   IDC_RESULT_ASDECCODEPOINT
+// Edit    IDC_EDITRESULT
+//
+// Check   IDC_OPTION_ENABLED
+// Check   IDC_OPTION_CASEINSENSITIVE
+// Check   IDC_OPTION_REVERSIBLE
+//
+// Button  IDOK_ADDANOTHER
+// Button  IDOK
+// Button  IDCANCEL
+//
+//==============================================================================
+
 IMPLEMENT_DYNAMIC(CComposeSequenceEditor, CDialog)
 
 BEGIN_MESSAGE_MAP(CComposeSequenceEditor, CDialog)
@@ -33,7 +57,7 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 
 void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& result ) {
 	if ( IDC_RESULT != nIDC ) {
-		debug( L"CComposeSequenceEditor::DDX_Char: wrong control ID %d?!\n", nIDC );
+		debug( L"CComposeSequenceEditor::DDX_Result: wrong control ID %d?!\n", nIDC );
 		return;
 	}
 
@@ -44,9 +68,9 @@ void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& 
 		m_editResult.GetWindowText( str );
 		if ( !str.IsEmpty( ) && !Utf16ToUtf32( str, ch ) ) {
 			if ( 1 == str.GetLength( ) ) {
-				debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-16 character U+%04hX to UTF-32?\n", str[0] );
+				debug( L"CComposeSequenceEditor::DDX_Result: Couldn't convert UTF-16 character U+%04hX to UTF-32?\n", str[0] );
 			} else {
-				debug( L"CComposeSequenceEditor::DDX_Char: Couldn't convert UTF-16 characters U+%04hX U+%04hX to UTF-32?\n", str[0], str[1] );
+				debug( L"CComposeSequenceEditor::DDX_Result: Couldn't convert UTF-16 characters U+%04hX U+%04hX to UTF-32?\n", str[0], str[1] );
 			}
 			pDX->Fail( );
 		} else {
