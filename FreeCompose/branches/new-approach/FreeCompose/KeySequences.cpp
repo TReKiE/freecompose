@@ -248,7 +248,7 @@ void CKeySequences::_FillList( void ) {
 		m_List.DeleteAllItems( );
 		m_ListIndexMap.RemoveAll( );
 
-		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+		INT_PTR groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 			INT_PTR sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
 			for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
