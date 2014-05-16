@@ -95,6 +95,30 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ExecutablePath>$(ICUROOT)bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ExecutablePath>$(ICUROOT)bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExecutablePath>$(ICUROOT)bin64;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib64;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ExecutablePath>$(ICUROOT)bin64;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib64;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
