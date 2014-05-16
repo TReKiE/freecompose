@@ -68,15 +68,15 @@ bool COptionsData::operator!=( COptionsData const& options ) const {
 
 bool COptionsData::_CheckIfRegistryKeyExists( void ) const {
 	CString registryKeyName( CString( L"Software\\" ) + theApp.m_pszRegistryKey + L"\\" + theApp.m_pszProfileName );
-	HKEY hkey;
+	CRegKey key;
 
-	LSTATUS rc = RegOpenKeyEx( HKEY_CURRENT_USER, registryKeyName, 0, KEY_READ, &hkey );
+	LSTATUS rc = key.Open( HKEY_CURRENT_USER, static_cast<LPCWSTR>( registryKeyName ), KEY_READ );
 	if ( ERROR_SUCCESS != rc ) {
 		debug( L"COptionsData::_LoadFromRegistry: can't open registry key '%s': error %ld\n", registryKeyName.GetString( ), rc );
 		return false;
 	}
 
-	RegCloseKey( hkey );
+	key.Close( );
 	return true;
 }
 
@@ -137,11 +137,11 @@ bool COptionsData::_LoadFromRegistry( void ) {
 
 void COptionsData::_UpdateRunKey( void ) {
 	LSTATUS rc;
-	HKEY hkey;
+	CRegKey key;
 	
-	rc = RegOpenKeyEx( HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hkey );
+	rc = key.Open( HKEY_CURRENT_USER, L"Software\\Microsoft\\Windows\\CurrentVersion\\Run", KEY_SET_VALUE );
 	if ( ERROR_SUCCESS != rc ) {
-		debug( L"COptionsData::_UpdateRunKey: RegOpenKeyEx failed: %d\n", rc );
+		debug( L"COptionsData::_UpdateRunKey: CRegKey::Open failed: %d\n", rc );
 		return;
 	}
 
@@ -150,9 +150,9 @@ void COptionsData::_UpdateRunKey( void ) {
 		rc = GetModuleFileNameEx( GetCurrentProcess( ), AfxGetApp( )->m_hInstance, lpszImageFilename, _countof( lpszImageFilename ) );
 		if ( rc > 0 ) {
 #ifndef _DEBUG
-			rc = RegSetValueEx( hkey, L"FreeCompose", 0, REG_SZ, reinterpret_cast<LPBYTE>( lpszImageFilename ), static_cast<DWORD>( sizeof(wchar_t) * ( wcslen( lpszImageFilename ) + 1 ) ) );
+			rc = key.SetStringValue( L"FreeCompose", lpszImageFilename, REG_SZ );
 			if ( ERROR_SUCCESS != rc ) {
-				debug( L"COptionsData::_UpdateRunKey: RegSetValueEx failed: %d\n", rc );
+				debug( L"COptionsData::_UpdateRunKey: key.SetStringValue failed: %d\n", rc );
 			}
 #endif
 		} else {
@@ -160,13 +160,13 @@ void COptionsData::_UpdateRunKey( void ) {
 		}
 	} else {
 #ifndef _DEBUG
-		rc = RegDeleteValue( hkey, L"FreeCompose" );
+		rc = key.DeleteValue( L"FreeCompose" );
 		if ( ERROR_SUCCESS != rc ) {
-			debug( L"COptionsData::_UpdateRunKey: RegDeleteValue failed: %d\n", rc );
+			debug( L"COptionsData::_UpdateRunKey: key.DeleteValue failed: %d\n", rc );
 		}
 #endif
 	}
-	RegCloseKey( hkey );
+	key.Close( );
 }
 
 ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& name ) {
