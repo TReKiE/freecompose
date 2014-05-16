@@ -244,25 +244,21 @@ void CKeySequences::_UpdateComposeSequence( int const nItemIndex, ComposeSequenc
 }
 
 void CKeySequences::_FillList( void ) {
-	SetRedraw( FALSE );
+	_DoWithRedrawDisabled( [&]( ) {
+		m_List.DeleteAllItems( );
+		m_ListIndexMap.RemoveAll( );
 
-	m_List.DeleteAllItems( );
-	m_ListIndexMap.RemoveAll( );
-
-	int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
-	for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
-		int sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
-		for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
-			unsigned csgKey = _MakeComposeSequenceGroupKey( groupIndex, sequenceIndex );
-			int nListIndex = _AddComposeSequence( _GetComposeSequence( csgKey ), csgKey );
-			m_ListIndexMap.SetAtGrow( nListIndex, csgKey );
+		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
+			int sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
+			for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
+				unsigned csgKey = _MakeComposeSequenceGroupKey( groupIndex, sequenceIndex );
+				int nListIndex = _AddComposeSequence( _GetComposeSequence( csgKey ), csgKey );
+				m_ListIndexMap.SetAtGrow( nListIndex, csgKey );
+			}
 		}
-	}
-	_SetColumnWidths( );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
+		_SetColumnWidths( );
+	} );
 }
 
 void CKeySequences::_SetColumnWidths( void ) {
@@ -285,6 +281,16 @@ void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
 		debug( L"CKeySequences::_SetColumnSortState: SetItem failed?\n" );
 		return;
 	}
+}
+
+void CKeySequences::_DoWithRedrawDisabled( std::function<void( void )> func ) {
+	SetRedraw( FALSE );
+
+	func( );
+
+	SetRedraw( TRUE );
+	Invalidate( );
+	UpdateWindow( );
 }
 
 //
@@ -498,44 +504,38 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 	}
 	debug( L"CKeySequences::OnListColumnClick: column %d sortstate %d self 0x%p\n", m_nSortColumn, m_SortState, this );
 
-	SetRedraw( FALSE );
+	_DoWithRedrawDisabled( [&]( ) {
+		//
+		// Step 1: tell combo box to sort itself
+		//
 
-	//
-	// Step 1: tell combo box to sort itself
-	//
+		_ASSERTE( m_nSortColumn >= 0 && m_nSortColumn < NumberOfColumns );
+		_ASSERTE( m_SortState >= ssUnsorted && m_SortState < ssMaximumValue );
+		PFNLVCOMPARE pfnCompare = ColumnSortFuncMap[m_nSortColumn][m_SortState];
+		if ( !pfnCompare ) {
+			debug( L"CKeySequences::OnListColumnClick: problem with ColumnSortFuncMap[column %d][state %d]: it's nullptr?\n", m_nSortColumn, m_SortState );
+			return;
+		}
 
-	_ASSERTE( m_nSortColumn >= 0 && m_nSortColumn < NumberOfColumns );
-	_ASSERTE( m_SortState >= ssUnsorted && m_SortState < ssMaximumValue );
-	PFNLVCOMPARE pfnCompare = ColumnSortFuncMap[m_nSortColumn][m_SortState];
-	if ( !pfnCompare ) {
-		debug( L"CKeySequences::OnListColumnClick: problem with ColumnSortFuncMap[column %d][state %d]: it's nullptr?\n", m_nSortColumn, m_SortState );
-		return;
-	}
+		if ( !m_List.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
+			debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
+		}
 
-	if ( !m_List.SortItemsEx( pfnCompare, reinterpret_cast<DWORD_PTR>( this ) ) ) {
-		debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
-	}
+		m_ListIndexMap.RemoveAll( );
+		int count = m_List.GetItemCount( );
+		for ( int n = 0; n < count; n++ ) {
+			m_ListIndexMap.SetAtGrow( n, static_cast<unsigned>( m_List.GetItemData( n ) ) );
+		}
 
-	m_ListIndexMap.RemoveAll( );
-	int count = m_List.GetItemCount( );
-	for ( int n = 0; n < count; n++ ) {
-		m_ListIndexMap.SetAtGrow( n, static_cast<unsigned>( m_List.GetItemData( n ) ) );
-	}
+		//
+		// Step 2: get the header control to display the appropriate indication
+		//
 
-	//
-	// Step 2: get the header control to display the appropriate indication
-	//
-
-	if ( -1 != nPrevSortColumn ) {
-		_SetColumnSortState( nPrevSortColumn, ssUnsorted );
-	}
-	_SetColumnSortState( m_nSortColumn, m_SortState );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
-
-	*pResult = 0;
+		if ( -1 != nPrevSortColumn ) {
+			_SetColumnSortState( nPrevSortColumn, ssUnsorted );
+		}
+		_SetColumnSortState( m_nSortColumn, m_SortState );
+	} );
 }
 
 void CKeySequences::OnBnClickedAdd( ) {
@@ -562,18 +562,14 @@ void CKeySequences::OnBnClickedAdd( ) {
 		focusedGroup = 0;
 	}
 
-	SetRedraw( FALSE );
-
-	unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
-	_UpdateGroup( focusedGroup );
-	m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
-	_AddComposeSequence( sequence, key );
-	_SetColumnWidths( );
-	SetModified( );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
+	_DoWithRedrawDisabled( [&]( ) {
+		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
+		_UpdateGroup( focusedGroup );
+		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+		_AddComposeSequence( sequence, key );
+		_SetColumnWidths( );
+		SetModified( );
+	} );
 }
 
 void CKeySequences::OnBnClickedEdit( ) {
@@ -593,17 +589,13 @@ void CKeySequences::OnBnClickedEdit( ) {
 	if ( IDOK == rc ) {
 		_GetComposeSequenceFromListIndex( nItem ) = sequence;
 
-		SetRedraw( FALSE );
-
-		_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
-		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
-		_UpdateComposeSequence( nItem, sequence );
-		_SetColumnWidths( );
-		SetModified( );
-
-		SetRedraw( TRUE );
-		Invalidate( );
-		UpdateWindow( );
+		_DoWithRedrawDisabled( [&]( ) {
+			_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
+			m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+			_UpdateComposeSequence( nItem, sequence );
+			_SetColumnWidths( );
+			SetModified( );
+		} );
 	}
 }
 
@@ -634,24 +626,20 @@ void CKeySequences::OnBnClickedRemove( ) {
 	qsort_s( items,   count, sizeof( int ),      compare_keys_reverse, nullptr );
 	qsort_s( indices, count, sizeof( unsigned ), compare_keys_reverse, nullptr );
 
-	SetRedraw( FALSE );
+	_DoWithRedrawDisabled( [&]( ) {
+		// TODO TEST
+		int n = count;
+		do {
+			n--;
+			m_List.DeleteItem( items[n] );
+			m_Options.ComposeSequenceGroups[_GroupIndex( indices[n] )].ComposeSequences.RemoveAt( _SequenceIndex( indices[n] ) );
+		} while ( n > 0 );
 
-	// TODO TEST
-	n = count;
-	do {
-		n--;
-		m_List.DeleteItem( items[n] );
-		m_Options.ComposeSequenceGroups[_GroupIndex( indices[n] )].ComposeSequences.RemoveAt( _SequenceIndex( indices[n] ) );
-	} while ( n > 0 );
+		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+
+		SetModified( );
+	} );
 
 	delete[] items;
 	delete[] indices;
-
-	SetModified( );
-
-	m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
-
-	SetRedraw( TRUE );
-	Invalidate( );
-	UpdateWindow( );
 }
