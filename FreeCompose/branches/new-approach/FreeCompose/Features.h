@@ -1,7 +1,6 @@
 #pragma once
 
 #include "OptionsData.h"
-#include "KeyEdit.h"
 
 class CFeatures: public CPropertyPage {
 	DECLARE_DYNAMIC( CFeatures )
