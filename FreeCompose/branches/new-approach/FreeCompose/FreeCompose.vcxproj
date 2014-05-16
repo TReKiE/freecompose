@@ -130,7 +130,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\SharedInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;U_USING_ICU_NAMESPACE=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -169,7 +169,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\SharedInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;U_USING_ICU_NAMESPACE=0;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -205,7 +205,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>..\SharedInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;U_USING_ICU_NAMESPACE=0;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -246,7 +246,7 @@
     </Midl>
     <ClCompile>
       <AdditionalIncludeDirectories>..\SharedInclude;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREECOMPOSE;WIN32;_WINDOWS;U_USING_ICU_NAMESPACE=0;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -290,7 +290,6 @@
     <ClCompile Include="ComposeSequenceEditor.cpp" />
     <ClCompile Include="Features.cpp" />
     <ClCompile Include="FreeCompose.cpp" />
-    <ClCompile Include="KeyEdit.cpp" />
     <ClCompile Include="KeySequences.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NTray.cpp" />
@@ -315,9 +314,9 @@
     <ClInclude Include="AboutDlg.h" />
     <ClInclude Include="AppSoundsRegistry.h" />
     <ClInclude Include="ComposeSequenceEditor.h" />
+    <ClInclude Include="CompositeCharacter.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="FreeCompose.h" />
-    <ClInclude Include="KeyEdit.h" />
     <ClInclude Include="KeySequences.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NTray.h" />

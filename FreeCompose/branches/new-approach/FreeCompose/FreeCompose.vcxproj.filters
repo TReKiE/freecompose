@@ -24,9 +24,6 @@
     <ClCompile Include="FreeCompose.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="KeyEdit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KeySequences.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -66,9 +63,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Features.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyEdit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="KeySequences.h">
@@ -114,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FreeCompose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositeCharacter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

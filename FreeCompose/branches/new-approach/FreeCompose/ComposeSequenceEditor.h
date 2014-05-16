@@ -1,6 +1,6 @@
 #pragma once
 
-#include "KeyEdit.h"
+#include "CompositeCharacter.h"
 
 enum SEQUENCE_EDITOR_MODE {
 	semAdd,
@@ -22,12 +22,14 @@ protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual void DDX_Result( CDataExchange* pDX, int nIDC, CString& result );
 
+	virtual BOOL OnInitDialog( );
+
 private:
 	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strTitle;
 
-	virtual BOOL OnInitDialog( );
+	CompositeCharacter m_CompositeCharacter;
 
 	CEdit m_editKeySequence;
 	CEdit m_editResult;
