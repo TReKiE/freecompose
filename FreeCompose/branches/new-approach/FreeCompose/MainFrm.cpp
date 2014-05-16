@@ -76,7 +76,7 @@ void CMainFrame::_Initialize( void ) {
 
 void CMainFrame::_Reconfigure( void ) {
 	ComposeSequenceArray allSequences;
-	int cGroups = m_pOptions->ComposeSequenceGroups.GetCount( );
+	INT_PTR cGroups = m_pOptions->ComposeSequenceGroups.GetCount( );
 	for ( int n = 0; n < cGroups; n++ ) {
 		allSequences.Append( m_pOptions->ComposeSequenceGroups[n].ComposeSequences );
 	}

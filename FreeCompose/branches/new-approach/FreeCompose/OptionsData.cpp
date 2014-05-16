@@ -38,8 +38,8 @@ bool COptionsData::operator==( COptionsData const& options ) const {
 		return false;
 	}
 
-	int cGroups = ComposeSequenceGroups.GetCount( );
-	for ( int groupIndex = 0; groupIndex < cGroups; groupIndex++ ) {
+	INT_PTR groupCount = ComposeSequenceGroups.GetCount( );
+	for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 		ComposeSequenceGroup const& lGroup = ComposeSequenceGroups[groupIndex];
 		ComposeSequenceGroup const& rGroup = options.ComposeSequenceGroups[groupIndex];
 
@@ -51,8 +51,8 @@ bool COptionsData::operator==( COptionsData const& options ) const {
 			return false;
 		}
 
-		int cSequences = lGroup.ComposeSequences.GetCount( );
-		for ( int sequenceIndex = 0; sequenceIndex < cSequences; sequenceIndex++ ) {
+		INT_PTR sequenceCount = lGroup.ComposeSequences.GetCount( );
+		for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
 			if ( lGroup.ComposeSequences[sequenceIndex] != rGroup.ComposeSequences[sequenceIndex] ) {
 				return false;
 			}
@@ -170,7 +170,7 @@ void COptionsData::_UpdateRunKey( void ) {
 }
 
 ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& name ) {
-	int limit = ComposeSequenceGroups.GetCount( );
+	INT_PTR limit = ComposeSequenceGroups.GetCount( );
 	for ( int index = 0; index < limit; index++ ) {
 		if ( 0 == name.CompareNoCase( ComposeSequenceGroups[index].Name ) ) {
 			return &ComposeSequenceGroups[index];

@@ -571,7 +571,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 
 			XNode Mappings = CreateAndAppendXNode( doc, L"Mappings", FcConfiguration );
 
-			int groupCount = _pOptionsData->ComposeSequenceGroups.GetCount( );
+			INT_PTR groupCount = _pOptionsData->ComposeSequenceGroups.GetCount( );
 			for ( INT_PTR groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 				ComposeSequenceGroup& composeSequenceGroup = _pOptionsData->ComposeSequenceGroups[groupIndex];
 				if ( 0 == composeSequenceGroup.ComposeSequences.GetCount( ) ) {
@@ -585,7 +585,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 					GroupElement->setAttribute( L"Name", static_cast<LPCWSTR>( composeSequenceGroup.Name ) );
 				}
 
-				int sequenceCount = composeSequenceGroup.ComposeSequences.GetSize( );
+				INT_PTR sequenceCount = composeSequenceGroup.ComposeSequences.GetSize( );
 				for ( INT_PTR sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
 					ComposeSequence& composeSequence = composeSequenceGroup.ComposeSequences[sequenceIndex];
 
