@@ -37,10 +37,10 @@ enum ResultMode {
 	rmDecCodePoint,
 };
 
-IMPLEMENT_DYNAMIC(CComposeSequenceEditor, CDialog)
+IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
 
-BEGIN_MESSAGE_MAP(CComposeSequenceEditor, CDialog)
-END_MESSAGE_MAP()
+BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
+END_MESSAGE_MAP( )
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
 	CDialog    ( IDD, pParent ),
@@ -131,16 +131,12 @@ void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& 
 	}
 }
 
-
-
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
 	if ( ! CDialog::OnInitDialog( ) )
 		return FALSE;
 
 	SetWindowText( m_strTitle );
 
-	// has to be 2 to support UTF-16
-	m_editResult.SetLimitText( 2 );
 	UpdateData( FALSE );
 
 	return TRUE;
