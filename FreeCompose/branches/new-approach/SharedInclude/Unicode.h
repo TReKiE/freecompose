@@ -5,19 +5,6 @@
 #include <unicode/brkiter.h>
 
 //==============================================================================
-// Constants
-//==============================================================================
-
-wchar_t  const LeadSurrogateBase      = 0xD800;
-wchar_t  const LeadSurrogateEnd       = 0xDC00;
-wchar_t  const TrailSurrogateBase     = 0xDC00;
-wchar_t  const TrailSurrogateEnd      = 0xE000;
-unsigned const SupplementalPlanesBase = 0x10000;
-unsigned const CodePointSpaceEnd      = 0x110000;
-wchar_t  const SurrogatePayloadMask   = 0x03FF;
-wchar_t  const SurrogateMask          = static_cast<wchar_t>( ~SurrogatePayloadMask );
-
-//==============================================================================
 // Inline functions
 //==============================================================================
 
@@ -34,15 +21,6 @@ inline bool const IsLeadSurrogate( T const ch ) {
 template<typename T>
 inline bool const IsTrailSurrogate( T const ch ) {
 	return ( UBLOCK_LOW_SURROGATES == ublock_getCode( ch ) );
-}
-
-
-inline wchar_t MakeFirstSurrogate( unsigned const ch ) {
-	return static_cast<wchar_t>( LeadSurrogateBase + ( ( ( ch - SupplementalPlanesBase ) >> 10 ) & SurrogatePayloadMask ) );
-}
-
-inline wchar_t MakeSecondSurrogate( unsigned const ch ) {
-	return static_cast<wchar_t>( TrailSurrogateBase + ( ( ch - SupplementalPlanesBase ) & SurrogatePayloadMask ) );
 }
 
 
@@ -99,7 +77,7 @@ inline UChar32* Utf16ToUtf32( UChar const* pwz, int const cch = -1 ) {
 
 	u_strToUTF32( nullptr, 0, &cchDest, pwz, cch, &errorCode );
 	if ( U_ZERO_ERROR != errorCode ) {
-		debug( L"Utf16ToUtf32: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		debug( L"Utf16ToUtf32: u_strToUTF32 failed, errorCode=%d\n", errorCode );
 		return nullptr;
 	}
 
@@ -110,7 +88,7 @@ inline UChar32* Utf16ToUtf32( UChar const* pwz, int const cch = -1 ) {
 	u_strToUTF32( pqzDest, cchDestCapacity, &cchDest, pwz, cch, &errorCode );
 
 	if ( U_ZERO_ERROR != errorCode ) {
-		debug( L"Utf32ToUtf16: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		debug( L"Utf32ToUtf16: u_strToUTF32 failed, errorCode=%d\n", errorCode );
 		delete[] pqzDest;
 		return nullptr;
 	}
