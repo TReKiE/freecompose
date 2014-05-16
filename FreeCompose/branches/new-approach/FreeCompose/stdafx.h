@@ -10,14 +10,21 @@
 
 #include "targetver.h"
 
-#include <cerrno>
 #include <crtdbg.h>
-#include <cstdlib>
 #include <malloc.h>
+
+#include <cerrno>
+#include <cstdlib>
+#include <cwchar>
+#include <locale>
 
 #include <algorithm>
 #include <initializer_list>
+#include <iostream>
+#include <iterator>
 #include <map>
+#include <string>
+#include <sstream>
 #include <vector>
 
 #include <afxwin.h>
@@ -32,6 +39,10 @@
 #include <comip.h>
 #include <comutil.h>
 #include <VersionHelpers.h>
+
+#include <unicode/uchar.h>
+#include <unicode/ustring.h>
+#include <unicode/brkiter.h>
 
 #include <FCHookDll.h>
 #include <FCShared.h>
