@@ -160,9 +160,12 @@ inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( INT_PTR
 
 inline CString CKeySequences::_FormatCodePoint( ComposeSequence const& sequence ) {
 	CString strResult;
-	unsigned chResult;
-	Utf16ToUtf32( sequence.Result, chResult );
-	strResult.Format( L"U+%06X", chResult );
+	int limit = sequence.Result.GetLength( );
+	UChar32* pchResult = Utf16ToUtf32( sequence.Result, limit );
+	for ( int index = 0; index < limit; index++ ) {
+		strResult.AppendFormat( L"%sU+%06X", ( index > 0 ) ? L", " : L"", pchResult[index] );
+	}
+	delete[] pchResult;
 	return strResult;
 }
 
