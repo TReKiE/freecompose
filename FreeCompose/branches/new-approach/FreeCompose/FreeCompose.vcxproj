@@ -98,28 +98,28 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+    <ExecutablePath>$(ICUROOT)bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+    <ExecutablePath>$(ICUROOT)bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin64;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib64;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+    <ExecutablePath>$(ICUROOT)bin64;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib64;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin64;$(ExecutablePath)</ExecutablePath>
-    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib64;$(LibraryPath)</LibraryPath>
-    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+    <ExecutablePath>$(ICUROOT)bin64;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>$(ICUROOT)include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ICUROOT)lib64;$(LibraryPath)</LibraryPath>
+    <SourcePath>$(ICUROOT)source;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
