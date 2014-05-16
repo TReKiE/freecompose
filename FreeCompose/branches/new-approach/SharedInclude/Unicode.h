@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unicode/uchar.h>
+
 //==============================================================================
 // Constants
 //==============================================================================
@@ -17,31 +19,21 @@ wchar_t  const SurrogateMask          = static_cast<wchar_t>( ~SurrogatePayloadM
 // Inline functions
 //==============================================================================
 
-inline bool IsSurrogate( wchar_t const ch ) {
-	return ( ch >= LeadSurrogateBase ) && ( ch < TrailSurrogateEnd );
+template<typename T>
+inline bool const IsSurrogate( T const ch ) {
+	return ( U_SURROGATE == u_charType( ch ) );
 }
 
-inline bool IsSurrogate( unsigned const ch ) {
-	return ( ch >= LeadSurrogateBase ) && ( ch < TrailSurrogateEnd );
+template<typename T>
+inline bool const IsLeadSurrogate( T const ch ) {
+	return ( UBLOCK_HIGH_SURROGATES == ublock_getCode( ch ) );
 }
 
-
-inline bool IsFirstSurrogate( wchar_t const ch ) {
-	return ( ch >= LeadSurrogateBase ) && ( ch < LeadSurrogateEnd );
+template<typename T>
+inline bool const IsTrailSurrogate( T const ch ) {
+	return ( UBLOCK_LOW_SURROGATES == ublock_getCode( ch ) );
 }
 
-inline bool IsFirstSurrogate( unsigned const ch ) {
-	return ( ch >= LeadSurrogateBase ) && ( ch < LeadSurrogateEnd );
-}
-
-
-inline bool IsSecondSurrogate( wchar_t const ch ) {
-	return ( ch >= TrailSurrogateBase ) && ( ch < TrailSurrogateEnd );
-}
-
-inline bool IsSecondSurrogate( unsigned const ch ) {
-	return ( ch >= TrailSurrogateBase ) && ( ch < TrailSurrogateEnd );
-}
 
 
 inline wchar_t MakeFirstSurrogate( unsigned const ch ) {
@@ -80,7 +72,7 @@ inline bool Utf16ToUtf32( CString const& s, unsigned& ch ) {
 		default:
 			w1 = s[0];
 			w2 = s[1];
-			if ( ! IsFirstSurrogate( w1 ) || ! IsSecondSurrogate( w2 ) ) {
+			if ( !IsLeadSurrogate( w1 ) || !IsTrailSurrogate( w2 ) ) {
 				return false;
 			}
 			ch = SupplementalPlanesBase + ( ( ( static_cast<unsigned>( w1 ) & SurrogatePayloadMask ) << 10 ) | ( static_cast<unsigned>( w2 ) & SurrogatePayloadMask ) );
