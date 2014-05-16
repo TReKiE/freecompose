@@ -97,6 +97,18 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ExecutablePath>C:\IceKarma\Libraries\icu4c-53.1\bin;$(ExecutablePath)</ExecutablePath>
+    <IncludePath>C:\IceKarma\Libraries\icu4c-53.1\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\IceKarma\Libraries\icu4c-53.1\lib;$(LibraryPath)</LibraryPath>
+    <SourcePath>C:\IceKarma\Libraries\icu4c-53.1\source;$(SourcePath)</SourcePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -123,7 +135,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -198,7 +210,7 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>

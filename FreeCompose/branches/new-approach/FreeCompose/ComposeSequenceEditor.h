@@ -29,6 +29,23 @@ private:
 
 	virtual BOOL OnInitDialog( );
 
-	CEdit m_editSequence;
+	CEdit m_editKeySequence;
 	CEdit m_editResult;
+
+	CButton m_radioResultAsCharacter;
+	CButton m_radioResultAsHexCodePoint;
+	CButton m_radioResultAsDecCodePoint;
+
+	CButton m_checkEnabled;
+	CButton m_checkCaseInsensitive;
+	CButton m_checkReversible;
+
+	CString m_strKeySequence;
+	CString m_strResult;
+
+	int m_nResultMode;
+
+	BOOL m_fEnabled;
+	BOOL m_fCaseInsensitive;
+	BOOL m_fReversible;
 };
