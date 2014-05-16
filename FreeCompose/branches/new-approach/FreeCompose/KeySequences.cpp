@@ -266,12 +266,9 @@ void CKeySequences::_FillList( void ) {
 }
 
 void CKeySequences::_SetColumnWidths( void ) {
-	m_List.SetColumnWidth( 0, m_nColumnWidths[0] );
-	m_List.SetColumnWidth( 1, m_nColumnWidths[1] );
-	m_List.SetColumnWidth( 2, m_nColumnWidths[2] );
-	m_List.SetColumnWidth( 3, m_nColumnWidths[3] );
-	m_List.SetColumnWidth( 4, m_nColumnWidths[4] );
-	m_List.SetColumnWidth( 5, m_nColumnWidths[5] );
+	for ( int index = 0; index < NumberOfColumns; index++ ) {
+		m_List.SetColumnWidth( index, m_nColumnWidths[index] );
+	}
 }
 
 void CKeySequences::_SetColumnSortState( int nColumn, SORTSTATE state ) {
