@@ -1,6 +1,8 @@
 #pragma once
 
 #include <unicode/uchar.h>
+#include <unicode/ustring.h>
+#include <unicode/brkiter.h>
 
 //==============================================================================
 // Constants
@@ -35,7 +37,6 @@ inline bool const IsTrailSurrogate( T const ch ) {
 }
 
 
-
 inline wchar_t MakeFirstSurrogate( unsigned const ch ) {
 	return static_cast<wchar_t>( LeadSurrogateBase + ( ( ( ch - SupplementalPlanesBase ) >> 10 ) & SurrogatePayloadMask ) );
 }
@@ -46,37 +47,74 @@ inline wchar_t MakeSecondSurrogate( unsigned const ch ) {
 
 
 #ifdef __AFXSTR_H__
-inline CString Utf32ToUtf16( unsigned const ch ) {
-	if ( ch < SupplementalPlanesBase ) {
-		return CString( static_cast<wchar_t>( ch ) );
+inline CString Utf32ToUtf16( UChar32 const* pqz, int const cch = -1 ) {
+	UErrorCode errorCode = U_ZERO_ERROR;
+
+	UChar* pwzDest = nullptr;
+	int cchDest = 0;
+
+	u_strFromUTF32( nullptr, 0, &cchDest, pqz, cch, &errorCode );
+	if ( U_ZERO_ERROR != errorCode ) {
+		debug( L"Utf32ToUtf16: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		return CString( );
+	}
+
+	int cchDestCapacity = cchDest;
+	pwzDest = new UChar[cchDestCapacity];
+	cchDest = 0;
+
+	u_strFromUTF32( pwzDest, cchDestCapacity, &cchDest, pqz, cch, &errorCode );
+
+	if ( U_ZERO_ERROR != errorCode ) {
+		debug( L"Utf32ToUtf16/n: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		delete[] pwzDest;
+		return CString( );
+	}
+
+	CString tmp( pwzDest, cchDest );
+	delete[] pwzDest;
+	return tmp;
+}
+
+inline CString Utf32ToUtf16( UChar32 const uch ) {
+	UErrorCode errorCode = U_ZERO_ERROR;
+
+	UChar wchDest = L'\0';
+	int cchDest = 1;
+
+	u_strFromUTF32( &wchDest, 1, &cchDest, &uch, 1, &errorCode );
+	if ( U_ZERO_ERROR != errorCode ) {
+		debug( L"Utf32ToUtf16/1: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		return CString( );
 	} else {
-		wchar_t tmp[2] = { MakeFirstSurrogate( ch ), MakeSecondSurrogate( ch ) };
-		return CString( tmp, 2 );
+		return CString( wchDest );
 	}
 }
 
-inline bool Utf16ToUtf32( CString const& s, unsigned& ch ) {
-	wchar_t w1, w2;
+inline UChar32* Utf16ToUtf32( UChar const* pwz, int const cch = -1 ) {
+	UErrorCode errorCode = U_ZERO_ERROR;
 
-	switch ( s.GetLength( ) ) {
-		case 0:
-			return false;
+	UChar32* pqzDest = nullptr;
+	int cchDest = 0;
 
-		case 1:
-			if ( IsSurrogate( s[0] ) ) {
-				return false;
-			}
-			ch = static_cast<unsigned>( s[0] );
-			return true;
-
-		default:
-			w1 = s[0];
-			w2 = s[1];
-			if ( !IsLeadSurrogate( w1 ) || !IsTrailSurrogate( w2 ) ) {
-				return false;
-			}
-			ch = SupplementalPlanesBase + ( ( ( static_cast<unsigned>( w1 ) & SurrogatePayloadMask ) << 10 ) | ( static_cast<unsigned>( w2 ) & SurrogatePayloadMask ) );
-			return true;
+	u_strToUTF32( nullptr, 0, &cchDest, pwz, cch, &errorCode );
+	if ( U_ZERO_ERROR != errorCode ) {
+		debug( L"Utf16ToUtf32: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		return nullptr;
 	}
+
+	int cchDestCapacity = cchDest;
+	pqzDest = new UChar32[cchDestCapacity];
+	cchDest = 0;
+
+	u_strToUTF32( pqzDest, cchDestCapacity, &cchDest, pwz, cch, &errorCode );
+
+	if ( U_ZERO_ERROR != errorCode ) {
+		debug( L"Utf32ToUtf16: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
+		delete[] pqzDest;
+		return nullptr;
+	}
+
+	return pqzDest;
 }
 #endif
