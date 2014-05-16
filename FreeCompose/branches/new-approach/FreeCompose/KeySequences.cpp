@@ -138,7 +138,7 @@ CKeySequences::~CKeySequences( ) {
 // CKeySequences private methods
 //
 
-inline unsigned CKeySequences::_MakeComposeSequenceGroupKey( int const groupIndex, int const sequenceIndex ) {
+inline unsigned CKeySequences::_MakeComposeSequenceGroupKey( INT_PTR const groupIndex, INT_PTR const sequenceIndex ) {
 	return ( ( groupIndex & 0xFFFF ) << 16 ) | ( sequenceIndex & 0xFFFF );
 }
 
@@ -154,7 +154,7 @@ inline ComposeSequence& CKeySequences::_GetComposeSequence( unsigned const uKey 
 	return m_Options.ComposeSequenceGroups[_GroupIndex( uKey )].ComposeSequences[_SequenceIndex( uKey )];
 }
 
-inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( int const nItemIndex ) {
+inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( INT_PTR const nItemIndex ) {
 	return _GetComposeSequence( m_ListIndexMap[nItemIndex] );
 }
 
@@ -250,7 +250,7 @@ void CKeySequences::_FillList( void ) {
 
 		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
-			int sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
+			INT_PTR sequenceCount = m_Options.ComposeSequenceGroups[groupIndex].ComposeSequences.GetCount( );
 			for ( int sequenceIndex = 0; sequenceIndex < sequenceCount; sequenceIndex++ ) {
 				unsigned csgKey = _MakeComposeSequenceGroupKey( groupIndex, sequenceIndex );
 				int nListIndex = _AddComposeSequence( _GetComposeSequence( csgKey ), csgKey );
@@ -442,7 +442,7 @@ BOOL CKeySequences::OnInitDialog( ) {
 	//
 
 	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_WINXP ) {
-		int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+		INT_PTR groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 			LVGROUP lv = {
 				/* cbSize    */ sizeof( LVGROUP ),
@@ -547,12 +547,16 @@ void CKeySequences::OnBnClickedAdd( ) {
 		return;
 	}
 
-	int groupCount = m_Options.ComposeSequenceGroups.GetCount( );
-	int focusedGroup = -1;
+	INT_PTR groupCount = m_Options.ComposeSequenceGroups.GetCount( );
+	INT_PTR focusedGroup = -1;
 	for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
 		LVGROUP lv = { sizeof( LVGROUP ), LVGF_STATE };
 		lv.stateMask = LVGS_FOCUSED;
 		int ret = m_List.GetGroupInfo( groupIndex, &lv );
+		if ( ret < 0 ) {
+			debug( L"CKeySequences::OnBnClickedAdd: m_List.GetGroupInfo failed: ret=%d\n", ret );
+			break;
+		}
 		if ( ( lv.state & LVGS_FOCUSED ) != 0 ) {
 			focusedGroup = groupIndex;
 			break;
@@ -564,7 +568,7 @@ void CKeySequences::OnBnClickedAdd( ) {
 
 	_DoWithRedrawDisabled( [&]( ) {
 		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
-		_UpdateGroup( focusedGroup );
+		_UpdateGroup( (int) focusedGroup );
 		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
 		_AddComposeSequence( sequence, key );
 		_SetColumnWidths( );
