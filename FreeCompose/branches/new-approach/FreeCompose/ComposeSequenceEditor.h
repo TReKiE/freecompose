@@ -31,8 +31,8 @@ private:
 
 	CompositeCharacter m_CompositeCharacter;
 
-	CEdit m_editKeySequence;
-	CEdit m_editResult;
+	CEdit m_editComposeSequence;
+	CEdit m_editComposeResult;
 
 	CButton m_radioResultAsCharacter;
 	CButton m_radioResultAsHexCodePoint;

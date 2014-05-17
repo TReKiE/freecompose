@@ -58,8 +58,8 @@ CComposeSequenceEditor::~CComposeSequenceEditor( ) {
 void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
 
-	DDX_Control ( pDX, IDC_EDITKEYSEQUENCE,        m_editKeySequence           );
-	DDX_Control ( pDX, IDC_EDITRESULT,             m_editResult                );
+	DDX_Control ( pDX, IDC_EDITKEYSEQUENCE,        m_editComposeSequence       );
+	DDX_Control ( pDX, IDC_EDITRESULT,             m_editComposeResult         );
 	DDX_Control ( pDX, IDC_RESULT_ASCHARACTER,     m_radioResultAsCharacter    );
 	DDX_Control ( pDX, IDC_RESULT_ASHEXCODEPOINT,  m_radioResultAsHexCodePoint );
 	DDX_Control ( pDX, IDC_RESULT_ASDECCODEPOINT,  m_radioResultAsDecCodePoint );
@@ -85,9 +85,9 @@ void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& 
 	if ( pDX->m_bSaveAndValidate ) {
 		result.Empty( );
 
-		int cchWindowText = m_editResult.GetWindowTextLength( );
+		int cchWindowText = m_editComposeResult.GetWindowTextLength( );
 		wchar_t* pwzWindowText = new wchar_t[cchWindowText + 1];
-		int cchCopied = m_editResult.GetWindowText( pwzWindowText, cchWindowText + 1 );
+		int cchCopied = m_editComposeResult.GetWindowText( pwzWindowText, cchWindowText + 1 );
 		icu::UnicodeString ustrResult( pwzWindowText, cchCopied );
 
 		switch ( m_nResultMode ) {
@@ -122,11 +122,11 @@ void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& 
 	} else {
 		// TODO
 		//if ( result.IsEmpty( ) ) {
-			m_editResult.SetWindowText( L"" );
+			m_editComposeResult.SetWindowText( L"" );
 		//} else {
 		//	Utf16ToUtf32( result, ch );
 		//	str.Format( L"U+%06X %s", ch, static_cast<wchar_t const*>( result ) );
-		//	m_editResult.SetWindowText( str );
+		//	m_editComposeResult.SetWindowText( str );
 		//}
 	}
 }
