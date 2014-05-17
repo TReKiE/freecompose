@@ -42,8 +42,8 @@ private:
 	CButton m_checkCaseInsensitive;
 	CButton m_checkReversible;
 
-	CString m_strKeySequence;
-	CString m_strResult;
+	CString m_strComposeSequence;
+	CString m_strComposeResult;
 
 	int m_nResultMode;
 
