@@ -3,10 +3,10 @@
 #include "ComposeTreeNode.h"
 
 class FCHOOKDLL_API CComposeSequenceTree {
-	CComposeTreeNode* _pRoot;
-
 public:
-	inline CComposeSequenceTree( ): _pRoot( nullptr ) {
+	inline CComposeSequenceTree( ):
+		_pRoot( nullptr )
+	{
 
 	}
 
@@ -14,7 +14,7 @@ public:
 		ReleaseTree( );
 	}
 
-	void BuildTree( ComposeSequence* pSequences, INT_PTR cSequences );
+	void BuildTree( ComposeSequence* pSequences, int const cSequences );
 	void ReleaseTree( void );
 	bool LookUp( CString const& strSequence, CString& strResult );
 
@@ -22,18 +22,20 @@ private:
 	enum SEQUENCE_RESULT {
 		srUnknown,
 
-		// srPrefix means that a sequence comprising a prefix of strSequence terminates in a leaf.
+		// A sequence comprising a prefix of the input sequence terminates in a leaf.
 		srPrefix,
 
-		// srAlreadyExists means that the complete sequence in strSequence exists and terminates in a leaf.
+		// The complete sequence exists and terminates in a leaf.
 		srAlreadyExists,
 
-		// srUnambiguous means that the complete sequence terminates on a nonexistent leaf, or
-		//               we don't even reach the leaf because we run out of branches on the way down.
+		// The complete sequence would terminate on a nonexistent leaf, or we don't
+		// even reach that leaf because we run out of nodes on the way down.
 		srUnambiguous,
 
 		srMaximumValue,
 	};
+
+	CComposeTreeNode* _pRoot;
 
 	bool _ValidateSequence( CString const& strSequence );
 	bool _ValidateResult( CString const& strResult );
