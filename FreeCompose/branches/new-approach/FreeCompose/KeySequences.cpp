@@ -158,17 +158,6 @@ inline ComposeSequence& CKeySequences::_GetComposeSequenceFromListIndex( INT_PTR
 	return _GetComposeSequence( m_ListIndexMap[nItemIndex] );
 }
 
-inline CString CKeySequences::_FormatCodePoint( ComposeSequence const& sequence ) {
-	CString strResult;
-	int limit = sequence.Result.GetLength( );
-	UChar32* pchResult = Utf16ToUtf32( sequence.Result, limit );
-	for ( int index = 0; index < limit; index++ ) {
-		strResult.AppendFormat( L"%sU+%06X", ( index > 0 ) ? L", " : L"", pchResult[index] );
-	}
-	delete[] pchResult;
-	return strResult;
-}
-
 inline int CKeySequences::_MeasureListItemText( CString const& str ) {
 	return m_List.GetStringWidth( str ) + ITEM_FUDGE_FACTOR;
 }
@@ -206,10 +195,10 @@ void CKeySequences::_UpdateGroup( int const groupIndex ) {
 }
 
 int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigned const csgKey ) {
-	CString strResult          ( _FormatCodePoint( sequence ) );
-	CString strEnabled         ( BooleanToGlyph[ !sequence.Disabled       ] );
-	CString strCaseInsensitive ( BooleanToGlyph[ sequence.CaseInsensitive ] );
-	CString strReversible      ( BooleanToGlyph[ sequence.Reversible      ] );
+	CString strResult          ( FormatCodePoint( sequence.Result ) );
+	CString strEnabled         ( BooleanToGlyph[!sequence.Disabled      ] );
+	CString strCaseInsensitive ( BooleanToGlyph[sequence.CaseInsensitive] );
+	CString strReversible      ( BooleanToGlyph[sequence.Reversible     ] );
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence, strEnabled, strCaseInsensitive, strReversible );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID };
@@ -228,10 +217,10 @@ int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigne
 }
 
 void CKeySequences::_UpdateComposeSequence( int const nItemIndex, ComposeSequence const& sequence ) {
-	CString strResult          ( _FormatCodePoint( sequence ) );
-	CString strEnabled         ( BooleanToGlyph[ !sequence.Disabled       ] );
-	CString strCaseInsensitive ( BooleanToGlyph[ sequence.CaseInsensitive ] );
-	CString strReversible      ( BooleanToGlyph[ sequence.Reversible      ] );
+	CString strResult          ( FormatCodePoint( sequence.Result ) );
+	CString strEnabled         ( BooleanToGlyph[!sequence.Disabled      ] );
+	CString strCaseInsensitive ( BooleanToGlyph[sequence.CaseInsensitive] );
+	CString strReversible      ( BooleanToGlyph[sequence.Reversible     ] );
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence, strEnabled, strCaseInsensitive, strReversible );
 
 	LVITEM lvItem = { LVIF_TEXT | LVIF_GROUPID };
@@ -420,6 +409,7 @@ BOOL CKeySequences::OnInitDialog( ) {
 	if ( g_CommonControlsApiVersion >= COMCTL32APIVER_VISTA ) {
 		dwExtendedStyles |= LVS_EX_COLUMNSNAPPOINTS;
 	}
+	// TODO can we use ModifyStylesEx?
 	m_List.SetExtendedStyle( m_List.GetExtendedStyle( ) | dwExtendedStyles );
 
 	//

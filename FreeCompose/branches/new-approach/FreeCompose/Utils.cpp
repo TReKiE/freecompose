@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "Unicode.h"
 #include "Utils.h"
 
 // XXX
@@ -183,4 +184,15 @@ CString GetFreeComposeFolderAsCString( void ) {
 		CoTaskMemFree( lpsz );
 	}
 	return str;
+}
+
+CString FormatCodePoint( CString const& str ) {
+	CString strResult;
+	int limit = str.GetLength( );
+	UChar32* pqzCodePoints = Utf16ToUtf32( str, limit );
+	for ( int index = 0; index < limit; index++ ) {
+		strResult.AppendFormat( L"%sU+%06X", ( index ? L", " : L"" ), pqzCodePoints[index] );
+	}
+	delete[] pqzCodePoints;
+	return strResult;
 }
