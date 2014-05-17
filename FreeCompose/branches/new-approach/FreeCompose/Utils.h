@@ -63,7 +63,7 @@ CString MakeInstanceExclusionName( const CString& input, const EXCLUSION_KIND ki
 
 CString GetFreeComposeFolderAsCString( void );
 
-extern CString FormatCodePoint( CString const& str );
+CString FormatCodePoint( CString const& str );
 
 //
 // Inline functions
