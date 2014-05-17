@@ -34,7 +34,7 @@ public:
 	}
 
 	inline CompositeCharacter& operator=( CompositeCharacter const& rhs ) {
-		int cch = wcslen( rhs.m_pwzUtf16 );
+		size_t cch = wcslen( rhs.m_pwzUtf16 );
 		m_pwzUtf16 = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
 		m_pqzUtf32 = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
 		memcpy( m_pwzUtf16, rhs.m_pwzUtf16, cch * sizeof( wchar_t ) );

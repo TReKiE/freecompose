@@ -109,11 +109,11 @@ void CComposeSequenceTree::ReleaseTree( void ) {
 	}
 }
 
-void CComposeSequenceTree::BuildTree( ComposeSequence* pSequences, INT_PTR cSequences ) {
+void CComposeSequenceTree::BuildTree( ComposeSequence* pSequences, int const cSequences ) {
 	ReleaseTree( );
 	_pRoot = new CComposeTreeNode( );
 
-	for ( INT_PTR index = 0; index < cSequences; index++ ) {
+	for ( int index = 0; index < cSequences; index++ ) {
 		CString& sequence = pSequences[index].Sequence;
 		CString& result = pSequences[index].Result;
 		int cchSequence = sequence.GetLength( );
@@ -128,14 +128,13 @@ void CComposeSequenceTree::BuildTree( ComposeSequence* pSequences, INT_PTR cSequ
 		}
 
 		if ( 2 == cchSequence ) {
-			wchar_t ch[2] = { sequence[1], sequence[0] };
-			CString reverse( ch, 2 );
+			wchar_t wch[2] = { sequence[1], sequence[0] };
+			CString reverse( wch, 2 );
 
 			SEQUENCE_RESULT sr1, sr2;
 			int index1, index2;
-			bool f1, f2;
-			f1 = _IsSequenceUnambiguous( sequence, sr1, index1 );
-			f2 = _IsSequenceUnambiguous( reverse,  sr2, index2 );
+			bool f1 = _IsSequenceUnambiguous( sequence, sr1, index1 );
+			bool f2 = _IsSequenceUnambiguous( reverse,  sr2, index2 );
 
 			if ( !f1 ) {
 				debug( L"CComposeSequenceTree::BuildTree: two-character sequence, and forward sequence is ambiguous.\n+ sr1=%d index1=%d f1=%s\n+ sr2=%d index2=%d f2=%s\n", sr1, index1, ( f1 ? L"TRUE" : L"false" ), sr2, index2, ( f2 ? L"TRUE" : L"false" ) );
@@ -147,9 +146,9 @@ void CComposeSequenceTree::BuildTree( ComposeSequence* pSequences, INT_PTR cSequ
 			}
 		} else {
 			SEQUENCE_RESULT sr;
-			int index;
+			int dummy;
 
-			bool f = _IsSequenceUnambiguous( sequence, sr, index );
+			bool f = _IsSequenceUnambiguous( sequence, sr, dummy );
 			if ( !f ) {
 				debug( L"CComposeSequenceTree::BuildTree: multi-character sequence, and sequence is ambiguous.\n+ sr=%d index=%d f1%s\n", sr, index, ( f ? L"TRUE" : L"false" ) );
 			} else {

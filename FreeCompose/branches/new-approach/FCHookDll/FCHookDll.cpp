@@ -15,13 +15,13 @@ static volatile LONG cClients = 0;
 // Function prototypes
 //==============================================================================
 
-static void _SetComposeSequencesImpl( ComposeSequence* pSequences, INT_PTR cSequences );
+static void _SetComposeSequencesImpl( ComposeSequence* pSequences, int cSequences );
 
 //==============================================================================
 // Private functions
 //==============================================================================
 
-static void _SetComposeSequencesImpl( ComposeSequence* pSequences, INT_PTR cSequences ) {
+static void _SetComposeSequencesImpl( ComposeSequence* pSequences, int cSequences ) {
 	LOCK( cs ) {
 		if ( ComposeSequences ) {
 			delete[] ComposeSequences;

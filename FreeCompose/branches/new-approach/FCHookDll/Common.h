@@ -27,7 +27,7 @@ extern AutoCriticalSection        cs;
 extern HHOOK                      hHook;
 
 extern ComposeSequence*           ComposeSequences;
-extern INT_PTR                    cComposeSequences;
+extern int                        cComposeSequences;
 
 extern CComposeSequenceTree       ComposeSequenceTree;
 

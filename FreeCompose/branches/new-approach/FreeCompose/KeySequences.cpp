@@ -460,7 +460,7 @@ BOOL CKeySequences::OnInitDialog( ) {
 				/* uAlign    */ LVGA_HEADER_LEFT | LVGA_FOOTER_LEFT
 			};
 			int ret = m_List.InsertGroup( groupIndex, &lv );
-			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, m_Options.ComposeSequenceGroups[groupIndex].Name, ret );
+			debug( L"CKeySequences::OnInitDialog: group #%d '%s' ret=%d\n", groupIndex, static_cast<LPCWSTR>( m_Options.ComposeSequenceGroups[groupIndex].Name ), ret );
 		}
 
 		m_List.EnableGroupView( groupCount > 1 );

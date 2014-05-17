@@ -153,7 +153,7 @@ LRESULT CMainFrame::OnActivate( WPARAM, LPARAM ) {
 	return 0;
 }
 
-LRESULT CMainFrame::OnNotifyIcon(WPARAM wParam, LPARAM lParam) {
+LRESULT CMainFrame::OnNotifyIcon( WPARAM wParam, LPARAM lParam ) {
 	return m_pTrayIcon->OnTrayNotification( wParam, lParam );
 }
 
@@ -167,8 +167,8 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 	return 0;
 }
 
-LRESULT CMainFrame::OnFcmPip(WPARAM wPip, LPARAM /*lParam*/) {
-	debug( L"CMainFrame::OnFcmPip: wPip=%llu\n", wPip );
+LRESULT CMainFrame::OnFcmPip( WPARAM wPip, LPARAM ) {
+	debug( L"CMainFrame::OnFcmPip: wPip=%ld\n", static_cast<long>( wPip ) );
 
 	switch ( wPip ) {
 		case PIP_OK_1:
