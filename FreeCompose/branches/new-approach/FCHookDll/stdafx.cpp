@@ -40,7 +40,7 @@ AutoCriticalSection        cs;
 HHOOK                      hHook                 = nullptr;
 
 ComposeSequence*           ComposeSequences      = nullptr;
-INT_PTR                    cComposeSequences     = 0;
+int                        cComposeSequences     = 0;
 
 CComposeSequenceTree       ComposeSequenceTree;
 

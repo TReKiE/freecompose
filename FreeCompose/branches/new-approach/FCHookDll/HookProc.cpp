@@ -197,7 +197,7 @@ LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
 	}
 
 	bool isKeyDown = Key::isKeyDownEvent( pkb );
-	debug( L"LLKP|ComposeState=%s wParam=0x%04llX isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), wParam, Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
+	debug( L"LLKP|ComposeState=%s wParam=0x%04lX isKeyDown=%s pkb->vkCode=0x%02x pkb->scanCode=0x%08x pkb->flags=0x%08x\n", Stringify::from_COMPOSE_STATE( ComposeState ), static_cast<long>( wParam ), Stringify::from_bool( isKeyDown ), pkb->vkCode, pkb->scanCode, pkb->flags );
 
 	DISPOSITION dHandler = D_NOT_HANDLED;
 	KeyEventHandler* keh = KeyEventHandlers[ pkb->vkCode ];
