@@ -79,7 +79,7 @@ IDR_MAINFRAME           ICON                    "res\\FreeCompose.ico"
 IDD_ABOUTBOX DIALOGEX 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About FreeCompose"
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
+FONT 8, "MS Shell Dlg2", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
     LTEXT           "FreeCompose Version 1.0",IDC_ABOUT_VERSION,40,10,119,8,SS_NOPREFIX
@@ -90,7 +90,7 @@ END
 IDD_KEYSEQUENCES DIALOGEX 0, 0, 252, 196
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Key sequences"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
+FONT 8, "MS Shell Dlg2", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Key sequences",IDC_STATIC,7,7,238,182,BS_FLAT | WS_GROUP
     CONTROL         "",IDC_KEYCOMBOLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,14,18,224,145
@@ -102,7 +102,7 @@ END
 IDD_FEATURES DIALOGEX 0, 0, 252, 196
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Features"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
+FONT 8, "MS Shell Dlg2", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Startup",IDC_STATIC,7,7,238,45,WS_GROUP
     CONTROL         "&Start FreeCompose when Windows starts",IDC_STARTWITHWINDOWS,
@@ -123,30 +123,17 @@ BEGIN
                     "Button",BS_AUTORADIOBUTTON | BS_FLAT,14,174,75,10
 END
 
-IDD_EDITKEYSEQUENCE_OLD DIALOGEX 0, 0, 189, 75
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
-CAPTION "Edit key sequence"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    EDITTEXT        IDC_SEQUENCE,77,7,105,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_RESULT,77,28,105,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,79,54,50,14,BS_FLAT
-    PUSHBUTTON      "Cancel",IDCANCEL,133,54,50,14,BS_FLAT
-    LTEXT           "Sequence:",IDC_STATIC,7,9,35,8
-    LTEXT           "Result:",IDC_STATIC,7,30,24,8
-END
-
 IDD_SOUNDS DIALOGEX 0, 0, 252, 196
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sounds"
-FONT 8, "MS Shell Dlg", 0, 0, 0x0
+FONT 8, "MS Shell Dlg2", 0, 0, 0x0
 BEGIN
 END
 
 IDD_EDITKEYSEQUENCE DIALOGEX 0, 0, 221, 191
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit compose sequence"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+FONT 8, "MS Shell Dlg2", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,111,171,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,165,171,50,14
@@ -210,42 +197,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        , 50
-    END
-
-    IDD_KEYSEQUENCES, DIALOG
-    BEGIN
-        , 50
-    END
-
-    IDD_FEATURES, DIALOG
-    BEGIN
-        , 50
-    END
-
-    IDD_SOUNDS, DIALOG
-    BEGIN
-        , 50
-    END
-
-    IDD_EDITKEYSEQUENCE, DIALOG
-    BEGIN
-        , 50
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Menu
 //
 
@@ -271,26 +222,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Accelerator
-//
-
-IDR_MAINFRAME ACCELERATORS
-BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
-    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
-    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
-    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // String Table
 //
 
@@ -309,65 +240,6 @@ BEGIN
     AFX_IDS_APP_TITLE       "FreeCompose"
     AFX_IDS_IDLEMESSAGE     "Ready"
     AFX_IDS_COMPANY_NAME    "Zive Technology Research"
-END
-
-STRINGTABLE
-BEGIN
-    ID_EDIT_CLEAR           "Erase the selection\nErase"
-    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
-    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
-    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
-    ID_EDIT_FIND            "Find the specified text\nFind"
-    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
-    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
-    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
-    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
-    ID_EDIT_UNDO            "Undo the last action\nUndo"
-    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
-END
-
-STRINGTABLE
-BEGIN
-    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
-END
-
-STRINGTABLE
-BEGIN
-    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
-    ID_APP_EXIT             "Quit the application\nExit"
-END
-
-STRINGTABLE
-BEGIN
-    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
-    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
-END
-
-STRINGTABLE
-BEGIN
-    ID_INDICATOR_EXT        "EXT"
-    ID_INDICATOR_CAPS       "CAP"
-    ID_INDICATOR_NUM        "NUM"
-    ID_INDICATOR_SCRL       "SCRL"
-    ID_INDICATOR_OVR        "OVR"
-    ID_INDICATOR_REC        "REC"
-END
-
-STRINGTABLE
-BEGIN
-    AFX_IDS_SCSIZE          "Change the window size"
-    AFX_IDS_SCMOVE          "Change the window position"
-    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
-    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
-    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
-    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
-    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
-END
-
-STRINGTABLE
-BEGIN
-    AFX_IDS_SCRESTORE       "Restore the window to normal size"
-    AFX_IDS_SCTASKLIST      "Activate Task List"
 END
 
 STRINGTABLE
