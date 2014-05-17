@@ -37,6 +37,8 @@ enum ResultMode {
 	rmDecCodePoint,
 };
 
+int static nLastRadioGroupSelection = -1;
+
 IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
 
 BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
@@ -67,13 +69,13 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Control ( pDX, IDC_OPTION_CASEINSENSITIVE, m_checkCaseInsensitive      );
 	DDX_Control ( pDX, IDC_OPTION_REVERSIBLE,      m_checkReversible           );
 
-	DDX_Text    ( pDX, IDC_EDITKEYSEQUENCE,        m_strKeySequence            );
+	DDX_Text    ( pDX, IDC_EDITKEYSEQUENCE,        m_strComposeSequence        );
 	DDX_Radio   ( pDX, IDC_RESULT_ASCHARACTER,     m_nResultMode               );
 	DDX_Check   ( pDX, IDC_OPTION_ENABLED,         m_fEnabled                  );
 	DDX_Check   ( pDX, IDC_OPTION_CASEINSENSITIVE, m_fCaseInsensitive          );
 	DDX_Check   ( pDX, IDC_OPTION_REVERSIBLE,      m_fReversible               );
 
-	DDX_Result  ( pDX, IDC_EDITRESULT,             m_strResult                 );
+	DDX_Result  ( pDX, IDC_EDITRESULT,             m_strComposeResult          );
 }
 
 void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& result ) {
@@ -132,10 +134,18 @@ void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& 
 }
 
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
-	if ( ! CDialog::OnInitDialog( ) )
+	if ( !CDialog::OnInitDialog( ) ) {
 		return FALSE;
+	}
 
 	SetWindowText( m_strTitle );
+
+	m_strComposeSequence =  m_sequence.Sequence;
+	m_strComposeResult   =  m_sequence.Result;
+	m_nResultMode        = ( -1 == nLastRadioGroupSelection ) ? 0 : nLastRadioGroupSelection;
+	m_fEnabled           = !m_sequence.Disabled;
+	m_fCaseInsensitive   =  m_sequence.CaseInsensitive;
+	m_fReversible        =  m_sequence.Reversible;
 
 	UpdateData( FALSE );
 
