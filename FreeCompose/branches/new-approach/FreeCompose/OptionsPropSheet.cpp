@@ -63,13 +63,15 @@ int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
 }
 
 int COptionsPropSheet::OnInitDialog( ) {
-	BOOL bRet = CPropertySheet::OnInitDialog( );
+	if ( !CPropertySheet::OnInitDialog( ) ) {
+		return FALSE;
+	}
 
 	CRect rect;
 	::GetWindowRect( m_hWnd, &rect );
 	::SetWindowPos( m_hWnd, nullptr, 0, 0, rect.right - rect.left + 8, rect.bottom - rect.top + 10, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER );
 
-	return bRet;
+	return TRUE;
 }
 
 void COptionsPropSheet::OnApplyNow( ) {
