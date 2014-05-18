@@ -34,6 +34,7 @@
 #define IDC_OPTION_ENABLED              5006
 #define IDC_OPTION_CASEINSENSITIVE      5007
 #define IDC_OPTION_REVERSIBLE           5008
+#define IDC_PREVIEW                     5009
 #define IDC_SEQUENCE                    5901
 #define IDC_RESULT                      5902
 #define IDS_MAINFRAME_ENABLED           6001
