@@ -20,14 +20,18 @@ public:
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
-	virtual void DDX_Result( CDataExchange* pDX, int nIDC, CString& result );
 
 	virtual BOOL OnInitDialog( );
+
+	afx_msg void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
+	afx_msg void OnUpdateComposeSequence( );
+	afx_msg void OnUpdateComposeResult( );
 
 private:
 	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strTitle;
+	CFont* m_pFont;
 
 	CompositeCharacter m_CompositeCharacter;
 
@@ -37,6 +41,8 @@ private:
 	CButton m_radioResultAsCharacter;
 	CButton m_radioResultAsHexCodePoint;
 	CButton m_radioResultAsDecCodePoint;
+
+	CStatic m_staticPreview;
 
 	CButton m_checkEnabled;
 	CButton m_checkCaseInsensitive;
@@ -50,4 +56,9 @@ private:
 	BOOL m_fEnabled;
 	BOOL m_fCaseInsensitive;
 	BOOL m_fReversible;
+
+	bool _InterpretComposeResult( void );
+	bool _ParseCodePointList( CString const& str, int const base, CArray<UChar32>& output );
+
+public:
 };

@@ -42,19 +42,72 @@ int static nLastRadioGroupSelection = -1;
 IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
 
 BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
+	ON_WM_DRAWITEM( )
+
+	ON_EN_UPDATE( IDC_EDITKEYSEQUENCE, &CComposeSequenceEditor::OnUpdateComposeSequence )
+	ON_EN_UPDATE( IDC_EDITRESULT,      &CComposeSequenceEditor::OnUpdateComposeResult   )
 END_MESSAGE_MAP( )
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
 	CDialog    ( IDD, pParent ),
 	m_sequence ( sequence ),
 	m_mode     ( mode ),
-	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) )
+	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) ),
+	m_pFont    ( nullptr )
 {
 
 }
 
 CComposeSequenceEditor::~CComposeSequenceEditor( ) {
+	if ( m_pFont ) {
+		delete m_pFont;
+		m_pFont = nullptr;
+	}
+}
 
+bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int const base, CArray<UChar32>& output ) {
+	int const GcDelimMask = U_GC_P_MASK  | U_GC_S_MASK  | U_GC_ZS_MASK;
+	int const GcAlnumMask = U_GC_LC_MASK | U_GC_ND_MASK;
+
+	UChar32* pqz = Utf16ToUtf32( input, input.GetLength( ) );
+	output.RemoveAll( );
+
+	UChar32 current = 0;
+	int index = 0;
+	bool converting = false;
+
+	CArray<UChar32> elements;
+	UChar32 ch;
+
+	for ( index = 0, ch = pqz[index]; 0 != ch; index++ ) {
+		unsigned mask = U_GET_GC_MASK( pqz[index] );
+		if ( 0 != ( mask & GcAlnumMask ) ) {
+			converting = true;
+			int digit = u_digit( ch, static_cast<int8_t>( base ) );
+			if ( -1 == digit ) {
+				debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable alphanumeric value &#%d;\n", ch );
+				return false;
+			}
+			current = current * base + digit;
+			if ( current > UCHAR_MAX_VALUE ) {
+				debug( L"CComposeSequenceEditor::_ParseCodePointList: Code point value overflow, 0x%X\n", ch );
+				return false;
+			}
+		} else if ( 0 != ( mask & GcDelimMask ) ) {
+			if ( converting ) {
+				output.Add( current );
+				current = 0;
+				converting = false;
+			}
+		} else {
+			debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable character &#%d;\n", ch );
+		}
+
+		index++;
+	}
+	delete[] pqz;
+
+	return true;
 }
 
 void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
@@ -65,81 +118,43 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Control ( pDX, IDC_RESULT_ASCHARACTER,     m_radioResultAsCharacter    );
 	DDX_Control ( pDX, IDC_RESULT_ASHEXCODEPOINT,  m_radioResultAsHexCodePoint );
 	DDX_Control ( pDX, IDC_RESULT_ASDECCODEPOINT,  m_radioResultAsDecCodePoint );
+	DDX_Control ( pDX, IDC_PREVIEW,                m_staticPreview             );
 	DDX_Control ( pDX, IDC_OPTION_ENABLED,         m_checkEnabled              );
 	DDX_Control ( pDX, IDC_OPTION_CASEINSENSITIVE, m_checkCaseInsensitive      );
 	DDX_Control ( pDX, IDC_OPTION_REVERSIBLE,      m_checkReversible           );
 
 	DDX_Text    ( pDX, IDC_EDITKEYSEQUENCE,        m_strComposeSequence        );
+	DDX_Text    ( pDX, IDC_EDITRESULT,             m_strComposeResult          );
 	DDX_Radio   ( pDX, IDC_RESULT_ASCHARACTER,     m_nResultMode               );
 	DDX_Check   ( pDX, IDC_OPTION_ENABLED,         m_fEnabled                  );
 	DDX_Check   ( pDX, IDC_OPTION_CASEINSENSITIVE, m_fCaseInsensitive          );
 	DDX_Check   ( pDX, IDC_OPTION_REVERSIBLE,      m_fReversible               );
-
-	DDX_Result  ( pDX, IDC_EDITRESULT,             m_strComposeResult          );
 }
 
-void CComposeSequenceEditor::DDX_Result( CDataExchange* pDX, int nIDC, CString& result ) {
-	if ( IDC_RESULT != nIDC ) {
-		debug( L"CComposeSequenceEditor::DDX_Result: wrong control ID %d?!\n", nIDC );
-		return;
-	}
-
-	if ( pDX->m_bSaveAndValidate ) {
-		result.Empty( );
-
-		int cchWindowText = m_editComposeResult.GetWindowTextLength( );
-		wchar_t* pwzWindowText = new wchar_t[cchWindowText + 1];
-		int cchCopied = m_editComposeResult.GetWindowText( pwzWindowText, cchWindowText + 1 );
-		icu::UnicodeString ustrResult( pwzWindowText, cchCopied );
-
-		switch ( m_nResultMode ) {
-			case rmCharacter: {
-				if ( !m_CompositeCharacter.SetContents( ustrResult ) ) {
-					pDX->Fail( );
-				}
-				// TODO update new 'character display' static
-				break;
-			}
-
-			case rmHexCodePoint:
-			case rmDecCodePoint:
-				{
-					// TODO use u_digit()!
-
-					//CArray<CString> parts;
-					//int index = 0;
-					//
-					//str = str.Trim( );
-					//int limit = str.GetLength( );
-					//
-					//while ( index < limit && iswspace( str[index] ) ) {
-					//	index++;
-					//}
-				}
-				break;
-
-			default:
-				break;
+bool CComposeSequenceEditor::_InterpretComposeResult( void ) {
+	if ( rmCharacter == m_nResultMode ) {
+		// nothing to do here
+	} else if ( rmDecCodePoint == m_nResultMode || rmHexCodePoint == m_nResultMode ) {
+		CArray<UChar32> codePoints;
+		bool fResult = _ParseCodePointList( m_strComposeResult, ( rmHexCodePoint == m_nResultMode ) ? 16 : 10, codePoints );
+		if ( !fResult ) {
+			return false;
 		}
+		m_strComposeResult = Utf32ToUtf16( codePoints.GetData( ) );
 	} else {
-		// TODO
-		//if ( result.IsEmpty( ) ) {
-			m_editComposeResult.SetWindowText( L"" );
-		//} else {
-		//	Utf16ToUtf32( result, ch );
-		//	str.Format( L"U+%06X %s", ch, static_cast<wchar_t const*>( result ) );
-		//	m_editComposeResult.SetWindowText( str );
-		//}
+		return false;
 	}
+
+	if ( !m_CompositeCharacter.SetContents( m_strComposeResult ) ) {
+		return false;
+	}
+
+	m_staticPreview.Invalidate( );
+
+	return true;
 }
 
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
-	if ( !CDialog::OnInitDialog( ) ) {
-		return FALSE;
-	}
-
-	SetWindowText( m_strTitle );
-
 	m_strComposeSequence =  m_sequence.Sequence;
 	m_strComposeResult   =  m_sequence.Result;
 	m_nResultMode        = ( -1 == nLastRadioGroupSelection ) ? 0 : nLastRadioGroupSelection;
@@ -147,7 +162,42 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 	m_fCaseInsensitive   =  m_sequence.CaseInsensitive;
 	m_fReversible        =  m_sequence.Reversible;
 
-	UpdateData( FALSE );
+	SetWindowText( m_strTitle );
+
+	CString junk( FormatCodePoint( CString( L"e\u0301" ) ) );
+
+	if ( !CDialog::OnInitDialog( ) ) {
+		return FALSE;
+	}
 
 	return TRUE;
+}
+
+void CComposeSequenceEditor::OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct ) {
+	if ( IDC_PREVIEW != nIDCtl ) {
+		CDialog::OnDrawItem( nIDCtl, lpDrawItemStruct );
+		return;
+	}
+
+	CRect rcItem( lpDrawItemStruct->rcItem );
+	CDC dc;
+	dc.Attach( lpDrawItemStruct->hDC );
+	if ( !m_pFont ) {
+		m_pFont = new CFont( );
+		m_pFont->CreateFont( rcItem.Height( ), 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH | FF_SWISS, L"MS Shell Dlg2" );
+	}
+
+	CFont* pOldFont = dc.SelectObject( m_pFont );
+	dc.DrawText( m_CompositeCharacter.GetPCWSTR( ), -1, rcItem, DT_CENTER | DT_VCENTER | DT_NOPREFIX | DT_SINGLELINE );
+	dc.SelectObject( pOldFont );
+	dc.Detach( );
+}
+
+void CComposeSequenceEditor::OnUpdateComposeSequence( ) {
+	// TODO allow only two composite characters
+}
+
+void CComposeSequenceEditor::OnUpdateComposeResult( ) {
+	m_editComposeResult.GetWindowText( m_strComposeResult );
+	_InterpretComposeResult( );
 }
