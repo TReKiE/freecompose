@@ -85,9 +85,6 @@ FCHOOKDLL_API BOOL FcUninitialize( void ) {
 //==============================================================================
 
 FCHOOKDLL_API BOOL FcEnableHook( void ) {
-#if UI_DEBUGGING_ONLY
-	return FALSE;
-#else
 	DWORD dwError = ERROR_SUCCESS;
 	BOOL ret = FALSE;
 
@@ -110,7 +107,6 @@ FCHOOKDLL_API BOOL FcEnableHook( void ) {
 		}
 	}
 	return ret;
-#endif
 }
 
 FCHOOKDLL_API BOOL FcDisableHook( void ) {
