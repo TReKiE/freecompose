@@ -6,9 +6,7 @@
 // company name
 #define AFX_IDS_COMPANY_NAME            0xE004
 
-LPWSTR _CoTaskMemDuplicateStringW( LPCWSTR lpwszSource );
+LPWSTR _CoTaskMemDuplicateString( LPCWSTR lpwszSource );
 bool _GetAppDataFolder( LPWSTR& lpsz );
 bool _GetAppDataFolderFromShell( LPWSTR& lpsz );
 bool _GetAppDataFolderFromKfm( LPWSTR& lpsz );
-
-extern HINSTANCE hDllInst;
