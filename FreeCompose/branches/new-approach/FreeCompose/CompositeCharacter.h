@@ -5,8 +5,8 @@ class CompositeCharacter {
 public:
 
 	inline CompositeCharacter( ):
-		m_pwzUtf16 ( nullptr ),
-		m_pqzUtf32 ( nullptr ),
+		m_pwz ( nullptr ),
+		m_pqz ( nullptr ),
 		m_error    ( U_ZERO_ERROR )
 	{
 		m_pBreakIterator = icu::BreakIterator::createCharacterInstance( icu::Locale::getDefault( ), m_error );
@@ -34,11 +34,11 @@ public:
 	}
 
 	inline CompositeCharacter& operator=( CompositeCharacter const& rhs ) {
-		size_t cch = wcslen( rhs.m_pwzUtf16 );
-		m_pwzUtf16 = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
-		m_pqzUtf32 = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
-		memcpy( m_pwzUtf16, rhs.m_pwzUtf16, cch * sizeof( wchar_t ) );
-		memcpy( m_pqzUtf32, rhs.m_pqzUtf32, cch * sizeof( UChar32 ) );
+		size_t cch = wcslen( rhs.m_pwz );
+		m_pwz = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
+		m_pqz = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
+		memcpy( m_pwz, rhs.m_pwz, cch * sizeof( wchar_t ) );
+		memcpy( m_pqz, rhs.m_pqz, cch * sizeof( UChar32 ) );
 		m_unicodeString = rhs.m_unicodeString;
 		return *this;
 	}
@@ -47,57 +47,57 @@ public:
 		return operator=( static_cast<CompositeCharacter const&>( rhs ) );
 	}
 
-	inline UChar const* GetUtf16( void ) const {
-		return nullptr;
+	inline UChar const* GetUtf16( void ) {
+		return m_pwz;
 	}
 
-	inline UChar32 const* GetUtf32( void ) const {
-		return nullptr;
+	inline UChar32 const* GetUtf32( void ) {
+		return m_pqz;
 	}
 
-	inline icu::UnicodeString GetUnicodeString( void ) const {
+	inline icu::UnicodeString GetUnicodeString( void ) {
 		return icu::UnicodeString( );
 	}
 
-	inline _bstr_t GetBstrT( void ) const {
-		return _bstr_t( );
+	inline _bstr_t GetBstrT( void ) {
+		return _bstr_t( m_pwz );
 	}
 
-	inline _variant_t GetVariantT( void ) const {
-		return _variant_t( );
+	inline _variant_t GetVariantT( void ) {
+		return _variant_t( _bstr_t( m_pwz ) );
 	}
 
-	inline CString GetCString( void ) const {
-		return CString( );
+	inline CString GetCString( void ) {
+		return CString( m_pwz );
 	}
 
-	inline std::wstring GetWstring( void ) const {
-		return std::wstring( );
+	inline std::wstring GetWstring( void ) {
+		return std::wstring( m_pwz );
 	}
 
-	inline PCWSTR GetPCWSTR( void ) const {
-		return nullptr;
+	inline PCWSTR GetPCWSTR( void ) {
+		return m_pwz;
 	}
 
-	inline PWSTR GetPWSTR( void ) const {
-		return nullptr;
+	inline PWSTR GetPWSTR( void ) {
+		return const_cast<PWSTR>( m_pwz );
 	}
 
-	inline bool SetContents( icu::UnicodeString const& contents ) {
-		if ( contents.isEmpty( ) ) {
+	inline bool SetContents( CString const& contents ) {
+		if ( contents.IsEmpty( ) ) {
 			return false;
 		}
 
-		if ( m_pwzUtf16 ) {
-			delete[] m_pwzUtf16;
-			m_pwzUtf16 = nullptr;
+		if ( m_pwz ) {
+			delete[] m_pwz;
+			m_pwz = nullptr;
 		}
-		if ( m_pqzUtf32 ) {
-			delete[] m_pqzUtf32;
-			m_pqzUtf32 = nullptr;
+		if ( m_pqz ) {
+			delete[] m_pqz;
+			m_pqz = nullptr;
 		}
 
-		m_unicodeString = contents;
+		m_unicodeString = icu::UnicodeString( contents );
 		m_pBreakIterator->setText( m_unicodeString );
 
 		int32_t p1 = m_pBreakIterator->first( );
@@ -114,24 +114,24 @@ public:
 		m_unicodeString = icu::UnicodeString( contents, cchStr );
 
 		m_error = U_ZERO_ERROR;
-		m_pqzUtf32 = new UChar32[cchStr];
-		m_unicodeString.toUTF32( m_pqzUtf32, cchStr, m_error );
+		m_pqz = new UChar32[cchStr];
+		m_unicodeString.toUTF32( m_pqz, cchStr, m_error );
 		if ( U_ZERO_ERROR != m_error ) {
 			debug( L"CompositeCharacter::SetContents: result.toUTF32 failed, m_error=%d\n", m_error );
-			delete[] m_pqzUtf32;
-			m_pqzUtf32 = nullptr;
+			delete[] m_pqz;
+			m_pqz = nullptr;
 			return false;
 		}
 
-		m_pwzUtf16 = new UChar[cchStr];
-		memcpy( m_pwzUtf16, m_unicodeString.getBuffer( ), sizeof(wchar_t) * cchStr );
+		m_pwz = new UChar[cchStr + 1];
+		memcpy( m_pwz, m_unicodeString.getTerminatedBuffer( ), sizeof(wchar_t) * ( cchStr + 1 ) );
 
 		return true;
 	}
 
 private:
-	UChar* m_pwzUtf16;
-	UChar32* m_pqzUtf32;
+	UChar* m_pwz;
+	UChar32* m_pqz;
 	icu::UnicodeString m_unicodeString;
 	icu::BreakIterator* m_pBreakIterator;
 	UErrorCode m_error;
