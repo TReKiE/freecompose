@@ -1,12 +1,12 @@
 #pragma once
 
-// Control whether to disable all backend functionality so the UI may be debugged in relative isolation.
-#undef UI_DEBUGGING_ONLY
-
-// Enable redirection of malloc, free, etc. to _malloc_dbg, _free_dbg, etc.
-#ifdef _DEBUG
+#define _ATL_APARTMENT_THREADED 
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS
 #define _CRTDBG_MAP_ALLOC
-#endif
+#define  NOMINMAX
+#define _SECURE_ATL 1
+#define  VC_EXTRALEAN
+#define  WIN32_LEAN_AND_MEAN
 
 #include "targetver.h"
 
