@@ -38,12 +38,10 @@ public:
 		return SetCriticalSectionSpinCount( &cs, cSpin );
 	}
 
-#pragma warning(push)
-#pragma warning(disable: 26116)
+#pragma warning(suppress: 26116)
 	_Acquires_lock_(this->cs) inline bool TryEnter( ) {
 		return TryEnterCriticalSection( &cs ) ? true : false;
 	}
-#pragma warning(pop)
 
 private:
 
