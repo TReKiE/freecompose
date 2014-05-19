@@ -20,7 +20,7 @@ private:
 	afx_msg void OnComposeKeyChanged( );
 	afx_msg void OnSwapCapsLockChanged( );
 	afx_msg void OnSwapCapsLockKeyChanged( );
-	afx_msg void OnCapsLockModeChanged( UINT uID );
+	afx_msg void OnCapsLockToggleModeChanged( UINT uID );
 
 private:
 	COptionsData& m_Options;
@@ -28,7 +28,6 @@ private:
 	CComboBox m_cbComposeKey;
 	CComboBox m_cbSwapCapsLockKey;
 	CButton m_btnSwapCapsLock;
-	CButton m_btnCltmNormal;
-	CButton m_btnCltmPressTwice;
-	CButton m_btnCltmDisabled;
+
+	int m_nCapsLockToggleMode;
 };
