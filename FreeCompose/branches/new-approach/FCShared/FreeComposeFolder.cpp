@@ -3,9 +3,6 @@
 #include "Internal.h"
 #include "resource.h"
 
-CString strCompanyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
-CString strAppName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
-
 FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
 	bool ret = false;
 
@@ -14,6 +11,8 @@ FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
 		return false;
 	}
 
+	CString strCompanyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
+	CString strAppName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
 	CString path;
 	path.Format( L"%s\\%s\\%s", appDataFolder, strCompanyName, strAppName );
 	lpsz = _CoTaskMemDuplicateString( path );
@@ -33,6 +32,8 @@ FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
 		return false;
 	}
 
+	CString strCompanyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
+	CString strAppName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
 	CString folder;
 	folder.Format( L"%s\\%s", appDataFolder, strCompanyName );
 
