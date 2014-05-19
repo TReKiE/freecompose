@@ -3,72 +3,54 @@
 #include "Internal.h"
 #include "resource.h"
 
-#include <cstdio>
-
-using namespace std;
+CString strCompanyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
+CString strAppName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
 
 FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
 	bool ret = false;
-	int rc;
 
 	LPWSTR appDataFolder = nullptr;
 	if ( !_GetAppDataFolder( appDataFolder ) ) {
 		return false;
 	}
 
-	wchar_t companyName[1024];
-	rc = LoadString( hDllInst, AFX_IDS_COMPANY_NAME, companyName, 1024 );
-	if ( !rc ) {
-		goto ret;
-	}
-
-	wchar_t appName[1024];
-	rc = LoadString( hDllInst, AFX_IDS_APP_TITLE, appName, 1024 );
-	if ( !rc ) {
-		goto ret;
-	}
-
-	wchar_t buf[1024];
-	swprintf_s( buf, 1024, L"%s\\%s\\%s", appDataFolder, companyName, appName );
-	lpsz = _CoTaskMemDuplicateStringW( buf );
+	CString path;
+	path.Format( L"%s\\%s\\%s", appDataFolder, strCompanyName, strAppName );
+	lpsz = _CoTaskMemDuplicateString( path );
 	ret = true;
 
-ret:
 	CoTaskMemFree( appDataFolder );
 	return ret;
 }
 
 FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
+	DWORD dwError;
+	BOOL rc;
 	bool ret = false;
-	int rc;
 
 	LPWSTR appDataFolder = nullptr;
 	if ( !_GetAppDataFolder( appDataFolder ) ) {
 		return false;
 	}
 
-	wchar_t companyName[1024];
-	rc = LoadString( hDllInst, AFX_IDS_COMPANY_NAME, companyName, 1024 );
-	if ( !rc ) {
+	CString folder;
+	folder.Format( L"%s\\%s", appDataFolder, strCompanyName );
+
+	SetLastError( 0 );
+	rc = CreateDirectory( folder, nullptr );
+	dwError = GetLastError( );
+	if ( !rc && ( ERROR_ALREADY_EXISTS != dwError ) ) {
+		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", static_cast<LPCWSTR>( folder ), dwError );
 		goto ret;
 	}
 
-	wchar_t appName[1024];
-	rc = LoadString( hDllInst, AFX_IDS_APP_TITLE, appName, 1024 );
-	if ( !rc ) {
-		goto ret;
-	}
+	folder.AppendFormat( L"\\%s", strAppName );
 
-	wchar_t folder[1024];
-	swprintf_s( folder, 1024, L"%s\\%s", appDataFolder, companyName );
-	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
-		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", folder, GetLastError( ) );
-		goto ret;
-	}
-
-	swprintf_s( folder, 1024, L"%s\\%s\\%s", appDataFolder, companyName, appName );
-	if ( ! CreateDirectory( folder, nullptr ) && ( ERROR_ALREADY_EXISTS != GetLastError( ) ) ) {
-		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", folder, GetLastError( ) );
+	SetLastError( 0 );
+	rc = CreateDirectory( folder, nullptr );
+	dwError = GetLastError( );
+	if ( !rc && ( ERROR_ALREADY_EXISTS != dwError ) ) {
+		debug( L"EnsureFreeComposeFolderExists: CreateDirectory('%s') failed: %lu\n", static_cast<LPCWSTR>( folder ), dwError );
 		goto ret;
 	}
 
