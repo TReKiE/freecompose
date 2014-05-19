@@ -27,6 +27,14 @@ public:
 
 	inline ~CompositeCharacter( )
 	{
+		if ( m_pwz ) {
+			delete m_pwz;
+			m_pwz = nullptr;
+		}
+		if ( m_pqz ) {
+			delete m_pqz;
+			m_pqz = nullptr;
+		}
 		if ( m_pBreakIterator ) {
 			delete m_pBreakIterator;
 			m_pBreakIterator = nullptr;
@@ -34,6 +42,12 @@ public:
 	}
 
 	inline CompositeCharacter& operator=( CompositeCharacter const& rhs ) {
+		if ( m_pwz ) {
+			free( m_pwz );
+		}
+		if ( m_pqz ) {
+			free( m_pqz );
+		}
 		size_t cch = wcslen( rhs.m_pwz );
 		m_pwz = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
 		m_pqz = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );

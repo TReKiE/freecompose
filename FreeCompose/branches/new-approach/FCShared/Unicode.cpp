@@ -83,6 +83,8 @@ int CountCompositeCharacters( UChar const* pwz, int const cch ) {
 		cComposites++;
 		p = pbi->next( );
 	}
+
+	delete pbi;
 	return p - 1;
 }
 

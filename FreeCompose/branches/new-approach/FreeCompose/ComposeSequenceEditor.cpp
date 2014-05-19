@@ -86,11 +86,13 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 			int digit = u_digit( ch, static_cast<int8_t>( base ) );
 			if ( -1 == digit ) {
 				debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable alphanumeric value &#%d;\n", ch );
+				delete[] pqz;
 				return false;
 			}
 			current = current * base + digit;
 			if ( current > UCHAR_MAX_VALUE ) {
 				debug( L"CComposeSequenceEditor::_ParseCodePointList: Code point value overflow, 0x%X\n", ch );
+				delete[] pqz;
 				return false;
 			}
 		} else if ( 0 != ( mask & GcDelimMask ) ) {
@@ -101,12 +103,14 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 			}
 		} else {
 			debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable character &#%d;\n", ch );
+			delete[] pqz;
+			return false;
 		}
 
 		index++;
 	}
-	delete[] pqz;
 
+	delete[] pqz;
 	return true;
 }
 
