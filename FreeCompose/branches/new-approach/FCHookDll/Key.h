@@ -1,7 +1,5 @@
 #pragma once
 
-#include <KeyIsXAlnum.h>
-
 class Key {
 public:
 	inline static bool isCapsLock( KBDLLHOOKSTRUCT const* pkb ) {
