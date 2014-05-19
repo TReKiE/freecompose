@@ -1,7 +1,5 @@
-// AboutDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
+
 #include "FreeCompose.h"
 #include "AboutDlg.h"
 #include "Utils.h"
@@ -17,8 +15,8 @@ CAboutDlg::CAboutDlg( ):
 
 void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
-	DDX_Text( pDX, IDC_ABOUT_VERSION,   m_strVersion   );
-	DDX_Text( pDX, IDC_ABOUT_COPYRIGHT, m_strCopyright );
+	DDX_Text( pDX, IDC_A_VERSION,   m_strVersion   );
+	DDX_Text( pDX, IDC_A_COPYRIGHT, m_strCopyright );
 }
 
 BOOL CAboutDlg::OnInitDialog( ) {
@@ -26,25 +24,22 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	strExeName.Format( L"%s.exe", theApp.m_pszExeName );
 
 	SetLastError( ERROR_SUCCESS );
-	DWORD dwBytes = GetFileVersionInfoSize( strExeName, nullptr/*&dwDummy*/ );
+	DWORD dwBytes = GetFileVersionInfoSize( strExeName, nullptr );
 	if ( 0 == dwBytes ) {
-		DWORD dwError = GetLastError( );
-		debug( L"GetFileVersionInfoSize failed: %lu\n", dwError );
+		debug( L"GetFileVersionInfoSize failed: %lu\n", GetLastError( ) );
 		return FALSE;
 	}
 
 	SetLastError( ERROR_SUCCESS );
 	void* pvdata = malloc( dwBytes );
 	if ( !pvdata ) {
-		DWORD dwError = GetLastError( );
-		debug( L"CAboutDlg::InitDialog: malloc(%lu) failed, errno: %d, Win32 error: %lu\n", dwBytes, errno, dwError );
+		debug( L"CAboutDlg::InitDialog: malloc(%lu) failed, errno: %d, Win32 error: %lu\n", dwBytes, errno, GetLastError( ) );
 		return FALSE;
 	}
 
 	SetLastError( ERROR_SUCCESS );
 	if ( !GetFileVersionInfo( strExeName, 0, dwBytes, pvdata ) ) {
-		DWORD dwError = GetLastError( );
-		debug( L"GetFileVersionInfo failed: %lu\n", dwError );
+		debug( L"GetFileVersionInfo failed: %lu\n", GetLastError( ) );
 		free( pvdata );
 		return FALSE;
 	}
@@ -53,8 +48,7 @@ BOOL CAboutDlg::OnInitDialog( ) {
 	UINT uLen = 0;
 	SetLastError( ERROR_SUCCESS );
 	if ( !VerQueryValue( pvdata, L"\\", reinterpret_cast<LPVOID*>( &pvsffi ), &uLen ) ) {
-		DWORD dwError = GetLastError( );
-		debug( L"VerQueryValue failed: %lu\n", dwError );
+		debug( L"VerQueryValue failed: %lu\n", GetLastError( ) );
 		free( pvdata );
 		return FALSE;
 	}
