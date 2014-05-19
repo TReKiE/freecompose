@@ -32,10 +32,6 @@ public:
 		return 0 != ( pkb->flags & LLKHF_UP );
 	}
 
-	inline static bool isXAlNum( KBDLLHOOKSTRUCT const* pkb ) {
-		return KeyIsXAlnum::Test( pkb->vkCode );
-	}
-
 private:
 	Key( );
 	Key( Key& );
