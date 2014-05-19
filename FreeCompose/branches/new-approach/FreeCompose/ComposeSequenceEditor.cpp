@@ -164,8 +164,6 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 
 	SetWindowText( m_strTitle );
 
-	CString junk( FormatCodePoint( CString( L"e\u0301" ) ) );
-
 	if ( !CDialog::OnInitDialog( ) ) {
 		return FALSE;
 	}
