@@ -418,11 +418,11 @@ BOOL CKeySequences::OnInitDialog( ) {
 
 	CString strLabels[NumberOfColumns] = {
 		CString( ),
-		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT_CODEPOINT ),
-		LoadFromStringTable( IDS_KEYSEQUENCES_RESULT_CHARACTER ),
-		LoadFromStringTable( IDS_KEYSEQUENCES_SEQUENCE ),
-		LoadFromStringTable( IDS_KEYSEQUENCES_CASEINSENSITIVE ),
-		LoadFromStringTable( IDS_KEYSEQUENCES_REVERSIBLE ),
+		LoadFromStringTable( IDS_KS_COLUMN_RESULT_CODEPOINT ),
+		LoadFromStringTable( IDS_KS_COLUMN_RESULT_CHARACTER ),
+		LoadFromStringTable( IDS_KS_COLUMN_SEQUENCE ),
+		LoadFromStringTable( IDS_KS_COLUMN_CASEINSENSITIVE ),
+		LoadFromStringTable( IDS_KS_COLUMN_REVERSIBLE ),
 	};
 
 	for ( int n = 0; n < NumberOfColumns; n++ ) {
@@ -602,7 +602,7 @@ void CKeySequences::OnBnClickedRemove( ) {
 		return;
 	}
 
-	int ret = MessageBox( LoadFromStringTable( IDS_KEYSEQUENCES_CONFIRM_PROMPT ), LoadFromStringTable( IDS_KEYSEQUENCES_CONFIRM_TITLE ), MB_YESNO | MB_ICONWARNING );
+	int ret = MessageBox( LoadFromStringTable( IDS_KS_CONFIRM_DELETE_PROMPT ), LoadFromStringTable( IDS_KS_CONFIRM_DELETE_TITLE ), MB_YESNO | MB_ICONWARNING );
 	if ( IDYES != ret ) {
 		return;
 	}

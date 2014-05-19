@@ -14,16 +14,16 @@
 //
 // Type    Resource ID
 // ------  --------------------------
-// Edit    IDC_EDITKEYSEQUENCE
+// Edit    IDC_CSE_SEQUENCE
 //
-// Radio   IDC_RESULT_ASCHARACTER
-// Radio   IDC_RESULT_ASHEXCODEPOINT
-// Radio   IDC_RESULT_ASDECCODEPOINT
-// Edit    IDC_EDITRESULT
+// Radio   IDC_CSE_RESULT_AS_CHARACTER
+// Radio   IDC_CSE_RESULT_AS_HEX
+// Radio   IDC_CSE_RESULT_AS_DECIMAL
+// Edit    IDC_CSE_RESULT
 //
-// Check   IDC_OPTION_ENABLED
-// Check   IDC_OPTION_CASEINSENSITIVE
-// Check   IDC_OPTION_REVERSIBLE
+// Check   IDC_CSE_ENABLED
+// Check   IDC_CSE_CASE_INSENSITIVE
+// Check   IDC_CSE_REVERSIBLE
 //
 // Button  IDOK_ADDANOTHER
 // Button  IDOK
@@ -44,15 +44,15 @@ IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
 BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
 	ON_WM_DRAWITEM( )
 
-	ON_EN_UPDATE( IDC_EDITKEYSEQUENCE, &CComposeSequenceEditor::OnUpdateComposeSequence )
-	ON_EN_UPDATE( IDC_EDITRESULT,      &CComposeSequenceEditor::OnUpdateComposeResult   )
+	ON_EN_UPDATE( IDC_CSE_SEQUENCE, &CComposeSequenceEditor::OnUpdateComposeSequence )
+	ON_EN_UPDATE( IDC_CSE_RESULT,   &CComposeSequenceEditor::OnUpdateComposeResult   )
 END_MESSAGE_MAP( )
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
 	CDialog    ( IDD, pParent ),
 	m_sequence ( sequence ),
 	m_mode     ( mode ),
-	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDS_EDITKEYSEQUENCE_TITLE_ADD : IDS_EDITKEYSEQUENCE_TITLE_EDIT ) ),
+	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDC_CSE_ADD_MODE_TITLE : IDC_CSE_EDIT_MODE_TITLE ) ),
 	m_pFont    ( nullptr )
 {
 
@@ -113,22 +113,22 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
 
-	DDX_Control ( pDX, IDC_EDITKEYSEQUENCE,        m_editComposeSequence       );
-	DDX_Control ( pDX, IDC_EDITRESULT,             m_editComposeResult         );
-	DDX_Control ( pDX, IDC_RESULT_ASCHARACTER,     m_radioResultAsCharacter    );
-	DDX_Control ( pDX, IDC_RESULT_ASHEXCODEPOINT,  m_radioResultAsHexCodePoint );
-	DDX_Control ( pDX, IDC_RESULT_ASDECCODEPOINT,  m_radioResultAsDecCodePoint );
-	DDX_Control ( pDX, IDC_PREVIEW,                m_staticPreview             );
-	DDX_Control ( pDX, IDC_OPTION_ENABLED,         m_checkEnabled              );
-	DDX_Control ( pDX, IDC_OPTION_CASEINSENSITIVE, m_checkCaseInsensitive      );
-	DDX_Control ( pDX, IDC_OPTION_REVERSIBLE,      m_checkReversible           );
+	DDX_Control ( pDX, IDC_CSE_SEQUENCE,            m_editComposeSequence       );
+	DDX_Control ( pDX, IDC_CSE_RESULT,              m_editComposeResult         );
+	DDX_Control ( pDX, IDC_CSE_RESULT_AS_CHARACTER, m_radioResultAsCharacter    );
+	DDX_Control ( pDX, IDC_CSE_RESULT_AS_HEX,       m_radioResultAsHexCodePoint );
+	DDX_Control ( pDX, IDC_CSE_RESULT_AS_DECIMAL,   m_radioResultAsDecCodePoint );
+	DDX_Control ( pDX, IDC_CSE_PREVIEW,             m_staticPreview             );
+	DDX_Control ( pDX, IDC_CSE_ENABLED,             m_checkEnabled              );
+	DDX_Control ( pDX, IDC_CSE_CASE_INSENSITIVE,    m_checkCaseInsensitive      );
+	DDX_Control ( pDX, IDC_CSE_REVERSIBLE,          m_checkReversible           );
 
-	DDX_Text    ( pDX, IDC_EDITKEYSEQUENCE,        m_strComposeSequence        );
-	DDX_Text    ( pDX, IDC_EDITRESULT,             m_strComposeResult          );
-	DDX_Radio   ( pDX, IDC_RESULT_ASCHARACTER,     m_nResultMode               );
-	DDX_Check   ( pDX, IDC_OPTION_ENABLED,         m_fEnabled                  );
-	DDX_Check   ( pDX, IDC_OPTION_CASEINSENSITIVE, m_fCaseInsensitive          );
-	DDX_Check   ( pDX, IDC_OPTION_REVERSIBLE,      m_fReversible               );
+	DDX_Text    ( pDX, IDC_CSE_SEQUENCE,            m_strComposeSequence        );
+	DDX_Text    ( pDX, IDC_CSE_RESULT,              m_strComposeResult          );
+	DDX_Radio   ( pDX, IDC_CSE_RESULT_AS_CHARACTER, m_nResultMode               );
+	DDX_Check   ( pDX, IDC_CSE_ENABLED,             m_fEnabled                  );
+	DDX_Check   ( pDX, IDC_CSE_CASE_INSENSITIVE,    m_fCaseInsensitive          );
+	DDX_Check   ( pDX, IDC_CSE_REVERSIBLE,          m_fReversible               );
 }
 
 bool CComposeSequenceEditor::_InterpretComposeResult( void ) {
@@ -174,7 +174,7 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 }
 
 void CComposeSequenceEditor::OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct ) {
-	if ( IDC_PREVIEW != nIDCtl ) {
+	if ( IDC_CSE_PREVIEW != nIDCtl ) {
 		CDialog::OnDrawItem( nIDCtl, lpDrawItemStruct );
 		return;
 	}
