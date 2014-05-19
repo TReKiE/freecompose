@@ -63,9 +63,7 @@ int COptionsPropSheet::OnCreate( LPCREATESTRUCT lpcs ) {
 }
 
 int COptionsPropSheet::OnInitDialog( ) {
-	if ( !CPropertySheet::OnInitDialog( ) ) {
-		return FALSE;
-	}
+	CPropertySheet::OnInitDialog( );
 
 	CRect rect;
 	::GetWindowRect( m_hWnd, &rect );
