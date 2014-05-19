@@ -16,7 +16,7 @@ public:
 	virtual ~CComposeSequenceEditor( );
 
 	// Dialog Data
-	enum { IDD = IDD_EDITKEYSEQUENCE };
+	enum { IDD = IDD_COMPOSE_SEQUENCE_EDITOR };
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
