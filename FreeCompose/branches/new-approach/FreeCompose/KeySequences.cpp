@@ -58,9 +58,9 @@ wchar_t const BooleanToGlyph[2] = { L'\u2718', L'\u2714' };
 //
 
 BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
-	ON_NOTIFY( NM_DBLCLK,       IDC_KEYCOMBOLIST, &CKeySequences::OnListDoubleClick )
-	ON_NOTIFY( LVN_COLUMNCLICK, IDC_KEYCOMBOLIST, &CKeySequences::OnListColumnClick )
-	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KEYCOMBOLIST, &CKeySequences::OnListItemChanged )
+	ON_NOTIFY( NM_DBLCLK,       IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListDoubleClick )
+	ON_NOTIFY( LVN_COLUMNCLICK, IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListColumnClick )
+	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListItemChanged )
 
 	ON_BN_CLICKED( IDADD,    &CKeySequences::OnBnClickedAdd    )
 	ON_BN_CLICKED( IDEDIT,   &CKeySequences::OnBnClickedEdit   )
@@ -385,10 +385,10 @@ int CKeySequences::_ListComparer_Descending_Reversible( LPARAM index1, LPARAM in
 void CKeySequences::DoDataExchange( CDataExchange* pDX ) {
 	CPropertyPage::DoDataExchange( pDX );
 
-	DDX_Control( pDX, IDC_KEYCOMBOLIST, m_List      );
-	DDX_Control( pDX, IDADD,            m_btnAdd    );
-	DDX_Control( pDX, IDEDIT,           m_btnEdit   );
-	DDX_Control( pDX, IDREMOVE,         m_btnRemove );
+	DDX_Control( pDX, IDC_KS_COMPOSE_SEQUENCE_LIST, m_List      );
+	DDX_Control( pDX, IDADD,                        m_btnAdd    );
+	DDX_Control( pDX, IDEDIT,                       m_btnEdit   );
+	DDX_Control( pDX, IDREMOVE,                     m_btnRemove );
 }
 
 BOOL CKeySequences::OnInitDialog( ) {
