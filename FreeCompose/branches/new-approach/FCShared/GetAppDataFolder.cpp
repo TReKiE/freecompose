@@ -12,7 +12,7 @@ bool _GetAppDataFolderFromShell( LPWSTR& lpsz ) {
 		return false;
 	}
 
-	lpsz = _CoTaskMemDuplicateStringW( buf );
+	lpsz = _CoTaskMemDuplicateString( buf );
 	return true;
 }
 
