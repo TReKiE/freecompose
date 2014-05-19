@@ -14,12 +14,13 @@ const DWORD SpecialKeys[] = {
 
 IMPLEMENT_DYNAMIC( CFeatures, CPropertyPage )
 BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
-	ON_BN_CLICKED( IDC_ENABLEONSTARTUP, &CFeatures::OnChanged )
-	ON_BN_CLICKED( IDC_STARTWITHWINDOWS, &CFeatures::OnChanged )
-	ON_CBN_SELCHANGE( IDC_COMPOSE_KEY, &CFeatures::OnComposeKeyChanged )
-	ON_BN_CLICKED( IDC_SWAPCAPSLOCK, &CFeatures::OnSwapCapsLockChanged )
-	ON_CBN_SELCHANGE( IDC_SWAPCAPSLOCK_KEY, &CFeatures::OnSwapCapsLockKeyChanged )
-	ON_CONTROL_RANGE( BN_CLICKED, IDC_CAPSLOCKTOGGLEMODE_NORMAL, IDC_CAPSLOCKTOGGLEMODE_DISABLED, &CFeatures::OnCapsLockModeChanged )
+	ON_BN_CLICKED   ( IDC_F_ENABLE_ON_STARTUP,  &CFeatures::OnChanged                )
+	ON_BN_CLICKED   ( IDC_F_START_WITH_WINDOWS, &CFeatures::OnChanged                )
+	ON_BN_CLICKED   ( IDC_F_SWAPCAPSLOCK,       &CFeatures::OnSwapCapsLockChanged    )
+	ON_CBN_SELCHANGE( IDC_F_COMPOSE_KEY,        &CFeatures::OnComposeKeyChanged      )
+	ON_CBN_SELCHANGE( IDC_F_SWAPCAPSLOCK_KEY,   &CFeatures::OnSwapCapsLockKeyChanged )
+
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_F_CAPS_LOCK_TOGGLE_MODE_NORMAL, IDC_F_CAPS_LOCK_TOGGLE_MODE_DISABLED, &CFeatures::OnCapsLockToggleModeChanged )
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):
@@ -36,15 +37,13 @@ CFeatures::~CFeatures( ) {
 void CFeatures::DoDataExchange( CDataExchange* pDX ) {
 	CPropertyPage::DoDataExchange( pDX );
 
-	DDX_Check( pDX, IDC_ENABLEONSTARTUP,  m_Options.StartActive );
-	DDX_Check( pDX, IDC_STARTWITHWINDOWS, m_Options.StartWithWindows );
+	DDX_Control ( pDX, IDC_F_COMPOSE_KEY,                      m_cbComposeKey             );
+	DDX_Control ( pDX, IDC_F_SWAPCAPSLOCK,                     m_btnSwapCapsLock          );
+	DDX_Control ( pDX, IDC_F_SWAPCAPSLOCK_KEY,                 m_cbSwapCapsLockKey        );
 
-	DDX_Control( pDX, IDC_COMPOSE_KEY,                   m_cbComposeKey );
-	DDX_Control( pDX, IDC_SWAPCAPSLOCK,                  m_btnSwapCapsLock );
-	DDX_Control( pDX, IDC_SWAPCAPSLOCK_KEY,              m_cbSwapCapsLockKey );
-	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_NORMAL,     m_btnCltmNormal );
-	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE, m_btnCltmPressTwice );
-	DDX_Control( pDX, IDC_CAPSLOCKTOGGLEMODE_DISABLED,   m_btnCltmDisabled );
+	DDX_Check   ( pDX, IDC_F_ENABLE_ON_STARTUP,                m_Options.StartActive      );
+	DDX_Check   ( pDX, IDC_F_START_WITH_WINDOWS,               m_Options.StartWithWindows );
+	DDX_Radio   ( pDX, IDC_F_CAPS_LOCK_TOGGLE_MODE_NORMAL,     m_nCapsLockToggleMode      );
 }
 
 BOOL CFeatures::OnInitDialog( ) {
@@ -52,15 +51,9 @@ BOOL CFeatures::OnInitDialog( ) {
 		return FALSE;
 	}
 
-	CString keyName;
 	int index;
 	for ( int n = 0; n < _countof( SpecialKeys ); n++ ) {
-		SetLastError( ERROR_SUCCESS );
-		if ( !keyName.LoadString( IDS_VK_NAMES_BASE + n ) ) {
-			DWORD dwError = GetLastError( );
-			debug( L"CFeatures::OnInitDialog: LoadString(%d) failed, error=%lu\n", IDS_VK_NAMES_BASE + n, dwError );
-			continue;
-		}
+		CString keyName( reinterpret_cast<LPCWSTR>( IDS_VK_NAMES_BASE + n ) );
 
 		index = m_cbComposeKey.AddString( keyName );
 		if ( index >= 0 ) {
@@ -83,11 +76,7 @@ BOOL CFeatures::OnInitDialog( ) {
 		}
 	}
 
-	switch ( m_Options.CapsLockToggleMode ) {
-		case CLTM_NORMAL:     m_btnCltmNormal    .SetCheck( BST_CHECKED ); break;
-		case CLTM_PRESSTWICE: m_btnCltmPressTwice.SetCheck( BST_CHECKED ); break;
-		case CLTM_DISABLED:   m_btnCltmDisabled  .SetCheck( BST_CHECKED ); break;
-	}
+	m_nCapsLockToggleMode = m_Options.CapsLockToggleMode - 1;
 
 	UpdateData( FALSE );
 	return TRUE;
@@ -136,19 +125,7 @@ void CFeatures::OnSwapCapsLockKeyChanged( ) {
 	SetModified( );
 }
 
-void CFeatures::OnCapsLockModeChanged( UINT uID ) {
-	switch ( uID ) {
-		case IDC_CAPSLOCKTOGGLEMODE_NORMAL:
-			m_Options.CapsLockToggleMode = CLTM_NORMAL;
-			break;
-
-		case IDC_CAPSLOCKTOGGLEMODE_PRESSTWICE:
-			m_Options.CapsLockToggleMode = CLTM_PRESSTWICE;
-			break;
-
-		case IDC_CAPSLOCKTOGGLEMODE_DISABLED:
-			m_Options.CapsLockToggleMode = CLTM_DISABLED;
-			break;
-	}
+void CFeatures::OnCapsLockToggleModeChanged( UINT uID ) {
+	m_Options.CapsLockToggleMode = static_cast<CAPS_LOCK_TOGGLE_MODE>( uID - IDC_F_CAPS_LOCK_TOGGLE_MODE_NORMAL + 1 );
 	SetModified( );
 }
