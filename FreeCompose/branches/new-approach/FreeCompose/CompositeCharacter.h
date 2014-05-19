@@ -5,9 +5,9 @@ class CompositeCharacter {
 public:
 
 	inline CompositeCharacter( ):
-		m_pwz ( nullptr ),
-		m_pqz ( nullptr ),
-		m_error    ( U_ZERO_ERROR )
+		m_pwz   ( nullptr ),
+		m_pqz   ( nullptr ),
+		m_error ( U_ZERO_ERROR )
 	{
 		m_pBreakIterator = icu::BreakIterator::createCharacterInstance( icu::Locale::getDefault( ), m_error );
 	}
