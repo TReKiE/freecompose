@@ -42,9 +42,6 @@
     <ClInclude Include="..\SharedInclude\Unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SharedInclude\FreeListAllocator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\SharedInclude\AutoCriticalSection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
