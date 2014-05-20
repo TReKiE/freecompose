@@ -55,7 +55,6 @@ CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUE
 	CDialog    ( IDD, pParent ),
 	m_sequence ( sequence ),
 	m_mode     ( mode ),
-	m_strTitle ( LoadFromStringTable( ( semAdd == mode ) ? IDC_CSE_ADD_MODE_TITLE : IDC_CSE_EDIT_MODE_TITLE ) ),
 	m_pFont    ( nullptr )
 {
 
@@ -211,7 +210,7 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 }
 
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
-	SetWindowText( m_strTitle );
+	SetWindowText( LoadFromStringTable( ( semAdd == m_mode ) ? IDC_CSE_ADD_MODE_TITLE : IDC_CSE_EDIT_MODE_TITLE ) );
 
 	m_strComposeSequence =  m_sequence.Sequence;
 	m_strComposeResult   =  m_sequence.Result;

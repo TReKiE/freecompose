@@ -31,7 +31,6 @@ protected:
 private:
 	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
-	CString m_strTitle;
 	CString m_strResultInput;
 	CFont* m_pFont;
 
