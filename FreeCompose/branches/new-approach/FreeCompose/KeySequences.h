@@ -79,6 +79,7 @@ private:
 	void _SetColumnWidths( void );
 	void _SetColumnSortState( int nColumn, SORTSTATE state );
 	void _DoWithRedrawDisabled( std::function<void( void )> func );
+	void _RefreshListIndexMap( void );
 
 private:
 	static int CALLBACK _ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM );

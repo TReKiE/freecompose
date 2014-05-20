@@ -45,15 +45,6 @@ public:
 #endif
 
 //
-// Constants
-//
-
-int const ITEM_FUDGE_FACTOR   = 12;
-int const HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
-
-wchar_t const BooleanToGlyph[2] = { L'\u2718', L'\u2714' };
-
-//
 // CKeySequences declarations
 //
 
@@ -67,6 +58,49 @@ BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
 	ON_BN_CLICKED( IDREMOVE, &CKeySequences::OnBnClickedRemove )
 END_MESSAGE_MAP( )
 IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
+
+//
+// Constants
+//
+
+int const ITEM_FUDGE_FACTOR   = 12;
+int const HEADER_FUDGE_FACTOR = ITEM_FUDGE_FACTOR + 3;
+
+wchar_t const BooleanToGlyph[2] = { L'\u2718', L'\u2714' };
+
+//
+// Types
+//
+
+class GroupAndSequenceIndex {
+public:
+	GroupAndSequenceIndex( ): nGroup( -1 ), nSequence( -1 ) { }
+
+	GroupAndSequenceIndex( int g, int s ): nGroup( g ), nSequence( s ) { }
+
+	bool operator>( GroupAndSequenceIndex const& rhs ) {
+		return ( nGroup > rhs.nGroup || ( nGroup == rhs.nGroup && nSequence > rhs.nSequence ) );
+	}
+
+	bool operator<( GroupAndSequenceIndex const& rhs ) {
+		return ( nGroup < rhs.nGroup || ( nGroup == rhs.nGroup && nSequence < rhs.nSequence ) );
+	}
+
+	static int CompareReverse( void* /*context*/, void const* _elem1, void const* _elem2 ) {
+		GroupAndSequenceIndex* elem1 = static_cast<GroupAndSequenceIndex*>( const_cast<void*>( _elem1 ) );
+		GroupAndSequenceIndex* elem2 = static_cast<GroupAndSequenceIndex*>( const_cast<void*>( _elem2 ) );
+
+		if ( *elem1 > *elem2 )
+			return -1;
+		else if ( *elem1 < *elem2 )
+			return 1;
+		else
+			return 0;
+	}
+
+	int nGroup;
+	int nSequence;
+};
 
 //
 // CKeySequences static member variables
@@ -124,8 +158,8 @@ int const CKeySequences::ColumnHeaderFormatFlagsMap[] = {
 CKeySequences::CKeySequences( COptionsData& Options ):
 	CPropertyPage ( IDD ),
 	m_Options     ( Options ),
-	m_nSortColumn ( -1 ),
-	m_SortState   ( ssUnsorted )
+	m_SortState   ( ssUnsorted ),
+	m_nSortColumn ( -1 )
 {
 
 }
@@ -236,9 +270,9 @@ void CKeySequences::_UpdateComposeSequence( int const nItemIndex, ComposeSequenc
 }
 
 void CKeySequences::_FillList( void ) {
+	m_ListIndexMap.RemoveAll( );
 	_DoWithRedrawDisabled( [&]( ) {
 		m_List.DeleteAllItems( );
-		m_ListIndexMap.RemoveAll( );
 
 		INT_PTR groupCount = m_Options.ComposeSequenceGroups.GetCount( );
 		for ( int groupIndex = 0; groupIndex < groupCount; groupIndex++ ) {
@@ -283,6 +317,14 @@ void CKeySequences::_DoWithRedrawDisabled( std::function<void( void )> func ) {
 	SetRedraw( TRUE );
 	Invalidate( );
 	UpdateWindow( );
+}
+
+void CKeySequences::_RefreshListIndexMap( void ) {
+	m_ListIndexMap.RemoveAll( );
+	int count = m_List.GetItemCount( );
+	for ( int n = 0; n < count; n++ ) {
+		m_ListIndexMap.SetAtGrow( n, static_cast<unsigned>( m_List.GetItemData( n ) ) );
+	}
 }
 
 //
@@ -514,11 +556,7 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 			debug( L"CKeySequences::OnListColumnClick: SortItemsEx failed?\n" );
 		}
 
-		m_ListIndexMap.RemoveAll( );
-		int count = m_List.GetItemCount( );
-		for ( int n = 0; n < count; n++ ) {
-			m_ListIndexMap.SetAtGrow( n, static_cast<unsigned>( m_List.GetItemData( n ) ) );
-		}
+		_RefreshListIndexMap( );
 
 		//
 		// Step 2: get the header control to display the appropriate indication
@@ -561,7 +599,7 @@ void CKeySequences::OnBnClickedAdd( ) {
 
 	_DoWithRedrawDisabled( [&]( ) {
 		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
-		_UpdateGroup( (int) focusedGroup );
+		_UpdateGroup( static_cast<int>( focusedGroup ) );
 		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
 		_AddComposeSequence( sequence, key );
 		_SetColumnWidths( );
@@ -580,20 +618,23 @@ void CKeySequences::OnBnClickedEdit( ) {
 	}
 
 	int nItem = m_List.GetNextSelectedItem( pos );
-	ComposeSequence sequence( _GetComposeSequenceFromListIndex( nItem ) );
+	ComposeSequence& origSequence = _GetComposeSequenceFromListIndex( nItem );
+	ComposeSequence sequence( origSequence );
+
 	CComposeSequenceEditor edit( sequence, semEdit, this );
 	INT_PTR rc = edit.DoModal( );
-	if ( IDOK == rc ) {
-		_GetComposeSequenceFromListIndex( nItem ) = sequence;
-
-		_DoWithRedrawDisabled( [&]( ) {
-			_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
-			m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
-			_UpdateComposeSequence( nItem, sequence );
-			_SetColumnWidths( );
-			SetModified( );
-		} );
+	if ( IDOK != rc ) {
+		return;
 	}
+
+	origSequence = sequence;
+	_DoWithRedrawDisabled( [&]( ) {
+		_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
+		_UpdateComposeSequence( nItem, sequence );
+		_SetColumnWidths( );
+		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+		SetModified( );
+	} );
 }
 
 void CKeySequences::OnBnClickedRemove( ) {
@@ -608,35 +649,28 @@ void CKeySequences::OnBnClickedRemove( ) {
 	}
 
 	POSITION pos = m_List.GetFirstSelectedItemPosition( );
-	int* items = new int[count];
-	unsigned* indices = new unsigned[count];
-	unsigned n = 0;
+	GroupAndSequenceIndex* items = new GroupAndSequenceIndex[count];
+	unsigned index = 0;
 
-	int i = m_List.GetNextSelectedItem( pos );
-	while ( ( -1 != i ) && ( n < count ) ) {
-		items[n] = i;
-		indices[n] = m_ListIndexMap[i];
-		n++;
-		i = m_List.GetNextSelectedItem( pos );
+	int nItemIndex = m_List.GetNextSelectedItem( pos );
+	while ( ( -1 != nItemIndex ) && ( index < count ) ) {
+		int mapped = m_ListIndexMap[nItemIndex];
+		items[index] = GroupAndSequenceIndex( _GroupIndex( mapped ), _SequenceIndex( mapped ) );
+		index++;
+		nItemIndex = m_List.GetNextSelectedItem( pos );
 	}
-	count = n;
-	qsort_s( items,   count, sizeof( int ),      compare_keys_reverse, nullptr );
-	qsort_s( indices, count, sizeof( unsigned ), compare_keys_reverse, nullptr );
 
-	_DoWithRedrawDisabled( [&]( ) {
-		// TODO TEST
-		int n = count;
-		do {
-			n--;
-			m_List.DeleteItem( items[n] );
-			m_Options.ComposeSequenceGroups[_GroupIndex( indices[n] )].ComposeSequences.RemoveAt( _SequenceIndex( indices[n] ) );
-		} while ( n > 0 );
+	count = index;
+	qsort_s( items, count, sizeof( GroupAndSequenceIndex ), GroupAndSequenceIndex::CompareReverse, nullptr );
 
-		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
+	for ( index = 0; index < count; index++ ) {
+		m_Options.ComposeSequenceGroups[items[index].nGroup].ComposeSequences.RemoveAt( items[index].nSequence );
+	};
 
-		SetModified( );
-	} );
+	SetModified( );
+
+	_FillList( );
+	m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
 
 	delete[] items;
-	delete[] indices;
 }
