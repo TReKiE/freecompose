@@ -20,7 +20,7 @@ CString Utf32ToUtf16( UChar32 const* pqz, int const cch ) {
 
 	errorCode = U_ZERO_ERROR;
 	u_strFromUTF32( pwzDest, cchDestCapacity, &cchDest, pqz, cch, &errorCode );
-	if ( U_ZERO_ERROR != errorCode ) {
+	if ( U_ZERO_ERROR != errorCode && U_STRING_NOT_TERMINATED_WARNING != errorCode ) {
 		debug( L"Utf32ToUtf16/n: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
 		delete[] pwzDest;
 		return CString( );
@@ -62,7 +62,7 @@ UChar32* Utf16ToUtf32( UChar const* pwz, int const cch ) {
 
 	errorCode = U_ZERO_ERROR;
 	u_strToUTF32( pqzDest, cchDestCapacity, &cchDest, pwz, cch, &errorCode );
-	if ( U_ZERO_ERROR != errorCode ) {
+	if ( U_ZERO_ERROR != errorCode && U_STRING_NOT_TERMINATED_WARNING != errorCode ) {
 		debug( L"Utf16ToUtf32: u_strToUTF32 failed, errorCode=%d\n", errorCode );
 		delete[] pqzDest;
 		return nullptr;
