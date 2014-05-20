@@ -89,19 +89,15 @@ public:
 		return std::wstring( m_pwz );
 	}
 
-	inline PCWSTR GetPCWSTR( void ) {
+	inline LPCWSTR GetLPCWSTR( void ) {
 		return m_pwz;
 	}
 
-	inline PWSTR GetPWSTR( void ) {
-		return const_cast<PWSTR>( m_pwz );
+	inline LPWSTR GetLPWSTR( void ) {
+		return const_cast<LPWSTR>( m_pwz );
 	}
 
 	inline bool SetContents( CString const& contents ) {
-		if ( contents.IsEmpty( ) ) {
-			return false;
-		}
-
 		if ( m_pwz ) {
 			delete[] m_pwz;
 			m_pwz = nullptr;
@@ -111,6 +107,18 @@ public:
 			m_pqz = nullptr;
 		}
 
+		if ( contents.IsEmpty( ) ) {
+			m_pwz = new UChar[1];
+			m_pwz[0] = 0;
+
+			m_pqz = new UChar32[1];
+			m_pqz[0] = 0;
+
+			m_unicodeString = icu::UnicodeString( );
+
+			return true;
+		}
+
 		m_unicodeString = icu::UnicodeString( contents );
 		m_pBreakIterator->setText( m_unicodeString );
 
@@ -118,10 +126,9 @@ public:
 		int32_t p2 = icu::BreakIterator::DONE;
 		if ( icu::BreakIterator::DONE != p1 ) {
 			p2 = m_pBreakIterator->next( );
-		}
-
-		if ( icu::BreakIterator::DONE == p1 ) {
-			return false;
+			if ( icu::BreakIterator::DONE == p2 ) {
+				return false;
+			}
 		}
 
 		int32_t cchStr = p2 - p1;
@@ -130,7 +137,7 @@ public:
 		m_error = U_ZERO_ERROR;
 		m_pqz = new UChar32[cchStr];
 		m_unicodeString.toUTF32( m_pqz, cchStr, m_error );
-		if ( U_ZERO_ERROR != m_error ) {
+		if ( U_ZERO_ERROR != m_error && U_STRING_NOT_TERMINATED_WARNING != m_error ) {
 			debug( L"CompositeCharacter::SetContents: result.toUTF32 failed, m_error=%d\n", m_error );
 			delete[] m_pqz;
 			m_pqz = nullptr;
@@ -138,7 +145,8 @@ public:
 		}
 
 		m_pwz = new UChar[cchStr + 1];
-		memcpy( m_pwz, m_unicodeString.getTerminatedBuffer( ), sizeof(wchar_t) * ( cchStr + 1 ) );
+		memset( m_pwz, 0, sizeof(UChar) * ( cchStr + 1 ) );
+		memcpy( m_pwz, m_unicodeString.getTerminatedBuffer( ), sizeof(UChar) * cchStr );
 
 		return true;
 	}
