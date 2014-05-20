@@ -20,17 +20,19 @@ public:
 
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
-
 	virtual BOOL OnInitDialog( );
+	virtual void OnOK( );
 
-	afx_msg void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
-	afx_msg void OnUpdateComposeSequence( );
-	afx_msg void OnUpdateComposeResult( );
+	void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
+	void OnUpdateComposeSequence( );
+	void OnUpdateComposeResult( );
+	void OnResultModeClicked( UINT uID );
 
 private:
 	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strTitle;
+	CString m_strResultInput;
 	CFont* m_pFont;
 
 	CompositeCharacter m_CompositeCharacter;
@@ -57,8 +59,9 @@ private:
 	BOOL m_fCaseInsensitive;
 	BOOL m_fReversible;
 
-	bool _InterpretComposeResult( void );
 	bool _ParseCodePointList( CString const& str, int const base, CArray<UChar32>& output );
+	void _SetResultFromInput( void );
+	void _SetInputFromResult( void );
 
 public:
 };
