@@ -106,7 +106,7 @@ FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
 BEGIN
     GROUPBOX        "Startup",IDC_STATIC,7,7,238,45,WS_GROUP
     CONTROL         "&Start FreeCompose when Windows starts",IDC_F_START_WITH_WINDOWS,
-                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,14,21,224,10
+                    "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_GROUP | WS_TABSTOP,14,21,224,10
     CONTROL         "&Enable Compose key when FreeCompose starts",IDC_F_ENABLE_ON_STARTUP,
                     "Button",BS_AUTOCHECKBOX | BS_FLAT | WS_TABSTOP,14,35,224,10
     GROUPBOX        "Compose",IDC_STATIC,7,59,238,34,WS_GROUP
