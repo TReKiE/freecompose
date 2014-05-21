@@ -605,9 +605,10 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 						MappingElement->setAttribute( L"Reversible", BoolStringMapper[composeSequence.Reversible] );
 					}
 
-						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping, static_cast<LPCWSTR>( composeSequence.Sequence ) );
+						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping );
 						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping );
-						result->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Result ) ) );
+						sequence->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Sequence ) ) );
+						result  ->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Result   ) ) );
 				}
 			}
 	}
