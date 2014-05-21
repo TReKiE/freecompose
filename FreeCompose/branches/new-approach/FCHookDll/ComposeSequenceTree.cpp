@@ -52,7 +52,6 @@ bool CComposeSequenceTree::_IsSequenceUnambiguous( CString const& strSequence, S
 
 		CComposeTreeNode* pNext = pNode->GetChild( ch );
 		if ( !pNext ) {
-			debug( L"CComposeSequenceTree::_IsSequenceAmbiguous: sequence '%s' is unambiguous starting at index %d\n", strSequence.GetString( ), n );
 			SequenceResult = srUnambiguous;
 			nIndex = n;
 			break;
