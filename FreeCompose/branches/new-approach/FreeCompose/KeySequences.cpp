@@ -572,8 +572,8 @@ void CKeySequences::OnListColumnClick( NMHDR* pnmhdr, LRESULT* pResult ) {
 
 void CKeySequences::OnBnClickedAdd( ) {
 	ComposeSequence sequence;
-	CComposeSequenceEditor edit( sequence, semAdd, this );
 
+	CComposeSequenceEditor edit( sequence, semAdd, this );
 	INT_PTR rc = edit.DoModal( );
 	if ( IDOK != rc ) {
 		return;
@@ -599,10 +599,15 @@ void CKeySequences::OnBnClickedAdd( ) {
 	}
 
 	_DoWithRedrawDisabled( [&]( ) {
-		unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( sequence ) );
 		_UpdateGroup( static_cast<int>( focusedGroup ) );
 		m_List.EnableGroupView( m_Options.ComposeSequenceGroups.GetCount( ) != 1 );
-		_AddComposeSequence( sequence, key );
+
+		int limit = edit.m_ComposeSequences.GetCount( );
+		for ( int index = 0; index < limit; index++ ) {
+			ComposeSequence& seq = edit.m_ComposeSequences[index];
+			unsigned key = _MakeComposeSequenceGroupKey( focusedGroup, m_Options.ComposeSequenceGroups[focusedGroup].ComposeSequences.Add( seq ) );
+			_AddComposeSequence( seq, key );
+		}
 		_SetColumnWidths( );
 		SetModified( );
 	} );
@@ -628,7 +633,13 @@ void CKeySequences::OnBnClickedEdit( ) {
 		return;
 	}
 
+	if ( 0 == edit.m_ComposeSequences.GetCount( ) ) {
+		return;
+	}
+
+	sequence = edit.m_ComposeSequences[0];
 	origSequence = sequence;
+
 	_DoWithRedrawDisabled( [&]( ) {
 		_UpdateGroup( _GroupIndex( m_ListIndexMap[nItem] ) );
 		_UpdateComposeSequence( nItem, sequence );
