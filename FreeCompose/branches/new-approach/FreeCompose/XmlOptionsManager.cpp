@@ -48,9 +48,9 @@ static XmlMethodMap         GroupMappingsElementsToMethods;
 // Static initialization object for this translation unit
 //==============================================================================
 
-class Initializer_ {
+static class XomInitializer {
 public:
-	inline Initializer_( ) {
+	inline XomInitializer( ) {
 		RootElementsToMethods           .insert( XmlMethodMapPair( L"Options",            &CXmlOptionsManager::_InterpretOptionsNode            ) );
 		RootElementsToMethods           .insert( XmlMethodMapPair( L"Mappings",           &CXmlOptionsManager::_InterpretMappingsNode           ) );
 
@@ -69,8 +69,7 @@ public:
 
 		GroupMappingsElementsToMethods  .insert( XmlMethodMapPair( L"Mapping",            &CXmlOptionsManager::_InterpretMappingNode            ) );
 	}
-};
-static Initializer_ Instance_;
+} Instance_;
 
 //==============================================================================
 // Local functions
