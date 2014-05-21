@@ -242,6 +242,7 @@ int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigne
 	lvItem.lParam = static_cast<LPARAM>( csgKey );
 	lvItem.iGroupId = _GroupIndex( csgKey );
 	int nItemIndex = m_List.InsertItem( &lvItem );
+	m_ListIndexMap.SetAtGrow( nItemIndex, csgKey );
 	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, strResult,          0, 0, 0, 0 );
 	m_List.SetItem( nItemIndex, 2, LVIF_TEXT, sequence.Result,    0, 0, 0, 0 );
 	m_List.SetItem( nItemIndex, 3, LVIF_TEXT, sequence.Sequence,  0, 0, 0, 0 );
