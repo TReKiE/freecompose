@@ -51,7 +51,7 @@ UChar32* Utf16ToUtf32( UChar const* pwz, int const cch ) {
 
 	UErrorCode errorCode = U_ZERO_ERROR;
 	u_strToUTF32( nullptr, 0, &cchDest, pwz, cch, &errorCode );
-	if ( U_BUFFER_OVERFLOW_ERROR != errorCode ) {
+	if ( U_BUFFER_OVERFLOW_ERROR != errorCode && U_STRING_NOT_TERMINATED_WARNING != errorCode ) {
 		debug( L"Utf16ToUtf32: u_strToUTF32 failed, errorCode=%d\n", errorCode );
 		return nullptr;
 	}
@@ -85,7 +85,7 @@ int CountCompositeCharacters( UChar const* pwz, int const cch ) {
 	}
 
 	delete pbi;
-	return p - 1;
+	return cComposites - 1;
 }
 
 int CountCompositeCharacters( UChar32 const* pqz, int const cch ) {
