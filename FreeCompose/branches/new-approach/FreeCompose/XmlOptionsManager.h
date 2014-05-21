@@ -115,5 +115,5 @@ private:
 		bool _InterpretGroupNode( XNode const& node );
 			bool _InterpretMappingNode( XNode const& node );
 
-	friend class Initializer_;
+	friend class XomInitializer;
 };
