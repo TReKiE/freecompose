@@ -18,22 +18,27 @@ public:
 	// Dialog Data
 	enum { IDD = IDD_COMPOSE_SEQUENCE_EDITOR };
 
+	// Results
+	CArray<ComposeSequence> m_ComposeSequences;
+
 protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
 	virtual void OnOK( );
 	virtual void OnOKAddAnother( );
 
-	void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
+	void OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStruct );
 	void OnUpdateComposeSequence( );
 	void OnUpdateComposeResult( );
 	void OnResultModeClicked( UINT uID );
+	void OnCheckboxClicked( UINT uID );
 
 private:
 	ComposeSequence& m_sequence;
 	SEQUENCE_EDITOR_MODE m_mode;
 	CString m_strResultInput;
 	CFont* m_pFont;
+	bool m_fModified;
 
 	CompositeCharacter m_CompositeCharacter;
 

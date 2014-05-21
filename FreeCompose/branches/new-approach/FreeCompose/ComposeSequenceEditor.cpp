@@ -42,6 +42,7 @@ BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
 	ON_EN_UPDATE ( IDC_CSE_RESULT,   &CComposeSequenceEditor::OnUpdateComposeResult   )
 
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_RESULT_AS_CHARACTER, IDC_CSE_RESULT_AS_DECIMAL, &CComposeSequenceEditor::OnResultModeClicked )
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_ENABLED,             IDC_CSE_REVERSIBLE,        &CComposeSequenceEditor::OnCheckboxClicked )
 END_MESSAGE_MAP( )
 
 enum ResultMode {
@@ -53,10 +54,11 @@ enum ResultMode {
 int static nLastRadioGroupSelection = -1;
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
-	CDialog    ( IDD, pParent ),
-	m_sequence ( sequence ),
-	m_mode     ( mode ),
-	m_pFont    ( nullptr )
+	CDialog     ( IDD, pParent ),
+	m_sequence  ( sequence ),
+	m_mode      ( mode ),
+	m_pFont     ( nullptr ),
+	m_fModified ( false )
 {
 
 }
@@ -230,8 +232,10 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 }
 
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
-	SetWindowText( LoadFromStringTable( ( semAdd == m_mode ) ? IDC_CSE_ADD_MODE_TITLE : IDC_CSE_EDIT_MODE_TITLE ) );
+	bool fAddMode = ( semAdd == m_mode );
+	SetWindowText( LoadFromStringTable( fAddMode ? IDC_CSE_ADD_MODE_TITLE : IDC_CSE_EDIT_MODE_TITLE ) );
 
+	m_ComposeSequences.RemoveAll( );
 	m_strComposeSequence =  m_sequence.Sequence;
 	m_strComposeResult   =  m_sequence.Result;
 	m_strResultInput     =  m_sequence.Result;
@@ -246,7 +250,7 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 		return FALSE;
 	}
 
-	m_buttonAddAnother.ShowWindow( ( semAdd == m_mode ) ? SW_SHOW : SW_HIDE );
+	m_buttonAddAnother.ShowWindow( fAddMode ? SW_SHOW : SW_HIDE );
 
 	m_editComposeSequence.SetFocus( );
 
@@ -259,11 +263,15 @@ void CComposeSequenceEditor::OnOK( ) {
 		return;
 	}
 
-	m_sequence.Sequence        =   m_strComposeSequence;
-	m_sequence.Result          =   m_strComposeResult;
-	m_sequence.Disabled        =  !m_fEnabled;
-	m_sequence.CaseInsensitive = !!m_fCaseInsensitive;
-	m_sequence.Reversible      = !!m_fReversible;
+	if ( m_fModified ) {
+		m_sequence.Sequence        =   m_strComposeSequence;
+		m_sequence.Result          =   m_strComposeResult;
+		m_sequence.Disabled        =  !m_fEnabled;
+		m_sequence.CaseInsensitive = !!m_fCaseInsensitive;
+		m_sequence.Reversible      = !!m_fReversible;
+
+		m_ComposeSequences.Add( m_sequence );
+	}
 
 	CDialog::OnOK( );
 }
@@ -280,7 +288,19 @@ void CComposeSequenceEditor::OnOKAddAnother( ) {
 	m_sequence.CaseInsensitive = !!m_fCaseInsensitive;
 	m_sequence.Reversible      = !!m_fReversible;
 
+	m_ComposeSequences.Add( m_sequence );
 
+	m_strComposeSequence.Empty( );
+	m_strComposeResult.Empty( );
+	m_strResultInput.Empty( );
+	m_fEnabled = TRUE;
+	m_fCaseInsensitive = FALSE;
+	m_fReversible = FALSE;
+
+	UpdateData( FALSE );
+	m_fModified = false;
+
+	m_editComposeSequence.SetFocus( );
 }
 
 void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStruct ) {
@@ -310,14 +330,19 @@ void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStr
 }
 
 void CComposeSequenceEditor::OnUpdateComposeSequence( ) {
-
+	m_fModified = true;
 }
 
 void CComposeSequenceEditor::OnUpdateComposeResult( ) {
 	_SetResultFromInput( );
+	m_fModified = true;
 }
 
 void CComposeSequenceEditor::OnResultModeClicked( UINT uID ) {
 	m_nResultMode = nLastRadioGroupSelection = uID - IDC_CSE_RESULT_AS_CHARACTER;
 	_SetInputFromResult( );
+}
+
+void CComposeSequenceEditor::OnCheckboxClicked( UINT /*uID*/ ) {
+	m_fModified = true;
 }
