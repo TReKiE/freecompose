@@ -9,7 +9,7 @@ CString Utf32ToUtf16( UChar32 const* pqz, int const cch ) {
 
 	UErrorCode errorCode = U_ZERO_ERROR;
 	u_strFromUTF32( nullptr, 0, &cchDest, pqz, cch, &errorCode );
-	if ( U_BUFFER_OVERFLOW_ERROR != errorCode ) {
+	if ( U_BUFFER_OVERFLOW_ERROR != errorCode && U_STRING_NOT_TERMINATED_WARNING != errorCode ) {
 		debug( L"Utf32ToUtf16/n: u_strFromUTF32 failed, errorCode=%d\n", errorCode );
 		return CString( );
 	}
