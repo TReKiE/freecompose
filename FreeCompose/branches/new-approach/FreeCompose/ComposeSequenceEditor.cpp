@@ -31,6 +31,19 @@
 //
 //==============================================================================
 
+IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
+
+BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
+	ON_WM_DRAWITEM( )
+
+	ON_BN_CLICKED( IDOK,             &CComposeSequenceEditor::OnOK                    )
+	ON_BN_CLICKED( IDOK_ADDANOTHER,  &CComposeSequenceEditor::OnOKAddAnother          )
+	ON_EN_UPDATE ( IDC_CSE_SEQUENCE, &CComposeSequenceEditor::OnUpdateComposeSequence )
+	ON_EN_UPDATE ( IDC_CSE_RESULT,   &CComposeSequenceEditor::OnUpdateComposeResult   )
+
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_RESULT_AS_CHARACTER, IDC_CSE_RESULT_AS_DECIMAL, &CComposeSequenceEditor::OnResultModeClicked )
+END_MESSAGE_MAP( )
+
 enum ResultMode {
 	rmCharacter,
 	rmHexCodePoint,
@@ -38,18 +51,6 @@ enum ResultMode {
 };
 
 int static nLastRadioGroupSelection = -1;
-
-IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
-
-BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
-	ON_WM_DRAWITEM( )
-
-	ON_BN_CLICKED( IDOK,             &CComposeSequenceEditor::OnOK                    )
-	ON_EN_UPDATE ( IDC_CSE_SEQUENCE, &CComposeSequenceEditor::OnUpdateComposeSequence )
-	ON_EN_UPDATE ( IDC_CSE_RESULT,   &CComposeSequenceEditor::OnUpdateComposeResult   )
-
-	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_RESULT_AS_CHARACTER, IDC_CSE_REVERSIBLE, &CComposeSequenceEditor::OnResultModeClicked )
-END_MESSAGE_MAP( )
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
 	CDialog    ( IDD, pParent ),
@@ -68,55 +69,50 @@ CComposeSequenceEditor::~CComposeSequenceEditor( ) {
 }
 
 bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int const base, CArray<UChar32>& output ) {
-	int const GcDelimMask = U_GC_P_MASK  | U_GC_S_MASK  | U_GC_ZS_MASK;
 	int const GcAlnumMask = U_GC_LC_MASK | U_GC_ND_MASK;
+	int const GcDelimMask = U_GC_P_MASK  | U_GC_S_MASK  | U_GC_ZS_MASK;
 
-	UChar32* pqz = Utf16ToUtf32( input, input.GetLength( ) );
-	output.RemoveAll( );
-
-	UChar32 current = 0;
-	int index = 0;
+	std::unique_ptr<UChar32[]> ptrInput( Utf16ToUtf32( input, input.GetLength( ) ) );
+	UChar32* pqzInput = ptrInput.get( );
+	UChar32 formingCharacter = 0;
 	bool converting = false;
 
-	CArray<UChar32> elements;
-	UChar32 ch;
-	bool fRet = false;
+	output.RemoveAll( );
 
-	for ( index = 0, ch = pqz[index]; 0 != ch; index++, ch = pqz[index] ) {
-		unsigned mask = U_GET_GC_MASK( pqz[index] );
+	int index = 0;
+	UChar32 ch;
+	for ( index = 0, ch = pqzInput[index]; 0 != ch; index++, ch = pqzInput[index] ) {
+		unsigned mask = U_GET_GC_MASK( pqzInput[index] );
 		if ( 0 != ( mask & GcAlnumMask ) ) {
 			converting = true;
 
 			int digit = u_digit( ch, static_cast<int8_t>( base ) );
 			if ( -1 == digit ) {
 				debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable alphanumeric value &#%d;\n", ch );
-				goto out;
+				return false;
 			}
 
-			current = current * base + digit;
-			if ( current > UCHAR_MAX_VALUE ) {
+			formingCharacter = formingCharacter * base + digit;
+			if ( formingCharacter > UCHAR_MAX_VALUE ) {
 				debug( L"CComposeSequenceEditor::_ParseCodePointList: Code point value overflow, 0x%X\n", ch );
-				goto out;
+				return false;
 			}
 		} else if ( 0 != ( mask & GcDelimMask ) ) {
 			if ( converting ) {
-				output.Add( current );
-				current = 0;
+				output.Add( formingCharacter );
+				formingCharacter = 0;
 				converting = false;
 			}
 		} else {
 			debug( L"CComposeSequenceEditor::_ParseCodePointList: Unacceptable character &#%d;\n", ch );
-			goto out;
+			return false;
 		}
 	}
 	if ( converting ) {
-		output.Add( current );
+		output.Add( formingCharacter );
 	}
-	fRet = true;
 
-out:
-	delete[] pqz;
-	return fRet;
+	return true;
 }
 
 void CComposeSequenceEditor::_SetResultFromInput( void ) {
@@ -186,18 +182,41 @@ void CComposeSequenceEditor::_SetInputFromResult( void ) {
 	m_staticPreview.Invalidate( TRUE );
 }
 
+void CComposeSequenceEditor::_DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned /*uID*/, CString& strInput, int const cchMin, int const cchMax ) {
+	debug( L"_DDV_MinMaxCompositeCharacters: pDX=0x%p (m_bSaveAndValidate?%s), strInput='%s' (length: %d), cchMin=%d, cchMax=%d\n", pDX, pDX->m_bSaveAndValidate ? L"TRUE" : L"false", strInput, strInput.GetLength( ), cchMin, cchMax );
+
+	if ( !pDX->m_bSaveAndValidate ) {
+		debug( L"+ Wrong mode, bailing\n" );
+		return;
+	}
+
+	if ( strInput.IsEmpty( ) ) {
+		debug( L"+ strInput is empty\n" );
+		pDX->Fail( );
+		return;
+	}
+
+	int cchComposeSequence = CountCompositeCharacters( strInput, strInput.GetLength( ) );
+	debug( L"+ cchComposeSequence=%d\n", cchComposeSequence );
+	if ( ( cchMin > -1 ) && ( cchComposeSequence < cchMin ) ) {
+		debug( L"+ strInput is too short\n" );
+		pDX->Fail( );
+		return;
+	}
+	if ( ( cchMax > -1 ) && ( cchComposeSequence > cchMax ) ) {
+		debug( L"+ strInput is too long\n" );
+		pDX->Fail( );
+		return;
+	}
+}
+
 void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
 
 	DDX_Control ( pDX, IDC_CSE_SEQUENCE,            m_editComposeSequence       );
 	DDX_Control ( pDX, IDC_CSE_RESULT,              m_editComposeResult         );
-	DDX_Control ( pDX, IDC_CSE_RESULT_AS_CHARACTER, m_radioResultAsCharacter    );
-	DDX_Control ( pDX, IDC_CSE_RESULT_AS_HEX,       m_radioResultAsHexCodePoint );
-	DDX_Control ( pDX, IDC_CSE_RESULT_AS_DECIMAL,   m_radioResultAsDecCodePoint );
 	DDX_Control ( pDX, IDC_CSE_PREVIEW,             m_staticPreview             );
-	DDX_Control ( pDX, IDC_CSE_ENABLED,             m_checkEnabled              );
-	DDX_Control ( pDX, IDC_CSE_CASE_INSENSITIVE,    m_checkCaseInsensitive      );
-	DDX_Control ( pDX, IDC_CSE_REVERSIBLE,          m_checkReversible           );
+	DDX_Control ( pDX, IDOK_ADDANOTHER,             m_buttonAddAnother          );
 
 	DDX_Text    ( pDX, IDC_CSE_SEQUENCE,            m_strComposeSequence        );
 	DDX_Text    ( pDX, IDC_CSE_RESULT,              m_strResultInput            );
@@ -206,7 +225,8 @@ void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Check   ( pDX, IDC_CSE_CASE_INSENSITIVE,    m_fCaseInsensitive          );
 	DDX_Check   ( pDX, IDC_CSE_REVERSIBLE,          m_fReversible               );
 
-	// TODO: DDV. =(
+	_DDV_MinMaxCompositeCharacters( pDX, IDC_CSE_SEQUENCE, m_strComposeSequence, 2, 16 );
+	_DDV_MinMaxCompositeCharacters( pDX, IDC_CSE_RESULT,   m_strComposeResult,   1, 1 );
 }
 
 BOOL CComposeSequenceEditor::OnInitDialog( ) {
@@ -226,11 +246,18 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 		return FALSE;
 	}
 
-	return TRUE;
+	m_buttonAddAnother.ShowWindow( ( semAdd == m_mode ) ? SW_SHOW : SW_HIDE );
+
+	m_editComposeSequence.SetFocus( );
+
+	return FALSE;
 }
 
 void CComposeSequenceEditor::OnOK( ) {
-	UpdateData( TRUE );
+	if ( !UpdateData( TRUE ) ) {
+		debug( L"CComposeSequenceEditor::OnOK: UpdateData(TRUE) failed\n" );
+		return;
+	}
 
 	m_sequence.Sequence        =   m_strComposeSequence;
 	m_sequence.Result          =   m_strComposeResult;
@@ -239,6 +266,21 @@ void CComposeSequenceEditor::OnOK( ) {
 	m_sequence.Reversible      = !!m_fReversible;
 
 	CDialog::OnOK( );
+}
+
+void CComposeSequenceEditor::OnOKAddAnother( ) {
+	if ( !UpdateData( TRUE ) ) {
+		debug( L"CComposeSequenceEditor::OnOK: UpdateData(TRUE) failed\n" );
+		return;
+	}
+
+	m_sequence.Sequence        =   m_strComposeSequence;
+	m_sequence.Result          =   m_strComposeResult;
+	m_sequence.Disabled        =  !m_fEnabled;
+	m_sequence.CaseInsensitive = !!m_fCaseInsensitive;
+	m_sequence.Reversible      = !!m_fReversible;
+
+
 }
 
 void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStruct ) {
@@ -268,11 +310,10 @@ void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStr
 }
 
 void CComposeSequenceEditor::OnUpdateComposeSequence( ) {
-	// TODO allow only two composite characters
+
 }
 
 void CComposeSequenceEditor::OnUpdateComposeResult( ) {
-	// TODO allow only one composite character
 	_SetResultFromInput( );
 }
 

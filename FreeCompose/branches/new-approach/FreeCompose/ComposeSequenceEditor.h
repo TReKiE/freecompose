@@ -22,6 +22,7 @@ protected:
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
 	virtual void OnOK( );
+	virtual void OnOKAddAnother( );
 
 	void OnDrawItem( int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct );
 	void OnUpdateComposeSequence( );
@@ -36,31 +37,22 @@ private:
 
 	CompositeCharacter m_CompositeCharacter;
 
-	CEdit m_editComposeSequence;
-	CEdit m_editComposeResult;
-
-	CButton m_radioResultAsCharacter;
-	CButton m_radioResultAsHexCodePoint;
-	CButton m_radioResultAsDecCodePoint;
-
+	CButton m_buttonAddAnother;
+	CEdit   m_editComposeSequence;
+	CEdit   m_editComposeResult;
 	CStatic m_staticPreview;
-
-	CButton m_checkEnabled;
-	CButton m_checkCaseInsensitive;
-	CButton m_checkReversible;
 
 	CString m_strComposeSequence;
 	CString m_strComposeResult;
-
-	int m_nResultMode;
-
-	BOOL m_fEnabled;
-	BOOL m_fCaseInsensitive;
-	BOOL m_fReversible;
+	int     m_nResultMode;
+	BOOL    m_fEnabled;
+	BOOL    m_fCaseInsensitive;
+	BOOL    m_fReversible;
 
 	bool _ParseCodePointList( CString const& str, int const base, CArray<UChar32>& output );
 	void _SetResultFromInput( void );
 	void _SetInputFromResult( void );
 
-public:
+	void _DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned uID, CString& strComposeSequence, int const cchMin, int const cchMax );
+
 };
