@@ -94,6 +94,51 @@ static inline bool SafeXNodeToBool( XNode const& pNode, bool const fDefault = fa
 	return BoolStringMapper[pNode->text];
 }
 
+static inline long WcsToL( CString const& input, int const radix = 10 ) {
+	wchar_t* pEnd = nullptr;
+	wchar_t const* pInput = input;
+
+	errno = 0;
+	long result = wcstol( pInput, &pEnd, radix );
+
+	if ( !pEnd ) {
+		// wtf?
+		debug( L"WcsToL: pEnd is nullptr?? result=%lu\n", result );
+		return result;
+	}
+	if ( pInput == pEnd ) {
+		// no conversion took place at all
+		debug( L"WcsToL: conversion totally failed. result=%lu\n", result );
+		return result;
+	}
+	if ( *pEnd != L'\0' && *pEnd != L',' ) {
+		debug( L"WcsToL: conversion stopped by character %u\n", *pEnd );
+		return 0;
+	}
+	return result;
+}
+
+static inline CString HexadecimalToString( CString const& input ) {
+	CArray<wchar_t> chars;
+
+	int lastindex = 0;
+	int index = input.Find( L',', 0 );
+	while ( index > -1 ) {
+		CString token( input.Mid( lastindex, index ) );
+		wchar_t charval = static_cast<wchar_t>( WcsToL( token, 16 ) );
+		chars.Add( charval );
+		lastindex = index + 1;
+		index = input.Find( L',', index + 1 );
+	}
+	if ( lastindex < input.GetLength( ) - 1 ) {
+		CString token( input.Mid( lastindex ) );
+		wchar_t charval = static_cast<wchar_t>( WcsToL( token, 16 ) );
+		chars.Add( charval );
+	}
+
+	return CString( chars.GetData( ), chars.GetCount( ) );
+}
+
 static inline CString StringToHexadecimal( CString const& input ) {
 	int index, limit = input.GetLength( );
 	if ( 0 == limit ) {
@@ -106,34 +151,6 @@ static inline CString StringToHexadecimal( CString const& input ) {
 		tmp.AppendFormat( L",%X", input[index] );
 	}
 	return tmp;
-}
-
-static inline CString UglyPseudoUtf8ToUtf16( CString const& strInput ) {
-	int index, limit;
-	char* utf8;
-	wchar_t* utf16;
-	int destLength = -1;
-	UErrorCode errorCode;
-
-	limit = strInput.GetLength( );
-	utf8 = new char[limit + 1];
-	for ( index = 0; index < limit; index++ ) {
-		utf8[index] = static_cast<char>( static_cast<int>( strInput[index] ) );
-	}
-	utf16 = new wchar_t[limit + 1];
-	errorCode = U_ZERO_ERROR;
-	u_strFromUTF8( utf16, limit + 1, &destLength, utf8, limit, &errorCode );
-	debug(
-		L"UglyPseudoUtf8ToUtf16:\n"
-		L"  + u_strFromUTF8: limit=%d; errorCode=%d, destLength=%d\n"
-		L"  + strInput:      {%s} [%s]\n",
-		limit, errorCode, destLength,
-		static_cast<LPCWSTR>( strInput ), static_cast<LPCWSTR>( StringToHexadecimal( strInput ) )
-		);
-	CString retval = utf16;
-	delete[] utf8;
-	delete[] utf16;
-	return retval;
 }
 
 // 'FromXNode' functions
@@ -171,18 +188,10 @@ inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, C
 		Result   = Composed;
 	} else if ( nodeSequence && nodeResult ) {
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
-		Result   = static_cast<LPCWSTR>( nodeResult->text );
+		Result   = static_cast<LPCWSTR>( nodeResult->text   );
 
-		if ( _loadingDefaultConfig ) {
-			// M̲o̲t̲i̲v̲a̲t̲i̲o̲n̲ f̲o̲r̲ t̲h̲i̲s̲ s̲e̲c̲t̲i̲o̲n̲:
-			// The CDATA sections in our UTF-8–encoded XML file are a little bit *too* transparent:
-			// The pseudo–UTF-16–encoded characters are not converted out of UTF-8, unlike the rest of
-			// the file (?). The following code uses static method UglyPseudoUtf8ToUtf16 to extract
-			// the UTF-8 and properly decode it into UTF-16.
-
-			Sequence = UglyPseudoUtf8ToUtf16( Sequence );
-			Result   = UglyPseudoUtf8ToUtf16( Result );
-		}
+		Sequence = HexadecimalToString( Sequence );
+		Result   = HexadecimalToString( Result   );
 
 		try {
 			XNamedNodeMap attributes = value->attributes;
