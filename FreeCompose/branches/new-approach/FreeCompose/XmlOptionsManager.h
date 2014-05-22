@@ -90,6 +90,7 @@ private:
 	ComposeSequenceArray* _pCurrentComposeSequences;
 	COptionsData* _pOptionsData;
 	XSchemaCollection _xmlSchemaCache;
+	bool _loadingDefaultConfig;
 
 	XDocument _CreateDomDocument( void );
 	bool _LoadSchema( void );

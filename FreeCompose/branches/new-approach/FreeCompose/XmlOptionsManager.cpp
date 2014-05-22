@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "FreeCompose.h"
 #include "OptionsData.h"
@@ -94,6 +94,48 @@ static inline bool SafeXNodeToBool( XNode const& pNode, bool const fDefault = fa
 	return BoolStringMapper[pNode->text];
 }
 
+static inline CString StringToHexadecimal( CString const& input ) {
+	int index, limit = input.GetLength( );
+	if ( 0 == limit ) {
+		return CString( );
+	}
+
+	CString tmp;
+	tmp.Format( L"%X", input[0] );
+	for ( index = 1; index < limit; index++ ) {
+		tmp.AppendFormat( L",%X", input[index] );
+	}
+	return tmp;
+}
+
+static inline CString UglyPseudoUtf8ToUtf16( CString const& strInput ) {
+	int index, limit;
+	char* utf8;
+	wchar_t* utf16;
+	int destLength = -1;
+	UErrorCode errorCode;
+
+	limit = strInput.GetLength( );
+	utf8 = new char[limit + 1];
+	for ( index = 0; index < limit; index++ ) {
+		utf8[index] = static_cast<char>( static_cast<int>( strInput[index] ) );
+	}
+	utf16 = new wchar_t[limit + 1];
+	errorCode = U_ZERO_ERROR;
+	u_strFromUTF8( utf16, limit + 1, &destLength, utf8, limit, &errorCode );
+	debug(
+		L"UglyPseudoUtf8ToUtf16:\n"
+		L"  + u_strFromUTF8: limit=%d; errorCode=%d, destLength=%d\n"
+		L"  + strInput:      {%s} [%s]\n",
+		limit, errorCode, destLength,
+		static_cast<LPCWSTR>( strInput ), static_cast<LPCWSTR>( StringToHexadecimal( strInput ) )
+		);
+	CString retval = utf16;
+	delete[] utf8;
+	delete[] utf16;
+	return retval;
+}
+
 // 'FromXNode' functions
 
 inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result ) {
@@ -130,6 +172,17 @@ inline bool CXmlOptionsManager::_ComposeSequenceFromXNode( XNode const& value, C
 	} else if ( nodeSequence && nodeResult ) {
 		Sequence = static_cast<LPCWSTR>( nodeSequence->text );
 		Result   = static_cast<LPCWSTR>( nodeResult->text );
+
+		if ( _loadingDefaultConfig ) {
+			// M̲o̲t̲i̲v̲a̲t̲i̲o̲n̲ f̲o̲r̲ t̲h̲i̲s̲ s̲e̲c̲t̲i̲o̲n̲:
+			// The CDATA sections in our UTF-8–encoded XML file are a little bit *too* transparent:
+			// The pseudo–UTF-16–encoded characters are not converted out of UTF-8, unlike the rest of
+			// the file (?). The following code uses static method UglyPseudoUtf8ToUtf16 to extract
+			// the UTF-8 and properly decode it into UTF-16.
+
+			Sequence = UglyPseudoUtf8ToUtf16( Sequence );
+			Result   = UglyPseudoUtf8ToUtf16( Result );
+		}
 
 		try {
 			XNamedNodeMap attributes = value->attributes;
@@ -468,6 +521,8 @@ bool CXmlOptionsManager::_LoadSchema( void ) {
 //
 
 bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
+	_loadingDefaultConfig = true;
+
 	if ( !_xmlSchemaCache && !_LoadSchema( ) ) {
 		debug( L"CXmlOptionsManager::LoadDefaultConfiguration: Can't load schema, but carrying on\n" );
 	}
@@ -483,7 +538,10 @@ bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 		return false;
 	}
 
-	return _InterpretConfiguration( doc );
+	bool ret = _InterpretConfiguration( doc );
+	doc = nullptr;
+	_loadingDefaultConfig = false;
+	return ret;
 }
 
 //==============================================================================
@@ -491,6 +549,8 @@ bool CXmlOptionsManager::LoadDefaultConfiguration( void ) {
 //
 
 bool CXmlOptionsManager::LoadFromFile( void ) {
+	_loadingDefaultConfig = false;
+
 	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"CXmlOptionsManager::LoadFromFile: Can't ensure app data folder exists\n" );
 		return false;
@@ -604,10 +664,8 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 						MappingElement->setAttribute( L"Reversible", BoolStringMapper[composeSequence.Reversible] );
 					}
 
-						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping );
-						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping );
-						sequence->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Sequence ) ) );
-						result  ->appendChild( doc->createCDATASection( static_cast<LPCWSTR>( composeSequence.Result   ) ) );
+						XNode sequence = CreateAndAppendXNode( doc, L"Sequence", Mapping, StringToHexadecimal( composeSequence.Sequence ) );
+						XNode result   = CreateAndAppendXNode( doc, L"Result",   Mapping, StringToHexadecimal( composeSequence.Result   ) );
 				}
 			}
 	}
