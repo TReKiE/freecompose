@@ -22,7 +22,7 @@ inline FCSHARED_API bool const IsTrailSurrogate( UChar32 const ch ) {
 
 FCSHARED_API CString Utf32ToUtf16( UChar32 const* pqz, int const cch = -1 );
 FCSHARED_API CString Utf32ToUtf16( UChar32 const uch );
-FCSHARED_API UChar32* Utf16ToUtf32( UChar const* pwz, int const cch = -1, int* pcchResult = nullptr );
+FCSHARED_API UChar32* Utf16ToUtf32( UChar const* pwz, int const cch, int& cchResult );
 
 FCSHARED_API int CountCompositeCharacters( UChar const* pwz, int const cch = -1 );
 FCSHARED_API int CountCompositeCharacters( UChar32 const* pqz, int const cch = -1 );
