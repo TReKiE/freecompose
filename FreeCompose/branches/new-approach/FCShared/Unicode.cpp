@@ -45,12 +45,10 @@ CString Utf32ToUtf16( UChar32 const wch ) {
 	}
 }
 
-UChar32* Utf16ToUtf32( UChar const* pwz, int const cch, int* pcchResult ) {
+UChar32* Utf16ToUtf32( UChar const* pwz, int const cch, int& cchResult ) {
 	UChar32* pqzDest = nullptr;
 	int cchDest = 0;
-	if ( pcchResult ) {
-		*pcchResult = 0;
-	}
+	cchResult = 0;
 
 	UErrorCode errorCode = U_ZERO_ERROR;
 	u_strToUTF32( nullptr, 0, &cchDest, pwz, cch, &errorCode );
@@ -71,10 +69,7 @@ UChar32* Utf16ToUtf32( UChar const* pwz, int const cch, int* pcchResult ) {
 		return nullptr;
 	}
 
-	if ( pcchResult ) {
-		*pcchResult = cchDest;
-	}
-
+	cchResult = cchDest;
 	return pqzDest;
 }
 
