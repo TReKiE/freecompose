@@ -188,8 +188,8 @@ CString GetFreeComposeFolderAsCString( void ) {
 
 CString FormatCodePoint( CString const& str ) {
 	CString strResult;
-	int limit = str.GetLength( );
-	UChar32* pqzCodePoints = Utf16ToUtf32( str, limit );
+	int limit = 0;
+	UChar32* pqzCodePoints = Utf16ToUtf32( str, str.GetLength( ), limit );
 	for ( int index = 0; index < limit; index++ ) {
 		strResult.AppendFormat( L"%sU+%06X", ( index ? L", " : L"" ), pqzCodePoints[index] );
 	}
