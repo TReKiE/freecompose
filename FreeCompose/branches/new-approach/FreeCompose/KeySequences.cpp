@@ -229,18 +229,27 @@ void CKeySequences::_UpdateGroup( int const groupIndex ) {
 }
 
 int CKeySequences::_AddComposeSequence( ComposeSequence const& sequence, unsigned const csgKey ) {
-	CString strResult          ( FormatCodePoint( sequence.Result ) );
+	CString strResult          ( FormatCodePoint( sequence.Result )       );
 	CString strEnabled         ( BooleanToGlyph[!sequence.Disabled      ] );
 	CString strCaseInsensitive ( BooleanToGlyph[sequence.CaseInsensitive] );
 	CString strReversible      ( BooleanToGlyph[sequence.Reversible     ] );
 	_MeasureListItemStringsAndUpdate( strResult, sequence.Result, sequence.Sequence, strEnabled, strCaseInsensitive, strReversible );
 
-	LVITEM lvItem = { LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID };
-	lvItem.iItem = m_List.GetItemCount( );
-	lvItem.iSubItem = 0;
-	lvItem.pszText = const_cast<LPWSTR>( static_cast<LPCWSTR>( strEnabled ) );
-	lvItem.lParam = static_cast<LPARAM>( csgKey );
-	lvItem.iGroupId = _GroupIndex( csgKey );
+	LVITEM lvItem = {
+		/* mask */ LVIF_TEXT | LVIF_PARAM | LVIF_GROUPID,
+		/* iItem */ m_List.GetItemCount( ),
+		/* iSubItem */ 0,
+		/* state */ 0,
+		/* stateMask */ 0,
+		/* pszText */ const_cast<LPWSTR>( static_cast<LPCWSTR>( strEnabled ) ),
+		/* cchTextMax */ 0,
+		/* iImage */ 0,
+		/* lParam */ static_cast<LPARAM>( csgKey ),
+		/* iIndent */ 0,
+		/* iGroupId */ _GroupIndex( csgKey ),
+		/* cColumns */ 0,
+		/* puColumns */ nullptr,
+	};
 	int nItemIndex = m_List.InsertItem( &lvItem );
 	m_ListIndexMap.SetAtGrow( nItemIndex, csgKey );
 	m_List.SetItem( nItemIndex, 1, LVIF_TEXT, strResult,          0, 0, 0, 0 );
