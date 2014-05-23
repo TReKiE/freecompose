@@ -42,7 +42,7 @@ BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
 	ON_EN_UPDATE ( IDC_CSE_RESULT,   &CComposeSequenceEditor::OnUpdateComposeResult   )
 
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_RESULT_AS_CHARACTER, IDC_CSE_RESULT_AS_DECIMAL, &CComposeSequenceEditor::OnResultModeClicked )
-	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_ENABLED,             IDC_CSE_REVERSIBLE,        &CComposeSequenceEditor::OnCheckboxClicked )
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_ENABLED,             IDC_CSE_REVERSIBLE,        &CComposeSequenceEditor::OnCheckboxClicked   )
 END_MESSAGE_MAP( )
 
 enum ResultMode {
@@ -74,17 +74,17 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 	int const GcAlnumMask = U_GC_LC_MASK | U_GC_ND_MASK;
 	int const GcDelimMask = U_GC_P_MASK  | U_GC_S_MASK  | U_GC_ZS_MASK;
 
-	std::unique_ptr<UChar32[]> ptrInput( Utf16ToUtf32( input, input.GetLength( ) ) );
+	int cchInput = 0;
+	std::unique_ptr<UChar32[]> ptrInput( Utf16ToUtf32( input, input.GetLength( ), cchInput ) );
 	UChar32* pqzInput = ptrInput.get( );
 	UChar32 formingCharacter = 0;
 	bool converting = false;
 
 	output.RemoveAll( );
 
-	int index = 0;
-	UChar32 ch;
-	for ( index = 0, ch = pqzInput[index]; 0 != ch; index++, ch = pqzInput[index] ) {
-		unsigned mask = U_GET_GC_MASK( pqzInput[index] );
+	for ( int index = 0; index < cchInput; index++ ) {
+		UChar32 ch = pqzInput[index];
+		unsigned mask = U_GET_GC_MASK( ch );
 		if ( 0 != ( mask & GcAlnumMask ) ) {
 			converting = true;
 
@@ -165,13 +165,23 @@ void CComposeSequenceEditor::_SetInputFromResult( void ) {
 		case rmHexCodePoint:
 		case rmDecCodePoint: {
 			m_strResultInput.Empty( );
-			wchar_t const* pszFormatString = ( rmHexCodePoint == m_nResultMode ) ? L"%s%X" : L"%s%d";
-			int limit = m_strComposeResult.GetLength( );
-			UChar32* pqzCodePoints = Utf16ToUtf32( m_strComposeResult, limit );
-			for ( int index = 0; index < limit; index++ ) {
-				m_strResultInput.AppendFormat( pszFormatString, ( index > 0 ) ? L", " : L"", pqzCodePoints[index] );
+
+			int limit = m_CompositeCharacter.GetUtf32Length( );
+			debug( L"CComposeSequenceEditor::_SetInputFromResult: hex/dec(%d), limit=%d\n", m_nResultMode, limit );
+			if ( !limit ) {
+				break;
 			}
-			delete[] pqzCodePoints;
+
+			wchar_t const* pwzFormatFirst = ( rmHexCodePoint == m_nResultMode ) ? L"%X"   : L"%u";
+			wchar_t const* pwzFormatRest  = ( rmHexCodePoint == m_nResultMode ) ? L", %X" : L", %u";
+
+			UChar32 const* pqzCodePoints = m_CompositeCharacter.GetUtf32( );
+			debug( L"+ pqzCodePoints[0]: %u\n", pqzCodePoints[0] );
+			m_strResultInput.Format( pwzFormatFirst, pqzCodePoints[0] );
+			for ( int index = 1; index < limit; index++ ) {
+				debug( L"+ pqzCodePoints[%d]: %u\n", index, pqzCodePoints[index] );
+				m_strResultInput.AppendFormat( pwzFormatRest, pqzCodePoints[index] );
+			}
 			break;
 		}
 
