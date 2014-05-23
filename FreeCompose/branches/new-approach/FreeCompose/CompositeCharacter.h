@@ -1,15 +1,18 @@
 ﻿#pragma once
 
+#include <Unicode.h>
+
 class CompositeCharacter {
 
 public:
 
 	inline CompositeCharacter( ):
-		m_pwz   ( nullptr ),
-		m_pqz   ( nullptr ),
-		m_error ( U_ZERO_ERROR )
+		_pWide   ( nullptr ),
+		_cchWide ( 0 ),
+		_pQuad   ( nullptr ),
+		_cchQuad ( 0 )
 	{
-		m_pBreakIterator = icu::BreakIterator::createCharacterInstance( icu::Locale::getDefault( ), m_error );
+
 	}
 
 	inline CompositeCharacter( CompositeCharacter const& rhs ):
@@ -20,142 +23,126 @@ public:
 
 	inline CompositeCharacter( CompositeCharacter&& rhs ):
 		CompositeCharacter ( )
-
 	{
 		operator=( rhs );
 	}
 
 	inline ~CompositeCharacter( )
 	{
-		if ( m_pwz ) {
-			delete m_pwz;
-			m_pwz = nullptr;
-		}
-		if ( m_pqz ) {
-			delete m_pqz;
-			m_pqz = nullptr;
-		}
-		if ( m_pBreakIterator ) {
-			delete m_pBreakIterator;
-			m_pBreakIterator = nullptr;
-		}
+		_FreeStrings( );
 	}
 
 	inline CompositeCharacter& operator=( CompositeCharacter const& rhs ) {
-		if ( m_pwz ) {
-			free( m_pwz );
-		}
-		if ( m_pqz ) {
-			free( m_pqz );
-		}
-		size_t cch = wcslen( rhs.m_pwz );
-		m_pwz = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
-		m_pqz = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
-		memcpy( m_pwz, rhs.m_pwz, cch * sizeof( wchar_t ) );
-		memcpy( m_pqz, rhs.m_pqz, cch * sizeof( UChar32 ) );
-		m_unicodeString = rhs.m_unicodeString;
+		_FreeStrings( );
+
+		size_t cch = wcslen( rhs._pWide );
+		_pWide = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
+		_pQuad = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
+		memcpy( _pWide, rhs._pWide, cch * sizeof( wchar_t ) );
+		memcpy( _pQuad, rhs._pQuad, cch * sizeof( UChar32 ) );
 		return *this;
 	}
 
 	inline CompositeCharacter& operator=( CompositeCharacter&& rhs ) {
 		return operator=( static_cast<CompositeCharacter const&>( rhs ) );
+		rhs._FreeStrings( );
 	}
 
-	inline UChar const* GetUtf16( void ) {
-		return m_pwz;
+	inline bool operator==( CompositeCharacter const& rhs ) {
+		if ( _cchWide != rhs._cchWide ) { return false; }
+		return false;
 	}
 
-	inline UChar32 const* GetUtf32( void ) {
-		return m_pqz;
+	inline bool operator!=( CompositeCharacter const& rhs ) {
+		return !operator==( rhs );
 	}
 
-	inline icu::UnicodeString GetUnicodeString( void ) {
-		return icu::UnicodeString( );
+	inline UChar32 const* GetUtf32( void ) const {
+		return _pQuad;
 	}
 
-	inline _bstr_t GetBstrT( void ) {
-		return _bstr_t( m_pwz );
+	inline CString GetCString( void ) const {
+		return CString( _pWide );
 	}
 
-	inline _variant_t GetVariantT( void ) {
-		return _variant_t( _bstr_t( m_pwz ) );
+	inline LPCWSTR GetLPCWSTR( void ) const {
+		return _pWide;
 	}
 
-	inline CString GetCString( void ) {
-		return CString( m_pwz );
+	inline LPWSTR GetLPWSTR( void ) const {
+		return const_cast<LPWSTR>( _pWide );
 	}
 
-	inline std::wstring GetWstring( void ) {
-		return std::wstring( m_pwz );
+	inline int GetUtf16Length( void ) const {
+		return _cchWide;
 	}
 
-	inline LPCWSTR GetLPCWSTR( void ) {
-		return m_pwz;
+	inline int GetUtf32Length( void ) const {
+		return _cchQuad;
 	}
 
-	inline LPWSTR GetLPWSTR( void ) {
-		return const_cast<LPWSTR>( m_pwz );
-	}
+	inline bool SetContents( CString const& input ) {
+		using namespace icu;
 
-	inline bool SetContents( CString const& contents ) {
-		if ( m_pwz ) {
-			delete[] m_pwz;
-			m_pwz = nullptr;
-		}
-		if ( m_pqz ) {
-			delete[] m_pqz;
-			m_pqz = nullptr;
-		}
+		_FreeStrings( );
 
-		if ( contents.IsEmpty( ) ) {
-			m_pwz = new UChar[1];
-			m_pwz[0] = 0;
+		if ( input.IsEmpty( ) ) {
+			_pWide = new UChar[1];
+			_pWide[0] = 0;
 
-			m_pqz = new UChar32[1];
-			m_pqz[0] = 0;
-
-			m_unicodeString = icu::UnicodeString( );
+			_pQuad = new UChar32[1];
+			_pQuad[0] = 0;
 
 			return true;
 		}
 
-		m_unicodeString = icu::UnicodeString( contents );
-		m_pBreakIterator->setText( m_unicodeString );
+		UErrorCode errorCode = U_ZERO_ERROR;
+		{
+			BreakIterator* pBreakIterator = BreakIterator::createCharacterInstance( Locale::getDefault( ), errorCode );
+			UnicodeString unicodeString( input );
+			pBreakIterator->setText( unicodeString );
 
-		int32_t p1 = m_pBreakIterator->first( );
-		int32_t p2 = icu::BreakIterator::DONE;
-		if ( icu::BreakIterator::DONE != p1 ) {
-			p2 = m_pBreakIterator->next( );
-			if ( icu::BreakIterator::DONE == p2 ) {
-				return false;
+			int32_t p1 = pBreakIterator->first( );
+			int32_t p2 = BreakIterator::DONE;
+			if ( BreakIterator::DONE != p1 ) {
+				p2 = pBreakIterator->next( );
+				delete pBreakIterator;
+				if ( BreakIterator::DONE == p2 ) {
+					return false;
+				}
 			}
+
+			_cchWide = p2 - p1;
 		}
 
-		int32_t cchStr = p2 - p1;
-		m_unicodeString = icu::UnicodeString( contents, cchStr );
-
-		m_error = U_ZERO_ERROR;
-		m_pqz = new UChar32[cchStr];
-		m_unicodeString.toUTF32( m_pqz, cchStr, m_error );
-		if ( U_ZERO_ERROR != m_error && U_STRING_NOT_TERMINATED_WARNING != m_error ) {
-			debug( L"CompositeCharacter::SetContents: result.toUTF32 failed, m_error=%d\n", m_error );
-			delete[] m_pqz;
-			m_pqz = nullptr;
+		_pWide = new UChar[_cchWide + 1];
+		errno_t err = wcsncpy_s( _pWide, _cchWide + 1, static_cast<LPCWSTR>( input ), _cchWide );
+		if ( 0 != err ) {
+			debug( L"CompositeCharacter::SetContents: WTF, wcsncpy_s() failed? err=%d\n", err );
+			_FreeStrings( );
 			return false;
 		}
 
-		m_pwz = new UChar[cchStr + 1];
-		memset( m_pwz, 0, sizeof(UChar) * ( cchStr + 1 ) );
-		memcpy( m_pwz, m_unicodeString.getTerminatedBuffer( ), sizeof(UChar) * cchStr );
+		_pQuad = Utf16ToUtf32( _pWide, _cchWide, _cchQuad );
+		if ( !_pQuad ) {
+			debug( L"CompositeCharacter::SetContents: u_strToUTF32 failed, errorCode=%d\n", errorCode );
+			_FreeStrings( );
+			return false;
+		}
 
 		return true;
 	}
 
 private:
-	UChar* m_pwz;
-	UChar32* m_pqz;
-	icu::UnicodeString m_unicodeString;
-	icu::BreakIterator* m_pBreakIterator;
-	UErrorCode m_error;
+	int _cchWide;
+	UChar* _pWide;
+
+	int _cchQuad;
+	UChar32* _pQuad;
+
+	void _FreeStrings( void ) {
+		delete[] _pWide; _pWide = nullptr; _cchWide = 0;
+		delete[] _pQuad; _pQuad = nullptr; _cchQuad = 0;
+	}
 
 };
