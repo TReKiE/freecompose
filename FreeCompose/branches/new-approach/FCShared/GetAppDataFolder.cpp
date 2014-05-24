@@ -4,6 +4,13 @@
 
 #include <ShlObj.h>
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 bool _GetAppDataFolderFromShell( LPWSTR& lpsz ) {
 	wchar_t buf[MAX_PATH];
 

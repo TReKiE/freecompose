@@ -3,6 +3,13 @@
 #include "AppSoundsRegistry.h"
 #include "Utils.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 static wchar_t* CompositionSoundNames[] = {
 	L"FC_Composition_Starting",
 	L"FC_Composition_KeyPressed",

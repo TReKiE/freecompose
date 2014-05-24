@@ -5,6 +5,13 @@
 
 #include "Utils.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 const DWORD SpecialKeys[] = {
 	VK_LCONTROL, VK_RCONTROL, VK_LMENU,    VK_RMENU,
 	VK_LWIN,     VK_RWIN,     VK_APPS,     VK_CAPITAL,

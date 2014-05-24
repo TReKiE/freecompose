@@ -2,6 +2,13 @@
 #include "FCShared.h"
 #include "Internal.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 //BOOL APIENTRY DllMain( HINSTANCE hModule, DWORD ulReasonForCall, LPVOID /*lpReserved*/ ) {
 //	switch ( ulReasonForCall ) {
 //		case DLL_PROCESS_ATTACH:

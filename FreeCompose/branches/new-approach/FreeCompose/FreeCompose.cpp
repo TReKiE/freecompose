@@ -6,6 +6,13 @@
 #include "AppSoundsRegistry.h"
 #include "Utils.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//{{AFX_MSG_MAP( CFreeComposeApp )
 	//}}AFX_MSG_MAP
@@ -98,7 +105,10 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	CAppSoundsRegistry::RegisterFcAppSounds( );
 
 	// Create and (not) show our hidden window
+#pragma push_macro( "new" )
+#undef new
 	CMainFrame* pFrame = new CMainFrame;
+#pragma pop_macro( "new" )
 	if ( !pFrame ) {
 		return FALSE;
 	}
