@@ -7,6 +7,13 @@
 
 #include "Utils.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 //==============================================================================
 //
 // Guide to this dialog's controls
@@ -324,7 +331,10 @@ void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStr
 	dc.Attach( lpDrawItemStruct->hDC );
 
 	if ( !m_pFont ) {
+#pragma push_macro( "new" )
+#undef new
 		m_pFont = new CFont( );
+#pragma pop_macro( "new" )
 		m_pFont->CreateFont( rcItem.Height( ), 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, VARIABLE_PITCH | FF_SWISS, L"MS Shell Dlg 2" );
 	}
 	

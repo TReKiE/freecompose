@@ -4,6 +4,13 @@
 #include "KeyUpSink.h"
 #include "ComposeKeyHandler.h"
 
+#ifdef _DEBUG
+#	ifndef DBG_NEW
+#		define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#		define new DBG_NEW
+#	endif
+#endif
+
 DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 	debug( L"ComposeKeyHandler@0x%p::KeyDown: pkb=0x%p, ComposeState=%s(%d), KeyEventHandlers[vkCompose(%lu)]=0x%p\n", this, pkb, Stringify::from_COMPOSE_STATE( ComposeState ), ComposeState, vkCompose, KeyEventHandlers[ vkCompose ] );
 

@@ -221,10 +221,9 @@ to maintain a single distribution point for the source code.
 #undef ATLASSERT
 #define ATLASSERT(x)
 
-#ifdef _AFX
-#ifdef _DEBUG
-#define new DEBUG_NEW
-#endif
+#if defined(_AFX) && defined(_DEBUG)
+#	define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#	define new DBG_NEW
 #endif
 
 //Defines our own versions of various constants we use from ShellApi.h. This allows us to operate in a mode
