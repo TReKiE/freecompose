@@ -9,16 +9,15 @@
 #define  WIN32_LEAN_AND_MEAN
 
 #ifdef TARGET_VISTA
-#include "targetver_vista.h"
+#	include "targetver_vista.h"
 #else
-#include "targetver.h"
+#	include "targetver.h"
 #endif
 
 #include <afx.h>
 
 #ifdef FCSHARED_EXPORTS
-#define FCSHARED_API __declspec(dllexport)
+#	define FCSHARED_API __declspec(dllexport)
 #else
-#define FCSHARED_API __declspec(dllimport)
+#	define FCSHARED_API __declspec(dllimport)
 #endif
-
