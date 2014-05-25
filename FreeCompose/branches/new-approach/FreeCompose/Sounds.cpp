@@ -13,6 +13,8 @@
 IMPLEMENT_DYNAMIC( CSounds, CPropertyPage )
 
 BEGIN_MESSAGE_MAP( CSounds, CPropertyPage )
+	//{{AFX_MSG_MAP( CSounds )
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 CSounds::CSounds( COptionsData& Options ):

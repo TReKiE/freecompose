@@ -18,9 +18,9 @@
 // Message map for CMainFrame
 //
 
-IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
+IMPLEMENT_DYNAMIC( CMainFrame, CFrameWnd )
 
-BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
+BEGIN_MESSAGE_MAP( CMainFrame, CFrameWnd )
 	//{{AFX_MSG_MAP( CMainFrame )
 	ON_WM_CREATE()
 	ON_WM_CLOSE()

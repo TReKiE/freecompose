@@ -13,6 +13,8 @@
 #	endif
 #endif
 
+IMPLEMENT_DYNAMIC( CFreeComposeApp, CWinApp )
+
 BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//{{AFX_MSG_MAP( CFreeComposeApp )
 	//}}AFX_MSG_MAP

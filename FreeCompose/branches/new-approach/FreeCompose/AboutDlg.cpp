@@ -11,7 +11,11 @@
 #	endif
 #endif
 
+IMPLEMENT_DYNAMIC( CAboutDlg, CDialog )
+
 BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
+	//{{AFX_MSG_MAP( CAboutDlg )
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
 
 CAboutDlg::CAboutDlg( ):

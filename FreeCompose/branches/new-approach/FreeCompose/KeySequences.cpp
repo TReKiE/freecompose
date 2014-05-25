@@ -55,7 +55,10 @@ public:
 // CKeySequences declarations
 //
 
+IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
+
 BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
+	//{{AFX_MSG_MAP( CKeySequences )
 	ON_NOTIFY( NM_DBLCLK,       IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListDoubleClick )
 	ON_NOTIFY( LVN_COLUMNCLICK, IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListColumnClick )
 	ON_NOTIFY( LVN_ITEMCHANGED, IDC_KS_COMPOSE_SEQUENCE_LIST, &CKeySequences::OnListItemChanged )
@@ -63,8 +66,8 @@ BEGIN_MESSAGE_MAP( CKeySequences, CPropertyPage )
 	ON_BN_CLICKED( IDADD,    &CKeySequences::OnBnClickedAdd    )
 	ON_BN_CLICKED( IDEDIT,   &CKeySequences::OnBnClickedEdit   )
 	ON_BN_CLICKED( IDREMOVE, &CKeySequences::OnBnClickedRemove )
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
-IMPLEMENT_DYNAMIC( CKeySequences, CPropertyPage )
 
 //
 // Constants

@@ -1,6 +1,7 @@
 #pragma once
 
 class CAboutDlg: public CDialog {
+	DECLARE_DYNAMIC( CAboutDlg )
 	DECLARE_MESSAGE_MAP( )
 
 public:
