@@ -54,10 +54,10 @@ private:
 	BOOL    m_fCaseInsensitive;
 	BOOL    m_fReversible;
 
-	bool _ParseCodePointList( CString const& str, int const base, CArray<UChar32>& output );
+	bool _ParseCodePointList( UChar32 const* pqzInput, int const cchInput, int const base, UChar32*& pqzOutput, int& cchOutput );
 	void _SetResultFromInput( void );
 	void _SetInputFromResult( void );
 
-	void _DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned uID, CString& strComposeSequence, int const cchMin, int const cchMax );
+	void _DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned const uID, CString const& strComposeSequence, int const cchMin, int const cchMax );
 
 };

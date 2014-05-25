@@ -77,23 +77,26 @@ CComposeSequenceEditor::~CComposeSequenceEditor( ) {
 	}
 }
 
-bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int const base, CArray<UChar32>& output ) {
+bool CComposeSequenceEditor::_ParseCodePointList( UChar32 const* pqzInput, int const cchInput, int const base, UChar32*& pqzOutput, int& cchOutput ) {
 	int const GcAlnumMask = U_GC_LC_MASK | U_GC_ND_MASK;
 	int const GcDelimMask = U_GC_P_MASK  | U_GC_S_MASK  | U_GC_ZS_MASK;
+	UChar32 const InvalidCharacterValue = UCHAR_MAX_VALUE + 1;
 
-	int cchInput = 0;
-	std::unique_ptr<UChar32[]> ptrInput( Utf16ToUtf32( input, input.GetLength( ), cchInput ) );
-	UChar32* pqzInput = ptrInput.get( );
-	UChar32 formingCharacter = 0;
+	UChar32 formingCharacter = InvalidCharacterValue;
 	bool converting = false;
 
-	output.RemoveAll( );
+	pqzOutput = nullptr;
+	cchOutput = 0;
 
+	CArray<UChar32> output;
 	for ( int index = 0; index < cchInput; index++ ) {
 		UChar32 ch = pqzInput[index];
 		unsigned mask = U_GET_GC_MASK( ch );
 		if ( 0 != ( mask & GcAlnumMask ) ) {
-			converting = true;
+			if ( !converting ) {
+				converting = true;
+				formingCharacter = 0;
+			}
 
 			int digit = u_digit( ch, static_cast<int8_t>( base ) );
 			if ( -1 == digit ) {
@@ -109,7 +112,7 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 		} else if ( 0 != ( mask & GcDelimMask ) ) {
 			if ( converting ) {
 				output.Add( formingCharacter );
-				formingCharacter = 0;
+				formingCharacter = InvalidCharacterValue;
 				converting = false;
 			}
 		} else {
@@ -117,9 +120,14 @@ bool CComposeSequenceEditor::_ParseCodePointList( CString const& input, int cons
 			return false;
 		}
 	}
-	if ( converting ) {
+	if ( converting && ( InvalidCharacterValue != formingCharacter ) ) {
 		output.Add( formingCharacter );
 	}
+
+	cchOutput = output.GetCount( );
+	pqzOutput = new UChar32[cchOutput + 1];
+	memcpy( pqzOutput, output.GetData( ), sizeof(UChar32) * cchOutput );
+	pqzOutput[cchOutput] = 0;
 
 	return true;
 }
@@ -141,10 +149,15 @@ void CComposeSequenceEditor::_SetResultFromInput( void ) {
 				break;
 			}
 
-			CArray<UChar32> codePoints;
-			if ( _ParseCodePointList( m_strResultInput, ( rmHexCodePoint == m_nResultMode ) ? 16 : 10, codePoints ) ) {
-				str = Utf32ToUtf16( codePoints.GetData( ), codePoints.GetCount( ) );
+			int cchInput = 0;
+			int cchOutput = 0;
+			UChar32* pqzInput = Utf16ToUtf32( m_strResultInput, m_strResultInput.GetLength( ), cchInput );
+			UChar32* pqzOutput = nullptr;
+			if ( _ParseCodePointList( pqzInput, cchInput, ( rmHexCodePoint == m_nResultMode ) ? 16 : 10, pqzOutput, cchOutput ) ) {
+				str = Utf32ToUtf16( pqzOutput, cchOutput );
+				delete[] pqzOutput;
 			}
+			delete[] pqzInput;
 			break;
 		}
 
@@ -201,7 +214,7 @@ void CComposeSequenceEditor::_SetInputFromResult( void ) {
 	m_staticPreview.Invalidate( TRUE );
 }
 
-void CComposeSequenceEditor::_DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned /*uID*/, CString& strInput, int const cchMin, int const cchMax ) {
+void CComposeSequenceEditor::_DDV_MinMaxCompositeCharacters( CDataExchange* pDX, unsigned const /*uID*/, CString const& strInput, int const cchMin, int const cchMax ) {
 	debug( L"_DDV_MinMaxCompositeCharacters: pDX=0x%p (m_bSaveAndValidate?%s), strInput='%s' (length: %d), cchMin=%d, cchMax=%d\n", pDX, pDX->m_bSaveAndValidate ? L"TRUE" : L"false", strInput, strInput.GetLength( ), cchMin, cchMax );
 
 	if ( !pDX->m_bSaveAndValidate ) {
