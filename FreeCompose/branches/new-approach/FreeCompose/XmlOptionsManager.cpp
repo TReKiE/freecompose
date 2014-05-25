@@ -101,7 +101,7 @@ static inline bool SafeXNodeToBool( XNode const& pNode, bool const fDefault = fa
 	return BoolStringMapper[pNode->text];
 }
 
-static inline long WcsToL( CString const& input, int const radix = 10 ) {
+static inline long WcsToL( CString const& input, int const radix ) {
 	wchar_t* pEnd = nullptr;
 	wchar_t const* pInput = input;
 
@@ -110,23 +110,23 @@ static inline long WcsToL( CString const& input, int const radix = 10 ) {
 
 	if ( !pEnd ) {
 		// wtf?
-		debug( L"WcsToL: pEnd is nullptr?? result=%lu\n", result );
+		debug( L"WcsToL: pEnd is nullptr?? (result=%lu)\n", result );
 		return result;
 	}
 	if ( pInput == pEnd ) {
 		// no conversion took place at all
-		debug( L"WcsToL: conversion totally failed. result=%lu\n", result );
+		debug( L"WcsToL: conversion totally failed. (result=%lu)\n", result );
 		return result;
 	}
 	if ( *pEnd != L'\0' && *pEnd != L',' ) {
-		debug( L"WcsToL: conversion stopped by character %u\n", *pEnd );
+		debug( L"WcsToL: conversion stopped by character %u. (result=0)\n", *pEnd );
 		return 0;
 	}
 	return result;
 }
 
 static inline CString HexadecimalToString( CString const& input ) {
-	CArray<wchar_t> chars;
+	CArray<UChar32> chars;
 
 	int lastindex = 0;
 	int index = input.Find( L',', 0 );
@@ -143,7 +143,7 @@ static inline CString HexadecimalToString( CString const& input ) {
 		chars.Add( charval );
 	}
 
-	return CString( chars.GetData( ), chars.GetCount( ) );
+	return Utf32ToUtf16( chars.GetData( ), chars.GetCount( ) );
 }
 
 static inline CString StringToHexadecimal( CString const& input ) {
@@ -152,11 +152,19 @@ static inline CString StringToHexadecimal( CString const& input ) {
 		return CString( );
 	}
 
-	CString tmp;
-	tmp.Format( L"%X", input[0] );
-	for ( index = 1; index < limit; index++ ) {
-		tmp.AppendFormat( L",%X", input[index] );
+	int cch = 0;
+	UChar32* pqz = Utf16ToUtf32( input, input.GetLength( ), cch );
+	if ( !pqz || !cch ) {
+		debug( L"StringToHexadecimal: input failed to convert\n" );
+		return CString( );
 	}
+
+	CString tmp;
+	tmp.Format( L"%X", pqz[0] );
+	for ( index = 1; index < limit; index++ ) {
+		tmp.AppendFormat( L",%X", pqz[index] );
+	}
+	delete[] pqz;
 	return tmp;
 }
 
