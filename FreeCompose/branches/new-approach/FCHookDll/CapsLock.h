@@ -11,7 +11,6 @@ class CapsLockMutator: public KeyEventHandler {
 class CapsLockSwapper: public CapsLockMutator {
 
 public:
-
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );
 
@@ -20,19 +19,17 @@ public:
 class CapsLockReplacer: public CapsLockMutator {
 
 public:
-
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );
 
 };
 
 class CapsLockMutatorFactory {
-public:
 
+public:
 	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE clSwapMode );
 
 private:
-
 	CapsLockMutatorFactory( );
 	CapsLockMutatorFactory( CapsLockMutatorFactory& );
 	CapsLockMutatorFactory& operator=( CapsLockMutatorFactory& );
@@ -46,8 +43,8 @@ private:
 class CapsLockToggler: public KeyEventHandler { };
 
 class CapsLockPressTwiceToggler: public CapsLockToggler {
-public:
 
+public:
 	CapsLockPressTwiceToggler( ): allowDown ( false ), allowUp ( false ) { }
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
@@ -62,20 +59,19 @@ private:
 };
 
 class CapsLockDisabledToggler: public CapsLockToggler {
-public:
 
+public:
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
 	virtual DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb );
 
 };
 
 class CapsLockTogglerFactory {
-public:
 
+public:
 	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE clToggleMode );
 
 private:
-
 	CapsLockTogglerFactory( );
 	CapsLockTogglerFactory( CapsLockTogglerFactory& );
 	CapsLockTogglerFactory& operator=( CapsLockTogglerFactory& );
@@ -87,13 +83,12 @@ private:
 //
 
 class CapsLockKeyHandler: public KeyEventHandler {
-public:
 
+public:
 	virtual inline DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb ) { return _Implementation( pkb ); }
 	virtual inline DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb )   { return _Implementation( pkb ); }
 
 private:
-
 	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb );
 
 };
