@@ -152,8 +152,12 @@ void CComposeSequenceEditor::_SetResultFromInput( void ) {
 			}
 
 			int cchInput = 0;
-			int cchOutput = 0;
 			UChar32* pqzInput = Utf16ToUtf32( m_strResultInput, m_strResultInput.GetLength( ), cchInput );
+			if ( !pqzInput || !cchInput ) {
+				break;
+			}
+
+			int cchOutput = 0;
 			UChar32* pqzOutput = nullptr;
 			if ( _ParseCodePointList( pqzInput, cchInput, ( rmHexCodePoint == m_nResultMode ) ? 16 : 10, pqzOutput, cchOutput ) ) {
 				str = Utf32ToUtf16( pqzOutput, cchOutput );
