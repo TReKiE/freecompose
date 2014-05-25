@@ -291,6 +291,7 @@
     <ClCompile Include="Features.cpp" />
     <ClCompile Include="FreeCompose.cpp" />
     <ClCompile Include="KeySequences.cpp" />
+    <ClCompile Include="KeySequences_Sorting.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NTray.cpp" />
     <ClCompile Include="OptionsData.cpp" />
