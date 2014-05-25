@@ -27,12 +27,12 @@ public:
 	}
 
 	inline ComposeSequence( ComposeSequence const& rhs ) {
-		debug( L"ComposeSequence::`ctor(ComposeSequence const&)\n" );
+		debug( L"ComposeSequence::`copy-ctor()\n" );
 		operator=( rhs );
 	}
 
 	inline ComposeSequence( ComposeSequence&& rhs ) {
-		debug( L"ComposeSequence::`ctor(ComposeSequence&&)\n" );
+		debug( L"ComposeSequence::`move-ctor()\n" );
 		operator=( rhs );
 	}
 
@@ -42,7 +42,7 @@ public:
 	}
 
 	inline ComposeSequence& operator=( ComposeSequence const& rhs ) {
-		debug( L"ComposeSequence::operator=(ComposeSequence const&)\n" );
+		debug( L"ComposeSequence::copy-operator=()\n" );
 		Sequence = rhs.Sequence;
 		Result = rhs.Result;
 		Disabled = rhs.Disabled;
@@ -52,7 +52,7 @@ public:
 	}
 
 	inline ComposeSequence& operator=( ComposeSequence&& rhs ) {
-		debug( L"ComposeSequence::operator=(ComposeSequence&&)\n" );
+		debug( L"ComposeSequence::move-operator=()\n" );
 		operator=( const_cast<ComposeSequence const&>( rhs ) );
 		rhs.Sequence.Empty( );
 		rhs.Result.Empty( );
