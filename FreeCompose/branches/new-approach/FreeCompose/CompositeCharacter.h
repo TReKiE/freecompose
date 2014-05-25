@@ -36,10 +36,12 @@ public:
 		_FreeStrings( );
 
 		size_t cch = wcslen( rhs._pWide );
-		_pWide = static_cast<UChar*>( malloc( cch * sizeof( wchar_t ) ) );
-		_pQuad = static_cast<UChar32*>( malloc( cch * sizeof( UChar32 ) ) );
+		_pWide = new UChar[cch + 1];
+		_pQuad = new UChar32[cch + 1];
 		memcpy( _pWide, rhs._pWide, cch * sizeof( wchar_t ) );
 		memcpy( _pQuad, rhs._pQuad, cch * sizeof( UChar32 ) );
+		_pWide[cch] = 0;
+		_pQuad[cch] = 0;
 		return *this;
 	}
 
