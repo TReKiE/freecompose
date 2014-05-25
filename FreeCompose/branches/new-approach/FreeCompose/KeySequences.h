@@ -32,6 +32,7 @@ public:
 	afx_msg void OnBnClickedRemove( );
 
 private:
+	// Constants
 	static int const ResultCodePointColumn   = 0;
 	static int const ResultCharacterColumn   = 1;
 	static int const SequenceColumn          = 2;
@@ -49,7 +50,7 @@ private:
 	static sortcallbackfunc** ColumnSortFuncMap[NumberOfColumns];
 	static int const ColumnHeaderFormatFlagsMap[3];
 
-private:
+	// Member variables
 	COptionsData& m_Options;
 
 	int m_nColumnWidths[NumberOfColumns];
@@ -63,7 +64,7 @@ private:
 	int m_nSortColumn;
 	CArray<unsigned> m_ListIndexMap;
 
-private:
+	// Member functions
 	unsigned _MakeComposeSequenceGroupKey( INT_PTR const groupIndex, INT_PTR const sequenceIndex );
 	int _GroupIndex( unsigned const key );
 	int _SequenceIndex( unsigned const key );
@@ -81,7 +82,7 @@ private:
 	void _DoWithRedrawDisabled( std::function<void( void )> func );
 	void _RefreshListIndexMap( void );
 
-private:
+	// Sorting functions
 	static int CALLBACK _ListComparer_Unsorted( LPARAM index1, LPARAM index2, LPARAM );
 	static int CALLBACK _ListComparer_Ascending_Result( LPARAM index1, LPARAM index2, LPARAM );
 	static int CALLBACK _ListComparer_Descending_Result( LPARAM index1, LPARAM index2, LPARAM );
