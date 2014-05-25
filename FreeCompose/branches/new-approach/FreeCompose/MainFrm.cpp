@@ -72,9 +72,6 @@ CMainFrame::~CMainFrame( ) {
 void CMainFrame::_Initialize( void ) {
 	m_pOptions = new COptionsData( );
 	m_pOptions->Load( );
-	// HACK HACK HACK HACK HACK
-	m_pOptions->StartActive = FALSE;
-	// HACK ENDS HACK ENDS HACK ENDS
 	_Reconfigure( );
 
 	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
@@ -83,18 +80,17 @@ void CMainFrame::_Initialize( void ) {
 
 void CMainFrame::_Reconfigure( void ) {
 	ComposeSequenceArray allSequences;
+
 	INT_PTR cGroups = m_pOptions->ComposeSequenceGroups.GetCount( );
 	for ( int n = 0; n < cGroups; n++ ) {
 		allSequences.Append( m_pOptions->ComposeSequenceGroups[n].ComposeSequences );
 	}
-	FcSetComposeSequences( allSequences.GetData( ), static_cast<DWORD>( allSequences.GetCount( ) ) );
-
-	FcSetCapsLockToggleMode( m_pOptions->CapsLockToggleMode );
-
-	FcSetCapsLockSwapMode( m_pOptions->CapsLockSwapMode );
-	FcSetSwapCapsLockKey( m_pOptions->SwapCapsLockVk );
 
 	FcSetComposeKey( m_pOptions->ComposeVk );
+	FcSetSwapCapsLockKey( m_pOptions->SwapCapsLockVk );
+	FcSetCapsLockToggleMode( m_pOptions->CapsLockToggleMode );
+	FcSetCapsLockSwapMode( m_pOptions->CapsLockSwapMode );
+	FcSetComposeSequences( allSequences.GetData( ), static_cast<DWORD>( allSequences.GetCount( ) ) );
 
 	if ( m_pOptions->StartActive ) {
 		FcEnableHook( );
