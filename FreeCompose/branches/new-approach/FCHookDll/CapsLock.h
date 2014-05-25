@@ -4,9 +4,12 @@
 // Caps Lock mutators.
 //
 
-class CapsLockMutator: public KeyEventHandler { };
+class CapsLockMutator: public KeyEventHandler {
+
+};
 
 class CapsLockSwapper: public CapsLockMutator {
+
 public:
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
@@ -15,6 +18,7 @@ public:
 };
 
 class CapsLockReplacer: public CapsLockMutator {
+
 public:
 
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* pkb );
@@ -28,6 +32,7 @@ public:
 	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE clSwapMode );
 
 private:
+
 	CapsLockMutatorFactory( );
 	CapsLockMutatorFactory( CapsLockMutatorFactory& );
 	CapsLockMutatorFactory& operator=( CapsLockMutatorFactory& );
@@ -70,6 +75,7 @@ public:
 	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE clToggleMode );
 
 private:
+
 	CapsLockTogglerFactory( );
 	CapsLockTogglerFactory( CapsLockTogglerFactory& );
 	CapsLockTogglerFactory& operator=( CapsLockTogglerFactory& );
@@ -87,6 +93,7 @@ public:
 	virtual inline DISPOSITION KeyUp( KBDLLHOOKSTRUCT* pkb )   { return _Implementation( pkb ); }
 
 private:
+
 	DISPOSITION _Implementation( KBDLLHOOKSTRUCT* pkb );
 
 };
