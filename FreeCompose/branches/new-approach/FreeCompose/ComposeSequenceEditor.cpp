@@ -41,6 +41,7 @@
 IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
 
 BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
+	//{{AFX_MSG_MAP( CComposeSequenceEditor )
 	ON_WM_DRAWITEM( )
 
 	ON_BN_CLICKED( IDOK,             &CComposeSequenceEditor::OnOK                    )
@@ -50,6 +51,7 @@ BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
 
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_RESULT_AS_CHARACTER, IDC_CSE_RESULT_AS_DECIMAL, &CComposeSequenceEditor::OnResultModeClicked )
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_CSE_ENABLED,             IDC_CSE_REVERSIBLE,        &CComposeSequenceEditor::OnCheckboxClicked   )
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
 
 enum ResultMode {

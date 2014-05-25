@@ -20,7 +20,9 @@ const DWORD SpecialKeys[] = {
 };
 
 IMPLEMENT_DYNAMIC( CFeatures, CPropertyPage )
+
 BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
+	//{{AFX_MSG_MAP( CFeatures )
 	ON_BN_CLICKED   ( IDC_F_ENABLE_ON_STARTUP,  &CFeatures::OnChanged                )
 	ON_BN_CLICKED   ( IDC_F_START_WITH_WINDOWS, &CFeatures::OnChanged                )
 	ON_BN_CLICKED   ( IDC_F_SWAPCAPSLOCK,       &CFeatures::OnSwapCapsLockChanged    )
@@ -28,6 +30,7 @@ BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 	ON_CBN_SELCHANGE( IDC_F_SWAPCAPSLOCK_KEY,   &CFeatures::OnSwapCapsLockKeyChanged )
 
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_F_CAPS_LOCK_TOGGLE_MODE_NORMAL, IDC_F_CAPS_LOCK_TOGGLE_MODE_DISABLED, &CFeatures::OnCapsLockToggleModeChanged )
+	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):

@@ -1,6 +1,7 @@
 #pragma once
 
 class CFreeComposeApp: public CWinApp {
+	DECLARE_DYNAMIC( CFreeComposeApp )
 	DECLARE_MESSAGE_MAP( )
 
 public:
