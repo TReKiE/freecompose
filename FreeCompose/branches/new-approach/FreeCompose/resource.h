@@ -5,7 +5,7 @@
 #define IDP_OLE_INIT_FAILED             100
 #define IDR_MAINFRAME                   128
 #define IDM_TRAY_MENU                   129
-#define IDD_ABOUT                    130
+#define IDD_ABOUT                       130
 #define IDD_KEYSEQUENCES                131
 #define IDD_FEATURES                    132
 #define IDD_COMPOSE_SEQUENCE_EDITOR     133
@@ -18,6 +18,7 @@
 #define IDC_A_VERSION                   2002
 #define IDC_A_COPYRIGHT                 2003
 #define IDC_A_WEBSITE                   2004
+#define IDC_A_LICENSE                   2005
 #define IDC_KS_COMPOSE_SEQUENCE_LIST    3001
 #define IDS_KS_COLUMN_SEQUENCE          3101
 #define IDS_KS_COLUMN_RESULT_CHARACTER  3102
