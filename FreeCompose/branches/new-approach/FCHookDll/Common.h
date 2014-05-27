@@ -23,27 +23,27 @@ extern UINT const FCM_KEY;
 // Global variables
 //==============================================================================
 
-extern AutoCriticalSection        cs;
-extern HHOOK                      hHook;
+extern AutoCriticalSection   cs;
+extern HHOOK                 hHook;
 
-extern ComposeSequence*           ComposeSequences;
-extern int                        cComposeSequences;
+extern ComposeSequence*      ComposeSequences;
+extern int                   cComposeSequences;
 
-extern CComposeSequenceTree       ComposeSequenceTree;
+extern CComposeSequenceTree  ComposeSequenceTree;
 
-extern CAPS_LOCK_TOGGLE_MODE      clToggleMode;
-extern CAPS_LOCK_SWAP_MODE        clSwapMode;
-extern bool                       fSwapCapsLock;
+extern CAPS_LOCK_TOGGLE_MODE clToggleMode;
+extern CAPS_LOCK_SWAP_MODE   clSwapMode;
+extern bool                  fSwapCapsLock;
 
-extern DWORD                      vkCompose;
-extern DWORD                      vkCapsLockSwap;
+extern DWORD                 vkCompose;
+extern DWORD                 vkCapsLockSwap;
 
-extern KeyEventHandler*           KeyEventHandlers[256];
-extern COMPOSE_STATE              ComposeState;
+extern KeyEventHandler*      KeyEventHandlers[256];
+extern COMPOSE_STATE         ComposeState;
 
-extern HINSTANCE                  hDllInst;
+extern HINSTANCE             hDllInst;
 
-extern HWND                       hwndNotifyWindow;
+extern HWND                  hwndNotifyWindow;
 
 //==============================================================================
 // Prototypes

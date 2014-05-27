@@ -1,8 +1,8 @@
 #pragma once
 
 class ComposeKeyHandler: public KeyEventHandler {
-public:
 
+public:
 	virtual DISPOSITION KeyDown( KBDLLHOOKSTRUCT* /*pkb*/ );
 
 };
