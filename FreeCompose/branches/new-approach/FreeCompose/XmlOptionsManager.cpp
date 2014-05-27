@@ -584,7 +584,7 @@ bool CXmlOptionsManager::LoadFromFile( void ) {
 		debug( L"CXmlOptionsManager::LoadFromFile: Can't load schema, but carrying on\n" );
 	}
 
-	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
+	CString str( GetFreeComposeFolder( ) + L"\\FcConfiguration.xml" );
 	XDocument doc;
 	try {
 		doc = _CreateDomDocument( );
@@ -623,7 +623,7 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 		return false;
 	}
 
-	CString str( GetFreeComposeFolderAsCString( ) + L"\\FcConfiguration.xml" );
+	CString str( GetFreeComposeFolder( ) + L"\\FcConfiguration.xml" );
 
 	XDocument doc = _CreateDomDocument( );
 	if ( !doc ) {
