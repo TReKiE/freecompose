@@ -10,23 +10,18 @@
 #	endif
 #endif
 
-FCSHARED_API bool GetFreeComposeFolder( LPWSTR& lpsz ) {
-	bool ret = false;
-
+FCSHARED_API CString GetFreeComposeFolder( void ) {
 	LPWSTR appDataFolder = nullptr;
 	if ( !_GetAppDataFolder( appDataFolder ) ) {
-		return false;
+		return CString( );
 	}
 
 	CString strCompanyName( reinterpret_cast<LPCWSTR>( AFX_IDS_COMPANY_NAME ) );
 	CString strAppName( reinterpret_cast<LPCWSTR>( AFX_IDS_APP_TITLE ) );
 	CString path;
 	path.Format( L"%s\\%s\\%s", appDataFolder, strCompanyName, strAppName );
-	lpsz = _CoTaskMemDuplicateString( path );
-	ret = true;
-
 	CoTaskMemFree( appDataFolder );
-	return ret;
+	return path;
 }
 
 FCSHARED_API bool EnsureFreeComposeFolderExists( void ) {
