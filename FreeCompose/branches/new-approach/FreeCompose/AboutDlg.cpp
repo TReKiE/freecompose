@@ -18,6 +18,8 @@ BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
 	ON_NOTIFY( NM_RETURN, IDC_A_COPYRIGHT, &CAboutDlg::OnClickCopyright )
 	ON_NOTIFY( NM_CLICK,  IDC_A_WEBSITE,   &CAboutDlg::OnClickWebsite   )
 	ON_NOTIFY( NM_RETURN, IDC_A_WEBSITE,   &CAboutDlg::OnClickWebsite   )
+	ON_NOTIFY( NM_CLICK,  IDC_A_LICENSE,   &CAboutDlg::OnClickLicense   )
+	ON_NOTIFY( NM_RETURN, IDC_A_LICENSE,   &CAboutDlg::OnClickLicense   )
 END_MESSAGE_MAP( )
 
 CAboutDlg::CAboutDlg( ):
@@ -78,6 +80,15 @@ void CAboutDlg::_GetVersionInfo( ) {
 	m_strVersion.Format( LoadFromStringTable( IDC_A_VERSION_FORMAT ), v1, v2, v3, v4 );
 }
 
+void CAboutDlg::_LaunchUrl( wchar_t const* pwzUrl ) {
+	HINSTANCE hinst = ShellExecute( nullptr, L"open", pwzUrl, nullptr, nullptr, SW_SHOW );
+	if ( reinterpret_cast<unsigned>( hinst ) > 32 ) {
+		debug( L"CAboutDlg::_LaunchUrl: ShellExecute('%s') succeeded (hinst=0x%08X)\n", pwzUrl, hinst );
+	} else {
+		debug( L"CAboutDlg::_LaunchUrl: ShellExecute('%s') failed, hinst=%d\n", pwzUrl, hinst );
+	}
+}
+
 void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
 	CDialog::DoDataExchange( pDX );
 
@@ -87,6 +98,7 @@ void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Control ( pDX, IDC_A_NAME,      m_staticName    );
 	DDX_Control ( pDX, IDC_A_COPYRIGHT, m_linkCopyright );
 	DDX_Control ( pDX, IDC_A_WEBSITE,   m_linkWebsite   );
+	DDX_Control ( pDX, IDC_A_LICENSE,   m_linkLicense   );
 }
 
 BOOL CAboutDlg::OnInitDialog( ) {
@@ -143,13 +155,7 @@ void CAboutDlg::OnClickCopyright( NMHDR* pNMHDR, LRESULT* pResult ) {
 		item.szUrl
 		);
 
-	HINSTANCE hinst = ShellExecute( nullptr, L"open", item.szUrl, nullptr, nullptr, SW_SHOW );
-	if ( reinterpret_cast<unsigned>( hinst ) > 32 ) {
-		debug( L"-- ShellExecute succeeded (hinst=0x%08X)\n", hinst );
-	} else {
-		debug( L"-- ShellExecute failed, hinst=%d\n", hinst );
-	}
-
+	_LaunchUrl( item.szUrl );
 	*pResult = 0;
 }
 
@@ -173,12 +179,30 @@ void CAboutDlg::OnClickWebsite( NMHDR* pNMHDR, LRESULT* pResult ) {
 		item.szUrl
 		);
 
-	HINSTANCE hinst = ShellExecute( nullptr, L"open", item.szUrl, nullptr, nullptr, SW_SHOW );
-	if ( reinterpret_cast<unsigned>( hinst ) > 32 ) {
-		debug( L"-- ShellExecute succeeded (hinst=0x%08X)\n", hinst );
-	} else {
-		debug( L"-- ShellExecute failed, hinst=%d\n", hinst );
-	}
+	_LaunchUrl( item.szUrl );
+	*pResult = 0;
+}
 
+void CAboutDlg::OnClickLicense( NMHDR* pNMHDR, LRESULT* pResult ) {
+	NMLINK* pnml = reinterpret_cast<NMLINK*>( pNMHDR );
+	LITEM& item = pnml->item;
+
+	debug(
+		L"CAboutDlg::OnClickLicense: LITEM structure contains:\n"
+		L"+ UINT  mask       0x%08X\n"
+		L"+ int   iLink      %d\n"
+		L"+ UINT  state      0x%08X\n"
+		L"+ UINT  stateMask  0x%08X\n"
+		L"+ WCHAR szID[]     '%s'\n"
+		L"+ WCHAR szUrl[]    '%s'\n",
+		item.mask,
+		item.iLink,
+		item.state,
+		item.stateMask,
+		item.szID,
+		item.szUrl
+		);
+
+	_LaunchUrl( item.szUrl );
 	*pResult = 0;
 }

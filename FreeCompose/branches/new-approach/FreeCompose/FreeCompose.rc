@@ -76,7 +76,7 @@ IDR_MAINFRAME           ICON                    "res\\FreeCompose.ico"
 // Dialog
 //
 
-IDD_ABOUT DIALOGEX 0, 0, 191, 114
+IDD_ABOUT DIALOGEX 0, 0, 191, 132
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About FreeCompose"
 FONT 8, "MS Shell Dlg 2", 400, 0, 0x1
@@ -84,11 +84,13 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
     LTEXT           "${IDC_A_NAME}",IDC_A_NAME,49,14,122,14,SS_NOPREFIX
     LTEXT           "${IDC_A_VERSION}",IDC_A_VERSION,49,34,122,8,SS_NOPREFIX
-    DEFPUSHBUTTON   "OK",IDOK,70,84,50,16,WS_GROUP
-    CONTROL         "© <a href=""https://www.zive.ca/"">Zive Technology Research</a>",IDC_A_COPYRIGHT,
+    DEFPUSHBUTTON   "OK",IDOK,70,103,50,16,WS_GROUP
+    CONTROL         "© <a href=""http://www.zive.ca/"">Zive Technology Research</a>",IDC_A_COPYRIGHT,
                     "SysLink",WS_TABSTOP,49,48,122,8
-    CONTROL         "<a href=""https://www.zive.ca/FreeCompose/"">http://www.zive.ca/FreeCompose/</a>",IDC_A_WEBSITE,
-                    "SysLink",WS_TABSTOP,49,62,122,8
+    CONTROL         "<a href=""http://www.zive.ca/FreeCompose/"">http://www.zive.ca/FreeCompose/</a>",IDC_A_WEBSITE,
+                    "SysLink",WS_TABSTOP,49,58,122,8
+    CONTROL         "This software is distributed under the terms of the <a href=""http://www.zive.ca/licence/bsd3.xhtml"">3-clause BSD license</a>.",IDC_A_LICENSE,
+                    "SysLink",WS_TABSTOP,49,73,127,16
 END
 
 IDD_KEYSEQUENCES DIALOGEX 0, 0, 252, 196
@@ -239,7 +241,7 @@ BEGIN
         RIGHTMARGIN, 177
         VERTGUIDE, 49
         TOPMARGIN, 14
-        BOTTOMMARGIN, 100
+        BOTTOMMARGIN, 118
     END
 END
 #endif    // APSTUDIO_INVOKED
