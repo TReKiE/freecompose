@@ -2,11 +2,10 @@
 // Microsoft Visual C++ generated include file.
 // Used by FreeCompose.rc
 //
-#define IDOK_ADDANOTHER                 25
 #define IDP_OLE_INIT_FAILED             100
 #define IDR_MAINFRAME                   128
 #define IDM_TRAY_MENU                   129
-#define IDD_ABOUTBOX                    130
+#define IDD_ABOUT                    130
 #define IDD_KEYSEQUENCES                131
 #define IDD_FEATURES                    132
 #define IDD_COMPOSE_SEQUENCE_EDITOR     133
@@ -14,9 +13,20 @@
 #define IDADD                           1001
 #define IDEDIT                          1002
 #define IDREMOVE                        1003
-#define IDC_A_VERSION                   2001
-#define IDC_A_COPYRIGHT                 2002
+#define IDOK_ADDANOTHER                 1004
+#define IDC_A_NAME                      2001
+#define IDC_A_VERSION                   2002
+#define IDC_A_COPYRIGHT                 2003
+#define IDC_A_WEBSITE                   2004
 #define IDC_KS_COMPOSE_SEQUENCE_LIST    3001
+#define IDS_KS_COLUMN_SEQUENCE          3101
+#define IDS_KS_COLUMN_RESULT_CHARACTER  3102
+#define IDS_KS_COLUMN_RESULT_CODEPOINT  3103
+#define IDS_KS_COLUMN_ENABLED           3106
+#define IDS_KS_COLUMN_CASEINSENSITIVE   3107
+#define IDS_KS_COLUMN_REVERSIBLE        3108
+#define IDS_KS_CONFIRM_DELETE_TITLE     3501
+#define IDS_KS_CONFIRM_DELETE_PROMPT    3502
 #define IDC_F_ENABLE_ON_STARTUP         4001
 #define IDC_F_START_WITH_WINDOWS        4002
 #define IDC_F_COMPOSE_KEY               4003
@@ -34,14 +44,6 @@
 #define IDC_CSE_CASE_INSENSITIVE        5007
 #define IDC_CSE_REVERSIBLE              5008
 #define IDC_CSE_PREVIEW                 5009
-#define IDS_KS_COLUMN_SEQUENCE          5101
-#define IDS_KS_COLUMN_RESULT_CHARACTER  5102
-#define IDS_KS_COLUMN_RESULT_CODEPOINT  5103
-#define IDS_KS_COLUMN_ENABLED           5106
-#define IDS_KS_COLUMN_CASEINSENSITIVE   5107
-#define IDS_KS_COLUMN_REVERSIBLE        5108
-#define IDS_KS_CONFIRM_DELETE_TITLE     5501
-#define IDS_KS_CONFIRM_DELETE_PROMPT    5502
 #define IDS_MAINFRAME_ENABLED           6001
 #define IDS_MAINFRAME_DISABLED          6002
 #define IDS_MAINFRAME_MISMATCH_TITLE    6003
@@ -66,7 +68,7 @@
 #define IDS_VK_TAB                      8013
 #define IDS_VK_BACK                     8014
 #define IDS_DEFAULT_GROUP_NAME          9001
-#define IDS_ABOUT_VERSION               10001
+#define IDC_A_VERSION_FORMAT            10001
 #define IDS_OPTIONSPROPSHEET_TITLE      11001
 #define IDC_CSE_EDIT_MODE_TITLE         13001
 #define IDC_CSE_ADD_MODE_TITLE          13002
