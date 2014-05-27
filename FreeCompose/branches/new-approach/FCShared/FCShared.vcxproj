@@ -193,6 +193,7 @@
     <ClInclude Include="..\SharedInclude\Bitset.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\GetMessageForError.h" />
+    <ClInclude Include="..\SharedInclude\QString.h" />
     <ClInclude Include="..\SharedInclude\Unicode.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="resource.h" />
