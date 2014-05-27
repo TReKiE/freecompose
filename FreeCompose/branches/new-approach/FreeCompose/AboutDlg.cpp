@@ -101,9 +101,8 @@ BOOL CAboutDlg::OnInitDialog( ) {
 		CDC dc;
 		if ( dc.CreateCompatibleDC( nullptr ) ) {
 			nHeight = -MulDiv( 14, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
-			debug( L"CAboutDlg::OnInitDialog: Desired font height is %d\n", nHeight );
 		} else {
-			debug( L"CAboutDlg::OnInitDialog: CreateCompatibleDC failed\n" );
+			debug( L"CAboutDlg::OnInitDialog: CreateCompatibleDC failed, can't get font height\n" );
 		} 
 	}
 
@@ -111,7 +110,6 @@ BOOL CAboutDlg::OnInitDialog( ) {
 #undef new
 	m_pFont = new CFont( );
 #pragma pop_macro( "new" )
-
 	if ( nHeight && m_pFont->CreateFont( nHeight, 0, 0, 0, FW_BOLD, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, FF_SWISS | VARIABLE_PITCH, L"MS Shell Dlg 2" ) ) {
 		m_staticName.SetFont( m_pFont, TRUE );
 	} else {
@@ -152,14 +150,6 @@ void CAboutDlg::OnClickCopyright( NMHDR* pNMHDR, LRESULT* pResult ) {
 		debug( L"-- ShellExecute failed, hinst=%d\n", hinst );
 	}
 
-	item.mask = LIF_ITEMINDEX | LIF_STATE;
-	item.iLink = 0;
-	item.state |= LIS_VISITED;
-	item.stateMask |= LIS_VISITED;
-	if ( !m_linkCopyright.SetItem( &item ) ) {
-		debug( L"CAboutDlg::OnClickCopyright: m_linkCopyright.SetItem failed\n" );
-	}
-
 	*pResult = 0;
 }
 
@@ -188,14 +178,6 @@ void CAboutDlg::OnClickWebsite( NMHDR* pNMHDR, LRESULT* pResult ) {
 		debug( L"-- ShellExecute succeeded (hinst=0x%08X)\n", hinst );
 	} else {
 		debug( L"-- ShellExecute failed, hinst=%d\n", hinst );
-	}
-
-	item.mask = LIF_ITEMINDEX | LIF_STATE;
-	item.iLink = 0;
-	item.state |= LIS_VISITED;
-	item.stateMask |= LIS_VISITED;
-	if ( !m_linkWebsite.SetItem( &item ) ) {
-		debug( L"CAboutDlg::OnClickWebsite: m_linkWebsite.SetItem failed\n" );
 	}
 
 	*pResult = 0;
