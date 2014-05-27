@@ -84,11 +84,11 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,20,20
     LTEXT           "${IDC_A_NAME}",IDC_A_NAME,49,14,122,14,SS_NOPREFIX
     LTEXT           "${IDC_A_VERSION}",IDC_A_VERSION,49,34,122,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,70,84,50,16,WS_GROUP
     CONTROL         "© <a href=""https://www.zive.ca/"">Zive Technology Research</a>",IDC_A_COPYRIGHT,
                     "SysLink",WS_TABSTOP,49,48,122,8
     CONTROL         "<a href=""https://www.zive.ca/FreeCompose/"">http://www.zive.ca/FreeCompose/</a>",IDC_A_WEBSITE,
                     "SysLink",WS_TABSTOP,49,62,122,8
-    DEFPUSHBUTTON   "OK",IDOK,70,84,50,16,WS_GROUP
 END
 
 IDD_KEYSEQUENCES DIALOGEX 0, 0, 252, 196
@@ -173,11 +173,7 @@ VS_VERSION_INFO VERSIONINFO
 #ifdef _DEBUG
  FILEFLAGS 0x3L
 #else
-# ifdef _RELEASE
- FILEFLAGS 0x0L
-# else
  FILEFLAGS 0x2L
-# endif
 #endif
  FILEOS 0x4L
  FILETYPE 0x1L
@@ -239,11 +235,11 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
-	    LEFTMARGIN, 14
-		RIGHTMARGIN, 177
-		TOPMARGIN, 14
+        LEFTMARGIN, 14
+        RIGHTMARGIN, 177
+        VERTGUIDE, 49
+        TOPMARGIN, 14
         BOTTOMMARGIN, 100
-		VERTGUIDE, 49
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -305,7 +301,7 @@ END
 
 STRINGTABLE
 BEGIN
-    IDC_A_VERSION_FORMAT "Version %d.%d.%d build %d"
+    IDC_A_VERSION_FORMAT    "Version %d.%d.%d build %d"
 END
 
 STRINGTABLE
