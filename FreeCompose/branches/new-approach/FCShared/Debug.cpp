@@ -1,4 +1,5 @@
 #include "stdafx.h"
+
 #include "FCShared.h"
 #include "Internal.h"
 
@@ -17,68 +18,74 @@
 #	endif
 #endif
 
-#ifndef _DEBUG
-FCSHARED_API void InitializeDebugLogFile( void ) {
-	// do nothing
-}
+#ifdef _DEBUG
 
-FCSHARED_API void TerminateDebugLogFile( void ) {
-	// do nothing
-}
-#else
-static FILE* debugFile = nullptr;
+static FILE* debugLogFile = nullptr;
 
 FCSHARED_API void InitializeDebugLogFile( void ) {
-	if ( ! EnsureFreeComposeFolderExists( ) ) {
+	if ( !EnsureFreeComposeFolderExists( ) ) {
 		debug( L"InitializeDebug: Can't make sure our AppData folder exists\n" );
 		return;
 	}
 
-	LPWSTR lpsz;
-	if ( ! GetFreeComposeFolder( lpsz ) ) {
+	CString strPath = GetFreeComposeFolder( );
+	if ( strPath.IsEmpty( ) ) {
 		debug( L"InitializeDebug: can't get name of our AppData folder\n" );
 		return;
 	}
-
-	wchar_t buf[1024];
-	swprintf_s( buf, 1024, L"%s\\debug.log", lpsz );
-	CoTaskMemFree( lpsz );
+	strPath.Append( L"\\debug.log" );
 
 	errno = 0;
-	debugFile = _wfsopen( buf, L"at+,ccs=UTF-16LE", _SH_DENYNO );
-	if ( nullptr == debugFile ) {
-		debug( L"InitializeDebug: _wfsopen('%s') failed: %d\n", buf, errno );
+	debugLogFile = _wfsopen( strPath, L"at+,ccs=UTF-16LE", _SH_DENYNO );
+	if ( nullptr == debugLogFile ) {
+		debug( L"InitializeDebug: _wfsopen('%s') failed: %d\n", static_cast<LPCWSTR>( strPath ), errno );
 		return;
 	}
-	setvbuf( debugFile, nullptr, _IONBF, 0 );
+	setvbuf( debugLogFile, nullptr, _IONBF, 0 );
 
 	wchar_t wcstr[256];
 	time_t timenow = time( nullptr );
 	tm tmnow;
 	if ( 0 == localtime_s( &tmnow, &timenow ) ) {
 		wcsftime( wcstr, _countof( wcstr ), L"========  Log opened at %Y-%m-%d %H:%M:%S  ========\n", &tmnow );
-		fputws( wcstr, debugFile );
+		fputws( wcstr, debugLogFile );
 	}
 }
 
 FCSHARED_API void TerminateDebugLogFile( void ) {
-	if ( debugFile ) {
-		fclose( debugFile );
-		debugFile = nullptr;
+	if ( debugLogFile ) {
+		fclose( debugLogFile );
+		debugLogFile = nullptr;
+	}
+}
+
+void _log( LPCWSTR pwz ) {
+	OutputDebugString( pwz );
+	if ( debugLogFile ) {
+		fputws( pwz, debugLogFile );
 	}
 }
 
 FCSHARED_API void debug( _In_z_ _Printf_format_string_ LPCWSTR format, ... ) {
-	wchar_t buf[1024];
+	wchar_t buf[4096];
 	va_list va;
 
 	va_start( va, format );
-	vswprintf_s( buf, 1024, format, va );
+	vswprintf_s( buf, _countof( buf ), format, va );
 	va_end( va );
-
-	OutputDebugString( buf );
-	if ( debugFile ) {
-		fputws( buf, debugFile );
-	}
+	_log( buf );
 }
+
+#ifdef _NOISY_DEBUG
+FCSHARED_API void noisydebug( _In_z_ _Printf_format_string_ LPCWSTR format, ... ) {
+	wchar_t buf[4096];
+	va_list va;
+
+	va_start( va, format );
+	vswprintf_s( buf, _countof( buf ), format, va );
+	va_end( va );
+	_log( buf );
+}
+#endif
+
 #endif
