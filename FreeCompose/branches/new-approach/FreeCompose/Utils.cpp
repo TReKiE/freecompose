@@ -183,16 +183,6 @@ CString MakeInstanceExclusionName( CString const& input, EXCLUSION_KIND const ki
 	}
 }
 
-CString GetFreeComposeFolderAsCString( void ) {
-	CString str;
-	LPWSTR lpsz;
-	if ( GetFreeComposeFolder( lpsz ) ) {
-		str = lpsz;
-		CoTaskMemFree( lpsz );
-	}
-	return str;
-}
-
 CString FormatCodePoint( CString const& str ) {
 	CString strResult;
 	int limit = 0;

@@ -294,7 +294,7 @@ void CMainFrame::OnAppZapConf( void ) {
 	}
 	debug( L"CMainFrame::OnAppZapConf: Response was YES\n" );
 
-	CString str( GetFreeComposeFolderAsCString( ) + L"\\FreeCompose.xml" );
+	CString str( GetFreeComposeFolder( ) + L"\\FreeCompose.xml" );
 	debug( L"CMainFrame::OnAppZapConf: Deleting configuration file '%s'\n", static_cast<wchar_t const*>( str ) );
 
 	SetLastError( 0 );
