@@ -85,7 +85,7 @@ BEGIN
     LTEXT           "${IDC_A_NAME}",IDC_A_NAME,49,14,122,14,SS_NOPREFIX
     LTEXT           "${IDC_A_VERSION}",IDC_A_VERSION,49,34,122,8,SS_NOPREFIX
     DEFPUSHBUTTON   "OK",IDOK,85,103,50,16,WS_GROUP
-    CONTROL         "© <a href=""http://www.zive.ca/"">Zive Technology Research</a>",IDC_A_COPYRIGHT,
+    CONTROL         "© <a href=""http://www.zive.ca/"">Zive Technology Research</a> 2014",IDC_A_COPYRIGHT,
                     "SysLink",WS_TABSTOP,49,48,122,8
     CONTROL         "<a href=""http://www.zive.ca/FreeCompose/"">http://www.zive.ca/FreeCompose/</a>",IDC_A_WEBSITE,
                     "SysLink",WS_TABSTOP,49,58,122,8
