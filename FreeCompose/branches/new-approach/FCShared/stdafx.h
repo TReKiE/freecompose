@@ -14,10 +14,10 @@
 #	include "targetver.h"
 #endif
 
+// Microsoft Foundation Classes
 #include <afx.h>
 
-#ifdef FCSHARED_EXPORTS
-#	define FCSHARED_API __declspec(dllexport)
-#else
-#	define FCSHARED_API __declspec(dllimport)
-#endif
+// International Components for Unicode
+#include <unicode/uchar.h>
+#include <unicode/ustring.h>
+#include <unicode/brkiter.h>
