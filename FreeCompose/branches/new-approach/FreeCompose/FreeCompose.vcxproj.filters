@@ -60,6 +60,9 @@
     <ClCompile Include="KeySequences_Sorting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TonePlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AboutDlg.h">
@@ -114,6 +117,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CompositeCharacter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TonePlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
