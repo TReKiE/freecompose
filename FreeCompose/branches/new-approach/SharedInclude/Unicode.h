@@ -1,9 +1,5 @@
 #pragma once
 
-#include <unicode/uchar.h>
-#include <unicode/ustring.h>
-#include <unicode/brkiter.h>
-
 //==============================================================================
 // Inline functions
 //==============================================================================
