@@ -4,6 +4,7 @@
 #include "MainFrm.h"
 
 #include "AppSoundsRegistry.h"
+#include "TonePlayer.h"
 #include "Utils.h"
 
 #ifdef _DEBUG
@@ -19,8 +20,6 @@ BEGIN_MESSAGE_MAP( CFreeComposeApp, CWinApp )
 	//{{AFX_MSG_MAP( CFreeComposeApp )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP( )
-
-CFreeComposeApp theApp;
 
 CFreeComposeApp::CFreeComposeApp( ):
 	m_hInstanceMutex( nullptr )
@@ -105,6 +104,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	}
 
 	CAppSoundsRegistry::RegisterFcAppSounds( );
+	g_pTonePlayer = new TonePlayer( );
 
 	// Create and (not) show our hidden window
 #pragma push_macro( "new" )
@@ -127,6 +127,9 @@ BOOL CFreeComposeApp::InitInstance( ) {
 int CFreeComposeApp::ExitInstance( ) {
 	FcUninitialize( );
 	TerminateDebugLogFile( );
+
+	g_pTonePlayer->ShutDown( );
+	delete g_pTonePlayer;
 
 	return CWinApp::ExitInstance( );
 }

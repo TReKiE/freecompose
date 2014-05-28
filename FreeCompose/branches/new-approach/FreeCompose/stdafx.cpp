@@ -3,6 +3,7 @@
 #include <initguid.h>
 
 #include "FreeCompose.h"
+#include "TonePlayer.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -32,3 +33,15 @@ unsigned g_CommonControlsDllMajorVersion = 0;
 unsigned g_CommonControlsDllMinorVersion = 0;
 unsigned g_CommonControlsDllBuildNumber = 0;
 unsigned g_CommonControlsDllQfeNumber = 0;
+
+//
+// The one and only CWinApp derivative
+//
+
+CFreeComposeApp theApp;
+
+//
+// Tone player
+//
+
+TonePlayer* g_pTonePlayer = nullptr;

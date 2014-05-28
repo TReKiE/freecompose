@@ -18,6 +18,10 @@ public:
 		_Enqueue( dwFrequency, dwDuration );
 	}
 
+	void PlaySilence( DWORD const dwDuration ) {
+		_Enqueue( 0, dwDuration );
+	}
+
 	void CancelPendingTones( void ) {
 		_ClearQueue( );
 	}
@@ -28,10 +32,11 @@ public:
 
 protected:
 	void _Enqueue( DWORD const dwFrequency, DWORD const dwDuration );
-	bool _Dequeue( DWORD& dwFrequency, DWORD& dwDuration );
 	void _ClearQueue( void );
 
 	void _CheckStartThread( void );
 	void _StopThread( void );
 
 };
+
+extern TonePlayer* g_pTonePlayer;
