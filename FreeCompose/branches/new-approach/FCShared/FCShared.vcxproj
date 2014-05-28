@@ -194,6 +194,7 @@
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\GetMessageForError.h" />
     <ClInclude Include="..\SharedInclude\Unicode.h" />
+    <ClInclude Include="..\SharedInclude\Utf1632Adaptor.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
