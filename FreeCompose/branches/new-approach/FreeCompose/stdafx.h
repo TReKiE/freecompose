@@ -10,45 +10,56 @@
 
 #include "targetver.h"
 
+// C standard library
 #include <crtdbg.h>
 #include <malloc.h>
 
+// C++ version of C standard library
 #include <cerrno>
 #include <cstdlib>
 #include <cwchar>
-#include <locale>
 
+// C++ Standard Template Library
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <iostream>
 #include <iterator>
+#include <locale>
 #include <map>
 #include <memory>
 #include <string>
 #include <sstream>
 #include <vector>
 
+// Microsoft Foundation Classes
 #include <afxwin.h>
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxtempl.h>
 
+// Active Template Library
 #include <atlbase.h>
 #include <atlwin.h>
 
+// Windows SDK
 #include <comdef.h>
 #include <comip.h>
 #include <comutil.h>
 #include <VersionHelpers.h>
 
+// International Components for Unicode
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/brkiter.h>
 
+// FCShared
 #include <FCShared.h>
+
+// FCHookDll
 #include <FCHookDll.h>
 
+// FreeCompose resources
 #include "resource.h"
 
 #undef _T
