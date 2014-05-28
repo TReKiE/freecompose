@@ -56,9 +56,7 @@ static void DrainQueue( void ) {
 		DWORD dwFrequency, dwDuration;
 		bool ret;
 
-		LOCK( QueueLock ) {
-			ret = Dequeue( dwFrequency, dwDuration );
-		} UNLOCK( QueueLock );
+		ret = Dequeue( dwFrequency, dwDuration );
 		if ( !ret ) {
 			return;
 		}
