@@ -190,6 +190,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\SharedInclude\AutoCriticalSection.h" />
+    <ClInclude Include="..\SharedInclude\AutoEvent.h" />
     <ClInclude Include="..\SharedInclude\Bitset.h" />
     <ClInclude Include="..\SharedInclude\FCShared.h" />
     <ClInclude Include="..\SharedInclude\GetMessageForError.h" />
