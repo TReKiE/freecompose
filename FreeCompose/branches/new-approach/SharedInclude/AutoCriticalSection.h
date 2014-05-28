@@ -26,6 +26,10 @@ public:
 		DeleteCriticalSection( &cs );
 	}
 
+	inline operator CRITICAL_SECTION&( ) {
+		return cs;
+	}
+
 	_Acquires_lock_(this->cs) inline void Enter( ) {
 		EnterCriticalSection( &cs );
 	}
