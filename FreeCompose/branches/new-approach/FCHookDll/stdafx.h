@@ -30,6 +30,11 @@
 // Windows SDK
 #include <windows.h>
 
+// International Components for Unicode
+#include <unicode/uchar.h>
+#include <unicode/ustring.h>
+#include <unicode/brkiter.h>
+
 // FCShared
 #include "FCShared.h"
 #include "Bitset.h"
