@@ -14,6 +14,10 @@ public:
 		}
 	}
 
+	inline operator HANDLE( ) const {
+		return m_hEvent;
+	}
+
 	inline void Set( void ) {
 		SetEvent( m_hEvent );
 	}
