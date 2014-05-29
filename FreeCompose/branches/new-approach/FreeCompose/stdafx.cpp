@@ -3,7 +3,7 @@
 #include <initguid.h>
 
 #include "FreeCompose.h"
-#include "TonePlayer.h"
+#include "SoundPlayer.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -44,7 +44,7 @@ CFreeComposeApp theApp;
 // Tone player
 //
 
-TonePlayer* g_pTonePlayer = nullptr;
+SoundPlayer* g_pTonePlayer = nullptr;
 
 //
 // Composition sound names

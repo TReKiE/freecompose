@@ -5,14 +5,14 @@
 
 #include "AppSoundsRegistry.h"
 
-class TonePlayer {
+class SoundPlayer {
 
 public:
-	inline TonePlayer( ) {
+	inline SoundPlayer( ) {
 		_CheckStartThread( );
 	}
 
-	inline ~TonePlayer( ) {
+	inline ~SoundPlayer( ) {
 		_StopThread( );
 	}
 
@@ -47,4 +47,4 @@ protected:
 
 };
 
-extern TonePlayer* g_pTonePlayer;
+extern SoundPlayer* g_pTonePlayer;

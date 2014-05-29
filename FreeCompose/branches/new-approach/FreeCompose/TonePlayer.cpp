@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "TonePlayer.h"
+#include "SoundPlayer.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -136,29 +136,29 @@ static UINT TonePlayerThreadFunction( LPVOID /*pvParam*/ ) {
 }
 
 //
-// Class TonePlayer
+// Class SoundPlayer
 //
 
-void TonePlayer::_EnqueueCompositionSound( CompositionSound const sound ) {
+void SoundPlayer::_EnqueueCompositionSound( CompositionSound const sound ) {
 	Enqueue( new CompositionSoundRequest( sound ) );
 }
 
-void TonePlayer::_EnqueueSilence( DWORD const dwDuration ) {
+void SoundPlayer::_EnqueueSilence( DWORD const dwDuration ) {
 	Enqueue( new SilenceRequest( dwDuration ) );
 }
 
-void TonePlayer::_EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration ) {
+void SoundPlayer::_EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration ) {
 	Enqueue( new ToneRequest( dwFrequency, dwDuration ) );
 }
 
-void TonePlayer::_ClearQueue( void ) {
+void SoundPlayer::_ClearQueue( void ) {
 	LOCK( QueueLock ) {
 		Queue.RemoveAll( );
 		QueueEvent.Reset( );
 	} UNLOCK( QueueLock );
 }
 
-void TonePlayer::_CheckStartThread( void ) {
+void SoundPlayer::_CheckStartThread( void ) {
 	LOCK( ThreadLock ) {
 		if ( ThreadObject ) {
 			break;
@@ -169,7 +169,7 @@ void TonePlayer::_CheckStartThread( void ) {
 	} UNLOCK( ThreadLock );
 }
 
-void TonePlayer::_StopThread( void ) {
+void SoundPlayer::_StopThread( void ) {
 	HANDLE hThread = INVALID_HANDLE_VALUE;	
 	LOCK( ThreadLock ) {
 		if ( !ThreadObject ) {
@@ -190,11 +190,11 @@ void TonePlayer::_StopThread( void ) {
 		// done \o/
 	} else if ( WAIT_TIMEOUT == dw ) {
 		// wtf?
-		debug( L"TonePlayer::_StopThread: WaitForSingleObject returned WAIT_TIMEOUT on a timeout of INFINITE?\n" );
+		debug( L"SoundPlayer::_StopThread: WaitForSingleObject returned WAIT_TIMEOUT on a timeout of INFINITE?\n" );
 	} else if ( WAIT_FAILED == dw ) {
-		debug( L"TonePlayer::_StopThread: WaitForSingleObject failed, error=%lu\n", GetLastError( ) );
+		debug( L"SoundPlayer::_StopThread: WaitForSingleObject failed, error=%lu\n", GetLastError( ) );
 	} else {
-		debug( L"TonePlayer::_StopThread: huh? dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
+		debug( L"SoundPlayer::_StopThread: huh? dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
 	}
 
 	delete ThreadObject;
