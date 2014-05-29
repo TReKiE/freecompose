@@ -295,7 +295,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="NTray.cpp" />
     <ClCompile Include="OptionsData.cpp" />
-    <ClCompile Include="TonePlayer.cpp" />
+    <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="XmlOptionsManager.cpp">
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MultiProcessorCompilation>
       <MultiProcessorCompilation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</MultiProcessorCompilation>
@@ -323,7 +323,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NTray.h" />
     <ClInclude Include="OptionsData.h" />
-    <ClInclude Include="TonePlayer.h" />
+    <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="XmlOptionsManager.h" />
     <ClInclude Include="OptionsPropSheet.h" />
     <ClInclude Include="Sounds.h" />
