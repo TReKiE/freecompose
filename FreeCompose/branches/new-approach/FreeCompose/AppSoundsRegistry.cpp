@@ -10,15 +10,6 @@
 #	endif
 #endif
 
-static wchar_t* CompositionSoundNames[] = {
-	L"FC_Composition_Starting",
-	L"FC_Composition_KeyPressed",
-	L"FC_Composition_Succeeded",
-	L"FC_Composition_Failed",
-	L"FC_Composition_Cancelled",
-	L"FC_Composition_Escape",
-};
-
 static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_STARTING,
 	IDS_APPSOUND_COMPOSITION_KEYPRESSED,
@@ -27,6 +18,8 @@ static int CompositionDisplayNameIds[] = {
 	IDS_APPSOUND_COMPOSITION_CANCELLED,
 	IDS_APPSOUND_COMPOSITION_ESCAPE,
 };
+
+int const NumberOfCompositionSounds = _countof( CompositionDisplayNameIds );
 
 //
 // Implementation
@@ -39,7 +32,7 @@ void CAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
 	DWORD dwDisposition;
 
 	ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
-	for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
+	for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
 		CRegKey key;
 		tmp.Format( L"@%s,%d", pwzExeName, -CompositionDisplayNameIds[n] );
 		dwDisposition = 0;
@@ -67,7 +60,7 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 		ls = FreeCompose.SetStringValue( nullptr, LoadFromStringTable( AFX_IDS_APP_TITLE ) );
 		ls = FreeCompose.SetStringValue( L"DispFileName", tmp );
 
-		for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
+		for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
 			CRegKey soundkey;
 			ls = soundkey.Create( FreeCompose, CompositionSoundNames[n] );
 			ls = soundkey.SetStringValue( nullptr, CompositionSoundNames[n] );
@@ -97,7 +90,7 @@ void CAppSoundsRegistry::_UnregisterEventLabels( void ) {
 		return;
 	}
 
-	for ( int n = 0; n < _countof( CompositionSoundNames ); n++ ) {
+	for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
 		ls = EventLabels.RecurseDeleteKey( CompositionSoundNames[n] );
 		debug( L"CAppSoundsRegistry::_UnregisterEventLabels: delete of '%s': %ld\n", CompositionSoundNames[n], ls );
 	}

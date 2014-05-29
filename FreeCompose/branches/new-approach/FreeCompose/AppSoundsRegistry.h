@@ -1,5 +1,15 @@
 #pragma once
 
+enum class CompositionSound: int {
+	none = -1,
+	Starting = 0,
+	KeyPressed,
+	Succeeded,
+	Failed,
+	Cancelled,
+	Escape,
+};
+
 class CAppSoundsRegistry {
 public:
 
@@ -15,3 +25,5 @@ private:
 	static void _UnregisterApp( void );
 
 };
+
+extern wchar_t const* CompositionSoundNames[];
