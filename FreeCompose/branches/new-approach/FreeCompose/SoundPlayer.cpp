@@ -10,20 +10,49 @@
 #endif
 
 //
-// Data types
+// Request queue stuff
 //
 
 namespace {
 
+	// Type alias
+
+	using ulonglong = unsigned long long;
+
+	// Local methods
+
+	static inline ulonglong _GetSystemTime( void ) {
+		ulonglong now = 0;
+		GetSystemTimeAsFileTime( reinterpret_cast<FILETIME*>( &now ) );
+		return now;
+	}
+
+	static inline double _TimeUntilNow( ulonglong then ) {
+		return ( _GetSystemTime( ) - then ) / 10000000.0;
+	}
+
+	//
+	// Class Request: Abstract base class for Request hierarchy.
+	//
+
 	class Request {
 
 	public:
-		inline Request( ) { }
+		inline Request( ): _createdAt( _GetSystemTime( ) ) { }
 		inline virtual ~Request( ) { }
 
 		virtual void Perform( void ) = 0;
 
+	protected:
+		ulonglong _createdAt;
+		ulonglong _startedAt;
+		ulonglong _finishedAt;
+
 	};
+
+	//
+	// Class CompositionSoundRequest: Derivative of class Request that plays one of FreeCompose's configured system sounds.
+	//
 
 	class CompositionSoundRequest: public Request {
 
@@ -33,12 +62,22 @@ namespace {
 		inline virtual ~CompositionSoundRequest( ) { }
 
 		inline virtual void Perform( void ) {
+			debug( L"CompositionSoundRequest::Perform: '%s'\n", CompositionSoundNames[static_cast<int>( Sound )] );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+
+			_startedAt = _GetSystemTime( );
 			PlaySound( CompositionSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
+			_finishedAt = _GetSystemTime( );
+			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
 		}
 
 		CompositionSound Sound;
 
 	};
+
+	//
+	// Class SilenceRequest: Derivative of class Request that simply produces silence.
+	//
 
 	class SilenceRequest: public Request {
 		
@@ -48,12 +87,22 @@ namespace {
 		inline virtual ~SilenceRequest( ) { }
 
 		inline virtual void Perform( void ) {
+			debug( L"SilenceRequest::Perform: silence for %lu ms\n", dwDuration );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+
+			_startedAt = _GetSystemTime( );
 			Sleep( dwDuration );
+			_finishedAt = _GetSystemTime( );
+			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
 		}
 
 		DWORD dwDuration;
 
 	};
+
+	//
+	// Class ToneRequest: Derivative of class Request that plays a single tone.
+	//
 
 	class ToneRequest: public Request {
 
@@ -63,7 +112,13 @@ namespace {
 		inline virtual ~ToneRequest( ) { }
 
 		inline virtual void Perform( void ) {
+			debug( L"ToneRequest::Perform: %lu Hz for %lu ms\n", dwFrequency, dwDuration );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+
+			_startedAt = _GetSystemTime( );
 			Beep( dwFrequency, dwDuration );
+			_finishedAt = _GetSystemTime( );
+			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
 		}
 
 		DWORD dwFrequency;
@@ -105,10 +160,12 @@ static Request* Dequeue( void ) {
 			Queue.RemoveAt( 0, 1 );
 		}
 	} UNLOCK( QueueLock );
+	debug( L"Dequeue: 0x%p\n", p );
 	return p;
 }
 
 static void DrainQueue( void ) {
+	debug( L"DrainQueue\n" );
 	Request* pReq;
 	while ( nullptr != ( pReq = Dequeue( ) ) ) {
 		pReq->Perform( );
