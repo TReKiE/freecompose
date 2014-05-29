@@ -46,6 +46,7 @@
 #include <comdef.h>
 #include <comip.h>
 #include <comutil.h>
+#include <mmsystem.h>
 #include <VersionHelpers.h>
 
 // International Components for Unicode
