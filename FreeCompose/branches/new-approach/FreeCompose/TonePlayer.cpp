@@ -112,6 +112,7 @@ static void DrainQueue( void ) {
 	Request* pReq;
 	while ( nullptr != ( pReq = Dequeue( ) ) ) {
 		pReq->Perform( );
+		delete pReq;
 	}
 }
 
