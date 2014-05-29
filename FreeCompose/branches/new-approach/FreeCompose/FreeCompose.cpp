@@ -4,7 +4,7 @@
 #include "MainFrm.h"
 
 #include "AppSoundsRegistry.h"
-#include "TonePlayer.h"
+#include "SoundPlayer.h"
 #include "Utils.h"
 
 #ifdef _DEBUG
@@ -103,8 +103,9 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 
+	// Initialize sound
 	CAppSoundsRegistry::RegisterFcAppSounds( );
-	g_pTonePlayer = new TonePlayer( );
+	g_pTonePlayer = new SoundPlayer( );
 
 	// Create and (not) show our hidden window
 #pragma push_macro( "new" )
