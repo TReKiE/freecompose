@@ -148,7 +148,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;winmm.lib;icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -185,7 +185,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;winmm.lib;icuucd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -226,7 +226,7 @@
     </ResourceCompile>
     <Link>
       <RegisterOutput>false</RegisterOutput>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;winmm.lib;icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -265,7 +265,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FCShared.lib;FCHookDll.lib;version.lib;psapi.lib;winmm.lib;icuuc.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
