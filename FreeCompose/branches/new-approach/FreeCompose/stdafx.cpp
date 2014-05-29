@@ -35,7 +35,7 @@ unsigned g_CommonControlsDllBuildNumber = 0;
 unsigned g_CommonControlsDllQfeNumber = 0;
 
 //
-// The one and only CWinApp derivative
+// The one and only CWinApp derivative, CFreeComposeApp
 //
 
 CFreeComposeApp theApp;
@@ -45,3 +45,16 @@ CFreeComposeApp theApp;
 //
 
 TonePlayer* g_pTonePlayer = nullptr;
+
+//
+// Composition sound names
+//
+
+wchar_t const* CompositionSoundNames[] = {
+	L"FC_Composition_Starting",
+	L"FC_Composition_KeyPressed",
+	L"FC_Composition_Succeeded",
+	L"FC_Composition_Failed",
+	L"FC_Composition_Cancelled",
+	L"FC_Composition_Escape",
+};
