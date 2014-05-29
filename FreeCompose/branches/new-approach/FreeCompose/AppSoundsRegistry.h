@@ -11,12 +11,13 @@ enum class CompositionSound: int {
 };
 
 class CAppSoundsRegistry {
-public:
 
+public:
 	static void RegisterFcAppSounds( void );
 	static void UnregisterFcAppSounds( void );
 
 private:
+	static CString _GetCurrentSoundScheme( void );
 
 	static void _RegisterEventLabels( wchar_t const* pwzExeName );
 	static void _RegisterApp( wchar_t const* pwzExeName );
