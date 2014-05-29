@@ -11,8 +11,53 @@ namespace {
 	class Request {
 
 	public:
-		Request( ): dwFrequency( 0 ), dwDuration( 0 ) { }
-		Request( DWORD const frequency, DWORD const duration ): dwFrequency( frequency ), dwDuration( duration ) { }
+		inline Request( ) { }
+		inline virtual ~Request( ) { }
+
+		virtual void Perform( void ) = 0;
+
+	};
+
+	class CompositionSoundRequest: public Request {
+
+	public:
+		inline CompositionSoundRequest( ): Sound( CompositionSound::none ) { }
+		inline CompositionSoundRequest( CompositionSound const sound ): Sound( sound ) { }
+		inline virtual ~CompositionSoundRequest( ) { }
+
+		inline virtual void Perform( void ) {
+			PlaySound( CompositionSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
+		}
+
+		CompositionSound Sound;
+
+	};
+
+	class SilenceRequest: public Request {
+		
+	public:
+		inline SilenceRequest( ): dwDuration( 0 ) { }
+		inline SilenceRequest( DWORD const duration ): dwDuration( duration ) { }
+		inline virtual ~SilenceRequest( ) { }
+
+		inline virtual void Perform( void ) {
+			Sleep( dwDuration );
+		}
+
+		DWORD dwDuration;
+
+	};
+
+	class ToneRequest: public Request {
+
+	public:
+		inline ToneRequest( ): dwFrequency( 0 ), dwDuration( 0 ) { }
+		inline ToneRequest( DWORD const frequency, DWORD const duration ): dwFrequency( frequency ), dwDuration( duration ) { }
+		inline virtual ~ToneRequest( ) { }
+
+		inline virtual void Perform( void ) {
+			Beep( dwFrequency, dwDuration );
+		}
 
 		DWORD dwFrequency;
 		DWORD dwDuration;
@@ -25,7 +70,7 @@ namespace {
 // Local variables
 //
 
-static CArray<Request> Queue;
+static CArray<Request*> Queue;
 static AutoEvent QueueEvent;
 static AutoCriticalSection QueueLock;
 
@@ -38,34 +83,28 @@ static AutoEvent ShutdownEvent;
 // Local functions
 //
 
-static bool Dequeue( DWORD& dwFrequency, DWORD& dwDuration ) {
-	bool ret = false;
+static void Enqueue( Request* pRequest ) {
+	LOCK( QueueLock ) {
+		Queue.Add( pRequest );
+		QueueEvent.Set( );
+	} UNLOCK( QueueLock );
+}
+
+static Request* Dequeue( void ) {
+	Request* p = nullptr;
 	LOCK( QueueLock ) {
 		if ( Queue.GetCount( ) > 0 ) {
-			dwFrequency = Queue[0].dwFrequency;
-			dwDuration  = Queue[0].dwDuration;
+			p = Queue[0];
 			Queue.RemoveAt( 0, 1 );
-			ret = true;
 		}
 	} UNLOCK( QueueLock );
-	return ret;
+	return p;
 }
 
 static void DrainQueue( void ) {
-	while ( true ) {
-		DWORD dwFrequency, dwDuration;
-		bool ret;
-
-		ret = Dequeue( dwFrequency, dwDuration );
-		if ( !ret ) {
-			return;
-		}
-
-		if ( !dwFrequency ) {
-			Sleep( dwDuration );
-		} else {
-			Beep( dwFrequency, dwDuration );
-		}
+	Request* pReq;
+	while ( nullptr != ( pReq = Dequeue( ) ) ) {
+		pReq->Perform( );
 	}
 }
 
@@ -92,11 +131,16 @@ static UINT TonePlayerThreadFunction( LPVOID /*pvParam*/ ) {
 // Class TonePlayer
 //
 
-void TonePlayer::_Enqueue( DWORD const dwFrequency, DWORD const dwDuration ) {
-	LOCK( QueueLock ) {
-		Queue.Add( { dwFrequency, dwDuration } );
-		QueueEvent.Set( );
-	} UNLOCK( QueueLock );
+void TonePlayer::_EnqueueCompositionSound( CompositionSound const sound ) {
+	Enqueue( new CompositionSoundRequest( sound ) );
+}
+
+void TonePlayer::_EnqueueSilence( DWORD const dwDuration ) {
+	Enqueue( new SilenceRequest( dwDuration ) );
+}
+
+void TonePlayer::_EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration ) {
+	Enqueue( new ToneRequest( dwFrequency, dwDuration ) );
 }
 
 void TonePlayer::_ClearQueue( void ) {

@@ -3,6 +3,8 @@
 #include <AutoCriticalSection.h>
 #include <AutoEvent.h>
 
+#include "AppSoundsRegistry.h"
+
 class TonePlayer {
 
 public:
@@ -14,15 +16,19 @@ public:
 		_StopThread( );
 	}
 
-	void PlayTone( DWORD const dwFrequency, DWORD const dwDuration ) {
-		_Enqueue( dwFrequency, dwDuration );
+	void PlayCompositionSound( CompositionSound const sound ) {
+		_EnqueueCompositionSound( sound );
 	}
 
 	void PlaySilence( DWORD const dwDuration ) {
-		_Enqueue( 0, dwDuration );
+		_EnqueueSilence( dwDuration );
 	}
 
-	void CancelPendingTones( void ) {
+	void PlayTone( DWORD const dwFrequency, DWORD const dwDuration ) {
+		_EnqueueTone( dwFrequency, dwDuration );
+	}
+
+	void CancelPending( void ) {
 		_ClearQueue( );
 	}
 
@@ -31,7 +37,9 @@ public:
 	}
 
 protected:
-	void _Enqueue( DWORD const dwFrequency, DWORD const dwDuration );
+	void _EnqueueCompositionSound( CompositionSound const sound );
+	void _EnqueueSilence( DWORD const dwDuration );
+	void _EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration );
 	void _ClearQueue( void );
 
 	void _CheckStartThread( void );
