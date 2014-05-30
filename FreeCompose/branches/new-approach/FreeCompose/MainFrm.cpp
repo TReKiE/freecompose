@@ -174,28 +174,28 @@ LRESULT CMainFrame::OnFcmPip( WPARAM wPip, LPARAM ) {
 	debug( L"CMainFrame::OnFcmPip: wPip=%ld\n", static_cast<long>( wPip ) );
 
 	switch ( wPip ) {
-		case PIP_OK_1:
+		case Pip::Starting:
 			Beep( 523, 100 );
 			break;
 
-		case PIP_OK_2:
+		case Pip::KeyPressed:
 			Beep( 523, 100 );
 			break;
 
-		case PIP_OK_3:
+		case Pip::Succeeded:
 			Beep( 1047, 100 );
 			break;
 
-		case PIP_ABORT:
+		case Pip::Failed:
+			MessageBeep( MB_ICONHAND );
+			break;
+
+		case Pip::Cancelled:
+			MessageBeep( MB_ICONHAND );
+			break;
+
+		case Pip::Escape:
 			MessageBeep( MB_ICONASTERISK );
-			break;
-
-		case PIP_ERROR:
-			MessageBeep( MB_ICONHAND );
-			break;
-
-		case PIP_FAIL:
-			MessageBeep( MB_ICONHAND );
 			break;
 
 		default:
