@@ -38,9 +38,9 @@
 //
 //==============================================================================
 
-IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialog )
+IMPLEMENT_DYNAMIC( CComposeSequenceEditor, CDialogEx )
 
-BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialog )
+BEGIN_MESSAGE_MAP( CComposeSequenceEditor, CDialogEx )
 	//{{AFX_MSG_MAP( CComposeSequenceEditor )
 	ON_WM_DRAWITEM( )
 
@@ -63,7 +63,7 @@ enum ResultMode {
 int static nLastRadioGroupSelection = -1;
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
-	CDialog     ( IDD, pParent ),
+	CDialogEx   ( IDD, pParent ),
 	m_sequence  ( sequence ),
 	m_mode      ( mode ),
 	m_pFont     ( nullptr ),
@@ -249,7 +249,7 @@ void CComposeSequenceEditor::_DDV_MinMaxCompositeCharacters( CDataExchange* pDX,
 }
 
 void CComposeSequenceEditor::DoDataExchange( CDataExchange* pDX ) {
-	CDialog::DoDataExchange( pDX );
+	CDialogEx::DoDataExchange( pDX );
 
 	DDX_Control ( pDX, IDC_CSE_SEQUENCE,            m_editComposeSequence       );
 	DDX_Control ( pDX, IDC_CSE_RESULT,              m_editComposeResult         );
@@ -282,7 +282,7 @@ BOOL CComposeSequenceEditor::OnInitDialog( ) {
 
 	m_CompositeCharacter.SetContents( m_strComposeResult );
 
-	if ( !CDialog::OnInitDialog( ) ) {
+	if ( !CDialogEx::OnInitDialog( ) ) {
 		return FALSE;
 	}
 
@@ -309,7 +309,7 @@ void CComposeSequenceEditor::OnOK( ) {
 		m_ComposeSequences.Add( m_sequence );
 	}
 
-	CDialog::OnOK( );
+	CDialogEx::OnOK( );
 }
 
 void CComposeSequenceEditor::OnOKAddAnother( ) {
@@ -341,7 +341,7 @@ void CComposeSequenceEditor::OnOKAddAnother( ) {
 
 void CComposeSequenceEditor::OnDrawItem( int nID, LPDRAWITEMSTRUCT lpDrawItemStruct ) {
 	if ( IDC_CSE_PREVIEW != nID ) {
-		CDialog::OnDrawItem( nID, lpDrawItemStruct );
+		CDialogEx::OnDrawItem( nID, lpDrawItemStruct );
 		return;
 	}
 
