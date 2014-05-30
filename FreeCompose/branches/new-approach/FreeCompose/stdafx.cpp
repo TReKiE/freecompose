@@ -44,7 +44,7 @@ CFreeComposeApp theApp;
 // Tone player
 //
 
-SoundPlayer* g_pTonePlayer = nullptr;
+SoundPlayer* g_pSoundPlayer = nullptr;
 
 //
 // Composition sound names

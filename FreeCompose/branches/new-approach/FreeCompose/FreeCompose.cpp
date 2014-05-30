@@ -105,7 +105,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 
 	// Initialize sound
 	CAppSoundsRegistry::RegisterFcAppSounds( );
-	g_pTonePlayer = new SoundPlayer( );
+	g_pSoundPlayer = new SoundPlayer( );
 
 	// Create and (not) show our hidden window
 #pragma push_macro( "new" )
@@ -129,8 +129,8 @@ int CFreeComposeApp::ExitInstance( ) {
 	FcUninitialize( );
 	TerminateDebugLogFile( );
 
-	g_pTonePlayer->ShutDown( );
-	delete g_pTonePlayer;
+	g_pSoundPlayer->ShutDown( );
+	delete g_pSoundPlayer;
 
 	return CWinApp::ExitInstance( );
 }
