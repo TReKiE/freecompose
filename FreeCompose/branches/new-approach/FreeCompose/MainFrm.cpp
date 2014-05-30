@@ -6,6 +6,7 @@
 #include "OptionsPropSheet.h"
 #include "NTray.h"
 #include "Utils.h"
+#include "SoundPlayer.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -172,36 +173,7 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 
 LRESULT CMainFrame::OnFcmPip( WPARAM wPip, LPARAM ) {
 	debug( L"CMainFrame::OnFcmPip: wPip=%ld\n", static_cast<long>( wPip ) );
-
-	switch ( wPip ) {
-		case Pip::Starting:
-			Beep( 523, 100 );
-			break;
-
-		case Pip::KeyPressed:
-			Beep( 523, 100 );
-			break;
-
-		case Pip::Succeeded:
-			Beep( 1047, 100 );
-			break;
-
-		case Pip::Failed:
-			MessageBeep( MB_ICONHAND );
-			break;
-
-		case Pip::Cancelled:
-			MessageBeep( MB_ICONHAND );
-			break;
-
-		case Pip::Escape:
-			MessageBeep( MB_ICONASTERISK );
-			break;
-
-		default:
-			break;
-	}
-
+	g_pSoundPlayer->PlaySoundForEvent( static_cast<Pip>( wPip ) );
 	return 0;
 }
 
