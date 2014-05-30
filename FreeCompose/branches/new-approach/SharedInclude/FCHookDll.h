@@ -10,7 +10,8 @@
 #define FCHOOKDLL_API __declspec(dllimport)
 #endif
 
-#include "ComposeSequenceGroup.h"
+#include <ComposeSequence.h>
+#include <ComposeSequenceGroup.h>
 
 //==============================================================================
 // Types
@@ -28,18 +29,21 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_REPLACE,
 };
 
+enum class Pip {
+	none,
+	Starting,
+	KeyPressed,
+	Succeeded,
+	Failed,
+	Cancelled,
+	Escape,
+};
+
 //==============================================================================
 // Constants
 //==============================================================================
 
 DWORD const FCHOOKDLL_API_VERSION = 0x0190;
-
-WPARAM const PIP_OK_1  = 1;
-WPARAM const PIP_OK_2  = 2;
-WPARAM const PIP_OK_3  = 3;
-WPARAM const PIP_ABORT = 4;
-WPARAM const PIP_ERROR = 5;
-WPARAM const PIP_FAIL  = 6;
 
 int const MAXIMUM_SEQUENCE_LENGTH = 16;
 
