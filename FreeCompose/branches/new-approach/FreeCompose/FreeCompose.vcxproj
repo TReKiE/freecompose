@@ -159,6 +159,7 @@
       <MinimumRequiredVersion>5.01</MinimumRequiredVersion>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
+      <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -195,6 +196,7 @@
       <DataExecutionPrevention>false</DataExecutionPrevention>
       <MinimumRequiredVersion>5.02</MinimumRequiredVersion>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
+      <FixedBaseAddress>false</FixedBaseAddress>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
