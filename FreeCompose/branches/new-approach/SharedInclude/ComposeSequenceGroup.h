@@ -1,19 +1,10 @@
 #pragma once
 
-#pragma push_macro( "debug" )
-#ifdef _NOISY_DEBUG
-#define debug(x) OutputDebugString(x)
-#else
-#define debug(x)
-#endif
-
-#include <ComposeSequence.h>
-
 //==============================================================================
 // Classes
 //==============================================================================
 
-class ComposeSequenceGroup {
+class FCHOOKDLL_API ComposeSequenceGroup {
 public:
 
 	//
@@ -21,29 +12,29 @@ public:
 	//
 
 	inline ComposeSequenceGroup( ) {
-		debug( L"ComposeSequenceGroup::`ctor()\n" );
+		noisydebug( L"ComposeSequenceGroup::`ctor()\n" );
 	}
 
 	inline ComposeSequenceGroup( ComposeSequenceGroup const& rhs ):
 		ComposeSequenceGroup( )
 	{
-		debug( L"ComposeSequenceGroup::`ctor(ComposeSequenceGroup const&)\n" );
+		noisydebug( L"ComposeSequenceGroup::`ctor(ComposeSequenceGroup const&)\n" );
 		operator=( rhs );
 	}
 
 	inline ComposeSequenceGroup( ComposeSequenceGroup&& rhs ):
 		ComposeSequenceGroup( )
 	{
-		debug( L"ComposeSequenceGroup::`ctor(ComposeSequenceGroup&&)\n" );
+		noisydebug( L"ComposeSequenceGroup::`ctor(ComposeSequenceGroup&&)\n" );
 		operator=( rhs );
 	}
 
 	inline ~ComposeSequenceGroup( ) {
-		debug( L"ComposeSequenceGroup::`dtor()\n" );
+		noisydebug( L"ComposeSequenceGroup::`dtor()\n" );
 	}
 
 	inline ComposeSequenceGroup& operator=( ComposeSequenceGroup const& rhs ) {
-		debug( L"ComposeSequenceGroup::operator=(ComposeSequenceGroup const&)\n" );
+		noisydebug( L"ComposeSequenceGroup::operator=(ComposeSequenceGroup const&)\n" );
 		Name = rhs.Name;
 		ComposeSequences.RemoveAll( );
 		ComposeSequences.Append( rhs.ComposeSequences );
@@ -51,7 +42,7 @@ public:
 	}
 
 	inline ComposeSequenceGroup& operator=( ComposeSequenceGroup&& rhs ) {
-		debug( L"ComposeSequenceGroup::operator=(ComposeSequenceGroup&&)\n" );
+		noisydebug( L"ComposeSequenceGroup::operator=(ComposeSequenceGroup&&)\n" );
 		operator=( const_cast<ComposeSequenceGroup const&>( rhs ) );
 		rhs.Name.Empty( );
 		rhs.ComposeSequences.RemoveAll( );
@@ -65,14 +56,14 @@ public:
 	inline ComposeSequenceGroup( CString const& name ):
 		ComposeSequenceGroup( )
 	{
-		debug( L"ComposeSequenceGroup::`ctor(CString const&)\n" );
+		noisydebug( L"ComposeSequenceGroup::`ctor(CString const&)\n" );
 		Name = name;
 	}
 
 	inline ComposeSequenceGroup( CString const& name, ComposeSequenceArray const& composeSequences ):
 		ComposeSequenceGroup( name )
 	{
-		debug( L"ComposeSequenceGroup::`ctor(CString const&, ComposeSequenceArray const&)\n" );
+		noisydebug( L"ComposeSequenceGroup::`ctor(CString const&, ComposeSequenceArray const&)\n" );
 		ComposeSequences.Append( composeSequences );
 	}
 
@@ -85,5 +76,3 @@ public:
 //==============================================================================
 
 using ComposeSequenceGroupArray = CArray<ComposeSequenceGroup>;
-
-#pragma pop_macro( "debug" )
