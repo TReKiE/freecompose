@@ -15,19 +15,15 @@
 
 namespace {
 
-	// Type alias
-
-	using ulonglong = unsigned long long;
-
 	// Local methods
 
-	static inline ulonglong _GetSystemTime( void ) {
-		ulonglong now = 0;
+	static inline unsigned long long _GetSystemTime( void ) {
+		unsigned long long now = 0;
 		GetSystemTimeAsFileTime( reinterpret_cast<FILETIME*>( &now ) );
 		return now;
 	}
 
-	static inline double _TimeUntilNow( ulonglong then ) {
+	static inline double _TimeSince( unsigned long long then ) {
 		return ( _GetSystemTime( ) - then ) / 10000000.0;
 	}
 
@@ -44,9 +40,9 @@ namespace {
 		virtual void Perform( void ) = 0;
 
 	protected:
-		ulonglong _createdAt;
-		ulonglong _startedAt;
-		ulonglong _finishedAt;
+		unsigned long long _createdAt;
+		unsigned long long _startedAt;
+		unsigned long long _finishedAt;
 
 	};
 
@@ -63,7 +59,7 @@ namespace {
 
 		inline virtual void Perform( void ) {
 			debug( L"CompositionSoundRequest::Perform: '%s'\n", CompositionSoundNames[static_cast<int>( Sound )] );
-			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeSince( _createdAt ) );
 
 			_startedAt = _GetSystemTime( );
 			PlaySound( CompositionSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
@@ -88,7 +84,7 @@ namespace {
 
 		inline virtual void Perform( void ) {
 			debug( L"SilenceRequest::Perform: silence for %lu ms\n", dwDuration );
-			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeSince( _createdAt ) );
 
 			_startedAt = _GetSystemTime( );
 			Sleep( dwDuration );
@@ -113,7 +109,7 @@ namespace {
 
 		inline virtual void Perform( void ) {
 			debug( L"ToneRequest::Perform: %lu Hz for %lu ms\n", dwFrequency, dwDuration );
-			debug( L"+ Time since queueing: %.3f s\n", _TimeUntilNow( _createdAt ) );
+			debug( L"+ Time since queueing: %.3f s\n", _TimeSince( _createdAt ) );
 
 			_startedAt = _GetSystemTime( );
 			Beep( dwFrequency, dwDuration );
