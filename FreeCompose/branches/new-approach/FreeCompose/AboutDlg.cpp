@@ -11,9 +11,9 @@
 #	endif
 #endif
 
-IMPLEMENT_DYNAMIC( CAboutDlg, CDialog )
+IMPLEMENT_DYNAMIC( CAboutDlg, CDialogEx )
 
-BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
+BEGIN_MESSAGE_MAP( CAboutDlg, CDialogEx )
 	ON_NOTIFY( NM_CLICK,  IDC_A_COPYRIGHT, &CAboutDlg::OnClickCopyright )
 	ON_NOTIFY( NM_RETURN, IDC_A_COPYRIGHT, &CAboutDlg::OnClickCopyright )
 	ON_NOTIFY( NM_CLICK,  IDC_A_WEBSITE,   &CAboutDlg::OnClickWebsite   )
@@ -23,8 +23,8 @@ BEGIN_MESSAGE_MAP( CAboutDlg, CDialog )
 END_MESSAGE_MAP( )
 
 CAboutDlg::CAboutDlg( ):
-	CDialog ( IDD     ),
-	m_pFont ( nullptr )
+	CDialogEx ( IDD     ),
+	m_pFont   ( nullptr )
 {
 
 }
@@ -90,7 +90,7 @@ void CAboutDlg::_LaunchUrl( wchar_t const* pwzUrl ) {
 }
 
 void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
-	CDialog::DoDataExchange( pDX );
+	CDialogEx::DoDataExchange( pDX );
 
 	DDX_Text    ( pDX, IDC_A_NAME,      m_strName       );
 	DDX_Text    ( pDX, IDC_A_VERSION,   m_strVersion    );
@@ -102,7 +102,7 @@ void CAboutDlg::DoDataExchange( CDataExchange* pDX ) {
 }
 
 BOOL CAboutDlg::OnInitDialog( ) {
-	if ( !CDialog::OnInitDialog( ) ) {
+	if ( !CDialogEx::OnInitDialog( ) ) {
 		return FALSE;
 	}
 

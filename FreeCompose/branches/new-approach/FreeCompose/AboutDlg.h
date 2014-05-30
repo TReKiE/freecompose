@@ -1,6 +1,6 @@
 #pragma once
 
-class CAboutDlg: public CDialog {
+class CAboutDlg: public CDialogEx {
 	DECLARE_DYNAMIC( CAboutDlg )
 	DECLARE_MESSAGE_MAP( )
 

@@ -37,6 +37,7 @@
 #include <afxcmn.h>
 #include <afxdlgs.h>
 #include <afxtempl.h>
+#include <afxdialogex.h>
 
 // Active Template Library
 #include <atlbase.h>

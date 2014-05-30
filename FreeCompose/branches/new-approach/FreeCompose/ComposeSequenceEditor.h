@@ -7,7 +7,7 @@ enum SEQUENCE_EDITOR_MODE {
 	semEdit,
 };
 
-class CComposeSequenceEditor: public CDialog {
+class CComposeSequenceEditor: public CDialogEx {
 	DECLARE_DYNAMIC( CComposeSequenceEditor )
 	DECLARE_MESSAGE_MAP( )
 
