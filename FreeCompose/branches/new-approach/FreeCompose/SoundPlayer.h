@@ -47,4 +47,4 @@ protected:
 
 };
 
-extern SoundPlayer* g_pTonePlayer;
+extern SoundPlayer* g_pSoundPlayer;
