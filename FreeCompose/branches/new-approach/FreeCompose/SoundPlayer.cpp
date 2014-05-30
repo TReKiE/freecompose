@@ -17,14 +17,18 @@ namespace {
 
 	// Local methods
 
-	static inline unsigned long long _GetSystemTime( void ) {
+	inline unsigned long long _GetSystemTime( void ) {
 		unsigned long long now = 0;
 		GetSystemTimeAsFileTime( reinterpret_cast<FILETIME*>( &now ) );
 		return now;
 	}
 
-	static inline double _TimeSince( unsigned long long then ) {
-		return ( _GetSystemTime( ) - then ) / 10000000.0;
+	inline double _TimeDelta( unsigned long long const start, unsigned long long const finish ) {
+		return ( finish - start ) / 10000000.0;
+	}
+
+	inline double _TimeSince( unsigned long long const then ) {
+		return _TimeDelta( then, _GetSystemTime( ) );
 	}
 
 	//
@@ -34,7 +38,7 @@ namespace {
 	class Request {
 
 	public:
-		inline Request( ): _createdAt( _GetSystemTime( ) ) { }
+		inline Request( ): _createdAt( _GetSystemTime( ) ), _startedAt( 0 ), _finishedAt( 0 ) { }
 		inline virtual ~Request( ) { }
 
 		virtual void Perform( void ) = 0;
@@ -47,7 +51,7 @@ namespace {
 	};
 
 	//
-	// Class CompositionSoundRequest: Derivative of class Request that plays one of FreeCompose's configured system sounds.
+	// Class CompositionSoundRequest: Derivative of class Request that plays one of FreeCompose's configured application sounds through the system sounds API.
 	//
 
 	class CompositionSoundRequest: public Request {
@@ -64,7 +68,7 @@ namespace {
 			_startedAt = _GetSystemTime( );
 			PlaySound( CompositionSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
 			_finishedAt = _GetSystemTime( );
-			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
+			debug( L"+ Time to perform: %.3f s\n", _TimeDelta( _startedAt, _finishedAt ) );
 		}
 
 		CompositionSound Sound;
@@ -89,7 +93,7 @@ namespace {
 			_startedAt = _GetSystemTime( );
 			Sleep( dwDuration );
 			_finishedAt = _GetSystemTime( );
-			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
+			debug( L"+ Time to perform: %.3f s\n", _TimeDelta( _startedAt, _finishedAt ) );
 		}
 
 		DWORD dwDuration;
@@ -114,7 +118,7 @@ namespace {
 			_startedAt = _GetSystemTime( );
 			Beep( dwFrequency, dwDuration );
 			_finishedAt = _GetSystemTime( );
-			debug( L"+ Time to perform: %.3f s\n", ( _finishedAt - _startedAt ) / 10000000.0 );
+			debug( L"+ Time to perform: %.3f s\n", _TimeDelta( _startedAt, _finishedAt ) );
 		}
 
 		DWORD dwFrequency;
@@ -169,7 +173,7 @@ static void DrainQueue( void ) {
 	}
 }
 
-static UINT TonePlayerThreadFunction( LPVOID /*pvParam*/ ) {
+static UINT SoundPlayerThreadFunction( LPVOID /*pvParam*/ ) {
 	HANDLE waitHandles[2] = { QueueEvent, ShutdownEvent };
 
 	while ( true ) {
@@ -180,7 +184,7 @@ static UINT TonePlayerThreadFunction( LPVOID /*pvParam*/ ) {
 		} else if ( WAIT_OBJECT_0 + 1 == dw ) {
 			return 0;
 		} else {
-			debug( L"TonePlayerThreadFunction: Something went wrong with WaitForMultipleObjects. dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
+			debug( L"SoundPlayerThreadFunction: Something went wrong with WaitForMultipleObjects. dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
 			return 1;
 		}
 	}
@@ -217,7 +221,7 @@ void SoundPlayer::_CheckStartThread( void ) {
 			break;
 		}
 		
-		ThreadObject = AfxBeginThread( TonePlayerThreadFunction, nullptr );
+		ThreadObject = AfxBeginThread( SoundPlayerThreadFunction, nullptr );
 		ThreadObject->m_bAutoDelete = FALSE;
 	} UNLOCK( ThreadLock );
 }
