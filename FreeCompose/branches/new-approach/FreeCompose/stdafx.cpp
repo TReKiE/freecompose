@@ -13,6 +13,12 @@
 #endif
 
 //
+// The one and only CWinApp derivative, CFreeComposeApp
+//
+
+CFreeComposeApp theApp;
+
+//
 // Registered window messages
 //
 
@@ -35,18 +41,6 @@ unsigned g_CommonControlsDllBuildNumber = 0;
 unsigned g_CommonControlsDllQfeNumber = 0;
 
 //
-// The one and only CWinApp derivative, CFreeComposeApp
-//
-
-CFreeComposeApp theApp;
-
-//
-// Tone player
-//
-
-SoundPlayer* g_pSoundPlayer = nullptr;
-
-//
 // Composition sound names
 //
 
@@ -58,3 +52,9 @@ wchar_t const* CompositionSoundNames[] = {
 	L"FC_Composition_Cancelled",
 	L"FC_Composition_Escape",
 };
+
+//
+// Sound player object
+//
+
+SoundPlayer* g_pSoundPlayer;
