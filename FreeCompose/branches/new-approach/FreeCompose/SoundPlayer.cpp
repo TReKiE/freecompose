@@ -129,6 +129,12 @@ namespace {
 };
 
 //
+// Forward declarations
+//
+
+class SoundPlayerThread;
+
+//
 // Local variables
 //
 
@@ -140,6 +146,8 @@ static CWinThread* ThreadObject = nullptr;
 static AutoCriticalSection ThreadLock;
 
 static AutoEvent ShutdownEvent;
+
+static SoundPlayerThread* _pSoundPlayer;
 
 //
 // Local functions
@@ -193,69 +201,103 @@ static UINT SoundPlayerThreadFunction( LPVOID /*pvParam*/ ) {
 }
 
 //
-// Class SoundPlayer
+// Class SoundPlayerThread
 //
 
-void SoundPlayer::_EnqueueCompositionSound( CompositionSound const sound ) {
-	Enqueue( new CompositionSoundRequest( sound ) );
-}
+class SoundPlayerThread {
 
-void SoundPlayer::_EnqueueSilence( DWORD const dwDuration ) {
-	Enqueue( new SilenceRequest( dwDuration ) );
-}
+public:
+	inline SoundPlayerThread( ) {
+		_CheckStartThread( );
+	}
 
-void SoundPlayer::_EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration ) {
-	Enqueue( new ToneRequest( dwFrequency, dwDuration ) );
-}
+	inline ~SoundPlayerThread( ) {
+		_StopThread( );
+	}
 
-void SoundPlayer::_ClearQueue( void ) {
-	LOCK( QueueLock ) {
-		Queue.RemoveAll( );
-		QueueEvent.Reset( );
-	} UNLOCK( QueueLock );
-}
+	void PlayCompositionSound( CompositionSound const sound ) {
+		_EnqueueCompositionSound( sound );
+	}
 
-void SoundPlayer::_CheckStartThread( void ) {
-	LOCK( ThreadLock ) {
-		if ( ThreadObject ) {
-			break;
-		}
+	void PlaySilence( DWORD const dwDuration ) {
+		_EnqueueSilence( dwDuration );
+	}
+
+	void PlayTone( DWORD const dwFrequency, DWORD const dwDuration ) {
+		_EnqueueTone( dwFrequency, dwDuration );
+	}
+
+	void CancelPending( void ) {
+		_ClearQueue( );
+	}
+
+	void ShutDown( void ) {
+		_StopThread( );
+	}
+
+protected:
+	void _EnqueueCompositionSound( CompositionSound const sound ) {
+		Enqueue( new CompositionSoundRequest( sound ) );
+	}
+
+	void _EnqueueSilence( DWORD const dwDuration ) {
+		Enqueue( new SilenceRequest( dwDuration ) );
+	}
+
+	void _EnqueueTone( DWORD const dwFrequency, DWORD const dwDuration ) {
+		Enqueue( new ToneRequest( dwFrequency, dwDuration ) );
+	}
+
+	void _ClearQueue( void ) {
+		LOCK( QueueLock ) {
+			Queue.RemoveAll( );
+			QueueEvent.Reset( );
+		} UNLOCK( QueueLock );
+	}
+
+	void _CheckStartThread( void ) {
+		LOCK( ThreadLock ) {
+			if ( ThreadObject ) {
+				break;
+			}
 		
-		ThreadObject = AfxBeginThread( SoundPlayerThreadFunction, nullptr );
-		ThreadObject->m_bAutoDelete = FALSE;
-	} UNLOCK( ThreadLock );
-}
+			ThreadObject = AfxBeginThread( SoundPlayerThreadFunction, nullptr );
+			ThreadObject->m_bAutoDelete = FALSE;
+		} UNLOCK( ThreadLock );
+	}
 
-void SoundPlayer::_StopThread( void ) {
-	HANDLE hThread = INVALID_HANDLE_VALUE;	
-	LOCK( ThreadLock ) {
-		if ( !ThreadObject ) {
-			break;
+	void _StopThread( void ) {
+		HANDLE hThread = INVALID_HANDLE_VALUE;	
+		LOCK( ThreadLock ) {
+			if ( !ThreadObject ) {
+				break;
+			}
+			hThread = ThreadObject->m_hThread;
+		} UNLOCK( ThreadLock );
+		if ( INVALID_HANDLE_VALUE == hThread ) {
+			return;
 		}
-		hThread = ThreadObject->m_hThread;
-	} UNLOCK( ThreadLock );
-	if ( INVALID_HANDLE_VALUE == hThread ) {
-		return;
+
+		ShutdownEvent.Set( );
+
+		SetLastError( ERROR_SUCCESS );
+		DWORD dw = WaitForSingleObject( hThread, INFINITE );
+		// WAIT_ABANDONED only applies to mutexes.
+		if ( WAIT_OBJECT_0 == dw ) {
+			// done \o/
+		} else if ( WAIT_TIMEOUT == dw ) {
+			// wtf?
+			debug( L"SoundPlayerThread::_StopThread: WaitForSingleObject returned WAIT_TIMEOUT on a timeout of INFINITE?\n" );
+		} else if ( WAIT_FAILED == dw ) {
+			debug( L"SoundPlayerThread::_StopThread: WaitForSingleObject failed, error=%lu\n", GetLastError( ) );
+		} else {
+			debug( L"SoundPlayerThread::_StopThread: huh? dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
+		}
+
+		delete ThreadObject;
+		ThreadObject = nullptr;
+
+		_ClearQueue( );
 	}
 
-	ShutdownEvent.Set( );
-
-	SetLastError( ERROR_SUCCESS );
-	DWORD dw = WaitForSingleObject( hThread, INFINITE );
-	// WAIT_ABANDONED only applies to mutexes.
-	if ( WAIT_OBJECT_0 == dw ) {
-		// done \o/
-	} else if ( WAIT_TIMEOUT == dw ) {
-		// wtf?
-		debug( L"SoundPlayer::_StopThread: WaitForSingleObject returned WAIT_TIMEOUT on a timeout of INFINITE?\n" );
-	} else if ( WAIT_FAILED == dw ) {
-		debug( L"SoundPlayer::_StopThread: WaitForSingleObject failed, error=%lu\n", GetLastError( ) );
-	} else {
-		debug( L"SoundPlayer::_StopThread: huh? dw=0x%08X, error=%lu\n", dw, GetLastError( ) );
-	}
-
-	delete ThreadObject;
-	ThreadObject = nullptr;
-
-	_ClearQueue( );
-}
+};
