@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<!--
+		General layout of the FreeCompose XML configuration file:
+
+		<FcConfiguration>
+			<Options>
+				<Startup />
+				<Keyboard />
+				<Sounds />
+			</Options>
+			<Mappings>
+				<Group>
+					<Mapping />
+				</Group>
+			</Mappings>
+		</FcConfiguration>
+	-->
+
 	<xs:simpleType name="CapsLockToggleModeEnumeration">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="normal" />
@@ -7,6 +25,7 @@
 			<xs:enumeration value="disabled" />
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:simpleType name="CapsLockSwapModeEnumeration">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="normal" />
@@ -14,12 +33,15 @@
 			<xs:enumeration value="replace" />
 		</xs:restriction>
 	</xs:simpleType>
+
 	<xs:element name="FcConfiguration">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Options">
+
+				<xs:element name="Options" minOccurs="0" maxOccurs="1">
 					<xs:complexType>
 						<xs:sequence>
+
 							<xs:element name="Startup">
 								<xs:complexType>
 									<xs:sequence>
@@ -28,6 +50,7 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+
 							<xs:element name="Keyboard">
 								<xs:complexType>
 									<xs:sequence>
@@ -38,44 +61,53 @@
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+
 							<xs:element name="Sounds">
 								<xs:complexType>
 									<xs:sequence>
+
 										<xs:element name="Scheme" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
+
 													<xs:element name="SoundEvent" minOccurs="0" maxOccurs="unbounded">
 														<xs:complexType>
 															<xs:choice minOccurs="1" maxOccurs="1">
-																<xs:element name="Tone" minOccurs="1" maxOccurs="1">
+																<xs:element name="Tone" minOccurs="0" maxOccurs="1">
 																	<xs:complexType>
 																		<xs:attribute name="Frequency" type="xs:unsignedInt" use="required" />
 																		<xs:attribute name="Duration" type="xs:unsignedInt" use="required" />
 																	</xs:complexType>
 																</xs:element>
-																<xs:element name="ApplicationSound" minOccurs="1" maxOccurs="1" />
-																<xs:element name="NoSound" minOccurs="1" maxOccurs="1" />
+																<xs:element name="ApplicationSound" minOccurs="0" maxOccurs="1" />
+																<xs:element name="NoSound" minOccurs="0" maxOccurs="1" />
 															</xs:choice>
 															<xs:attribute name="Name" type="xs:string" use="required" />
 														</xs:complexType>
 													</xs:element>
+
 												</xs:sequence>
 												<xs:attribute name="ID" type="xs:string" use="required" />
 												<xs:attribute name="Name" type="xs:string" use="required" />
 											</xs:complexType>
 										</xs:element>
+
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
+
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+
 				<xs:element name="Mappings">
 					<xs:complexType>
 						<xs:sequence>
+
 							<xs:element name="Group" minOccurs="0" maxOccurs="unbounded">
 								<xs:complexType>
 									<xs:sequence>
+
 										<xs:element name="Mapping" minOccurs="0" maxOccurs="unbounded">
 											<xs:complexType>
 												<xs:sequence>
@@ -87,14 +119,18 @@
 												<xs:attribute name="Reversible" type="xs:boolean" use="optional" default="false" />
 											</xs:complexType>
 										</xs:element>
+
 									</xs:sequence>
 									<xs:attribute name="Name" type="xs:string" use="required" />
 								</xs:complexType>
 							</xs:element>
+
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
+
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+
 </xs:schema>
