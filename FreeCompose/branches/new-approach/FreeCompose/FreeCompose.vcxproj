@@ -325,6 +325,7 @@
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="NTray.h" />
     <ClInclude Include="OptionsData.h" />
+    <ClInclude Include="SoundOptions.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="XmlOptionsManager.h" />
     <ClInclude Include="OptionsPropSheet.h" />

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SoundOptions.h"
 #include "XmlOptionsManager.h"
 
 class COptionsData {
@@ -37,8 +38,6 @@ public:
 	// Configuration store
 	//
 
-	ComposeSequenceGroupArray ComposeSequenceGroups;
- 
 	BOOL StartActive;
 	BOOL StartWithWindows;
 	CAPS_LOCK_TOGGLE_MODE CapsLockToggleMode;
@@ -46,6 +45,8 @@ public:
 	DWORD ComposeVk;
 	DWORD SwapCapsLockVk;
 
+	ComposeSequenceGroupArray ComposeSequenceGroups;
+ 
 private:
 	CXmlOptionsManager _xmlOptionsHandler;
 
