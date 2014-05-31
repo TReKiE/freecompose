@@ -8,13 +8,12 @@
 class SoundPlayer {
 
 public:
-	inline SoundPlayer( ) { }
-	inline ~SoundPlayer( ) { }
+	SoundPlayer( );
+	~SoundPlayer( );
 
-	inline void ShutDown( void ) {
-		
-	}
-	
+	void PlaySoundForEvent( Pip soundEvent );
+	void ShutDown( void );
+
 };
 
 extern SoundPlayer* g_pSoundPlayer;

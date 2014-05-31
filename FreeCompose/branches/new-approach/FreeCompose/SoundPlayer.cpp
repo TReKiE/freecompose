@@ -147,7 +147,7 @@ static AutoCriticalSection ThreadLock;
 
 static AutoEvent ShutdownEvent;
 
-static SoundPlayerThread* _pSoundPlayer;
+static SoundPlayerThread* _pSoundPlayerThread = nullptr;
 
 //
 // Local functions
@@ -301,3 +301,54 @@ protected:
 	}
 
 };
+
+//
+// Class SoundPlayer
+//
+
+SoundPlayer::SoundPlayer( ) {
+	_pSoundPlayerThread = new SoundPlayerThread( );
+}
+
+SoundPlayer::~SoundPlayer( ) {
+	ShutDown( );
+}
+
+void SoundPlayer::PlaySoundForEvent( Pip soundEvent ) {
+	switch ( soundEvent ) {
+		case Pip::Starting:
+			_pSoundPlayerThread->PlayTone( 523, 100 );
+			break;
+
+		case Pip::KeyPressed:
+			_pSoundPlayerThread->PlayTone( 523, 100 );
+			break;
+
+		case Pip::Succeeded:
+			_pSoundPlayerThread->PlayTone( 1047, 100 );
+			break;
+
+		case Pip::Failed:
+			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Failed );
+			break;
+
+		case Pip::Cancelled:
+			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Cancelled );
+			break;
+
+		case Pip::Escape:
+			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Escape );
+			break;
+
+		default:
+			break;
+	}
+}
+
+void SoundPlayer::ShutDown( void ) {
+	if ( _pSoundPlayerThread ) {
+		_pSoundPlayerThread->ShutDown( );
+		delete _pSoundPlayerThread;
+		_pSoundPlayerThread = nullptr;
+	}
+}
