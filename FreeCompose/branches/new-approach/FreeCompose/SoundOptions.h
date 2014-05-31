@@ -15,6 +15,9 @@ public:
 class SoundScheme {
 
 public:
+	CString ID;
+	CString Name;
+
 	std::map<CString, SoundEvent> Events;
 
 };
@@ -27,6 +30,8 @@ public:
 	inline virtual ~SoundEvent( ) { }
 
 	virtual bool PlaySound( void ) = 0;
+
+	CString Name;
 
 };
 
@@ -63,5 +68,8 @@ public:
 	inline virtual bool PlaySound( void ) {
 		return false;
 	}
+
+	unsigned Frequency;
+	unsigned Duration;
 
 };
