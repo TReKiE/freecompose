@@ -11,6 +11,48 @@
             <ComposeKey>93</ComposeKey>
             <SwapCapsLockKey>162</SwapCapsLockKey>
         </Keyboard>
+		<Sounds>
+			<Scheme ID=".Default" Name="Default">
+				<SoundEvent Name="FC_Composition_Starting">
+					<Tone Frequency="523" Duration="100" />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_KeyPressed">
+					<Tone Frequency="523" Duration="100" />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Succeeded">
+					<Tone Frequency="1047" Duration="100" />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Failed">
+					<ApplicationSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Cancelled">
+					<ApplicationSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Escape">
+					<ApplicationSound />
+				</SoundEvent>
+			</Scheme>
+			<Scheme ID=".None" Name="Silent">
+				<SoundEvent Name="FC_Composition_Starting">
+					<NoSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_KeyPressed">
+					<NoSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Succeeded">
+					<NoSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Failed">
+					<NoSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Cancelled">
+					<NoSound />
+				</SoundEvent>
+				<SoundEvent Name="FC_Composition_Escape">
+					<NoSound />
+				</SoundEvent>
+			</Scheme>
+		</Sounds>
     </Options>
     <Mappings>
         <Group Name="">
