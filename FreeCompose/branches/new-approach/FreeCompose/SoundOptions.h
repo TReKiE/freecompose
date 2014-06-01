@@ -1,9 +1,16 @@
 #pragma once
 
+//
+// Forward declarations
+//
+
 class SoundScheme;
 class SoundEvent;
 
 
+//
+// SoundOptions: Root of sound config classes
+//
 
 class SoundOptions {
 
@@ -15,7 +22,9 @@ public:
 
 };
 
-
+//
+// SoundScheme: contains a collection of event configuration
+//
 
 class SoundScheme {
 
@@ -31,7 +40,9 @@ public:
 
 };
 
-
+//
+// SoundEvent: Base class for event configuration
+//
 
 class SoundEvent {
 
@@ -48,6 +59,10 @@ public:
 
 };
 
+//
+// NoSoundEvent: Silent event.
+//
+
 class NoSoundEvent: public SoundEvent {
 
 public:
@@ -61,6 +76,10 @@ public:
 
 };
 
+//
+// ApplicationSoundEvent: Play a WAV file configured in the "Sounds" control panel via PlaySound().
+//
+
 class ApplicationSoundEvent: public SoundEvent {
 
 public:
@@ -73,6 +92,10 @@ public:
 	}
 
 };
+
+//
+// ToneSoundEvent: Play a specified frequency for a specified duration.
+//
 
 class ToneSoundEvent: public SoundEvent {
 
