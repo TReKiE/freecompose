@@ -404,8 +404,9 @@ bool CXmlOptionsManager::_InterpretSchemeNode( XNode const& node ) {
 
 	_pOptionsData->Sounds.Schemes.push_back( SoundScheme( id, name ) );
 	_currentSoundSchemeName = name;
-
-	return _DispatchChildren( L"Sounds\\Scheme", node, SchemeElementsToMethods );
+	bool ret = _DispatchChildren( L"Sounds\\Scheme", node, SchemeElementsToMethods );
+	_currentSoundSchemeName.Empty( );
+	return ret;
 }
 
 bool CXmlOptionsManager::_InterpretSoundEventNode( XNode const& node ) {
@@ -421,8 +422,9 @@ bool CXmlOptionsManager::_InterpretSoundEventNode( XNode const& node ) {
 	}
 
 	_currentSoundEventName = name;
-
-	return _DispatchChildren( L"Sounds\\Scheme\\SoundEvent", node, SchemeElementsToMethods );
+	bool ret = _DispatchChildren( L"Sounds\\Scheme\\SoundEvent", node, SoundEventElementsToMethods );
+	_currentSoundEventName.Empty( );
+	return ret;
 }
 
 bool CXmlOptionsManager::_InterpretNoSoundNode( XNode const& /*node*/ ) {
@@ -433,7 +435,7 @@ bool CXmlOptionsManager::_InterpretNoSoundNode( XNode const& /*node*/ ) {
 
 	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
 	if ( pScheme ) {
-		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, NoSoundEvent( _currentSoundEventName ) ) );
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, new NoSoundEvent( _currentSoundEventName ) ) );
 	}
 
 	return true;
@@ -447,7 +449,7 @@ bool CXmlOptionsManager::_InterpretApplicationSoundNode( XNode const& /*node*/ )
 
 	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
 	if ( pScheme ) {
-		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, ApplicationSoundEvent( _currentSoundEventName ) ) );
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, new ApplicationSoundEvent( _currentSoundEventName ) ) );
 	}
 
 	return true;
@@ -467,17 +469,11 @@ bool CXmlOptionsManager::_InterpretToneNode( XNode const& node ) {
 		if ( attributes ) {
 			XNode Frequency = attributes->getNamedItem( L"Frequency" );
 			if ( Frequency ) {
-				_variant_t vFrequency( static_cast<LPCWSTR>( Frequency->text ) );
-				debug( L"CXmlOptionsManager::_InterpretToneNode: Frequency: before ChangeType: vFrequency.uintVal=%u\n", vFrequency.uintVal );
-				vFrequency.ChangeType( VT_UI4, &vFrequency );
-				frequency = vFrequency.uintVal;
+				frequency = static_cast<unsigned>( _variant_t( Frequency->text ) );
 			}
 			XNode Duration = attributes->getNamedItem( L"Duration" );
 			if ( Duration ) {
-				_variant_t vDuration( static_cast<LPCWSTR>( Frequency->text ) );
-				debug( L"CXmlOptionsManager::_InterpretToneNode: Duration: before ChangeType: vDuration.uintVal=%u\n", vDuration.uintVal );
-				vDuration.ChangeType( VT_UI4, &vDuration );
-				frequency = vDuration.uintVal;
+				duration = static_cast<unsigned>( _variant_t( Duration->text ) );
 			}
 		}
 	}
@@ -489,9 +485,8 @@ bool CXmlOptionsManager::_InterpretToneNode( XNode const& node ) {
 
 	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
 	if ( pScheme ) {
-		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, ToneSoundEvent( _currentSoundEventName, frequency, duration ) ) );
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, new ToneSoundEvent( _currentSoundEventName, frequency, duration ) ) );
 	}
-	_currentSoundEventName.Empty( );
 
 	return true;
 }
@@ -787,9 +782,9 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 						XElement SoundEventElement = SoundEvent;
 						SoundEventElement->setAttribute( L"Name", static_cast<LPCWSTR>( pair.first ) );
 
-						NoSoundEvent          const* pNoSoundEvent          = dynamic_cast<NoSoundEvent          const*>( &pair.second );
-						ApplicationSoundEvent const* pApplicationSoundEvent = dynamic_cast<ApplicationSoundEvent const*>( &pair.second );
-						ToneSoundEvent        const* pToneSoundEvent        = dynamic_cast<ToneSoundEvent        const*>( &pair.second );
+						NoSoundEvent*          pNoSoundEvent          = dynamic_cast<NoSoundEvent*         >( pair.second );
+						ApplicationSoundEvent* pApplicationSoundEvent = dynamic_cast<ApplicationSoundEvent*>( pair.second );
+						ToneSoundEvent*        pToneSoundEvent        = dynamic_cast<ToneSoundEvent*       >( pair.second );
 						if ( pNoSoundEvent ) {
 							XNode NoSound = CreateAndAppendXNode( doc, L"NoSound", SoundEvent );
 						} else if ( pApplicationSoundEvent ) {
