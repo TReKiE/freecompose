@@ -7,7 +7,6 @@
 class SoundScheme;
 class SoundEvent;
 
-
 //
 // SoundOptions: Root of sound config classes
 //
