@@ -11,19 +11,26 @@ class SoundEvent;
 // SoundOptions: Root of sound config classes
 //
 
+using SoundSchemeVector = std::vector<SoundScheme>;
+
 class SoundOptions {
 
 public:
 	inline SoundOptions( ) { }
 	inline ~SoundOptions( ) { }
 
-	std::vector<SoundScheme> Schemes;
+	inline SoundScheme* GetSoundScheme( CString const& name );
+
+	SoundSchemeVector Schemes;
 
 };
 
 //
 // SoundScheme: contains a collection of event configuration
 //
+
+using SoundEventMap = std::map<CString, SoundEvent>;
+using SoundEventMapPair = std::pair<CString, SoundEvent>;
 
 class SoundScheme {
 
@@ -35,9 +42,19 @@ public:
 	CString ID;
 	CString Name;
 
-	std::map<CString, SoundEvent> Events;
+	SoundEventMap Events;
 
 };
+
+// The following method is defined here because class SoundScheme is incomplete until here.
+inline SoundScheme* SoundOptions::GetSoundScheme( CString const& name ) {
+	for ( auto& s : Schemes ) {
+		if ( s.Name.CompareNoCase( name ) ) {
+			return &s;
+		}
+	}
+	return nullptr;
+}
 
 //
 // SoundEvent: Base class for event configuration
