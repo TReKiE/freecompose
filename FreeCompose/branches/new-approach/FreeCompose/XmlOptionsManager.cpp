@@ -382,28 +382,118 @@ bool CXmlOptionsManager::_InterpretSwapCapsLockKeyNode( XNode const& node ) {
 	return true;
 }
 
-bool CXmlOptionsManager::_InterpretSoundsNode( XNode const& /*node*/ ) {
-	return false;
+bool CXmlOptionsManager::_InterpretSoundsNode( XNode const& node ) {
+	return _DispatchChildren( L"Sounds", node, SoundsElementsToMethods );
 }
 
-bool CXmlOptionsManager::_InterpretSchemeNode( XNode const& /*node*/ ) {
-	return false;
+bool CXmlOptionsManager::_InterpretSchemeNode( XNode const& node ) {
+	CString id, name;
+	if ( node ) {
+		XNamedNodeMap attributes = node->attributes;
+		if ( attributes ) {
+			XNode ID = attributes->getNamedItem( L"ID" );
+			if ( ID ) {
+				id = static_cast<LPCWSTR>( ID->text );
+			}
+			XNode Name = attributes->getNamedItem( L"Name" );
+			if ( Name ) {
+				name = static_cast<LPCWSTR>( Name->text );
+			}
+		}
+	}
+
+	_pOptionsData->Sounds.Schemes.push_back( SoundScheme( id, name ) );
+	_currentSoundSchemeName = name;
+
+	return _DispatchChildren( L"Sounds\\Scheme", node, SchemeElementsToMethods );
 }
 
-bool CXmlOptionsManager::_InterpretSoundEventNode( XNode const& /*node*/ ) {
-	return false;
+bool CXmlOptionsManager::_InterpretSoundEventNode( XNode const& node ) {
+	CString name;
+	if ( node ) {
+		XNamedNodeMap attributes = node->attributes;
+		if ( attributes ) {
+			XNode Name = attributes->getNamedItem( L"Name" );
+			if ( Name ) {
+				name = static_cast<LPCWSTR>( Name->text );
+			}
+		}
+	}
+
+	_currentSoundEventName = name;
+
+	return _DispatchChildren( L"Sounds\\Scheme\\SoundEvent", node, SchemeElementsToMethods );
 }
 
 bool CXmlOptionsManager::_InterpretNoSoundNode( XNode const& /*node*/ ) {
-	return false;
+	if ( _currentSoundSchemeName.IsEmpty( ) || _currentSoundEventName.IsEmpty( ) ) {
+		debug( L"CXmlOptionsManager::_InterpretNoSoundNode: problem: one or both of _currentSoundSchemeName ('%s') and _currentSoundEventName ('%s') is empty?\n", static_cast<LPCWSTR>( _currentSoundSchemeName ), static_cast<LPCWSTR>( _currentSoundEventName ) );
+		return false;
+	}
+
+	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
+	if ( pScheme ) {
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, NoSoundEvent( _currentSoundEventName ) ) );
+	}
+
+	return true;
 }
 
 bool CXmlOptionsManager::_InterpretApplicationSoundNode( XNode const& /*node*/ ) {
-	return false;
+	if ( _currentSoundSchemeName.IsEmpty( ) || _currentSoundEventName.IsEmpty( ) ) {
+		debug( L"CXmlOptionsManager::_InterpretApplicationSoundNode: problem: one or both of _currentSoundSchemeName ('%s') and _currentSoundEventName ('%s') is empty?\n", static_cast<LPCWSTR>( _currentSoundSchemeName ), static_cast<LPCWSTR>( _currentSoundEventName ) );
+		return false;
+	}
+
+	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
+	if ( pScheme ) {
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, ApplicationSoundEvent( _currentSoundEventName ) ) );
+	}
+
+	return true;
 }
 
-bool CXmlOptionsManager::_InterpretToneNode( XNode const& /*node*/ ) {
-	return false;
+bool CXmlOptionsManager::_InterpretToneNode( XNode const& node ) {
+	if ( _currentSoundSchemeName.IsEmpty( ) || _currentSoundEventName.IsEmpty( ) ) {
+		debug( L"CXmlOptionsManager::_InterpretToneNode: problem: one or both of _currentSoundSchemeName ('%s') and _currentSoundEventName ('%s') is empty?\n", static_cast<LPCWSTR>( _currentSoundSchemeName ), static_cast<LPCWSTR>( _currentSoundEventName ) );
+		return false;
+	}
+
+	unsigned frequency = 0;
+	unsigned duration = 0;
+
+	if ( node ) {
+		XNamedNodeMap attributes = node->attributes;
+		if ( attributes ) {
+			XNode Frequency = attributes->getNamedItem( L"Frequency" );
+			if ( Frequency ) {
+				_variant_t vFrequency( static_cast<LPCWSTR>( Frequency->text ) );
+				debug( L"CXmlOptionsManager::_InterpretToneNode: Frequency: before ChangeType: vFrequency.uintVal=%u\n", vFrequency.uintVal );
+				vFrequency.ChangeType( VT_UI4, &vFrequency );
+				frequency = vFrequency.uintVal;
+			}
+			XNode Duration = attributes->getNamedItem( L"Duration" );
+			if ( Duration ) {
+				_variant_t vDuration( static_cast<LPCWSTR>( Frequency->text ) );
+				debug( L"CXmlOptionsManager::_InterpretToneNode: Duration: before ChangeType: vDuration.uintVal=%u\n", vDuration.uintVal );
+				vDuration.ChangeType( VT_UI4, &vDuration );
+				frequency = vDuration.uintVal;
+			}
+		}
+	}
+
+	if ( 0 == frequency && 0 == duration ) {
+		debug( L"CXmlOptionsManager::_InterpretToneNode: Frequency and Duration must both be positive values\n" );
+		return false;
+	}
+
+	SoundScheme* pScheme = _pOptionsData->Sounds.GetSoundScheme( _currentSoundSchemeName );
+	if ( pScheme ) {
+		pScheme->Events.insert( SoundEventMapPair( _currentSoundEventName, ToneSoundEvent( _currentSoundEventName, frequency, duration ) ) );
+	}
+	_currentSoundEventName.Empty( );
+
+	return true;
 }
 
 bool CXmlOptionsManager::_InterpretMappingsNode( XNode const& node ) {
