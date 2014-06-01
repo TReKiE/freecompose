@@ -111,7 +111,12 @@ private:
 			bool _InterpretCapsLockSwapModeNode( XNode const& node );
 			bool _InterpretComposeKeyNode( XNode const& node );
 			bool _InterpretSwapCapsLockKeyNode( XNode const& node );
-
+		bool _InterpretSoundsNode( XNode const& node );
+			bool _InterpretSchemeNode( XNode const& node );
+				bool _InterpretSoundEventNode( XNode const& node );
+					bool _InterpretNoSoundNode( XNode const& node );
+					bool _InterpretApplicationSoundNode( XNode const& node );
+					bool _InterpretToneNode( XNode const& node );
 	bool _InterpretMappingsNode( XNode const& node );
 		bool _InterpretGroupNode( XNode const& node );
 			bool _InterpretMappingNode( XNode const& node );
