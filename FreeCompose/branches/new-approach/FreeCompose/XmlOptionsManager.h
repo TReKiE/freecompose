@@ -121,5 +121,8 @@ private:
 		bool _InterpretGroupNode( XNode const& node );
 			bool _InterpretMappingNode( XNode const& node );
 
+	CString _currentSoundSchemeName;
+	CString _currentSoundEventName;
+
 	friend class XomInitializer;
 };
