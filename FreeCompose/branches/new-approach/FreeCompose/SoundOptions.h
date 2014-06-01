@@ -29,15 +29,15 @@ public:
 // SoundScheme: contains a collection of event configuration
 //
 
-using SoundEventMap = std::map<CString, SoundEvent>;
-using SoundEventMapPair = std::pair<CString, SoundEvent>;
+using SoundEventMap = std::map<CString, SoundEvent*>;
+using SoundEventMapPair = std::pair<CString, SoundEvent*>;
 
 class SoundScheme {
 
 public:
 	inline SoundScheme( ) { }
 	inline SoundScheme( CString const& id, CString const& name ): ID( id ), Name( name ) { }
-	inline ~SoundScheme( ) { }
+	inline ~SoundScheme( );
 
 	CString ID;
 	CString Name;
@@ -46,10 +46,10 @@ public:
 
 };
 
-// The following method is defined here because class SoundScheme is incomplete until here.
+// The following method is defined here because class SoundScheme is incomplete until this point.
 inline SoundScheme* SoundOptions::GetSoundScheme( CString const& name ) {
 	for ( auto& s : Schemes ) {
-		if ( s.Name.CompareNoCase( name ) ) {
+		if ( 0 == s.Name.CompareNoCase( name ) ) {
 			return &s;
 		}
 	}
@@ -74,6 +74,14 @@ public:
 	CString Name;
 
 };
+
+// The following method is defined here because class SoundEvent is incomplete until this point.
+inline SoundScheme::~SoundScheme( ) {
+	for ( auto p : Events ) {
+		delete p.second;
+	}
+	Events.clear( );
+}
 
 //
 // NoSoundEvent: Silent event.
