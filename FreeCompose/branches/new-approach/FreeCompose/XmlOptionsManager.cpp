@@ -776,6 +776,39 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 					XNode ComposeKey         = CreateAndAppendXNode( doc, L"ComposeKey",         Keyboard, _pOptionsData->ComposeVk );
 					XNode SwapCapsLockKey    = CreateAndAppendXNode( doc, L"SwapCapsLockKey",    Keyboard, _pOptionsData->SwapCapsLockVk );
 
+				XNode Sounds = CreateAndAppendXNode( doc, L"Sounds", Options );
+				for ( auto& scheme : _pOptionsData->Sounds.Schemes ) {
+					XNode Scheme = CreateAndAppendXNode( doc, L"Scheme", Sounds );
+					XElement SchemeElement = Scheme;
+					SchemeElement->setAttribute( L"ID",   static_cast<LPCWSTR>( scheme.ID   ) );
+					SchemeElement->setAttribute( L"Name", static_cast<LPCWSTR>( scheme.Name ) );
+					for ( SoundEventMapPair const& pair : scheme.Events ) {
+						XNode SoundEvent = CreateAndAppendXNode( doc, L"SoundEvent", Scheme );
+						XElement SoundEventElement = SoundEvent;
+						SoundEventElement->setAttribute( L"Name", static_cast<LPCWSTR>( pair.first ) );
+
+						NoSoundEvent          const* pNoSoundEvent          = dynamic_cast<NoSoundEvent          const*>( &pair.second );
+						ApplicationSoundEvent const* pApplicationSoundEvent = dynamic_cast<ApplicationSoundEvent const*>( &pair.second );
+						ToneSoundEvent        const* pToneSoundEvent        = dynamic_cast<ToneSoundEvent        const*>( &pair.second );
+						if ( pNoSoundEvent ) {
+							XNode NoSound = CreateAndAppendXNode( doc, L"NoSound", SoundEvent );
+						} else if ( pApplicationSoundEvent ) {
+							XNode ApplicationSound = CreateAndAppendXNode( doc, L"ApplicationSound", SoundEvent );
+						} else if ( pToneSoundEvent ) {
+							XNode Tone = CreateAndAppendXNode( doc, L"Tone", SoundEvent );
+							XElement ToneElement = Tone;
+							CString freq, dur;
+							freq.Format( L"%u", pToneSoundEvent->Frequency );
+							dur.Format( L"%u", pToneSoundEvent->Duration );
+							ToneElement->setAttribute( L"Frequency", static_cast<LPCWSTR>( freq ) );
+							ToneElement->setAttribute( L"Duration",  static_cast<LPCWSTR>( dur  ) );
+						} else {
+							debug( L"CXmlOptionsManager::SaveToFile: Unknown sound event type found while saving sound schemas. Name: '%s'\n", static_cast<LPCWSTR>( pair.first ) );
+						}
+					}
+				}
+
+
 			XNode Mappings = CreateAndAppendXNode( doc, L"Mappings", FcConfiguration );
 
 			int groupCount = static_cast<int>( _pOptionsData->ComposeSequenceGroups.GetCount( ) );
