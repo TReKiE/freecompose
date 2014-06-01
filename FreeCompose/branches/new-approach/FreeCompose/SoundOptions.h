@@ -4,17 +4,26 @@ class SoundScheme;
 class SoundEvent;
 
 
+
 class SoundOptions {
 
 public:
+	inline SoundOptions( ) { }
+	inline ~SoundOptions( ) { }
+
 	std::vector<SoundScheme> Schemes;
 
 };
 
 
+
 class SoundScheme {
 
 public:
+	inline SoundScheme( ) { }
+	inline SoundScheme( CString const& id, CString const& name ): ID( id ), Name( name ) { }
+	inline ~SoundScheme( ) { }
+
 	CString ID;
 	CString Name;
 
@@ -23,13 +32,17 @@ public:
 };
 
 
+
 class SoundEvent {
 
 public:
 	inline SoundEvent( ) { }
+	inline SoundEvent( CString const& name ): Name( name ) { }
 	inline virtual ~SoundEvent( ) { }
 
-	virtual bool PlaySound( void ) = 0;
+	inline virtual bool PlaySound( void ) {
+		return false;
+	}
 
 	CString Name;
 
@@ -38,11 +51,12 @@ public:
 class NoSoundEvent: public SoundEvent {
 
 public:
-	inline NoSoundEvent( ) { }
+	inline NoSoundEvent( ): SoundEvent( ) { }
+	inline NoSoundEvent( CString const& name ): SoundEvent( name ) { }
 	inline virtual ~NoSoundEvent( ) { }
 
 	inline virtual bool PlaySound( void ) {
-		return false;
+		return true;
 	}
 
 };
@@ -50,7 +64,8 @@ public:
 class ApplicationSoundEvent: public SoundEvent {
 
 public:
-	inline ApplicationSoundEvent( ) { }
+	inline ApplicationSoundEvent( ): SoundEvent( ) { }
+	inline ApplicationSoundEvent( CString const& name ): SoundEvent( name ) { }
 	inline virtual ~ApplicationSoundEvent( ) { }
 
 	inline virtual bool PlaySound( void ) {
@@ -62,7 +77,8 @@ public:
 class ToneSoundEvent: public SoundEvent {
 
 public:
-	inline ToneSoundEvent( ) { }
+	inline ToneSoundEvent( ): SoundEvent( ), Frequency( 0 ), Duration( 0 ) { }
+	inline ToneSoundEvent( CString const& name, unsigned const frequency, unsigned const duration ): SoundEvent( name ), Frequency( frequency ), Duration( duration ) { }
 	inline virtual ~ToneSoundEvent( ) { }
 
 	inline virtual bool PlaySound( void ) {
