@@ -45,6 +45,8 @@ public:
 	DWORD ComposeVk;
 	DWORD SwapCapsLockVk;
 
+	SoundOptions Sounds;
+
 	ComposeSequenceGroupArray ComposeSequenceGroups;
  
 private:
