@@ -756,6 +756,9 @@ bool CXmlOptionsManager::SaveToFile( void ) {
 	try {
         doc->appendChild( doc->createProcessingInstruction( L"xml", L"version='1.0' encoding='utf-16le'" ) );
 		XNode FcConfiguration = CreateAndAppendXNode( doc, L"FcConfiguration", doc );
+		XElement FcConfigurationElement = FcConfiguration;
+		FcConfigurationElement->setAttribute( L"xmlns:xsi", L"http://www.w3.org/2001/XMLSchema-instance" );
+		FcConfigurationElement->setAttribute( L"xsi:noNamespaceSchemaLocation", L"FcConfiguration.xsd" );
 
 			XNode Options = CreateAndAppendXNode( doc, L"Options", FcConfiguration );
 
