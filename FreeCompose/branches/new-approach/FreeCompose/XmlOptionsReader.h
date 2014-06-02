@@ -1,9 +1,9 @@
 #pragma once
 
-class XmlOptionsReader {
+class CXmlOptionsReader {
 
 public:
-	XmlOptionsReader( );
-	~XmlOptionsReader( );
+	CXmlOptionsReader( );
+	~CXmlOptionsReader( );
 
 };

@@ -2,12 +2,12 @@
 
 #include "XmlOptionsWriter.h"
 
-XmlOptionsWriter::XmlOptionsWriter( )
+CXmlOptionsWriter::CXmlOptionsWriter( )
 {
 	
 }
 
-XmlOptionsWriter::~XmlOptionsWriter( )
+CXmlOptionsWriter::~CXmlOptionsWriter( )
 {
 	
 }

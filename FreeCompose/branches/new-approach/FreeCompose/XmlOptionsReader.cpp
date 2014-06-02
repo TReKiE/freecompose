@@ -2,12 +2,12 @@
 
 #include "XmlOptionsReader.h"
 
-XmlOptionsReader::XmlOptionsReader( )
+CXmlOptionsReader::CXmlOptionsReader( )
 {
 	
 }
 
-XmlOptionsReader::~XmlOptionsReader( )
+CXmlOptionsReader::~CXmlOptionsReader( )
 {
 	
 }
