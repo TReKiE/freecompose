@@ -1,9 +1,9 @@
 #pragma once
 
-class XmlOptionsWriter {
+class CXmlOptionsWriter {
 
 public:
-	XmlOptionsWriter( );
-	~XmlOptionsWriter( );
+	CXmlOptionsWriter( );
+	~CXmlOptionsWriter( );
 
 };
