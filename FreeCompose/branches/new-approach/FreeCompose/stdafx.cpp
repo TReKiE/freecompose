@@ -4,6 +4,7 @@
 
 #include "FreeCompose.h"
 #include "SoundPlayer.h"
+#include "StringMapper.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -58,3 +59,26 @@ wchar_t const* CompositionSoundNames[] = {
 //
 
 SoundPlayer* g_pSoundPlayer;
+
+//
+// StringMappers
+//
+
+extern StringMapper<bool> const BoolStringMapper {
+	L"false",
+	L"true",
+};
+
+extern StringMapper<CAPS_LOCK_TOGGLE_MODE> const CltmStringMapper {
+	static_cast<LPCWSTR>( nullptr ),
+	L"normal",
+	L"pressTwice",
+	L"disabled",
+};
+
+extern StringMapper<CAPS_LOCK_SWAP_MODE> const ClsmStringMapper {
+	static_cast<LPCWSTR>( nullptr ),
+	L"normal",
+	L"swap",
+	L"replace",
+};

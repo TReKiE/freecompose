@@ -99,3 +99,8 @@ extern inline bool IsKeyDown( const DWORD vk ) {
 extern inline CString LoadFromStringTable( unsigned nResourceId ) {
 	return CString( reinterpret_cast<LPCWSTR>( nResourceId ) );
 }
+
+template<typename Tin, typename Tout>
+extern inline Tout Coerce( Tin const& in ) {
+	return static_cast<Tout>( _variant_t( in ) );
+}
