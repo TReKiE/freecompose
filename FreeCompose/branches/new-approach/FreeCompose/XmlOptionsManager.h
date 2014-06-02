@@ -8,6 +8,8 @@
 
 class COptionsData;
 class CXmlOptionsManager;
+class CXmlOptionsReader;
+class CXmlOptionsWriter;
 
 //==============================================================================
 // Type aliases
@@ -26,9 +28,11 @@ using XProcessingInstruction = MSXML2::IXMLDOMProcessingInstructionPtr;
 using XSchemaCollection      = MSXML2::IXMLDOMSchemaCollectionPtr;
 using XText                  = MSXML2::IXMLDOMTextPtr;
 
-using MethodPtr              = bool (CXmlOptionsManager::*)( XNode const& );
-using XmlMethodMap           = std::map<_bstr_t, MethodPtr>;
-using XmlMethodMapPair       = std::pair<_bstr_t, MethodPtr>;
+//==============================================================================
+// Constants
+//==============================================================================
+
+extern wchar_t const XML_NAMESPACE[];
 
 //==============================================================================
 // Class declarations
@@ -38,7 +42,6 @@ class CXmlOptionsManager {
 	// Rule of Five members
 
 	inline CXmlOptionsManager( ):
-		_pCurrentComposeSequences( nullptr ),
 		_pOptionsData( nullptr )
 	{ }
 
@@ -70,7 +73,6 @@ public:
 	// User constructors
 public:
 	inline CXmlOptionsManager( COptionsData* pOptionsData ):
-		_pCurrentComposeSequences( nullptr ),
 		_pOptionsData( pOptionsData )
 	{
 
@@ -81,13 +83,13 @@ public:
 	bool operator==( CXmlOptionsManager const& );
 	bool operator!=( CXmlOptionsManager const& );
 
+	// Methods
 public:
 	bool LoadDefaultConfiguration( void );
 	bool LoadFromFile( void );
 	bool SaveToFile( void );
 
 private:
-	ComposeSequenceArray* _pCurrentComposeSequences;
 	COptionsData* _pOptionsData;
 	XSchemaCollection _xmlSchemaCache;
 	bool _loadingDefaultConfig;
@@ -95,34 +97,4 @@ private:
 	XDocument _CreateDomDocument( void );
 	bool _LoadSchema( void );
 
-	bool _ComposeSequenceFromXNode( XNode const& value, ComposeSequence& result );
-
-	bool _InterpretConfiguration( XDocument& doc );
-
-	bool _DispatchChildren( wchar_t const* label,  XNode const& node, XmlMethodMap& map );
-	bool _DispatchNode( wchar_t const* label, XNode const& node, XmlMethodMap& map );
-
-	bool _InterpretOptionsNode( XNode const& node );
-		bool _InterpretStartupNode( XNode const& node );
-			bool _InterpretStartActiveNode( XNode const& node );
-			bool _InterpretStartWithWindowsNode( XNode const& node );
-		bool _InterpretKeyboardNode( XNode const& node );
-			bool _InterpretCapsLockToggleModeNode( XNode const& node );
-			bool _InterpretCapsLockSwapModeNode( XNode const& node );
-			bool _InterpretComposeKeyNode( XNode const& node );
-			bool _InterpretSwapCapsLockKeyNode( XNode const& node );
-		bool _InterpretSoundsNode( XNode const& node );
-			bool _InterpretSchemeNode( XNode const& node );
-				bool _InterpretSoundEventNode( XNode const& node );
-					bool _InterpretNoSoundNode( XNode const& node );
-					bool _InterpretApplicationSoundNode( XNode const& node );
-					bool _InterpretToneNode( XNode const& node );
-	bool _InterpretMappingsNode( XNode const& node );
-		bool _InterpretGroupNode( XNode const& node );
-			bool _InterpretMappingNode( XNode const& node );
-
-	CString _currentSoundSchemeName;
-	CString _currentSoundEventName;
-
-	friend class XomInitializer;
 };
