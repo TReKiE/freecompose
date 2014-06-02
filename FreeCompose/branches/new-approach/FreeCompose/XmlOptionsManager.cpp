@@ -18,7 +18,6 @@
 // Constants
 //==============================================================================
 
-int const CONFIGURATION_SCHEMA_VERSION = 1;
 wchar_t const XML_NAMESPACE[] = L"http://www.zive.ca/xmlns/FreeCompose/configuration/1";
 
 //==============================================================================
