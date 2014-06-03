@@ -38,10 +38,10 @@
 #define IDC_F_CAPS_LOCK_TOGGLE_MODE_PRESSTWICE 4007
 #define IDC_F_CAPS_LOCK_TOGGLE_MODE_DISABLED 4008
 #define IDC_S_SCHEME                    5001
-#define IDC_S_EVENT               5002
+#define IDC_S_EVENT                     5002
 #define IDC_S_NO_SOUND                  5003
 #define IDC_S_APPLICATION_SOUND         5004
-#define IDC_S_SOUND_FILE_NAME           5005
+#define IDC_S_FILE_NAME                 5005
 #define IDC_S_TONE_SOUND                5006
 #define IDC_S_FREQUENCY                 5007
 #define IDC_S_DURATION                  5008
