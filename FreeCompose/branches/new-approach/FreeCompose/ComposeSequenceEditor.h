@@ -15,9 +15,6 @@ public:
 	CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent = nullptr );
 	virtual ~CComposeSequenceEditor( );
 
-	// Dialog Data
-	enum { IDD = IDD_COMPOSE_SEQUENCE_EDITOR };
-
 	// Results
 	CArray<ComposeSequence> m_ComposeSequences;
 

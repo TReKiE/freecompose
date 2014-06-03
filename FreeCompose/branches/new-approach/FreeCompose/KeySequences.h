@@ -15,8 +15,6 @@ class CKeySequences: public CPropertyPage {
 	DECLARE_MESSAGE_MAP( )
 
 public:
-	enum { IDD = IDT_KEYSEQUENCES };
-
 	CKeySequences( COptionsData& Options );
 	virtual ~CKeySequences( );
 

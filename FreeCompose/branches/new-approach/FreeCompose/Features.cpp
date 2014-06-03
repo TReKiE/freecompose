@@ -34,7 +34,7 @@ BEGIN_MESSAGE_MAP( CFeatures, CPropertyPage )
 END_MESSAGE_MAP( )
 
 CFeatures::CFeatures( COptionsData& Options ):
-	CPropertyPage ( IDD ),
+	CPropertyPage ( IDT_FEATURES ),
 	m_Options     ( Options )
 {
 
