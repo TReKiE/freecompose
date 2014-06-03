@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef __cplusplus
-#error Sorry, you must compile FCHookDll.h as C++.
+#error Sorry, FCHookDll.h must be compiled as C++.
 #endif
 
 #ifdef FCHOOKDLL_EXPORTS
@@ -29,9 +29,9 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_REPLACE,
 };
 
-enum class Pip {
-	none,
-	Starting,
+enum class CompositionSound: int {
+	none       = -1,
+	Starting   =  0,
 	KeyPressed,
 	Succeeded,
 	Failed,

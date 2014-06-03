@@ -23,7 +23,7 @@ DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 			ComposeState = csCOMPOSE;
 			KeyEventHandlers[ vkCompose ] = new KeyUpSink( pkb->vkCode, this );
 			if ( hwndNotifyWindow ) {
-				PostPipMessage( Pip::Starting );
+				PostCompositionSoundMessage( CompositionSound::Starting );
 			}
 			result = D_REJECT_KEY;
 			break;
@@ -32,7 +32,7 @@ DISPOSITION ComposeKeyHandler::KeyDown( KBDLLHOOKSTRUCT* pkb ) {
 			ComposeState = csNORMAL;
 			KeyEventHandlers[ vkCompose ] = new KeyUpSink( pkb->vkCode, this );
 			if ( hwndNotifyWindow ) {
-				PostPipMessage( Pip::Escape );
+				PostCompositionSoundMessage( CompositionSound::Escape );
 			}
 			result = D_ACCEPT_KEY;
 			break;

@@ -23,12 +23,12 @@ CFreeComposeApp theApp;
 // Registered window messages
 //
 
-UINT const APP_ACTIVATE    = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_ACTIVATE" );
-UINT const APP_NOTIFYICON  = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_NOTIFYICON" );
-UINT const APP_RECONFIGURE = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_RECONFIGURE" );
+UINT const APP_ACTIVATE          = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_ACTIVATE" );
+UINT const APP_NOTIFYICON        = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_NOTIFYICON" );
+UINT const APP_RECONFIGURE       = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_RECONFIGURE" );
 
-UINT const FCM_KEY         = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
-UINT const FCM_PIP         = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_PIP" );
+UINT const FCM_KEY               = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
+UINT const FCM_COMPOSITION_SOUND = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_COMPOSITION_SOUND" );
 
 //
 // Common Controls (COMCTL32) version

@@ -36,7 +36,7 @@ namespace Stringify {
 
 };
 
-UINT const FCM_PIP = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_PIP" );
+UINT const FCM_COMPOSITION_SOUND = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_COMPOSITION_SOUND" );
 UINT const FCM_KEY = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 
 //==============================================================================

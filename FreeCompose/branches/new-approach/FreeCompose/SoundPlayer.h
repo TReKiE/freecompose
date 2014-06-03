@@ -3,15 +3,13 @@
 #include <AutoCriticalSection.h>
 #include <AutoEvent.h>
 
-#include "AppSoundsRegistry.h"
-
 class SoundPlayer {
 
 public:
 	SoundPlayer( );
 	~SoundPlayer( );
 
-	void PlaySoundForEvent( Pip soundEvent );
+	void PlaySoundForEvent( CompositionSound soundEvent );
 	void ShutDown( void );
 
 };

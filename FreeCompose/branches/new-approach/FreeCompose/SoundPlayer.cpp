@@ -1,5 +1,8 @@
 #include "stdafx.h"
 
+#include <FCHookDll.h>
+
+#include "AppSoundsRegistry.h"
 #include "SoundPlayer.h"
 
 #ifdef _DEBUG
@@ -314,29 +317,29 @@ SoundPlayer::~SoundPlayer( ) {
 	ShutDown( );
 }
 
-void SoundPlayer::PlaySoundForEvent( Pip soundEvent ) {
+void SoundPlayer::PlaySoundForEvent( CompositionSound soundEvent ) {
 	switch ( soundEvent ) {
-		case Pip::Starting:
+		case CompositionSound::Starting:
 			_pSoundPlayerThread->PlayTone( 523, 100 );
 			break;
 
-		case Pip::KeyPressed:
+		case CompositionSound::KeyPressed:
 			_pSoundPlayerThread->PlayTone( 523, 100 );
 			break;
 
-		case Pip::Succeeded:
+		case CompositionSound::Succeeded:
 			_pSoundPlayerThread->PlayTone( 1047, 100 );
 			break;
 
-		case Pip::Failed:
+		case CompositionSound::Failed:
 			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Failed );
 			break;
 
-		case Pip::Cancelled:
+		case CompositionSound::Cancelled:
 			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Cancelled );
 			break;
 
-		case Pip::Escape:
+		case CompositionSound::Escape:
 			_pSoundPlayerThread->PlayCompositionSound( CompositionSound::Escape );
 			break;
 
