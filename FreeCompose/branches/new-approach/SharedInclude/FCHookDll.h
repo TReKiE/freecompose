@@ -37,6 +37,7 @@ enum class CompositionSound: int {
 	Failed,
 	Cancelled,
 	Escape,
+	max
 };
 
 //==============================================================================
