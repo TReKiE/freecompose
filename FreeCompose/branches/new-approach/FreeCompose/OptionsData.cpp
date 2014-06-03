@@ -26,6 +26,7 @@ COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	CapsLockSwapMode   = options.CapsLockSwapMode;
 	ComposeVk          = options.ComposeVk;
 	SwapCapsLockVk     = options.SwapCapsLockVk;
+	Sounds             = options.Sounds;
 
 	ComposeSequenceGroups.RemoveAll( );
 	ComposeSequenceGroups.Append( options.ComposeSequenceGroups );
@@ -40,6 +41,7 @@ bool COptionsData::operator==( COptionsData const& options ) const {
 	if ( CapsLockSwapMode   != options.CapsLockSwapMode   ) { return false; }
 	if ( ComposeVk          != options.ComposeVk          ) { return false; }
 	if ( SwapCapsLockVk     != options.SwapCapsLockVk     ) { return false; }
+	if ( Sounds             != options.Sounds             ) { return false; }
 
 	if ( ComposeSequenceGroups.GetCount( ) != options.ComposeSequenceGroups.GetCount( ) ) {
 		return false;
