@@ -7,7 +7,7 @@ class CSounds: public CPropertyPage {
 	DECLARE_MESSAGE_MAP( )
 
 public:
-	enum { IDD = IDD_SOUNDS };
+	enum { IDD = IDT_SOUNDS };
 
 	CSounds( COptionsData& Options );
 	virtual ~CSounds( );

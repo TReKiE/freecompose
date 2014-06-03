@@ -6,10 +6,10 @@
 #define IDR_MAINFRAME                   128
 #define IDM_TRAY_MENU                   129
 #define IDD_ABOUT                       130
-#define IDD_KEYSEQUENCES                131
-#define IDD_FEATURES                    132
-#define IDD_COMPOSE_SEQUENCE_EDITOR     133
-#define IDD_SOUNDS                      134
+#define IDD_COMPOSE_SEQUENCE_EDITOR     131
+#define IDT_KEYSEQUENCES                132
+#define IDT_FEATURES                    133
+#define IDT_SOUNDS                      134
 #define IDADD                           1001
 #define IDEDIT                          1002
 #define IDREMOVE                        1003

@@ -7,7 +7,7 @@ class CFeatures: public CPropertyPage {
 	DECLARE_MESSAGE_MAP( )
 
 public:
-	enum { IDD = IDD_FEATURES };
+	enum { IDD = IDT_FEATURES };
 
 	CFeatures( COptionsData& Options );
 	virtual ~CFeatures( );
