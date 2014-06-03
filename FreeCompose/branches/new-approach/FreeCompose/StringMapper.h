@@ -1,13 +1,13 @@
 #pragma once
 
-template<typename T>
+template<typename Tvalue, typename Tstring = _bstr_t>
 class StringMapper {
 public:
 	inline StringMapper( ) {
 
 	}
 
-	inline StringMapper( _bstr_t const strings[] ): StringMapper( ) {
+	inline StringMapper( Tstring const strings[] ): StringMapper( ) {
 		for ( auto s : strings ) {
 			_strings.Add( s );
 		}
@@ -19,7 +19,7 @@ public:
 		}
 	}
 
-	inline StringMapper( std::initializer_list<_bstr_t> strings ): StringMapper( ) {
+	inline StringMapper( std::initializer_list<Tstring> strings ): StringMapper( ) {
 		for ( auto s : strings ) {
 			_strings.Add( s );
 		}
@@ -60,37 +60,37 @@ public:
 		return *this;
 	}
 
-	inline T operator[]( _bstr_t const& value ) const {
+	inline Tvalue operator[]( Tstring const& value ) const {
 		return Map( value );
 	}
 
-	inline T operator[]( wchar_t const* value ) const {
+	inline Tvalue operator[]( wchar_t const* value ) const {
 		return Map( value );
 	}
 
-	inline _bstr_t operator[]( T const& value ) const {
+	inline Tstring operator[]( Tvalue const& value ) const {
 		return Map( value );
 	}
 
-	inline T Map( _bstr_t const& value ) const {
-		T ret = static_cast<T>( 0 );
+	inline Tvalue Map( Tstring const& value ) const {
+		Tvalue ret = static_cast<Tvalue>( 0 );
 		for ( INT_PTR n = 0; n < _strings.GetCount( ); n++ ) {
 			if ( static_cast<LPCWSTR>( _strings[n] ) && 0 == wcsicmp( _strings[n], value ) ) {
 #pragma warning(suppress: 4800)
-				ret = static_cast<T>( n );
+				ret = static_cast<Tvalue>( n );
 				break;
 			}
 		}
 		return ret;
 	}
 
-	inline _bstr_t Map( T const& value ) const {
+	inline Tstring Map( Tvalue const& value ) const {
 		if ( static_cast<INT_PTR>( value ) >= _strings.GetCount( ) ) {
-			return _bstr_t( );
+			return Tstring( );
 		}
 		return _strings[value];
 	}
 
 private:
-	CArray<_bstr_t> _strings;
+	CArray<Tstring> _strings;
 };
