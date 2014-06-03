@@ -15,4 +15,5 @@ private:
 
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
+
 };
