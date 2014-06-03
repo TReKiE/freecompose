@@ -18,8 +18,8 @@ BEGIN_MESSAGE_MAP( CSounds, CPropertyPage )
 END_MESSAGE_MAP()
 
 CSounds::CSounds( COptionsData& Options ):
-	CPropertyPage( IDT_SOUNDS ),
-	m_Options( Options )
+	CPropertyPage ( IDT_SOUNDS ),
+	m_Options     ( Options )
 {
 
 }
