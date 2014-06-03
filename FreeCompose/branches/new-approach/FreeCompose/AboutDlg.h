@@ -5,8 +5,6 @@ class CAboutDlg: public CDialogEx {
 	DECLARE_MESSAGE_MAP( )
 
 public:
-	enum { IDD = IDD_ABOUT };
-
 	CAboutDlg( );
 	virtual ~CAboutDlg( );
 

@@ -117,7 +117,7 @@ public:
 //
 
 CKeySequences::CKeySequences( COptionsData& Options ):
-	CPropertyPage ( IDD ),
+	CPropertyPage ( IDT_KEYSEQUENCES ),
 	m_Options     ( Options ),
 	m_SortState   ( ssUnsorted ),
 	m_nSortColumn ( -1 )

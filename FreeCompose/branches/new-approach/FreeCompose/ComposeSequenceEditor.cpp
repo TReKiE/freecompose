@@ -63,7 +63,7 @@ enum ResultMode {
 int static nLastRadioGroupSelection = -1;
 
 CComposeSequenceEditor::CComposeSequenceEditor( ComposeSequence& sequence, SEQUENCE_EDITOR_MODE mode, CWnd* pParent ):
-	CDialogEx   ( IDD, pParent ),
+	CDialogEx   ( IDD_COMPOSE_SEQUENCE_EDITOR, pParent ),
 	m_sequence  ( sequence ),
 	m_mode      ( mode ),
 	m_pFont     ( nullptr ),

@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP( CAboutDlg, CDialogEx )
 END_MESSAGE_MAP( )
 
 CAboutDlg::CAboutDlg( ):
-	CDialogEx ( IDD     ),
+	CDialogEx ( IDD_ABOUT ),
 	m_pFont   ( nullptr )
 {
 
