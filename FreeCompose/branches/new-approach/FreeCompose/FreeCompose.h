@@ -23,4 +23,4 @@ extern UINT const APP_RECONFIGURE;
 extern UINT const APP_NOTIFYICON;
 
 extern UINT const FCM_KEY;
-extern UINT const FCM_PIP;
+extern UINT const FCM_COMPOSITION_SOUND;

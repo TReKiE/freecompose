@@ -1,15 +1,5 @@
 #pragma once
 
-enum class CompositionSound: int {
-	none = -1,
-	Starting = 0,
-	KeyPressed,
-	Succeeded,
-	Failed,
-	Cancelled,
-	Escape,
-};
-
 class CAppSoundsRegistry {
 
 public:

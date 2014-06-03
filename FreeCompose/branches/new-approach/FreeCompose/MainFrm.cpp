@@ -23,22 +23,22 @@ IMPLEMENT_DYNAMIC( CMainFrame, CFrameWnd )
 
 BEGIN_MESSAGE_MAP( CMainFrame, CFrameWnd )
 	//{{AFX_MSG_MAP( CMainFrame )
-	ON_WM_CREATE()
-	ON_WM_CLOSE()
-	ON_REGISTERED_MESSAGE (APP_ACTIVATE,     &CMainFrame::OnActivate)
-	ON_REGISTERED_MESSAGE (APP_NOTIFYICON,   &CMainFrame::OnNotifyIcon)
-	ON_REGISTERED_MESSAGE (APP_RECONFIGURE,  &CMainFrame::OnReconfigure)
-	ON_REGISTERED_MESSAGE (FCM_PIP,          &CMainFrame::OnFcmPip)
-	ON_COMMAND            (ID_APP_ABOUT,     &CMainFrame::OnAppAbout)
-	ON_COMMAND            (ID_APP_CAPSLOCK,  &CMainFrame::OnAppCapsLock)
-	ON_COMMAND            (ID_APP_CONFIGURE, &CMainFrame::OnAppConfigure)
-	ON_COMMAND            (ID_APP_EXIT,      &CMainFrame::OnAppExit)
-	ON_COMMAND            (ID_APP_TOGGLE,    &CMainFrame::OnAppToggle)
+	ON_WM_CREATE( )
+	ON_WM_CLOSE( )
+	ON_REGISTERED_MESSAGE ( APP_ACTIVATE,          &CMainFrame::OnActivate          )
+	ON_REGISTERED_MESSAGE ( APP_NOTIFYICON,        &CMainFrame::OnNotifyIcon        )
+	ON_REGISTERED_MESSAGE ( APP_RECONFIGURE,       &CMainFrame::OnReconfigure       )
+	ON_REGISTERED_MESSAGE ( FCM_COMPOSITION_SOUND, &CMainFrame::OnFcmPip            )
+	ON_COMMAND            ( ID_APP_ABOUT,          &CMainFrame::OnAppAbout          )
+	ON_COMMAND            ( ID_APP_CAPSLOCK,       &CMainFrame::OnAppCapsLock       )
+	ON_COMMAND            ( ID_APP_CONFIGURE,      &CMainFrame::OnAppConfigure      )
+	ON_COMMAND            ( ID_APP_EXIT,           &CMainFrame::OnAppExit           )
+	ON_COMMAND            ( ID_APP_TOGGLE,         &CMainFrame::OnAppToggle         )
 #ifdef _DEBUG
-	ON_COMMAND            (ID_APP_ZAPCONF,   &CMainFrame::OnAppZapConf)
+	ON_COMMAND            ( ID_APP_ZAPCONF,        &CMainFrame::OnAppZapConf        )
 #endif
-	ON_UPDATE_COMMAND_UI  (ID_APP_CAPSLOCK,  &CMainFrame::OnUpdateAppCapsLock)
-	ON_UPDATE_COMMAND_UI  (ID_APP_TOGGLE,    &CMainFrame::OnUpdateAppToggle)
+	ON_UPDATE_COMMAND_UI  ( ID_APP_CAPSLOCK,       &CMainFrame::OnUpdateAppCapsLock )
+	ON_UPDATE_COMMAND_UI  ( ID_APP_TOGGLE,         &CMainFrame::OnUpdateAppToggle   )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -173,7 +173,7 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 
 LRESULT CMainFrame::OnFcmPip( WPARAM wPip, LPARAM ) {
 	debug( L"CMainFrame::OnFcmPip: wPip=%ld\n", static_cast<long>( wPip ) );
-	g_pSoundPlayer->PlaySoundForEvent( static_cast<Pip>( wPip ) );
+	g_pSoundPlayer->PlaySoundForEvent( static_cast<CompositionSound>( wPip ) );
 	return 0;
 }
 

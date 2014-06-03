@@ -16,7 +16,7 @@ class KeyEventHandler;
 // Constants
 //==============================================================================
 
-extern UINT const FCM_PIP;
+extern UINT const FCM_COMPOSITION_SOUND;
 extern UINT const FCM_KEY;
 
 //==============================================================================
@@ -52,8 +52,8 @@ extern HWND                  hwndNotifyWindow;
 int CompareComposeSequences( const void*, const void* );
 void ReleaseComposeSequences( void );
 
-inline void PostPipMessage( Pip const pip ) {
-	::PostMessage( hwndNotifyWindow, FCM_PIP, static_cast<WPARAM>( pip ), 0 );
+inline void PostCompositionSoundMessage( CompositionSound const pip ) {
+	::PostMessage( hwndNotifyWindow, FCM_COMPOSITION_SOUND, static_cast<WPARAM>( pip ), 0 );
 }
 
 //==============================================================================
