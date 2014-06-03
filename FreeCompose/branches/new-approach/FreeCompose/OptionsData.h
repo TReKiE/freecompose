@@ -17,7 +17,8 @@ public:
 		operator=( options );
 	}
 
-	inline ~COptionsData( ) {
+	inline ~COptionsData( )
+	{
 
 	}
 
