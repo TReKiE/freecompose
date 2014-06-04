@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "FreeCompose.h"
-#include "AppSoundsRegistry.h"
+#include "FcAppSoundsRegistry.h"
 #include "Utils.h"
 
 #ifdef _DEBUG

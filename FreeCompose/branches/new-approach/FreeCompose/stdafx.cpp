@@ -3,7 +3,7 @@
 #include <initguid.h>
 
 #include "FreeCompose.h"
-#include "AppSoundsRegistry.h"
+#include "FcAppSoundsRegistry.h"
 #include "SoundPlayer.h"
 #include "StringMapper.h"
 
