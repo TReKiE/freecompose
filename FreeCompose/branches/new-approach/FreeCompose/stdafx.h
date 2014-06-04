@@ -30,6 +30,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <typeinfo>
 #include <vector>
 
 // Microsoft Foundation Classes
