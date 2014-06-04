@@ -61,5 +61,7 @@ private:
 	afx_msg void OnRename( );
 	afx_msg void OnRemove( );
 	afx_msg void OnBrowse( );
+	afx_msg void OnUpdateRemove( CCmdUI* pui );
+	afx_msg void OnUpdateBrowse( CCmdUI* pui );
 
 };

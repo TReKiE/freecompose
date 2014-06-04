@@ -21,10 +21,12 @@ IMPLEMENT_DYNAMIC( CSounds, CPropertyPage )
 
 BEGIN_MESSAGE_MAP( CSounds, CPropertyPage )
 	//{{AFX_MSG_MAP( CSounds )
-	ON_BN_CLICKED( IDADD,    CSounds::OnAdd    )
-	ON_BN_CLICKED( IDEDIT,   CSounds::OnRename )
-	ON_BN_CLICKED( IDREMOVE, CSounds::OnRemove )
-	ON_BN_CLICKED( IDBROWSE, CSounds::OnBrowse )
+	ON_COMMAND( IDADD,    CSounds::OnAdd    )
+	ON_COMMAND( IDEDIT,   CSounds::OnRename )
+	ON_COMMAND( IDREMOVE, CSounds::OnRemove )
+	ON_COMMAND( IDBROWSE, CSounds::OnBrowse )
+	ON_UPDATE_COMMAND_UI( IDREMOVE, CSounds::OnUpdateRemove )
+	ON_UPDATE_COMMAND_UI( IDBROWSE, CSounds::OnUpdateBrowse )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -109,7 +111,7 @@ BOOL CSounds::OnInitDialog( ) {
 		m_comboScheme.AddString( scheme.Name );
 	}
 
-	for ( auto& soundId : ApplicationSoundDisplayNameIds ) {
+	for ( auto soundId : ApplicationSoundDisplayNameIds ) {
 		m_comboEvent.AddString( LoadFromStringTable( soundId ) );
 	}
 
@@ -118,12 +120,12 @@ BOOL CSounds::OnInitDialog( ) {
 
 void CSounds::OnAdd( ) {
 	// TODO
-	// pop up Add/Rename dialog for new name
+	// pop up Add/Rename dialog for name
 }
 
 void CSounds::OnRename( ) {
 	// TODO
-	// pop up Add/Rename dialog for new name
+	// pop up Add/Rename dialog for name
 }
 
 void CSounds::OnRemove( ) {
@@ -132,18 +134,40 @@ void CSounds::OnRemove( ) {
 }
 
 void CSounds::OnBrowse( ) {
-	// TODO
-	// init m_soundEventFileName
+	debug( L"CSounds::OnBrowse: about to show common file dialog\n" );
 
-	CString m_soundEventFileName;
+	UpdateData( TRUE );
+
+	CString m_soundEventFileName = CFcAppSoundsRegistry::GetEventFileName( m_Schemes[m_nSchemeIndex].ID, ApplicationSoundNames[m_nEventIndex] );
 
 	CFileDialog dlg( TRUE, L"wav", m_soundEventFileName, dwOfnFlags, L"Wave Files (*.wav)|*.wav|All Files (*.*)|*.*||", this, TRUE );
-	if ( !strLastDirectory.IsEmpty( ) ) {
-		dlg.m_ofn.lpstrInitialDir = strLastDirectory;
-	} else {
+	if ( !m_soundEventFileName.IsEmpty( ) ) {
 		dlg.m_ofn.lpstrInitialDir = GetPathFromFileName( m_soundEventFileName );
+	} else {
+		dlg.m_ofn.lpstrInitialDir = strLastDirectory;
 	}
 
 	INT_PTR ret = dlg.DoModal( );
+	if ( IDCANCEL == ret ) {
+		debug( L"CSounds::OnBrowse: user clicked Cancel\n" );
+	}
+	if ( IDOK != ret ) {
+		debug( L"CSounds::OnBrowse: unknown return value from DoModal: %d\n", static_cast<int>( ret ) );
+	}
 
+	SoundEvent* pSoundEvent = m_Schemes[m_nSchemeIndex].Events[ApplicationSoundNames[m_nEventIndex]];
+	ApplicationSoundEvent* pAppSoundEvent = dynamic_cast<ApplicationSoundEvent*>( pSoundEvent );
+	if ( !pAppSoundEvent ) {
+		m_Schemes[m_nSchemeIndex].Events[ApplicationSoundNames[m_nEventIndex]] = new ApplicationSoundEvent( );
+		delete pSoundEvent;
+	}
+}
+
+void CSounds::OnUpdateRemove( CCmdUI* pui ) {
+	CString scheme = m_Schemes[m_nSchemeIndex].ID;
+	pui->Enable( ( 0 != scheme.CompareNoCase( L".Default" ) ) && ( 0 != scheme.CompareNoCase( L".None" ) ) );
+}
+
+void CSounds::OnUpdateBrowse( CCmdUI* pui ) {
+	pui->Enable( TRUE );
 }
