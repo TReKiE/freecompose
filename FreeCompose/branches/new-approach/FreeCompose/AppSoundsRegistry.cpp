@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "FreeCompose.h"
 #include "AppSoundsRegistry.h"
 #include "Utils.h"
 
@@ -10,31 +11,22 @@
 #	endif
 #endif
 
-static int CompositionDisplayNameIds[] = {
-	IDS_APPSOUND_COMPOSITION_STARTING,
-	IDS_APPSOUND_COMPOSITION_KEYPRESSED,
-	IDS_APPSOUND_COMPOSITION_SUCCEEDED,
-	IDS_APPSOUND_COMPOSITION_FAILED,
-	IDS_APPSOUND_COMPOSITION_CANCELLED,
-	IDS_APPSOUND_COMPOSITION_ESCAPE,
+static wchar_t const* ApplicationSoundDefaultSoundEventFileName[NumberOfApplicationSounds] = {
+	/* Starting    */ L"C:/Windows/Media/Windows Notify Calendar.wav",
+	/* KeyPressed  */ L"",
+	/* Succeeded   */ L"",
+	/* Failed      */ L"",
+	/* Cancelled   */ L"",
+	/* Escape      */ L"C:/Windows/Media/Windows Notify Email.wav",
+	/* Activated   */ L"",
+	/* Deactivated */ L"",
 };
-
-static wchar_t const* CompositionDefaultSoundSchemeFileName[] = {
-	/* Starting   */ L"C:/Windows/Media/Windows Notify Calendar.wav",
-	/* KeyPressed */ L"",
-	/* Succeeded  */ L"",
-	/* Failed     */ L"",
-	/* Cancelled  */ L"",
-	/* Escape     */ L"C:/Windows/Media/Windows Notify Email.wav",
-};
-
-int const NumberOfCompositionSounds = _countof( CompositionDisplayNameIds );
 
 //
 // Implementation
 //
 
-CString CAppSoundsRegistry::_GetCurrentSoundScheme( void ) {
+CString CFcAppSoundsRegistry::_GetCurrentSoundScheme( void ) {
 	CString currentSoundScheme;
 	LSTATUS ls;
 
@@ -49,33 +41,33 @@ CString CAppSoundsRegistry::_GetCurrentSoundScheme( void ) {
 		wchar_t* pwz = static_cast<wchar_t*>( alloca( cbValue ) );
 		ls = schemeskey.QueryStringValue( nullptr, pwz, &cbValue );
 		if ( ERROR_SUCCESS == ls ) {
-			debug( L"CAppSoundsRegistry::_RegisterApp: Current sound scheme is '%s'\n", pwz );
+			debug( L"CFcAppSoundsRegistry::_RegisterApp: Current sound scheme is '%s'\n", pwz );
 			currentSoundScheme = pwz;
 		} else {
-			debug( L"CAppSoundsRegistry::_RegisterApp: Couldn't query value of current sound scheme: error=%lu\n", ls );
+			debug( L"CFcAppSoundsRegistry::_RegisterApp: Couldn't query value of current sound scheme: error=%lu\n", ls );
 		}
 	} else {
-		debug( L"CAppSoundsRegistry::_GetCurrentSoundScheme: Failed to query size of current sound scheme's name: error=%lu\n", ls );
+		debug( L"CFcAppSoundsRegistry::_GetCurrentSoundScheme: Failed to query size of current sound scheme's name: error=%lu\n", ls );
 	}
 
 	ls = schemeskey.Close( );
 	return currentSoundScheme;
 }
 
-void CAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
+void CFcAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
 	LSTATUS ls;
 	CRegKey EventLabels;
 	CString tmp;
 	DWORD dwDisposition;
 
 	ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
-	for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
+	for ( int n = 0; n < NumberOfApplicationSounds; n++ ) {
 		CRegKey key;
-		tmp.Format( L"@%s,%d", pwzExeName, -CompositionDisplayNameIds[n] );
+		tmp.Format( L"@%s,-%d", pwzExeName, ApplicationSoundDisplayNameIds[n] );
 		dwDisposition = 0;
-		ls = key.Create( EventLabels, CompositionSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
+		ls = key.Create( EventLabels, ApplicationSoundNames[n], nullptr, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr, &dwDisposition );
 		if ( ( ERROR_SUCCESS == ls ) && ( REG_CREATED_NEW_KEY == dwDisposition ) ) {
-			ls = key.SetStringValue( nullptr, CompositionSoundNames[n] );
+			ls = key.SetStringValue( nullptr, ApplicationSoundNames[n] );
 			ls = key.SetStringValue( L"DispFileName", tmp );
 		}
 		ls = key.Close( );
@@ -84,7 +76,7 @@ void CAppSoundsRegistry::_RegisterEventLabels( wchar_t const* pwzExeName ) {
 	ls = EventLabels.Close( );
 }
 
-void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
+void CFcAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 	CRegKey FreeCompose;
 	CString tmp;
 	LSTATUS ls;
@@ -93,7 +85,7 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 	CString currentSoundScheme = _GetCurrentSoundScheme( );
 	bool silentScheme = ( 0 == currentSoundScheme.CompareNoCase( L".None" ) );
 	if ( silentScheme ) {
-		debug( L"CAppSoundsRegistry::_RegisterApp: Silent sound scheme is in effect!\n" );
+		debug( L"CFcAppSoundsRegistry::_RegisterApp: Silent sound scheme is in effect!\n" );
 	}
 
 	tmp.Format( L"@%s,%d", pwzExeName, -AFX_IDS_APP_TITLE );
@@ -103,14 +95,14 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 		ls = FreeCompose.SetStringValue( nullptr, LoadFromStringTable( AFX_IDS_APP_TITLE ) );
 		ls = FreeCompose.SetStringValue( L"DispFileName", tmp );
 
-		for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
+		for ( int n = 0; n < NumberOfApplicationSounds; n++ ) {
 			CRegKey soundkey;
-			ls = soundkey.Create( FreeCompose, CompositionSoundNames[n] );
-			ls = soundkey.SetStringValue( nullptr, CompositionSoundNames[n] );
+			ls = soundkey.Create( FreeCompose, ApplicationSoundNames[n] );
+			ls = soundkey.SetStringValue( nullptr, ApplicationSoundNames[n] );
 
 			CRegKey dotdefaultkey;
 			ls = dotdefaultkey.Create( soundkey, L".Default" );
-			ls = dotdefaultkey.SetStringValue( nullptr, CompositionDefaultSoundSchemeFileName[n] );
+			ls = dotdefaultkey.SetStringValue( nullptr, ApplicationSoundDefaultSoundEventFileName[n] );
 			ls = dotdefaultkey.Close( );
 
 			CRegKey dotnonekey;
@@ -120,7 +112,7 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 
 			CRegKey dotcurrentkey;
 			ls = dotcurrentkey.Create( soundkey, L".Current" );
-			ls = dotcurrentkey.SetStringValue( nullptr, silentScheme ? L"" : CompositionDefaultSoundSchemeFileName[n] );
+			ls = dotcurrentkey.SetStringValue( nullptr, silentScheme ? L"" : ApplicationSoundDefaultSoundEventFileName[n] );
 			ls = dotcurrentkey.Close( );
 
 			ls = soundkey.Close( );
@@ -130,31 +122,31 @@ void CAppSoundsRegistry::_RegisterApp( wchar_t const* pwzExeName ) {
 	ls = FreeCompose.Close( );
 }
 
-void CAppSoundsRegistry::_UnregisterEventLabels( void ) {
+void CFcAppSoundsRegistry::_UnregisterEventLabels( void ) {
 	CRegKey EventLabels;
 	LSTATUS ls = EventLabels.Open( HKEY_CURRENT_USER, L"AppEvents\\EventLabels" );
 	if ( ERROR_SUCCESS != ls ) {
-		debug( L"CAppSoundsRegistry::_UnregisterEventLabels: EventLabels.Open failed: %ld\n", ls );
+		debug( L"CFcAppSoundsRegistry::_UnregisterEventLabels: EventLabels.Open failed: %ld\n", ls );
 		return;
 	}
 
-	for ( int n = 0; n < NumberOfCompositionSounds; n++ ) {
-		ls = EventLabels.RecurseDeleteKey( CompositionSoundNames[n] );
-		debug( L"CAppSoundsRegistry::_UnregisterEventLabels: delete of '%s': %ld\n", CompositionSoundNames[n], ls );
+	for ( int n = 0; n < NumberOfApplicationSounds; n++ ) {
+		ls = EventLabels.RecurseDeleteKey( ApplicationSoundNames[n] );
+		debug( L"CFcAppSoundsRegistry::_UnregisterEventLabels: delete of '%s': %ld\n", ApplicationSoundNames[n], ls );
 	}
 	ls = EventLabels.Close( );
 }
 
-void CAppSoundsRegistry::_UnregisterApp( void ) {
+void CFcAppSoundsRegistry::_UnregisterApp( void ) {
 	CRegKey Apps;
 	LSTATUS ls = Apps.Open( HKEY_CURRENT_USER, L"AppEvents\\Schemes\\Apps" );
 	if ( ERROR_SUCCESS != ls ) {
-		debug( L"CAppSoundsRegistry::_UnregisterApp: open of HKCU\\AppEvents\\Schemes\\Apps failed: %ld\n", ls );
+		debug( L"CFcAppSoundsRegistry::_UnregisterApp: open of HKCU\\AppEvents\\Schemes\\Apps failed: %ld\n", ls );
 		return;
 	}
 
 	ls = Apps.RecurseDeleteKey( L"FreeCompose" );
-	debug( L"CAppSoundsRegistry::_UnregisterApp: delete of 'FreeCompose': %ld\n", ls );
+	debug( L"CFcAppSoundsRegistry::_UnregisterApp: delete of 'FreeCompose': %ld\n", ls );
 	ls = Apps.Close( );
 }
 
@@ -162,12 +154,12 @@ void CAppSoundsRegistry::_UnregisterApp( void ) {
 // Interface
 //
 
-void CAppSoundsRegistry::RegisterFcAppSounds( void ) {
+void CFcAppSoundsRegistry::Register( void ) {
 	_RegisterEventLabels( _wpgmptr );
 	_RegisterApp( _wpgmptr );
 }
 
-void CAppSoundsRegistry::UnregisterFcAppSounds( void ) {
+void CFcAppSoundsRegistry::Unregister( void ) {
 	_UnregisterEventLabels( );
 	_UnregisterApp( );
 }

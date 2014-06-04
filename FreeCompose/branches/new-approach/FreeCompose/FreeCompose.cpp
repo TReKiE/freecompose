@@ -104,7 +104,7 @@ BOOL CFreeComposeApp::InitInstance( ) {
 	}
 
 	// Initialize sound
-	CAppSoundsRegistry::RegisterFcAppSounds( );
+	CFcAppSoundsRegistry::Register( );
 	g_pSoundPlayer = new SoundPlayer( );
 
 	// Create and (not) show our hidden window

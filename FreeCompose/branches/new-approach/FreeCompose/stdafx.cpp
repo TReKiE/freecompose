@@ -3,6 +3,7 @@
 #include <initguid.h>
 
 #include "FreeCompose.h"
+#include "AppSoundsRegistry.h"
 #include "SoundPlayer.h"
 #include "StringMapper.h"
 
@@ -45,13 +46,26 @@ unsigned g_CommonControlsDllQfeNumber = 0;
 // Composition sound names
 //
 
-wchar_t const* CompositionSoundNames[] = {
+wchar_t const* ApplicationSoundNames[NumberOfApplicationSounds] = {
 	L"FC_Composition_Starting",
 	L"FC_Composition_KeyPressed",
 	L"FC_Composition_Succeeded",
 	L"FC_Composition_Failed",
 	L"FC_Composition_Cancelled",
 	L"FC_Composition_Escape",
+	L"FC_Application_Activated",
+	L"FC_Application_Deactivated",
+};
+
+int const ApplicationSoundDisplayNameIds[NumberOfApplicationSounds] = {
+	IDS_APPSOUND_COMPOSITION_STARTING,
+	IDS_APPSOUND_COMPOSITION_KEYPRESSED,
+	IDS_APPSOUND_COMPOSITION_SUCCEEDED,
+	IDS_APPSOUND_COMPOSITION_FAILED,
+	IDS_APPSOUND_COMPOSITION_CANCELLED,
+	IDS_APPSOUND_COMPOSITION_ESCAPE,
+	IDS_APPSOUND_APPLICATION_ACTIVATED,
+	IDS_APPSOUND_APPLICATION_DEACTIVATED,
 };
 
 //

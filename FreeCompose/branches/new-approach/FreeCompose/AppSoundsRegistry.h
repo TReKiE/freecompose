@@ -1,10 +1,10 @@
 #pragma once
 
-class CAppSoundsRegistry {
+class CFcAppSoundsRegistry {
 
 public:
-	static void RegisterFcAppSounds( void );
-	static void UnregisterFcAppSounds( void );
+	static void Register( void );
+	static void Unregister( void );
 
 private:
 	static CString _GetCurrentSoundScheme( void );
@@ -17,4 +17,7 @@ private:
 
 };
 
-extern wchar_t const* CompositionSoundNames[];
+int const NumberOfApplicationSounds = static_cast<int>( ApplicationSound::max );
+
+extern wchar_t const* ApplicationSoundNames[NumberOfApplicationSounds];
+extern int const ApplicationSoundDisplayNameIds[NumberOfApplicationSounds];

@@ -1,6 +1,9 @@
 #include "stdafx.h"
 
 #include "FreeCompose.h"
+#include "AppSoundsRegistry.h"
+#include "Utils.h"
+
 #include "Sounds.h"
 
 #ifdef _DEBUG
@@ -73,17 +76,6 @@ static CString GetPathFromFileName( CString const& strFileName ) {
 // CSounds
 //==============================================================================
 
-CSounds::CSounds( COptionsData& Options ):
-	CPropertyPage ( IDT_SOUNDS ),
-	m_Options     ( Options )
-{
-
-}
-
-CSounds::~CSounds( ) {
-
-}
-
 void CSounds::DoDataExchange( CDataExchange* pDX ) {
 	CPropertyPage::DoDataExchange( pDX );
 
@@ -111,6 +103,14 @@ void CSounds::DoDataExchange( CDataExchange* pDX ) {
 BOOL CSounds::OnInitDialog( ) {
 	if ( !CPropertyPage::OnInitDialog( ) ) {
 		return FALSE;
+	}
+
+	for ( auto& scheme : m_Schemes ) {
+		m_comboScheme.AddString( scheme.Name );
+	}
+
+	for ( auto& soundId : ApplicationSoundDisplayNameIds ) {
+		m_comboEvent.AddString( LoadFromStringTable( soundId ) );
 	}
 
 	return TRUE;
