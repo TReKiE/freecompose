@@ -3,7 +3,7 @@
 #include <FCHookDll.h>
 
 #include "FreeCompose.h"
-#include "AppSoundsRegistry.h"
+#include "FcAppSoundsRegistry.h"
 #include "SoundPlayer.h"
 
 #ifdef _DEBUG
