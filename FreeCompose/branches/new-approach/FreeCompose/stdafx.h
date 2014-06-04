@@ -66,8 +66,7 @@
 
 #undef _T
 #undef _TEXT
-#undef min
-#undef max
+#undef PlaySound
 
 #ifdef _UNICODE
 #if defined _M_IX86
