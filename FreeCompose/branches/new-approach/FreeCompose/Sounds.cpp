@@ -14,6 +14,31 @@
 #endif
 
 //==============================================================================
+//
+// Guide to this dialog's controls
+// ===============================
+//
+// Type    Resource ID
+// ------  --------------------------
+// Combo   IDC_S_SCHEME
+// Button  IDADD
+// Button  IDEDIT
+// Button  IDREMOVE
+//
+// Combo   IDC_S_EVENT
+// Radio   IDC_S_NO_SOUND
+// Radio   IDC_S_APPLICATION_SOUND
+// Radio   IDC_S_TONE_SOUND
+//
+// Edit    IDC_S_FILE_NAME
+// Button  IDBROWSE
+//
+// Edit    IDC_S_FREQUENCY
+// Edit    IDC_S_DURATION
+//
+//==============================================================================
+
+//==============================================================================
 // Definitions for CSounds
 //==============================================================================
 
