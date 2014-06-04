@@ -108,23 +108,22 @@ void CXmlOptionsWriter::_SerializeSoundScheme( XNode& Sounds, SoundScheme const&
 }
 
 void CXmlOptionsWriter::_SerializeSoundEvent( XNode& Scheme, SoundEventMapPair const& pair ) {
-	XNode SoundEvent = CreateAndAppendXNode( _doc, L"SoundEvent", Scheme );
-	XElement SoundEventElement = SoundEvent;
+	XNode SoundEventNode = CreateAndAppendXNode( _doc, L"SoundEvent", Scheme );
+	XElement SoundEventElement = SoundEventNode;
 	SoundEventElement->setAttribute( L"Name", static_cast<LPCWSTR>( pair.first ) );
 
-	NoSoundEvent*          pNoSoundEvent          = dynamic_cast<NoSoundEvent*         >( pair.second );
-	ApplicationSoundEvent* pApplicationSoundEvent = dynamic_cast<ApplicationSoundEvent*>( pair.second );
-	ToneSoundEvent*        pToneSoundEvent        = dynamic_cast<ToneSoundEvent*       >( pair.second );
-	if ( pNoSoundEvent ) {
-		XNode NoSound = CreateAndAppendXNode( _doc, L"NoSound", SoundEvent );
-	} else if ( pApplicationSoundEvent ) {
-		XNode ApplicationSound = CreateAndAppendXNode( _doc, L"ApplicationSound", SoundEvent );
-	} else if ( pToneSoundEvent ) {
+	SoundEvent* pSoundEvent = pair.second;
+	if ( typeid( NoSoundEvent ) == typeid( *pSoundEvent ) ) {
+		XNode NoSound = CreateAndAppendXNode( _doc, L"NoSound", SoundEventNode );
+	} else if ( typeid( ApplicationSoundEvent ) == typeid( *pSoundEvent ) ) {
+		XNode ApplicationSound = CreateAndAppendXNode( _doc, L"ApplicationSound", SoundEventNode );
+	} else if ( typeid( ToneSoundEvent ) == typeid( *pSoundEvent ) ) {
+		ToneSoundEvent* pToneSoundEvent = dynamic_cast<ToneSoundEvent*>( pair.second );
 		CString frequency, duration;
 		frequency.Format( L"%u", pToneSoundEvent->Frequency );
 		duration.Format( L"%u", pToneSoundEvent->Duration );
 
-		XNode Tone = CreateAndAppendXNode( _doc, L"Tone", SoundEvent );
+		XNode Tone = CreateAndAppendXNode( _doc, L"Tone", SoundEventNode );
 		XElement ToneElement = Tone;
 		ToneElement->setAttribute( L"Frequency", static_cast<LPCWSTR>( frequency ) );
 		ToneElement->setAttribute( L"Duration",  static_cast<LPCWSTR>( duration  ) );
