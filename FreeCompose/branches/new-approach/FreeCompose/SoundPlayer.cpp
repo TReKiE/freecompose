@@ -70,7 +70,7 @@ namespace {
 			debug( L"+ Time since queueing: %.3f s\n", _TimeSince( _createdAt ) );
 
 			_startedAt = _GetSystemTime( );
-			PlaySound( ApplicationSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
+			PlaySoundW( ApplicationSoundNames[static_cast<int>( Sound )], nullptr, SND_ALIAS | SND_APPLICATION | SND_SYNC );
 			_finishedAt = _GetSystemTime( );
 			debug( L"+ Time to perform: %.3f s\n", _TimeDelta( _startedAt, _finishedAt ) );
 		}
