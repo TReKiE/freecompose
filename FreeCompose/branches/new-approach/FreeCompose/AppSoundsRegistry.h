@@ -6,9 +6,12 @@ public:
 	static void Register( void );
 	static void Unregister( void );
 
-private:
-	static CString _GetCurrentSoundScheme( void );
+	static CString GetCurrentSoundScheme( void );
 
+	static CString GetEventFileName( CString const& strScheme, CString const& strEvent );
+	static bool SetEventFileName( CString const& strScheme, CString const& strEvent, CString const& strNewFileName );
+
+private:
 	static void _RegisterEventLabels( wchar_t const* pwzExeName );
 	static void _RegisterApp( wchar_t const* pwzExeName );
 
