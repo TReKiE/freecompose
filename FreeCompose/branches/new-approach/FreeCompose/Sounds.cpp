@@ -51,7 +51,7 @@ BEGIN_MESSAGE_MAP( CSounds, CPropertyPage )
 	ON_COMMAND( IDREMOVE, CSounds::OnRemove )
 	ON_COMMAND( IDBROWSE, CSounds::OnBrowse )
 	ON_UPDATE_COMMAND_UI( IDREMOVE, CSounds::OnUpdateRemove )
-	ON_UPDATE_COMMAND_UI( IDBROWSE, CSounds::OnUpdateBrowse )
+	ON_CONTROL_RANGE( BN_CLICKED, IDC_S_NO_SOUND, IDC_S_TONE_SOUND, &CSounds::OnRadioGroupClicked )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -193,6 +193,15 @@ void CSounds::OnUpdateRemove( CCmdUI* pui ) {
 	pui->Enable( ( 0 != scheme.CompareNoCase( L".Default" ) ) && ( 0 != scheme.CompareNoCase( L".None" ) ) );
 }
 
-void CSounds::OnUpdateBrowse( CCmdUI* pui ) {
-	pui->Enable( TRUE );
+void CSounds::OnRadioGroupClicked( UINT uID ) {
+	m_nRadioIndex = uID - IDC_S_NO_SOUND;
+
+	BOOL fApplicationSound = ( IDC_S_APPLICATION_SOUND == uID );
+	BOOL fToneSound        = ( IDC_S_TONE_SOUND        == uID );
+
+	m_editFileName.EnableWindow( fApplicationSound );
+	m_buttonBrowse.EnableWindow( fApplicationSound );
+
+	m_editFrequency.EnableWindow( fToneSound );
+	m_editDuration .EnableWindow( fToneSound );
 }
