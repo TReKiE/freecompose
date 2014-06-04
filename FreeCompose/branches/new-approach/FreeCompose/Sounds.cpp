@@ -50,8 +50,11 @@ BEGIN_MESSAGE_MAP( CSounds, CPropertyPage )
 	ON_COMMAND( IDEDIT,   CSounds::OnRename )
 	ON_COMMAND( IDREMOVE, CSounds::OnRemove )
 	ON_COMMAND( IDBROWSE, CSounds::OnBrowse )
-	ON_UPDATE_COMMAND_UI( IDREMOVE, CSounds::OnUpdateRemove )
+
 	ON_CONTROL_RANGE( BN_CLICKED, IDC_S_NO_SOUND, IDC_S_TONE_SOUND, &CSounds::OnRadioGroupClicked )
+
+	ON_CBN_SELCHANGE( IDC_S_SCHEME, CSounds::OnSchemeChanged )
+	ON_CBN_SELCHANGE( IDC_S_EVENT,  CSounds::OnEventChanged )
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
@@ -181,16 +184,10 @@ void CSounds::OnBrowse( ) {
 	}
 
 	SoundEvent* pSoundEvent = m_Schemes[m_nSchemeIndex].Events[ApplicationSoundNames[m_nEventIndex]];
-	ApplicationSoundEvent* pAppSoundEvent = dynamic_cast<ApplicationSoundEvent*>( pSoundEvent );
-	if ( !pAppSoundEvent ) {
+	if ( typeid( ApplicationSoundEvent ) != typeid( *pSoundEvent ) ) {
 		m_Schemes[m_nSchemeIndex].Events[ApplicationSoundNames[m_nEventIndex]] = new ApplicationSoundEvent( );
 		delete pSoundEvent;
 	}
-}
-
-void CSounds::OnUpdateRemove( CCmdUI* pui ) {
-	CString scheme = m_Schemes[m_nSchemeIndex].ID;
-	pui->Enable( ( 0 != scheme.CompareNoCase( L".Default" ) ) && ( 0 != scheme.CompareNoCase( L".None" ) ) );
 }
 
 void CSounds::OnRadioGroupClicked( UINT uID ) {
@@ -204,4 +201,37 @@ void CSounds::OnRadioGroupClicked( UINT uID ) {
 
 	m_editFrequency.EnableWindow( fToneSound );
 	m_editDuration .EnableWindow( fToneSound );
+}
+
+void CSounds::OnSchemeChanged( ) {
+	m_nSchemeIndex = m_comboScheme.GetCurSel( );
+	if ( CB_ERR != m_nSchemeIndex ) {
+		CString strSchemeId = m_Schemes[m_nSchemeIndex].ID;
+		m_buttonRemove.EnableWindow( ( 0 != strSchemeId.CompareNoCase( L".Default" ) ) && ( 0 != strSchemeId.CompareNoCase( L".None" ) ) );
+	} else {
+		m_buttonRemove.EnableWindow( FALSE );
+	}
+}
+
+void CSounds::OnEventChanged( ) {
+	m_nEventIndex = m_comboEvent.GetCurSel( );
+	if ( CB_ERR != m_nEventIndex ) {
+		SoundEvent* pSoundEvent = m_Schemes[m_nSchemeIndex].Events[ApplicationSoundNames[m_nEventIndex]];
+		if ( typeid( NoSoundEvent ) == typeid( *pSoundEvent ) ) {
+			m_nRadioIndex = 0;
+		} else if ( typeid( ApplicationSoundEvent ) == typeid( *pSoundEvent ) ) {
+			m_nRadioIndex = 1;
+		} else if ( typeid( ToneSoundEvent ) == typeid( *pSoundEvent ) ) {
+			m_nRadioIndex = 2;
+		} else {
+			debug( L"CSounds::OnEventChanged: unknown type of sound event '%hs'?\n", typeid( *pSoundEvent ).name( ) );
+			m_nRadioIndex = 0;
+		}
+	} else {
+		m_nRadioIndex = 0;
+	}
+
+	m_radioNoSound         .SetCheck( ( 0 == m_nRadioIndex ) ? BST_CHECKED : BST_UNCHECKED );
+	m_radioApplicationSound.SetCheck( ( 1 == m_nRadioIndex ) ? BST_CHECKED : BST_UNCHECKED );
+	m_radioToneSound       .SetCheck( ( 2 == m_nRadioIndex ) ? BST_CHECKED : BST_UNCHECKED );
 }
