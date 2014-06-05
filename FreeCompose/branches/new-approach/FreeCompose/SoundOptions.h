@@ -8,6 +8,18 @@ class SoundScheme;
 class SoundEvent;
 
 //
+// Types
+//
+
+enum class SoundEventType: int {
+	none             = -1,
+	NoSound          =  0,
+	ApplicationSound,
+	ToneSound,
+	max
+};
+
+//
 // SoundOptions: Root of sound config classes
 //
 
@@ -138,6 +150,10 @@ public:
 		return !( *this == rhs );
 	}
 
+	inline virtual SoundEventType GetType( void ) const {
+		return SoundEventType::none;
+	}
+
 	inline virtual bool PlaySound( void ) {
 		return false;
 	}
@@ -166,6 +182,10 @@ public:
 	inline NoSoundEvent( CString const& name ): SoundEvent( name ) { }
 	inline virtual ~NoSoundEvent( ) { }
 
+	inline virtual SoundEventType GetType( void ) const {
+		return SoundEventType::NoSound;
+	}
+
 	inline virtual bool PlaySound( void ) {
 		return true;
 	}
@@ -183,6 +203,10 @@ public:
 	inline ApplicationSoundEvent( ApplicationSoundEvent const& rhs ) { *this = rhs; }
 	inline ApplicationSoundEvent( CString const& name ): SoundEvent( name ) { }
 	inline virtual ~ApplicationSoundEvent( ) { }
+
+	inline virtual SoundEventType GetType( void ) const {
+		return SoundEventType::ApplicationSound;
+	}
 
 	inline virtual bool PlaySound( void ) {
 		return false;
@@ -218,6 +242,10 @@ public:
 
 	inline virtual bool operator!=( ToneSoundEvent const& rhs ) const {
 		return !( *this == rhs );
+	}
+
+	inline virtual SoundEventType GetType( void ) const {
+		return SoundEventType::ToneSound;
 	}
 
 	inline virtual bool PlaySound( void ) {
