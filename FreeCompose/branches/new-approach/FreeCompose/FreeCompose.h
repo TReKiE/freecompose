@@ -1,5 +1,7 @@
 #pragma once
 
+#include "FcCommandLineInfo.h"
+
 //==============================================================================
 // Types
 //==============================================================================
@@ -35,6 +37,8 @@ public:
 
 	virtual BOOL InitInstance( );
 	virtual int ExitInstance( );
+
+	CFcCommandLineInfo m_CommandLineInfo;
 
 protected:
 	HANDLE m_hInstanceMutex;
