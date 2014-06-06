@@ -14,6 +14,9 @@
 #	include "targetver.h"
 #endif
 
+// C++ standard library
+#include <tuple>	
+
 // Microsoft Foundation Classes
 #include <afx.h>
 
@@ -21,3 +24,6 @@
 #include <unicode/uchar.h>
 #include <unicode/ustring.h>
 #include <unicode/brkiter.h>
+
+// FCShared
+#include "EnumTraits.h"

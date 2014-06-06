@@ -30,6 +30,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <tuple>	
 #include <typeinfo>
 #include <vector>
 
@@ -58,6 +59,7 @@
 
 // FCShared
 #include <FCShared.h>
+#include <EnumTraits.h>
 
 // FCHookDll
 #include <FCHookDll.h>

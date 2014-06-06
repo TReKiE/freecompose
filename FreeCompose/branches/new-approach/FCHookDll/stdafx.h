@@ -21,6 +21,7 @@
 // C++ standard library
 #include <algorithm>
 #include <map>
+#include <tuple>	
 #include <utility>
 
 // MFC
@@ -36,9 +37,10 @@
 #include <unicode/brkiter.h>
 
 // FCShared
-#include "FCShared.h"
-#include "Bitset.h"
-#include "AutoCriticalSection.h"
+#include <FCShared.h>
+#include <Bitset.h>
+#include <AutoCriticalSection.h>
+#include <EnumTraits.h>
 
 // FCHookDll
 #include "FCHookDll.h"
