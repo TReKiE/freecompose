@@ -321,6 +321,7 @@
     <ClInclude Include="FcAppSoundsRegistry.h" />
     <ClInclude Include="ComposeSequenceEditor.h" />
     <ClInclude Include="CompositeCharacter.h" />
+    <ClInclude Include="FcCommandLineInfo.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="FreeCompose.h" />
     <ClInclude Include="KeySequences.h" />

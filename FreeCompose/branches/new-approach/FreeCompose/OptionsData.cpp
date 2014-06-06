@@ -16,9 +16,6 @@
 #	endif
 #endif
 
-#define FORCE_DEFAULT_CONFIG  0
-#define FORCE_REGISTRY_CONFIG 0
-
 COptionsData& COptionsData::operator=( COptionsData const& options ) {
 	StartActive        = options.StartActive;
 	StartWithWindows   = options.StartWithWindows;
@@ -190,29 +187,32 @@ ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& nam
 }
 
 void COptionsData::Load( void ) {
-#if !FORCE_DEFAULT_CONFIG
-#if !FORCE_REGISTRY_CONFIG
-	debug( L"COptionsData::Load: Trying to load XML configuration file.\n" );
-	if ( _xmlOptionsHandler.LoadFromFile( ) ) {
-		debug( L"COptionsData::Load: XML configuration file loaded.\n" );
-		return;
+	BOOL bForceDefault  = theApp.m_CommandLineInfo.m_bForceDefaultConfiguration;
+	BOOL bForceRegistry = theApp.m_CommandLineInfo.m_bForceRegistryConfiguration;
+
+	if ( !bForceDefault && !bForceRegistry ) {
+		debug( L"COptionsData::Load: Trying to load user configuration file\n" );
+		if ( _xmlOptionsHandler.LoadFromFile( ) ) {
+			debug( L"COptionsData::Load: User configuration file loaded\n" );
+			return;
+		}
 	}
 
-	debug( L"COptionsData::Load: Couldn't load XML, trying the registry\n" );
-#endif
-	if ( _LoadFromRegistry( ) ) {
-		debug( L"COptionsData::Load: Loaded configuration from registry, saving to XML\n" );
-		if ( !_xmlOptionsHandler.SaveToFile( ) ) {
-			debug( L"COptionsData::Load: Couldn't save registry configuration to XML\n" );
+	if ( !bForceDefault ) {
+		debug( L"COptionsData::Load: Trying to import user configuration from the registry\n" );
+		if ( _LoadFromRegistry( ) ) {
+			debug( L"COptionsData::Load: Imported configuration from the registry, saving to XML\n" );
+			if ( !_xmlOptionsHandler.SaveToFile( ) ) {
+				debug( L"COptionsData::Load: Couldn't save configuration imported from the registry\n" );
+			}
+			return;
 		}
-		return;
 	}
-#endif
 
 	debug( L"COptionsData::Load: Loading default configuration\n" );
 	_xmlOptionsHandler.LoadDefaultConfiguration( );
 	if ( !_xmlOptionsHandler.SaveToFile( ) ) {
-		debug( L"COptionsData::Load: Couldn't save default configuration to XML\n" );
+		debug( L"COptionsData::Load: Couldn't save default configuration\n" );
 	}
 }
 
