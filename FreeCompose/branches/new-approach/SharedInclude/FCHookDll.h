@@ -29,7 +29,7 @@ enum CAPS_LOCK_SWAP_MODE {
 	CLSM_REPLACE,
 };
 
-enum class CompositionSound: int {
+DECLARE_INDEXABLE_ENUM( CompositionSound ) {
 	none       = -1,
 	Starting   =  0,
 	KeyPressed,
