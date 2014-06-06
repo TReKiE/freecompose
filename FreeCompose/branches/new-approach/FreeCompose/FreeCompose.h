@@ -6,7 +6,7 @@
 // Types
 //==============================================================================
 
-enum class ApplicationSound: int {
+DECLARE_INDEXABLE_ENUM( ApplicationSound ) {
 	none = -1,
 	Activated = static_cast<int>( CompositionSound::max ),
 	Deactivated,
