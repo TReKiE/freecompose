@@ -5,9 +5,10 @@
 #include <Unicode.h>
 
 #include "FreeCompose.h"
-#include "OptionsData.h"
-
+#include "FcCommandLineInfo.h"
 #include "Utils.h"
+
+#include "OptionsData.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -187,8 +188,8 @@ ComposeSequenceGroup* COptionsData::FindComposeSequenceGroup( CString const& nam
 }
 
 void COptionsData::Load( void ) {
-	BOOL bForceDefault  = theApp.m_CommandLineInfo.m_bForceDefaultConfiguration;
-	BOOL bForceRegistry = theApp.m_CommandLineInfo.m_bForceRegistryConfiguration;
+	BOOL bForceDefault  = ( ConfigurationSource::Default  == g_ConfigurationSource );
+	BOOL bForceRegistry = ( ConfigurationSource::Registry == g_ConfigurationSource );
 
 	if ( !bForceDefault && !bForceRegistry ) {
 		debug( L"COptionsData::Load: Trying to load user configuration file\n" );
