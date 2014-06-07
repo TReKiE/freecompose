@@ -37,11 +37,11 @@ CFeatures::CFeatures( COptionsData& Options ):
 	CPropertyPage ( IDT_FEATURES ),
 	m_Options     ( Options )
 {
-
+	debug( L"CFeatures::`ctor\n" );
 }
 
 CFeatures::~CFeatures( ) {
-
+	debug( L"CFeatures::`dtor\n" );
 }
 
 void CFeatures::DoDataExchange( CDataExchange* pDX ) {

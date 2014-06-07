@@ -122,11 +122,11 @@ CKeySequences::CKeySequences( COptionsData& Options ):
 	m_SortState   ( ssUnsorted ),
 	m_nSortColumn ( -1 )
 {
-
+	debug( L"CKeySequences::`ctor\n" );
 }
 
 CKeySequences::~CKeySequences( ) {
-
+	debug( L"CKeySequences::`dtor\n" );
 }
 
 //
