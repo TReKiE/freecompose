@@ -1,11 +1,12 @@
 #include "stdafx.h"
 
 #include "FreeCompose.h"
-#include "MainFrm.h"
-
 #include "FcAppSoundsRegistry.h"
+#include "FcCommandLineInfo.h"
 #include "SoundPlayer.h"
 #include "Utils.h"
+
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -62,7 +63,8 @@ BOOL CFreeComposeApp::InitInstance( ) {
 		return FALSE;
 	}
 
-	ParseCommandLine( m_CommandLineInfo );
+	CFcCommandLineInfo commandLineInfo;
+	ParseCommandLine( commandLineInfo );
 
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
