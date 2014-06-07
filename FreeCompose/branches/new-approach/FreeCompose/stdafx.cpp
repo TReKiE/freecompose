@@ -4,6 +4,7 @@
 
 #include "FreeCompose.h"
 #include "FcAppSoundsRegistry.h"
+#include "FcCommandLineInfo.h"
 #include "SoundPlayer.h"
 #include "StringMapper.h"
 
@@ -19,6 +20,12 @@
 //
 
 CFreeComposeApp theApp;
+
+//
+// Source of configuration information
+//
+
+ConfigurationSource g_ConfigurationSource = ConfigurationSource::User;
 
 //
 // Registered window messages
