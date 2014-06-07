@@ -1,31 +1,40 @@
 #pragma once
 
+//==============================================================================
+// Types
+//==============================================================================
+
+enum class ConfigurationSource {
+	User,
+	Registry,
+	Default,
+};
+
+//==============================================================================
+// Global variables
+//==============================================================================
+
+extern ConfigurationSource g_ConfigurationSource;
+
+//==============================================================================
+// Classes
+//==============================================================================
+
 class CFcCommandLineInfo: public CCommandLineInfo {
 
 public:
-	CFcCommandLineInfo( ):
-		CCommandLineInfo              ( ),
-		m_bForceDefaultConfiguration  ( FALSE ),
-		m_bForceRegistryConfiguration ( FALSE )
-	{
-		
-	}
-
 	inline virtual void ParseParam( wchar_t const* pwzParam, BOOL bFlag, BOOL /*bLast*/ ) {
 		if ( bFlag ) {
 			CString param( pwzParam );
 
 			if ( 0 == param.CompareNoCase( L"forceDefConf" ) ) {
-				m_bForceDefaultConfiguration = TRUE;
+				g_ConfigurationSource = ConfigurationSource::Default;
 			} else if ( 0 == param.CompareNoCase( L"forceRegConf" ) ) {
-				m_bForceRegistryConfiguration = TRUE;
+				g_ConfigurationSource = ConfigurationSource::Registry;
 			} else {
 				debug( L"CFcCommandLineInfo::ParseParam: Unknown parameter '/%s'\n", pwzParam );
 			}
 		}
 	}
-
-	BOOL m_bForceDefaultConfiguration;
-	BOOL m_bForceRegistryConfiguration;
 
 };
