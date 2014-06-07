@@ -13,28 +13,14 @@ public:
 	CSounds& operator=( CSounds const& ) = delete;
 	CSounds& operator=( CSounds&& ) = delete;
 
-	inline CSounds( COptionsData& Options ):
-		CPropertyPage  ( IDT_SOUNDS ),
-		m_Options      ( Options ),
-		m_Schemes      ( Options.Sounds.Schemes ),
-		m_nSchemeIndex ( 0 ),
-		m_nEventIndex  ( 0 ),
-		m_nRadioIndex  ( 0 ),
-		m_nFrequency   ( 0 ),
-		m_nDuration    ( 0 )
-	{
-
-	}
-
-	inline ~CSounds( )
-	{
-
-	}
+	CSounds( COptionsData& Options );
+	~CSounds( );
 
 private:
 	COptionsData& m_Options;
 
 	CComboBox m_comboScheme;
+	CButton m_buttonRename;
 	CButton m_buttonRemove;
 	CComboBox m_comboEvent;
 	CButton m_radioNoSound;
@@ -45,14 +31,25 @@ private:
 	CEdit m_editFrequency;
 	CEdit m_editDuration;
 
-	int m_nSchemeIndex;
-	int m_nEventIndex;
+	int m_nCurrentScheme;
+	int m_nCurrentEvent;
 	int m_nRadioIndex;
 	CString m_strFileName;
 	int m_nFrequency;
 	int m_nDuration;
 
 	SoundSchemeVector& m_Schemes;
+
+	inline SoundScheme& _GetCurrentScheme( void ) const;
+	inline CString      _GetCurrentSchemeId( void ) const;
+	inline SoundEvent*  _GetCurrentEvent( void ) const;
+	inline CString      _GetCurrentEventName( void ) const;
+	inline void         _SetCurrentEvent( SoundEvent* pEvent );
+
+	void _UpdateNoSound( void );
+	void _UpdateApplicationSound( void );
+	void _UpdateToneSound( void );
+	void _UpdateEventGroup( void );
 
 	virtual void DoDataExchange( CDataExchange* pDX );
 	virtual BOOL OnInitDialog( );
@@ -61,8 +58,12 @@ private:
 	afx_msg void OnRename( );
 	afx_msg void OnRemove( );
 	afx_msg void OnBrowse( );
-	afx_msg void OnRadioGroupClicked( UINT uID );
 	afx_msg void OnSchemeChanged( );
 	afx_msg void OnEventChanged( );
+	afx_msg void OnNoSoundClicked( );
+	afx_msg void OnApplicationSoundClicked( );
+	afx_msg void OnToneSoundClicked( );
 
+	using MethodPtr = void (CSounds::*)( void );
+	static MethodPtr const _EventGroupDispatchTable[];
 };
