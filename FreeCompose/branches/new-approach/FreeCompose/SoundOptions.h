@@ -17,7 +17,7 @@ class SoundEvent;
 // Types
 //
 
-DECLARE_INDEXABLE_TYPED_ENUM( SoundEventType, int ) {
+DECLARE_INDEXABLE_ENUM( SoundEventType ) {
 	none             = -1,
 	NoSound          =  0,
 	ApplicationSound,
