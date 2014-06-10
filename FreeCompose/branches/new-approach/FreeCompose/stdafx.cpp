@@ -28,12 +28,19 @@ CFreeComposeApp theApp;
 ConfigurationSource g_ConfigurationSource = ConfigurationSource::User;
 
 //
+// A flag for displaying the Options dialog immediately on startup.
+//
+
+bool g_ShowOptionsDialogImmediately = false;
+
+//
 // Registered window messages
 //
 
 UINT const APP_ACTIVATE          = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_ACTIVATE" );
 UINT const APP_NOTIFYICON        = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_NOTIFYICON" );
 UINT const APP_RECONFIGURE       = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_RECONFIGURE" );
+UINT const APP_SHOWOPTIONS       = RegisterWindowMessage( L"ca.zive.FreeCompose.APP_SHOWOPTIONS" );
 
 UINT const FCM_KEY               = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_KEY" );
 UINT const FCM_COMPOSITION_SOUND = RegisterWindowMessage( L"ca.zive.FcHookDll.FCM_COMPOSITION_SOUND" );
