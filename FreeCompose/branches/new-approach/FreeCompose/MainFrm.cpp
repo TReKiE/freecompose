@@ -1,12 +1,13 @@
 #include "stdafx.h"
 
 #include "FreeCompose.h"
-#include "MainFrm.h"
-#include "AboutDlg.h"
 #include "OptionsPropSheet.h"
 #include "NTray.h"
 #include "Utils.h"
 #include "SoundPlayer.h"
+
+#include "AboutDlg.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #	ifndef DBG_NEW
@@ -28,6 +29,7 @@ BEGIN_MESSAGE_MAP( CMainFrame, CFrameWnd )
 	ON_REGISTERED_MESSAGE ( APP_ACTIVATE,          &CMainFrame::OnActivate          )
 	ON_REGISTERED_MESSAGE ( APP_NOTIFYICON,        &CMainFrame::OnNotifyIcon        )
 	ON_REGISTERED_MESSAGE ( APP_RECONFIGURE,       &CMainFrame::OnReconfigure       )
+	ON_REGISTERED_MESSAGE ( APP_SHOWOPTIONS,       &CMainFrame::OnShowOptions       )
 	ON_REGISTERED_MESSAGE ( FCM_COMPOSITION_SOUND, &CMainFrame::OnFcmPip            )
 	ON_COMMAND            ( ID_APP_ABOUT,          &CMainFrame::OnAppAbout          )
 	ON_COMMAND            ( ID_APP_CAPSLOCK,       &CMainFrame::OnAppCapsLock       )
@@ -77,6 +79,10 @@ void CMainFrame::_Initialize( void ) {
 
 	FcSetNotifyWindowHandle( GetSafeHwnd( ) );
 	_SetUpTrayIcon( );
+
+	if ( g_ShowOptionsDialogImmediately ) {
+		::PostMessage( m_hWnd, APP_SHOWOPTIONS, 0, 0 );
+	}
 }
 
 void CMainFrame::_Reconfigure( void ) {
@@ -126,6 +132,14 @@ void CMainFrame::_UpdateTooltip( void ) {
 	m_pTrayIcon->SetBalloonDetails( str, m_strTitle, CTrayNotifyIcon::Info, 10 );
 }
 
+BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
+	if ( IsDialogMessage( pMsg ) ) {
+		return TRUE;
+	}
+	
+	return CFrameWnd::PreTranslateMessage( pMsg );
+}
+
 //
 // CMainFrame event handlers
 //
@@ -171,13 +185,18 @@ LRESULT CMainFrame::OnReconfigure( WPARAM, LPARAM lparamOptionsPropSheet ) {
 	return 0;
 }
 
+LRESULT CMainFrame::OnShowOptions( WPARAM, LPARAM ) {
+	OnAppConfigure( );
+	return 0;
+}
+
 LRESULT CMainFrame::OnFcmPip( WPARAM wPip, LPARAM ) {
 	debug( L"CMainFrame::OnFcmPip: wPip=%ld\n", static_cast<long>( wPip ) );
 	g_pSoundPlayer->PlaySoundForEvent( static_cast<CompositionSound>( wPip ) );
 	return 0;
 }
 
-void CMainFrame::OnAppAbout(void) {
+void CMainFrame::OnAppAbout( ) {
 	CAboutDlg aboutDlg;
 	aboutDlg.DoModal( );
 }
@@ -194,7 +213,7 @@ void CMainFrame::OnAppExit( ) {
 	}
 }
 
-void CMainFrame::OnAppCapsLock( void ) {
+void CMainFrame::OnAppCapsLock( ) {
 	INPUT inputs[2];
 	memset( inputs, 0, 2 * sizeof( INPUT ) );
 
@@ -240,7 +259,7 @@ void CMainFrame::OnAppConfigure( ) {
 	}
 }
 
-void CMainFrame::OnAppToggle( void ) {
+void CMainFrame::OnAppToggle( ) {
 	if ( FcIsHookEnabled( ) ) {
 		FcDisableHook();
 	} else {
@@ -250,7 +269,7 @@ void CMainFrame::OnAppToggle( void ) {
 }
 
 #ifdef _DEBUG
-void CMainFrame::OnAppZapConf( void ) {
+void CMainFrame::OnAppZapConf( ) {
 	CString appTitle = LoadFromStringTable( AFX_IDS_APP_TITLE );
 
 	debug( L"CMainFrame::OnAppZapConf: Prompting to confirm deletion\n" );
@@ -295,12 +314,4 @@ void CMainFrame::OnUpdateAppToggle( CCmdUI* pui ) {
 	} else {
 		pui->SetText( LoadFromStringTable( IDS_MAINFRAME_MENU_ENABLE ) );
 	}
-}
-
-BOOL CMainFrame::PreTranslateMessage( MSG* pMsg ) {
-	if ( IsDialogMessage( pMsg ) ) {
-		return TRUE;
-	}
-	
-	return CFrameWnd::PreTranslateMessage( pMsg );
 }
