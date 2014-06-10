@@ -1,5 +1,11 @@
 #pragma once
 
+//
+// Enum traits.
+// Inspired by user Potatoswatter's "Solution 1: Operator overloading."
+// http://stackoverflow.com/questions/12927951/array-indexing-converting-to-integer-with-scoped-enumeration
+//
+
 #if defined(_MSC_FULL_VER) && _MSC_FULL_VER <= 180021005
 #define constexpr
 #endif
