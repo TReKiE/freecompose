@@ -1,22 +1,6 @@
 #pragma once
 
 //==============================================================================
-// Types
-//==============================================================================
-
-enum class ConfigurationSource {
-	User,
-	Registry,
-	Default,
-};
-
-//==============================================================================
-// Global variables
-//==============================================================================
-
-extern ConfigurationSource g_ConfigurationSource;
-
-//==============================================================================
 // Classes
 //==============================================================================
 
@@ -31,6 +15,8 @@ public:
 				g_ConfigurationSource = ConfigurationSource::Default;
 			} else if ( 0 == param.CompareNoCase( L"forceRegConf" ) ) {
 				g_ConfigurationSource = ConfigurationSource::Registry;
+			} else if ( 0 == param.CompareNoCase( L"showOptions" ) ) {
+				g_ShowOptionsDialogImmediately = true;
 			} else {
 				debug( L"CFcCommandLineInfo::ParseParam: Unknown parameter '/%s'\n", pwzParam );
 			}
