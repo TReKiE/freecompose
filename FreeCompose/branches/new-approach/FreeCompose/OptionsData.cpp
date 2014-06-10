@@ -5,7 +5,6 @@
 #include <Unicode.h>
 
 #include "FreeCompose.h"
-#include "FcCommandLineInfo.h"
 #include "Utils.h"
 
 #include "OptionsData.h"
