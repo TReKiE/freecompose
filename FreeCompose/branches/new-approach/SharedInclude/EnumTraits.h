@@ -1,5 +1,9 @@
 #pragma once
 
+#if defined(_MSC_FULL_VER) && _MSC_FULL_VER <= 180021005
+#define constexpr
+#endif
+
 /**
 * Trait to make an enum class usable as an integer
 *
@@ -19,11 +23,12 @@
 *
 * Sadly there is no way to use Bar as a sizing value. :(
 */
+
 template<typename Tenum>
 struct enumeration_traits;
 
 struct enumeration_trait_indexable {
-	static bool const indexable = true;
+	static constexpr bool const indexable = true;
 };
 
 /**
@@ -35,15 +40,14 @@ struct enumeration_trait_indexable {
 /*
 * Use this _in_ a scoped enum's declaration to enable the indexing trait.
 */
-#define DECLARE_INDEXABLE_ENUM(Tenum)                   enum class Tenum; DECLARE_INDEXABLE_TRAIT( Tenum ); enum class Tenum
-#define DECLARE_INDEXABLE_TYPED_ENUM(Tenum,Tunderlying) enum class Tenum: Tunderlying; DECLARE_INDEXABLE_TRAIT( Tenum ); enum class Tenum: Tunderlying
+#define DECLARE_INDEXABLE_ENUM(Tenum) enum class Tenum; DECLARE_INDEXABLE_TRAIT(Tenum); enum class Tenum
 
 /**
 * Use unary + to convert an enum class value into its underlying integral type.
-* It's pretty ugly, but at least it's brief.
+* It may be ugly, but at least it's brief.
 */
 template<typename Tenum>
-typename std::enable_if<enumeration_traits<Tenum>::indexable, typename std::underlying_type<Tenum>::type>::type operator+( Tenum const value ) {
+constexpr typename std::enable_if<enumeration_traits<Tenum>::indexable, typename std::underlying_type<Tenum>::type>::type operator+( Tenum const value ) {
 	return static_cast<typename std::underlying_type<Tenum>::type>( value );
 }
 
