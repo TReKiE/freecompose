@@ -5,6 +5,12 @@
 #endif
 
 /**
+* Forward declaration of 
+*/
+template<typename Tenum>
+struct enumeration_traits;
+
+/**
 * Trait to make an enum class usable as an integer
 *
 * C++11 adds scoped enums ('enum [class|struct]'), which is a strongly-scoped
@@ -23,9 +29,6 @@
 *
 * Sadly there is no way to use Bar as a sizing value. :(
 */
-
-template<typename Tenum>
-struct enumeration_traits;
 
 struct enumeration_trait_indexable {
 	static constexpr bool const indexable = true;
@@ -93,4 +96,36 @@ typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type oper
 	Tenum temp = value;
 	--value;
 	return temp;
+}
+
+//==============================================================================
+// Enum trait 'Flags'
+//==============================================================================
+
+struct enumeration_trait_flags {
+	static constexpr bool const flags = true;
+};
+
+#define DECLARE_FLAGS_TRAIT(Tenum) template<> struct enumeration_traits<Tenum>: enumeration_trait_flags { }
+#define DECLARE_FLAGS_ENUM(Tenum) enum class Tenum; DECLARE_FLAGS_TRAIT(Tenum); enum class Tenum
+#define DECLARE_FLAGS_TYPED_ENUM(Tenum, Tunderlying) enum class Tenum: Tunderlying; DECLARE_FLAGS_TRAIT(Tenum); enum class Tenum: Tunderlying
+
+template<typename Tenum>
+constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator&( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) & static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+}
+
+template<typename Tenum>
+constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator^( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) ^ static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+}
+
+template<typename Tenum>
+constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator|( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) | static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+}
+
+template<typename Tenum>
+constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator~( Tenum lhs ) {
+	return static_cast<Tenum>( ~static_cast<typename std::underlying_type<Tenum>::type>( lhs ) );
 }
