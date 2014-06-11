@@ -1,104 +1,97 @@
 #pragma once
 
-//
-// Enum traits.
-// Inspired by user Potatoswatter's "Solution 1: Operator overloading."
-// http://stackoverflow.com/questions/12927951/array-indexing-converting-to-integer-with-scoped-enumeration
-//
-
-#if defined(_MSC_FULL_VER) && _MSC_FULL_VER <= 180021005
+#if defined( _MSC_FULL_VER ) && ( _MSC_FULL_VER <= 180021005 )
 #define constexpr
 #endif
 
-/**
-* Forward declaration of 
-*/
+//
+// ==========================
+// || INDEXABLE ENUM TRAIT ||
+// ==========================
+//
+// C++11 adds scoped enums ('enum struct' and 'enum class'), which is a
+// strongly-scoped and -typed form of enum. It is intentionally not permitted
+// to implicitly cast a scoped enumerator to an integral type, so this trait
+// overloads the otherwise-useless unary operator+ to cast the enum to its
+// underlying integral type.
+//
+// Usage
+// =====
+//
+//    DECLARE_INDEXABLE_ENUM( Foo ) { X, Y, Z, max };
+//
+//        -or-
+//
+//    DECLARE_INDEXABLE_TYPED_ENUM( Foo, short ) { X, Y, Z, max };
+//
+// Foo's members can now be used to index an array like so:
+//
+//    SomeArray[+Foo::X]
+//
+// Sadly, because unary operator+ produces run-time constants, it is not
+// possible to use, e.g., +Foo::max as the size of an array.
+//
+// ======================
+// || FLAGS ENUM TRAIT ||
+// ======================
+//
+// Overloads the bitwise operators -- & ^ | ~ -- to allow operations on enums.
+//
+// Usage
+// =====
+//
+//    DECLARE_FLAGS_ENUM( Foo ) { X = 1, Y = 2, Z = 4 };
+//
+//        -or-
+//
+//    DECLARE_FLAGS_TYPED_ENUM( Foo, unsigned ) { X = 1, Y = 2, Z = 4 };
+//
+// Foo's members can now be used in expressions involving bitwise operators.
+//
+//
+// Indexable enum trait inspired by user Potatoswatter's "Solution 1: Operator
+// overloading."
+// http://stackoverflow.com/questions/12927951/array-indexing-converting-to-integer-with-scoped-enumeration
+//
+
 template<typename Tenum>
 struct enumeration_traits;
 
-/**
-* Trait to make an enum class usable as an integer
-*
-* C++11 adds scoped enums ('enum [class|struct]'), which is a strongly-scoped
-* and -typed form of enum. It is intentionally not permitted to implicitly
-* cast a scoped enumerator to an integral type, so this trait overloads the
-* otherwise-useless unary + operator to cast the enum to its underlying
-* integral type.
-*
-* \section Usage
-* enum class Bar { X, Y, Z };
-* DECLARE_INDEXABLE_TRAIT(Bar);
-*
-* Bar's members can now be used to index an array like so:
-*
-* SomeArray[+Bar::X]   -or-   SomeArray[AS_INDEX(Bar::X)]
-*
-* Sadly there is no way to use Bar as a sizing value. :(
-*/
+//==============================================================================
+// Enum trait 'Indexable'
+//==============================================================================
 
 struct enumeration_trait_indexable {
 	static constexpr bool const indexable = true;
 };
 
-/**
-* Use this on a scoped enum after its declaration to enable the indexing trait.
-* This allows the use of operator+/AS_INDEX on it, as well as operator++, operator--.
-*/
-#define DECLARE_INDEXABLE_TRAIT(Tenum) template<> struct enumeration_traits<Tenum>: enumeration_trait_indexable { }
+#define DECLARE_INDEXABLE_ENUM( Tenum ) enum class Tenum; template<> struct enumeration_traits<Tenum>: enumeration_trait_indexable { }; enum class Tenum
+#define DECLARE_INDEXABLE_TYPED_ENUM( Tenum, Tunderlying ) enum class Tenum: Tunderlying; template<> struct enumeration_traits<Tenum>: enumeration_trait_indexable { }; enum class Tenum: Tunderlying
 
-/*
-* Use this _in_ a scoped enum's declaration to enable the indexing trait.
-*/
-#define DECLARE_INDEXABLE_ENUM(Tenum) enum class Tenum; DECLARE_INDEXABLE_TRAIT(Tenum); enum class Tenum
-
-/**
-* Use unary + to convert an enum class value into its underlying integral type.
-* It may be ugly, but at least it's brief.
-*/
 template<typename Tenum>
-constexpr typename std::enable_if<enumeration_traits<Tenum>::indexable, typename std::underlying_type<Tenum>::type>::type operator+( Tenum const value ) {
+inline constexpr typename std::enable_if<enumeration_traits<Tenum>::indexable, typename std::underlying_type<Tenum>::type>::type operator+( Tenum const value ) {
 	return static_cast<typename std::underlying_type<Tenum>::type>( value );
 }
 
-/**
-* Function wrapper around operator+.
-*/
 template<typename Tenum>
-inline typename std::underlying_type<Tenum>::type AS_INDEX( Tenum const value ) {
-	return +value;
-}
-
-/**
-* Prefix increment operator. Don't overflow it, or weird things can happen.
-*/
-template<typename Tenum>
-typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator++( Tenum& value ) {
+inline typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator++( Tenum& value ) {
 	return ( value = static_cast<Tenum>( +value + 1 ) );
 }
 
-/**
-* Postfix increment operator. Don't overflow it, or weird things can happen.
-*/
 template<typename Tenum>
-typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator++( Tenum& value, int ) {
+inline typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator++( Tenum& value, int ) {
 	auto temp = value;
 	++value;
 	return temp;
 }
 
-/**
-* Prefix decrement operator. Don't underflow it, or weird things can happen.
-*/
 template<typename Tenum>
-typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator--( Tenum& value ) {
+inline typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator--( Tenum& value ) {
 	return ( value = static_cast<Tenum>( +value - 1 ) );
 }
 
-/**
-* Postfix decrement operator. Don't underflow it, or weird things can happen.
-*/
 template<typename Tenum>
-typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator--( Tenum& value, int ) {
+inline typename std::enable_if<enumeration_traits<Tenum>::indexable, Tenum&>::type operator--( Tenum& value, int ) {
 	Tenum temp = value;
 	--value;
 	return temp;
@@ -112,26 +105,25 @@ struct enumeration_trait_flags {
 	static constexpr bool const flags = true;
 };
 
-#define DECLARE_FLAGS_TRAIT(Tenum) template<> struct enumeration_traits<Tenum>: enumeration_trait_flags { }
-#define DECLARE_FLAGS_ENUM(Tenum) enum class Tenum; DECLARE_FLAGS_TRAIT(Tenum); enum class Tenum
-#define DECLARE_FLAGS_TYPED_ENUM(Tenum, Tunderlying) enum class Tenum: Tunderlying; DECLARE_FLAGS_TRAIT(Tenum); enum class Tenum: Tunderlying
+#define DECLARE_FLAGS_ENUM(Tenum) enum class Tenum; template<> struct enumeration_traits<Tenum>: enumeration_trait_flags { }; enum class Tenum
+#define DECLARE_FLAGS_TYPED_ENUM(Tenum, Tunderlying) enum class Tenum: Tunderlying; template<> struct enumeration_traits<Tenum>: enumeration_trait_flags { }; enum class Tenum: Tunderlying
 
 template<typename Tenum>
-constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator&( Tenum lhs, Tenum rhs ) {
-	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) & static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+inline constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator&( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( lhs & rhs );
 }
 
 template<typename Tenum>
-constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator^( Tenum lhs, Tenum rhs ) {
-	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) ^ static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+inline constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator^( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( lhs ^ rhs );
 }
 
 template<typename Tenum>
-constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator|( Tenum lhs, Tenum rhs ) {
-	return static_cast<Tenum>( static_cast<typename std::underlying_type<Tenum>::type>( lhs ) | static_cast<typename std::underlying_type<Tenum>::type>( rhs ) );
+inline constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator|( Tenum lhs, Tenum rhs ) {
+	return static_cast<Tenum>( lhs | rhs );
 }
 
 template<typename Tenum>
-constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator~( Tenum lhs ) {
-	return static_cast<Tenum>( ~static_cast<typename std::underlying_type<Tenum>::type>( lhs ) );
+inline constexpr typename std::enable_if<enumeration_traits<Tenum>::flags, Tenum>::type operator~( Tenum lhs ) {
+	return static_cast<Tenum>( ~lhs );
 }
