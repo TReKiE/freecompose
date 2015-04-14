@@ -213,7 +213,7 @@ public:
 	}
 
 	inline virtual SoundEvent& operator=( SoundEvent&& rhs ) {
-		*this = const_cast<SoundEvent const&>( rhs );
+		Name = rhs.Name;
 		rhs.Name.Empty( );
 		return *this;
 	}
@@ -276,6 +276,17 @@ public:
 		noisydebug( L"0x%p NoSoundEvent::`dtor\n", this );
 	}
 
+	inline virtual NoSoundEvent& operator=( NoSoundEvent const& rhs ) {
+		Name = rhs.Name;
+		return *this;
+	}
+
+	inline virtual NoSoundEvent& operator=( NoSoundEvent&& rhs ) {
+		Name = rhs.Name;
+		rhs.Name.Empty( );
+		return *this;
+	}
+
 	inline virtual SoundEventType GetType( void ) const {
 		return SoundEventType::NoSound;
 	}
@@ -313,6 +324,17 @@ public:
 
 	inline virtual ~ApplicationSoundEvent( ) {
 		noisydebug( L"0x%p ApplicationSoundEvent::`dtor\n", this );
+	}
+
+	inline virtual ApplicationSoundEvent& operator=( ApplicationSoundEvent const& rhs ) {
+		Name = rhs.Name;
+		return *this;
+	}
+
+	inline virtual ApplicationSoundEvent& operator=( ApplicationSoundEvent&& rhs ) {
+		Name = rhs.Name;
+		rhs.Name.Empty( );
+		return *this;
 	}
 
 	inline virtual SoundEventType GetType( void ) const {
