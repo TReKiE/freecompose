@@ -56,8 +56,8 @@ DISPOSITION CapsLockReplacer::KeyUp( KBDLLHOOKSTRUCT* pkb ) {
 	return KeyDown( pkb );
 }
 
-CapsLockMutator* CapsLockMutatorFactory::Create( CAPS_LOCK_SWAP_MODE clSwapMode ) {
-	switch ( clSwapMode ) {
+CapsLockMutator* CapsLockMutatorFactory::Create( CAPS_LOCK_SWAP_MODE swapMode ) {
+	switch ( swapMode ) {
 		case CLSM_SWAP:    return new CapsLockReplacer;
 		case CLSM_REPLACE: return new CapsLockSwapper;
 		default:           return nullptr;
@@ -95,8 +95,8 @@ DISPOSITION CapsLockDisabledToggler::KeyUp( KBDLLHOOKSTRUCT* pkb ) {
 	return KeyDown( pkb );
 }
 
-CapsLockToggler* CapsLockTogglerFactory::Create( CAPS_LOCK_TOGGLE_MODE clToggleMode ) {
-	switch ( clToggleMode ) {
+CapsLockToggler* CapsLockTogglerFactory::Create( CAPS_LOCK_TOGGLE_MODE toggleMode ) {
+	switch ( toggleMode ) {
 		case CLTM_PRESSTWICE: return new CapsLockPressTwiceToggler;
 		case CLTM_DISABLED:   return new CapsLockDisabledToggler;
 		default:              return nullptr;
