@@ -27,7 +27,7 @@ public:
 class CapsLockMutatorFactory {
 
 public:
-	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE clSwapMode );
+	static CapsLockMutator* Create( CAPS_LOCK_SWAP_MODE swapMode );
 
 private:
 	CapsLockMutatorFactory( );
@@ -69,7 +69,7 @@ public:
 class CapsLockTogglerFactory {
 
 public:
-	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE clToggleMode );
+	static CapsLockToggler* Create( CAPS_LOCK_TOGGLE_MODE toggleMode );
 
 private:
 	CapsLockTogglerFactory( );
