@@ -167,7 +167,6 @@ bool CXmlOptionsManager::_LoadSchema( void ) {
 			hr = pErrorInfo->GetDescription( &bstrDescription );
 			hr = pErrorInfo->GetSource( &bstrSource );
 			debug( L"+ Description: %s\n+ Source: %s\n", bstrDescription, bstrSource );
-			return false;
 		}
 		return false;
 	}
