@@ -112,6 +112,8 @@ static CString GetPathFromFileName( CString const& strFileName ) {
 // CSounds helper members
 //==============================================================================
 
+// Helpers relating to the current scheme and current event.
+
 inline SoundScheme& CSounds::_GetCurrentScheme( void ) const {
 	return m_Schemes[m_nCurrentScheme];
 }
@@ -136,6 +138,8 @@ inline void CSounds::_SetCurrentEvent( SoundEvent* pEvent ) {
 	}
 	events[name] = pEvent;
 }
+
+// Update controls related to the radio button group.
 
 void CSounds::_UpdateNoSound( void ) {
 	m_nRadioIndex = 0;
@@ -222,7 +226,7 @@ void CSounds::DoDataExchange( CDataExchange* pDX ) {
 	DDX_Text    ( pDX, IDC_S_FREQUENCY,         m_nFrequency            );
 	DDX_Text    ( pDX, IDC_S_DURATION,          m_nDuration             );
 
-	DDV_MinMaxInt( pDX, m_nFrequency, 37, 32767 );
+	DDV_MinMaxInt( pDX, m_nFrequency, 0/*37*/, 32767 );
 }
 
 CSounds::CSounds( COptionsData& Options ):
@@ -238,23 +242,25 @@ CSounds::CSounds( COptionsData& Options ):
 	debug( L"CSounds::`ctor\n" );
 }
 
-CSounds::~CSounds( )
-{
+CSounds::~CSounds( ) {
 	debug( L"CSounds::`dtor\n" );
 }
 
 BOOL CSounds::OnInitDialog( ) {
-	if ( !CPropertyPage::OnInitDialog( ) ) {
-		return FALSE;
+	BOOL b = CPropertyPage::OnInitDialog( );
+	if ( !b ) {
+		debug( L"CSounds::OnInitDialog: base::OnInitDialog() returned %d; continuing anyway\n", b );
 	}
 
 	for ( auto& scheme : m_Schemes ) {
 		m_comboScheme.AddString( scheme.Name );
 	}
+	m_comboScheme.SetCurSel( 0 );
 
 	for ( auto soundId : ApplicationSoundDisplayNameIds ) {
 		m_comboEvent.AddString( LoadFromStringTable( soundId ) );
 	}
+	m_comboEvent.SetCurSel( 0 );
 
 	_UpdateEventGroup( );
 
@@ -305,16 +311,17 @@ void CSounds::OnBrowse( ) {
 
 void CSounds::OnSchemeChanged( ) {
 	debug( L"CSounds::OnSchemeChanged\n" );
+
 	m_nCurrentScheme = m_comboScheme.GetCurSel( );
 	BOOL fEnable = FALSE;
 	if ( CB_ERR != m_nCurrentScheme ) {
 		CString strSchemeId = _GetCurrentSchemeId( );
-		fEnable = ( ( 0 != strSchemeId.CompareNoCase( L".Default" ) ) && ( 0 != strSchemeId.CompareNoCase( L".None" ) ) );
+		fEnable = ( 0 != strSchemeId.CompareNoCase( L".Current" ) ) && ( 0 != strSchemeId.CompareNoCase( L".Default" ) ) && ( 0 != strSchemeId.CompareNoCase( L".None" ) );
 	}
 	
 	m_buttonRename.EnableWindow( fEnable );
 	m_buttonRemove.EnableWindow( fEnable );
-	m_comboEvent.SetCurSel( 0 );
+
 	_UpdateEventGroup( );
 }
 
