@@ -10,14 +10,6 @@
 #include "XmlOptionsHelpers.h"
 
 //==============================================================================
-// Type aliases
-//==============================================================================
-
-using MethodPtr        = bool (CXmlOptionsReader::*)( XNode const& );
-using XmlMethodMap     = std::map<_bstr_t, MethodPtr>;
-using XmlMethodMapPair = std::pair<_bstr_t, MethodPtr>;
-
-//==============================================================================
 // Local objects
 //==============================================================================
 
@@ -35,9 +27,9 @@ static XmlMethodMap         GroupElementsToMethods;
 // Static initialization object for this translation unit
 //==============================================================================
 
-static class XorInitializer {
+static class _StaticInitializer {
 public:
-	inline XorInitializer( ) {
+	inline _StaticInitializer( ) {
 		RootElementsToMethods      .insert( XmlMethodMapPair( L"Options",            &CXmlOptionsReader::_InterpretOptionsNode            ) );
 		RootElementsToMethods      .insert( XmlMethodMapPair( L"Mappings",           &CXmlOptionsReader::_InterpretMappingsNode           ) );
 
