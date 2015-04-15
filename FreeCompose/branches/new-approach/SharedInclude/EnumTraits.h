@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined( _MSC_FULL_VER ) && ( _MSC_FULL_VER <= 180021005 )
+#if defined( _MSC_FULL_VER ) && ( _MSC_FULL_VER <= 180031101 )
 #define constexpr
 #endif
 
