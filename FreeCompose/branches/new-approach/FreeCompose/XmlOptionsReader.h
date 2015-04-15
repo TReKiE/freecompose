@@ -4,11 +4,11 @@
 // Class declarations
 //==============================================================================
 
-class CXmlOptionsReader {
+using MethodPtr        = bool (CXmlOptionsReader::*)( XNode const& );
+using XmlMethodMap     = std::map<_bstr_t, MethodPtr>;
+using XmlMethodMapPair = std::pair<_bstr_t, MethodPtr>;
 
-	using MethodPtr        = bool (CXmlOptionsReader::*)( XNode const& );
-	using XmlMethodMap     = std::map<_bstr_t, MethodPtr>;
-	using XmlMethodMapPair = std::pair<_bstr_t, MethodPtr>;
+class CXmlOptionsReader {
 
 public:
 	CXmlOptionsReader( ):
@@ -60,6 +60,6 @@ protected:
 		bool _InterpretGroupNode( XNode const& node );
 			bool _InterpretMappingNode( XNode const& node );
 
-	friend class XorInitializer;
+	friend class _StaticInitializer;
 
 };
